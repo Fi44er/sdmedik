@@ -11,8 +11,8 @@ import (
 	"github.com/chromedp/chromedp"
 )
 
-const BROWSER_PULL_LIMIT = 5
-const MAIN_URL = "https://ktsr.sfr.gov.ru/ru-RU/product/product/order86n/165"
+const BROWSER_PULL_LIMIT = 2
+const MAIN_URL = "https://ktsr.sfr.gov.ru/ru-RU/product/product/order86n/81"
 
 func main() {
 	Run()
@@ -53,9 +53,16 @@ func Run() {
 	}()
 
 	var wgWorkers sync.WaitGroup
-	for i := 0; i < BROWSER_PULL_LIMIT; i++ {
-		wgWorkers.Add(1)
-		go utils.Worker(allocCtx, jobs, results, &wgWorkers)
+	if BROWSER_PULL_LIMIT > len(links) {
+		for i := 0; i < len(links); i++ {
+			wgWorkers.Add(1)
+			go utils.Worker(allocCtx, jobs, results, &wgWorkers)
+		}
+	} else {
+		for i := 0; i < BROWSER_PULL_LIMIT; i++ {
+			wgWorkers.Add(1)
+			go utils.Worker(allocCtx, jobs, results, &wgWorkers)
+		}
 	}
 
 	var wgResults sync.WaitGroup
