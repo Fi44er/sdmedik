@@ -3,6 +3,7 @@ package utils
 import (
 	"context"
 	"log"
+	"time"
 
 	"github.com/chromedp/chromedp"
 )
@@ -20,8 +21,34 @@ func GetPriceAndArticle(ctx context.Context, link, region string) (string, strin
 		chromedp.WaitVisible("#suggest-container", chromedp.ByID),
 		chromedp.WaitVisible(".ymaps-2-1-79-suggest-item-0", chromedp.ByQuery),
 		chromedp.Evaluate(`document.querySelector(".ymaps-2-1-79-suggest-item-0 .ymaps-2-1-79-search__suggest-item").click();`, nil),
-		chromedp.WaitVisible(`.catalog-products__info-price`, chromedp.ByQuery),
-		chromedp.Text(`.catalog-products__info-price span`, &price, chromedp.ByQuery),
+		// chromedp.WaitVisible(`.catalog-products__info-price`, chromedp.ByQuery),
+		// chromedp.Text(`.catalog-products__info-price span`, &price, chromedp.ByQuery),
+
+		chromedp.ActionFunc(func(ctx context.Context) error {
+
+			// Create a context with a timeout
+
+			timeoutCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
+
+			defer cancel()
+
+			// Wait for the element to be visible
+
+			err := chromedp.WaitVisible(`.catalog-products__info-price`, chromedp.ByQuery).Do(timeoutCtx)
+
+			if err == nil {
+
+				// If the element is visible, get the price
+
+				return chromedp.Text(`.catalog-products__info-price span`, &price, chromedp.ByQuery).Do(ctx)
+
+			}
+
+			// If the element is not visible, just return nil to skip
+
+			return nil
+
+		}),
 
 		// get product article
 		chromedp.WaitVisible(`.product-inner-top-article__code`, chromedp.ByQuery),
