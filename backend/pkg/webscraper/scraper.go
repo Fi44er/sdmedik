@@ -11,14 +11,14 @@ import (
 	"github.com/chromedp/chromedp"
 )
 
-const BROWSER_PULL_LIMIT = 2
-const MAIN_URL = "https://ktsr.sfr.gov.ru/ru-RU/product/product/order86n/81"
+const MAIN_URL = "https://ktsr.sfr.gov.ru/ru-RU/product/product/order86n/165"
 
 func main() {
 	Run()
 }
 
 func Run() {
+	var brawserPullLimit = 4
 
 	jobs := make(chan structs.Job, 100)
 	results := make(chan structs.Result, 100)
@@ -40,9 +40,26 @@ func Run() {
 		log.Fatal(err)
 	}
 
-	links, err := utils.GetProductLinks(ctx)
+	pagintioLinks, err := utils.GetPaginationLinks(ctx)
 	if err != nil {
 		log.Fatal(err)
+	}
+
+	var links []string
+
+	for _, link := range pagintioLinks {
+		if err := utils.NavigateTo(ctx, link); err != nil {
+			log.Fatal(err)
+		}
+
+		productLinks, err := utils.GetProductLinks(ctx)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		links = append(links, productLinks...)
+		fmt.Printf("Array: %v\n", links)
+
 	}
 
 	go func() {
@@ -53,16 +70,13 @@ func Run() {
 	}()
 
 	var wgWorkers sync.WaitGroup
-	if BROWSER_PULL_LIMIT > len(links) {
-		for i := 0; i < len(links); i++ {
-			wgWorkers.Add(1)
-			go utils.Worker(allocCtx, jobs, results, &wgWorkers)
-		}
-	} else {
-		for i := 0; i < BROWSER_PULL_LIMIT; i++ {
-			wgWorkers.Add(1)
-			go utils.Worker(allocCtx, jobs, results, &wgWorkers)
-		}
+	if brawserPullLimit > len(links) {
+		brawserPullLimit = len(links)
+	}
+
+	for i := 0; i < brawserPullLimit; i++ {
+		wgWorkers.Add(1)
+		go utils.Worker(allocCtx, jobs, results, &wgWorkers)
 	}
 
 	var wgResults sync.WaitGroup
@@ -83,10 +97,8 @@ func Run() {
 	wgWorkers.Wait()
 	close(results) // Закрываем канал результатов после завершения workers
 
-	// Ожидаем завершения сбора результатов
 	wgResults.Wait()
 
-	// Сохраняем результаты в файл
 	if err := utils.SaveToFile(products, "products.json"); err != nil {
 		log.Fatal(err)
 	}
