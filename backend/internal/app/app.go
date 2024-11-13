@@ -1,21 +1,22 @@
 package app
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/Fi44er/sdmedik/backend/internal/config"
+	"github.com/Fi44er/sdmedik/backend/pkg/logger"
 	"github.com/gofiber/fiber/v2"
 )
 
 type App struct {
-	app            *fiber.App
-	sericeProvider *serviceProvider
-	httpService    *http.Server
+	app             *fiber.App
+	serviceProvider *serviceProvider
+	httpService     *http.Server
+	logger          *logger.Logger
 }
 
-func NewApp() (*App, error) {
-	a := &App{app: fiber.New()}
+func NewApp(logger *logger.Logger) (*App, error) {
+	a := &App{app: fiber.New(), logger: logger}
 
 	if err := a.initDeps(); err != nil {
 		return nil, err
@@ -54,24 +55,25 @@ func (a *App) initConfig() error {
 }
 
 func (a *App) initServiceProvider() error {
-	a.sericeProvider = newServiceProvider()
+	var err error
+	a.serviceProvider, err = newServiceProvider(a.logger)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
 func (a *App) initRouter() error {
 	v1 := a.app.Group("/api/v1")
 
-	v1.Get("/hello", a.sericeProvider.userProvider.UserImpl().Hello)
+	v1.Get("/hello", a.serviceProvider.userProvider.UserImpl().Hello)
 	return nil
 }
 
 func (a *App) runHttpServer() error {
-	log.Printf("HTTP server is running on %s", a.sericeProvider.HTTPConfig().Address())
-	if err := a.initRouter(); err != nil {
-		log.Fatal(err)
-	}
-	if err := a.app.Listen(a.sericeProvider.httpConfig.Address()); err != nil {
-		log.Fatal(err)
+	a.logger.Infof("HTTP server is running on %s", a.serviceProvider.HTTPConfig().Address())
+	if err := a.app.Listen(a.serviceProvider.httpConfig.Address()); err != nil {
+		a.logger.Fatal(err)
 	}
 	return nil
 }
