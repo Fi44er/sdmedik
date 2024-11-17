@@ -7,11 +7,11 @@ import (
 )
 
 type ICategoryRepository interface {
-	Create(ctx context.Context, data *model.Categori) error
-	GetAll(ctx context.Context) ([]*model.Categori, error)
-	GetByID(ctx context.Context, id int) (*model.Categori, error)
+	Create(ctx context.Context, data *model.Category) error
+	GetAll(ctx context.Context) ([]*model.Category, error)
+	GetByID(ctx context.Context, id int) (*model.Category, error)
 	Delete(ctx context.Context, id int) error
-	Update(ctx context.Context, data *model.Categori) error
+	Update(ctx context.Context, data *model.Category) error
 }
 
 type IImageRepository interface {
@@ -40,8 +40,8 @@ type IPriceRepository interface {
 
 type IProductRepository interface {
 	Create(ctx context.Context, data *model.Product) error
-	GetAll(ctx context.Context) ([]model.Product, error)
-	GetByID(ctx context.Context, id string) (*model.Product, error)
+	GetAll(ctx context.Context, offset int, limit int) ([]model.Product, error)
+	GetByID(ctx context.Context, id string) (model.Product, error)
 	Delete(ctx context.Context, id string) error
 	Update(ctx context.Context, data *model.Product) error
 }

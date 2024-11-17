@@ -18,13 +18,14 @@ type ProductProvider struct {
 	db                *gorm.DB
 }
 
-func NewProductProvider(logger *logger.Logger) *UserProvider {
-	return &UserProvider{
+func NewProductProvider(logger *logger.Logger, db *gorm.DB) *ProductProvider {
+	return &ProductProvider{
 		logger: logger,
+		db:     db,
 	}
 }
 
-func (s *ProductProvider) UserRepository() repository.IProductRepository {
+func (s *ProductProvider) ProductRepository() repository.IProductRepository {
 	if s.productRepository == nil {
 		s.productRepository = productRepository.NewRepository(s.logger, s.db)
 	}
@@ -33,7 +34,7 @@ func (s *ProductProvider) UserRepository() repository.IProductRepository {
 
 func (s *ProductProvider) ProductService() service.IProductService {
 	if s.productService == nil {
-		s.productService = productService.NewService(s.productRepository)
+		s.productService = productService.NewService(s.ProductRepository(), s.logger)
 	}
 
 	return s.productService
