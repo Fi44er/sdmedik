@@ -5,7 +5,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func (i *Implemenation) Create(ctx *fiber.Ctx) error {
+func (i *Implementation) Create(ctx *fiber.Ctx) error {
 	product := new(model.Product)
 	if err := ctx.BodyParser(&product); err != nil {
 		return ctx.Status(400).JSON("Failed to parse body")

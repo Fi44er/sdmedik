@@ -27,17 +27,30 @@ func (s *repository) Create(ctx context.Context, data *model.Product) error {
 	return s.db.WithContext(ctx).Create(data).Error
 }
 
-func (s *repository) GetByID(ctx context.Context, id string) (*model.Product, error) {
+func (s *repository) GetByID(ctx context.Context, id string) (model.Product, error) {
 	var product model.Product
 	if err := s.db.WithContext(ctx).Where("id = ?", id).First(&product).Error; err != nil {
-		return nil, err
+		return model.Product{}, err
 	}
-	return &product, nil
+	return product, nil
 }
 
-func (s *repository) GetAll(ctx context.Context) ([]model.Product, error) {
+func (s *repository) GetAll(ctx context.Context, offset int, limit int) ([]model.Product, error) {
 	var products []model.Product
-	if err := s.db.WithContext(ctx).Find(&products).Error; err != nil {
+	switch {
+
+	case offset == 0 && limit == 0:
+		offset = -1
+		limit = -1
+	case offset == 0:
+		offset = -1
+	case limit == 0:
+		limit = -1
+	default:
+		offset *= limit
+	}
+
+	if err := s.db.WithContext(ctx).Offset(offset).Limit(limit).Find(&products).Error; err != nil {
 		return nil, err
 	}
 	return products, nil

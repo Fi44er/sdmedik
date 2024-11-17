@@ -6,6 +6,7 @@ import (
 	"github.com/Fi44er/sdmedik/backend/internal/config"
 	"github.com/Fi44er/sdmedik/backend/pkg/logger"
 	"github.com/gofiber/fiber/v2"
+	"gorm.io/gorm"
 )
 
 type App struct {
@@ -13,10 +14,15 @@ type App struct {
 	serviceProvider *serviceProvider
 	httpService     *http.Server
 	logger          *logger.Logger
+	db              *gorm.DB
 }
 
-func NewApp(logger *logger.Logger) (*App, error) {
-	a := &App{app: fiber.New(), logger: logger}
+func NewApp(logger *logger.Logger, db *gorm.DB) (*App, error) {
+	a := &App{
+		app:    fiber.New(),
+		logger: logger,
+		db:     db,
+	}
 
 	if err := a.initDeps(); err != nil {
 		return nil, err
@@ -56,7 +62,7 @@ func (a *App) initConfig() error {
 
 func (a *App) initServiceProvider() error {
 	var err error
-	a.serviceProvider, err = newServiceProvider(a.logger)
+	a.serviceProvider, err = newServiceProvider(a.logger, a.db)
 	if err != nil {
 		return err
 	}
@@ -67,6 +73,10 @@ func (a *App) initRouter() error {
 	v1 := a.app.Group("/api/v1")
 
 	v1.Get("/hello", a.serviceProvider.userProvider.UserImpl().Hello)
+
+	product := v1.Group("/product")
+	product.Get("/", a.serviceProvider.productProvider.ProductImpl().GetAll)
+	product.Post("/", a.serviceProvider.productProvider.ProductImpl().Create)
 	return nil
 }
 

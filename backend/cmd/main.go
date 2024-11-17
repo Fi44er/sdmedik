@@ -18,7 +18,7 @@ func main() {
 		log.Fatalf("Database migration failed: %v", err)
 	}
 
-	a, err := app.NewApp(log)
+	a, err := app.NewApp(log, db.Db)
 	if err != nil {
 		log.Fatalf("failed to init app: %s", err.Error())
 	}
