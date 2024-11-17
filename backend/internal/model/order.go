@@ -1,13 +1,23 @@
 package model
 
-import "time"
+import (
+	"time"
+
+	"github.com/google/uuid"
+	"gorm.io/gorm"
+)
 
 type Order struct {
-	ID             string    `json:"id"`
-	FIO            string    `json:"fio"`
-	Date           time.Time `json:"date"`
-	Article        string    `json:"article"`
-	RegionID       int       `json:"region_id"`
-	PaymenMethodID int       `json:"payment_method_id"`
-	CreateAt       time.Time `json:"create_at"`
+	ID              string    `gorm:"primaryKey;type:string;" json:"id"`
+	FIO             string    `gorm:"type:varchar(255);not null" json:"fio"`
+	Date            time.Time `gorm:"not null" json:"date"`
+	Article         string    `gorm:"type:varchar(255);not null" json:"article"`
+	RegionID        int       `gorm:"not null" json:"region_id"`
+	PaymentMethodID int       `gorm:"not null" json:"payment_method_id"`
+	CreatedAt       time.Time `gorm:"autoCreateTime" json:"created_at"`
+}
+
+func (o *Order) BeforeCreate(tx *gorm.DB) error {
+	o.ID = uuid.New().String()
+	return nil
 }
