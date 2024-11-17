@@ -11,7 +11,7 @@ import (
 	"github.com/chromedp/chromedp"
 )
 
-const MAIN_URL = "https://ktsr.sfr.gov.ru/ru-RU/product/product/order86n/165"
+const MAIN_URL = "https://ktsr.sfr.gov.ru/ru-RU/product/product/order86n/184"
 
 func main() {
 	Run()

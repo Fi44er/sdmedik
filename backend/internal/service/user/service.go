@@ -5,7 +5,7 @@ import (
 	"github.com/Fi44er/sdmedik/backend/pkg/logger"
 )
 
-var _ def.UserService = (*service)(nil)
+var _ def.IUserService = (*service)(nil)
 
 type service struct {
 	logger *logger.Logger

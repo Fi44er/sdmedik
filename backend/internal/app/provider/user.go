@@ -9,7 +9,7 @@ import (
 
 type UserProvider struct {
 	// userRepository repository.UserRepository
-	userService service.UserService
+	userService service.IUserService
 	userImpl    *user.Implementation
 	logger      *logger.Logger
 }
@@ -27,7 +27,7 @@ func NewUserProvider(logger *logger.Logger) *UserProvider {
 // 	return s.userRepository
 // }
 
-func (s *UserProvider) UserService() service.UserService {
+func (s *UserProvider) UserService() service.IUserService {
 	if s.userService == nil {
 		s.userService = userService.NewService(s.logger)
 	}
