@@ -77,6 +77,9 @@ func (a *App) initRouter() error {
 	product := v1.Group("/product")
 	product.Get("/", a.serviceProvider.productProvider.ProductImpl().GetAll)
 	product.Post("/", a.serviceProvider.productProvider.ProductImpl().Create)
+	product.Get("/:id", a.serviceProvider.productProvider.ProductImpl().GetById)
+	product.Put("/:id", a.serviceProvider.productProvider.ProductImpl().Update)
+	product.Delete("/:id", a.serviceProvider.productProvider.ProductImpl().Delete)
 	return nil
 }
 

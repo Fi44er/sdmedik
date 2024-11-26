@@ -7,5 +7,13 @@ import (
 )
 
 func (s *service) Create(ctx context.Context, product *model.Product) error {
-	return s.productRepository.Create(ctx, product)
+	s.logger.Info("Creating product in service...")
+
+	if err := s.productRepository.Create(ctx, product); err != nil {
+		s.logger.Errorf("Failed to create product: %v", err)
+		return err
+	}
+
+	s.logger.Info("Product created successfully")
+	return nil
 }

@@ -6,13 +6,15 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func (i *Implementation) Create(ctx *fiber.Ctx) error {
+func (i *Implementation) Update(ctx *fiber.Ctx) error {
+	id := ctx.Params("id")
 	product := new(model.Product)
 	if err := ctx.BodyParser(&product); err != nil {
 		return ctx.Status(400).JSON("Failed to parse body")
 	}
 
-	if err := i.productService.Create(ctx.Context(), product); err != nil {
+	product.ID = id
+	if err := i.productService.Update(ctx.Context(), product); err != nil {
 		code, msg := errors.GetErroField(err)
 		return ctx.Status(code).JSON(msg)
 	}
