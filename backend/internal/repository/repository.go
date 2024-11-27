@@ -55,8 +55,9 @@ type ITokenRepository interface {
 
 type IUserRepository interface {
 	Create(ctx context.Context, data *model.User) error
-	GetAll(ctx context.Context) ([]*model.User, error)
-	GetByID(ctx context.Context, id string) (*model.User, error)
+	GetAll(ctx context.Context, offset int, limit int) ([]model.User, error)
+	GetByID(ctx context.Context, id string) (model.User, error)
+	GetByEmail(ctx context.Context, email string) (model.User, error)
 	Delete(ctx context.Context, id string) error
 	Update(ctx context.Context, data *model.User) error
 }

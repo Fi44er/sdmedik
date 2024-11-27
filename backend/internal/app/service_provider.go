@@ -4,6 +4,7 @@ import (
 	"github.com/Fi44er/sdmedik/backend/internal/app/provider"
 	"github.com/Fi44er/sdmedik/backend/internal/config"
 	"github.com/Fi44er/sdmedik/backend/pkg/logger"
+	"github.com/go-playground/validator/v10"
 	"gorm.io/gorm"
 )
 
@@ -12,14 +13,16 @@ type serviceProvider struct {
 	userProvider    provider.UserProvider
 	productProvider provider.ProductProvider
 
-	logger *logger.Logger
-	db     *gorm.DB
+	logger    *logger.Logger
+	db        *gorm.DB
+	validator validator.Validate
 }
 
-func newServiceProvider(logger *logger.Logger, db *gorm.DB) (*serviceProvider, error) {
+func newServiceProvider(logger *logger.Logger, db *gorm.DB, valivalidator validator.Validate) (*serviceProvider, error) {
 	a := &serviceProvider{
-		logger: logger,
-		db:     db,
+		logger:    logger,
+		db:        db,
+		validator: valivalidator,
 	}
 
 	if err := a.initDeps(); err != nil {
@@ -46,7 +49,7 @@ func (s *serviceProvider) initDeps() error {
 }
 
 func (s *serviceProvider) initUserProvider() error {
-	s.userProvider = *provider.NewUserProvider(s.logger)
+	s.userProvider = *provider.NewUserProvider(s.logger, s.validator)
 	return nil
 }
 

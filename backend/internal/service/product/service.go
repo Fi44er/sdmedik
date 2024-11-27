@@ -9,13 +9,13 @@ import (
 var _ def.IProductService = (*service)(nil)
 
 type service struct {
-	logger            *logger.Logger
-	productRepository repository.IProductRepository
+	logger *logger.Logger
+	repo   repository.IProductRepository
 }
 
-func NewService(productRepository repository.IProductRepository, logger *logger.Logger) *service {
+func NewService(repo repository.IProductRepository, logger *logger.Logger) *service {
 	return &service{
-		productRepository: productRepository,
-		logger:            logger,
+		repo:   repo,
+		logger: logger,
 	}
 }

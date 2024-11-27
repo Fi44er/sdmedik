@@ -9,8 +9,7 @@ import (
 func (s *service) Create(ctx context.Context, product *model.Product) error {
 	s.logger.Info("Creating product in service...")
 
-	if err := s.productRepository.Create(ctx, product); err != nil {
-		s.logger.Errorf("Failed to create product: %v", err)
+	if err := s.repo.Create(ctx, product); err != nil {
 		return err
 	}
 

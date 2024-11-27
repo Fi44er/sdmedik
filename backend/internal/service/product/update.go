@@ -7,5 +7,5 @@ import (
 )
 
 func (s *service) Update(ctx context.Context, product *model.Product) error {
-	return s.productRepository.Update(ctx, product)
+	return s.repo.Update(ctx, product)
 }
