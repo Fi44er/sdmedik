@@ -5,6 +5,7 @@ import (
 	def "github.com/Fi44er/sdmedik/backend/internal/service"
 	"github.com/Fi44er/sdmedik/backend/pkg/logger"
 	"github.com/go-playground/validator/v10"
+	"github.com/redis/go-redis/v9"
 )
 
 var _ def.IUserService = (*service)(nil)
@@ -12,10 +13,11 @@ var _ def.IUserService = (*service)(nil)
 type service struct {
 	logger    *logger.Logger
 	repo      repository.IUserRepository
-	validator validator.Validate
+	validator *validator.Validate
+	cache     *redis.Client
 }
 
-func NewService(logger *logger.Logger, repo repository.IUserRepository, validator validator.Validate) *service {
+func NewService(logger *logger.Logger, repo repository.IUserRepository, validator *validator.Validate) *service {
 	return &service{
 		logger:    logger,
 		repo:      repo,

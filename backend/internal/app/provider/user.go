@@ -17,12 +17,13 @@ type UserProvider struct {
 	userImpl       *user.Implementation
 	logger         *logger.Logger
 	db             *gorm.DB
-	validator      validator.Validate
+	validator      *validator.Validate
 }
 
-func NewUserProvider(logger *logger.Logger, vavalidator validator.Validate) *UserProvider {
+func NewUserProvider(logger *logger.Logger, vavalidator *validator.Validate) *UserProvider {
 	return &UserProvider{
-		logger: logger,
+		logger:    logger,
+		validator: vavalidator,
 	}
 }
 

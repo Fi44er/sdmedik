@@ -21,7 +21,7 @@ func ConnectDb() (Database, error) {
 		log.Fatalf("Error loading .env file: %v", err)
 	}
 
-	dbURL := os.Getenv("DB_URL")
+	dbURL := os.Getenv("POSTGRES_URL")
 	if dbURL == "" {
 		log.Fatalf("DB_URL is not set in the environment variables")
 	}

@@ -16,10 +16,10 @@ type App struct {
 	httpService     *http.Server
 	logger          *logger.Logger
 	db              *gorm.DB
-	validator       validator.Validate
+	validator       *validator.Validate
 }
 
-func NewApp(logger *logger.Logger, db *gorm.DB, vavalidator validator.Validate) (*App, error) {
+func NewApp(logger *logger.Logger, db *gorm.DB, vavalidator *validator.Validate) (*App, error) {
 	a := &App{
 		app:       fiber.New(),
 		logger:    logger,
@@ -84,7 +84,7 @@ func (a *App) initRouter() error {
 
 	auth := v1.Group("/auth")
 	auth.Post("/register", a.serviceProvider.userProvider.UserImpl().Register)
-	// auth.Post("/login", a.serviceProvider.userProvider.UserImpl().Login)
+	auth.Post("/login", a.serviceProvider.userProvider.UserImpl().Login)
 
 	product := v1.Group("/product")
 	product.Get("/", a.serviceProvider.productProvider.ProductImpl().GetAll)
