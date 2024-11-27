@@ -6,9 +6,11 @@ import (
 )
 
 type User struct {
-	ID       string `gorm:"primaryKey;type:string;" json:"id"`
-	Login    string `gorm:"type:varchar(100);unique;not null" json:"login"`
-	Password string `gorm:"type:varchar(255);not null" json:"password"`
+	ID          string `gorm:"primaryKey;type:string;" json:"id"`
+	Email       string `gorm:"type:varchar(100);unique;not null" json:"email"`
+	Password    string `gorm:"type:varchar(255);not null" json:"password"`
+	FIO         string `gorm:"type:varchar(255)" json:"fio"`
+	PhoneNumber string `gorm:"type:varchar(255)" json:"phone_number"`
 
 	Tokens []Token `gorm:"foreignKey:UserID" json:"tokens"`
 }

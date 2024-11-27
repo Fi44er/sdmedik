@@ -8,7 +8,7 @@ import (
 )
 
 func (s *service) GetByID(ctx context.Context, id string) (model.Product, error) {
-	product, err := s.productRepository.GetByID(ctx, id)
+	product, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return model.Product{}, err
 	}
