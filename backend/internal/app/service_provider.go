@@ -15,10 +15,10 @@ type serviceProvider struct {
 
 	logger    *logger.Logger
 	db        *gorm.DB
-	validator validator.Validate
+	validator *validator.Validate
 }
 
-func newServiceProvider(logger *logger.Logger, db *gorm.DB, valivalidator validator.Validate) (*serviceProvider, error) {
+func newServiceProvider(logger *logger.Logger, db *gorm.DB, valivalidator *validator.Validate) (*serviceProvider, error) {
 	a := &serviceProvider{
 		logger:    logger,
 		db:        db,
