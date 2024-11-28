@@ -2,6 +2,7 @@ package provider
 
 import (
 	"github.com/Fi44er/sdmedik/backend/internal/api/user"
+	"github.com/Fi44er/sdmedik/backend/internal/config"
 	"github.com/Fi44er/sdmedik/backend/internal/repository"
 	userRepository "github.com/Fi44er/sdmedik/backend/internal/repository/user"
 	"github.com/Fi44er/sdmedik/backend/internal/service"
@@ -15,15 +16,19 @@ type UserProvider struct {
 	userRepository repository.IUserRepository
 	userService    service.IUserService
 	userImpl       *user.Implementation
-	logger         *logger.Logger
-	db             *gorm.DB
-	validator      *validator.Validate
+
+	logger    *logger.Logger
+	db        *gorm.DB
+	validator *validator.Validate
+	config    *config.Config
 }
 
-func NewUserProvider(logger *logger.Logger, vavalidator *validator.Validate) *UserProvider {
+func NewUserProvider(logger *logger.Logger, validator *validator.Validate, db *gorm.DB, config *config.Config) *UserProvider {
 	return &UserProvider{
 		logger:    logger,
-		validator: vavalidator,
+		validator: validator,
+		db:        db,
+		config:    config,
 	}
 }
 
@@ -36,7 +41,7 @@ func (s *UserProvider) UserRepository() repository.IUserRepository {
 
 func (s *UserProvider) UserService() service.IUserService {
 	if s.userService == nil {
-		s.userService = userService.NewService(s.logger, s.UserRepository(), s.validator)
+		s.userService = userService.NewService(s.logger, s.UserRepository(), s.validator, s.config)
 	}
 
 	return s.userService
@@ -44,7 +49,7 @@ func (s *UserProvider) UserService() service.IUserService {
 
 func (s *UserProvider) UserImpl() *user.Implementation {
 	if s.userImpl == nil {
-		s.userImpl = user.NewImplementation(s.UserService())
+		s.userImpl = user.NewImplementation(s.UserService(), s.config)
 	}
 
 	return s.userImpl

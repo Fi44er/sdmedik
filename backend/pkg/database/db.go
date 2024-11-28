@@ -2,7 +2,6 @@ package database
 
 import (
 	"log"
-	"os"
 
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
@@ -16,17 +15,12 @@ type Database struct {
 
 var DB Database
 
-func ConnectDb() (Database, error) {
+func ConnectDb(url string) (Database, error) {
 	if err := godotenv.Load(); err != nil {
 		log.Fatalf("Error loading .env file: %v", err)
 	}
 
-	dbURL := os.Getenv("POSTGRES_URL")
-	if dbURL == "" {
-		log.Fatalf("DB_URL is not set in the environment variables")
-	}
-
-	db, err := gorm.Open(postgres.Open(dbURL), &gorm.Config{
+	db, err := gorm.Open(postgres.Open(url), &gorm.Config{
 		Logger: gormLogger.Default.LogMode(gormLogger.Warn),
 	})
 	if err != nil {

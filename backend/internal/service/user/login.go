@@ -2,8 +2,6 @@ package user
 
 import (
 	"context"
-	"os"
-	"time"
 
 	"github.com/Fi44er/sdmedik/backend/internal/dto"
 	"github.com/Fi44er/sdmedik/backend/pkg/errors"
@@ -28,23 +26,23 @@ func (s *service) Login(ctx context.Context, dto *dto.Login) (string, error) {
 		return "", errors.New(400, "Invalid email or password")
 	}
 
-	accessTokenDuration, err := time.ParseDuration(os.Getenv("ACCESS_TOKEN_EXPIRED_IN"))
-	if err != nil {
-		return "", err
-	}
+	// accessTokenDuration, err := time.ParseDuration(os.Getenv("ACCESS_TOKEN_EXPIRED_IN"))
+	// if err != nil {
+	// 	return "", err
+	// }
+	//
+	// accessTokenDetails, err := utils.CreateToken(existUser.ID, accessTokenDuration, os.Getenv("JWT_PRIVATE_KEY"))
+	// if err != nil {
+	// 	return "", err
+	// }
 
-	accessTokenDetails, err := utils.CreateToken(existUser.ID, accessTokenDuration, os.Getenv("JWT_PRIVATE_KEY"))
-	if err != nil {
-		return "", err
-	}
-
-	refreshTokenDetails, err := utils.CreateToken()
-	if err != nil {
-		return "", err
-	}
-
-	errAccess := s.cache.Set(ctx, accessTokenDetails.TokenUUID, existUser.ID, 0).Err()
-
+	// refreshTokenDetails, err := utils.CreateToken()
+	// if err != nil {
+	// 	return "", err
+	// }
+	//
+	// errAccess := s.cache.Set(ctx, accessTokenDetails.TokenUUID, existUser.ID, 0).Err()
+	//
 	// token, err := utils.GenerateToken(existUser.ID)
 	// if err != nil {
 	// 	s.logger.Errorf("Error during token generation: %s", err.Error())

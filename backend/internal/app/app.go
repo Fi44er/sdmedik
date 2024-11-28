@@ -14,17 +14,20 @@ type App struct {
 	app             *fiber.App
 	serviceProvider *serviceProvider
 	httpService     *http.Server
-	logger          *logger.Logger
-	db              *gorm.DB
-	validator       *validator.Validate
+
+	logger    *logger.Logger
+	db        *gorm.DB
+	validator *validator.Validate
+	config    *config.Config
 }
 
-func NewApp(logger *logger.Logger, db *gorm.DB, vavalidator *validator.Validate) (*App, error) {
+func NewApp(logger *logger.Logger, db *gorm.DB, vavalidator *validator.Validate, config *config.Config) (*App, error) {
 	a := &App{
 		app:       fiber.New(),
 		logger:    logger,
 		db:        db,
 		validator: vavalidator,
+		config:    config,
 	}
 
 	if err := a.initDeps(); err != nil {
@@ -65,7 +68,7 @@ func (a *App) initConfig() error {
 
 func (a *App) initServiceProvider() error {
 	var err error
-	a.serviceProvider, err = newServiceProvider(a.logger, a.db, a.validator)
+	a.serviceProvider, err = newServiceProvider(a.logger, a.db, a.validator, a.config)
 	if err != nil {
 		return err
 	}

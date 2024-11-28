@@ -28,12 +28,12 @@ func CreateToken(userID string, ttl time.Duration, privateKey string) (*TokenDet
 
 	decodedPrivateKey, err := base64.StdEncoding.DecodeString(privateKey)
 	if err != nil {
-		return nil, fmt.Errorf("could not decode token private key: %w", err)
+		return nil, fmt.Errorf("Could not decode token private key: %w", err)
 	}
 	key, err := jwt.ParseRSAPrivateKeyFromPEM(decodedPrivateKey)
 
 	if err != nil {
-		return nil, fmt.Errorf("create: parse token private key: %w", err)
+		return nil, fmt.Errorf("Create: parse token private key: %w", err)
 	}
 
 	*td.Token, err = jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{
@@ -45,7 +45,7 @@ func CreateToken(userID string, ttl time.Duration, privateKey string) (*TokenDet
 	}).SignedString(key)
 
 	if err != nil {
-		return nil, fmt.Errorf("create: sign token: %w", err)
+		return nil, fmt.Errorf("Create: sign token: %w", err)
 	}
 
 	return td, nil
@@ -54,29 +54,29 @@ func CreateToken(userID string, ttl time.Duration, privateKey string) (*TokenDet
 func ValidateToken(token string, publicKey string) (*TokenDetails, error) {
 	decodedPublicKey, err := base64.StdEncoding.DecodeString(publicKey)
 	if err != nil {
-		return nil, fmt.Errorf("could not decode: %w", err)
+		return nil, fmt.Errorf("Could not decode: %w", err)
 	}
 
 	key, err := jwt.ParseRSAPublicKeyFromPEM(decodedPublicKey)
 
 	if err != nil {
-		return nil, fmt.Errorf("validate: parse key: %w", err)
+		return nil, fmt.Errorf("Validate: parse key: %w", err)
 	}
 
 	parsedToken, err := jwt.Parse(token, func(t *jwt.Token) (interface{}, error) {
 		if _, ok := t.Method.(*jwt.SigningMethodRSA); !ok {
-			return nil, fmt.Errorf("unexpected method: %s", t.Header["alg"])
+			return nil, fmt.Errorf("Unexpected method: %s", t.Header["alg"])
 		}
 		return key, nil
 	})
 
 	if err != nil {
-		return nil, fmt.Errorf("validate: %w", err)
+		return nil, fmt.Errorf("Validate: %w", err)
 	}
 
 	claims, ok := parsedToken.Claims.(jwt.MapClaims)
 	if !ok || !parsedToken.Valid {
-		return nil, fmt.Errorf("validate: invalid token")
+		return nil, fmt.Errorf("Validate: invalid token")
 	}
 
 	return &TokenDetails{
@@ -84,30 +84,3 @@ func ValidateToken(token string, publicKey string) (*TokenDetails, error) {
 		UserID:    fmt.Sprint(claims["sub"]),
 	}, nil
 }
-
-// func GenerateToken(id string) (string, error) {
-// 	hour, _ := strconv.Atoi(os.Getenv("JWT_EXP"))
-// 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-// 		"user_id": id,
-// 		"exp":     time.Now().Add(time.Hour * time.Duration(hour)).Unix(),
-// 	})
-//
-// 	t, err := token.SignedString([]byte(os.Getenv("JWT_SECRET")))
-// 	if err != nil {
-// 		log.Error(err)
-// 		return "", err
-// 	}
-//
-// 	return t, nil
-// }
-//
-// func VerifyToken(tokenString string) (bool, error) {
-// 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-// 		return []byte(os.Getenv("JWT_SECRET")), nil
-// 	})
-// 	if err != nil {
-// 		return false, err
-// 	}
-//
-// 	return token.Valid, nil
-// }
