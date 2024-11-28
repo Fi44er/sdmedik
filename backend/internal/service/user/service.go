@@ -20,11 +20,12 @@ type service struct {
 	config    *config.Config
 }
 
-func NewService(logger *logger.Logger, repo repository.IUserRepository, validator *validator.Validate, config *config.Config) *service {
+func NewService(logger *logger.Logger, repo repository.IUserRepository, validator *validator.Validate, config *config.Config, cache *redis.Client) *service {
 	return &service{
 		logger:    logger,
 		repo:      repo,
 		validator: validator,
 		config:    config,
+		cache:     cache,
 	}
 }

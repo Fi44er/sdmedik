@@ -8,7 +8,6 @@ import (
 func Migrate(db *gorm.DB) error {
 	models := []interface{}{
 		&model.User{},
-		&model.Token{},
 		&model.Region{},
 		&model.ProductCategory{},
 		&model.Product{},

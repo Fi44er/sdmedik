@@ -12,5 +12,6 @@ func (i *Implementation) Delete(ctx *fiber.Ctx) error {
 		code, msg := errors.GetErroField(err)
 		return ctx.Status(code).JSON(msg)
 	}
-	return ctx.Status(200).JSON("OK")
+
+	return ctx.Status(200).JSON(fiber.Map{"status": "success", "message": "OK"})
 }

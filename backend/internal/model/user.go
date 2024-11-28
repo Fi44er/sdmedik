@@ -11,8 +11,6 @@ type User struct {
 	Password    string `gorm:"type:varchar(255);not null" json:"password"`
 	FIO         string `gorm:"type:varchar(255)" json:"fio"`
 	PhoneNumber string `gorm:"type:varchar(255)" json:"phone_number"`
-
-	Tokens []Token `gorm:"foreignKey:UserID" json:"tokens"`
 }
 
 func (u *User) BeforeCreate(tx *gorm.DB) error {

@@ -18,5 +18,5 @@ func (i *Implementation) Update(ctx *fiber.Ctx) error {
 		return ctx.Status(code).JSON(msg)
 	}
 
-	return ctx.Status(200).JSON("OK")
+	return ctx.Status(200).JSON(fiber.Map{"status": "success", "message": "OK"})
 }

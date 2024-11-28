@@ -5,8 +5,11 @@ import (
 
 	"github.com/Fi44er/sdmedik/backend/internal/config"
 	"github.com/Fi44er/sdmedik/backend/pkg/logger"
+	"github.com/Fi44er/sdmedik/backend/pkg/midleware"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
 )
 
@@ -19,15 +22,17 @@ type App struct {
 	db        *gorm.DB
 	validator *validator.Validate
 	config    *config.Config
+	cache     *redis.Client
 }
 
-func NewApp(logger *logger.Logger, db *gorm.DB, vavalidator *validator.Validate, config *config.Config) (*App, error) {
+func NewApp(logger *logger.Logger, db *gorm.DB, vavalidator *validator.Validate, config *config.Config, cache *redis.Client) (*App, error) {
 	a := &App{
 		app:       fiber.New(),
 		logger:    logger,
 		db:        db,
 		validator: vavalidator,
 		config:    config,
+		cache:     cache,
 	}
 
 	if err := a.initDeps(); err != nil {
@@ -37,6 +42,10 @@ func NewApp(logger *logger.Logger, db *gorm.DB, vavalidator *validator.Validate,
 }
 
 func (a *App) Run() error {
+	a.app.Use(cors.New(cors.Config{
+		AllowOrigins:     "http://127.0.0.1:8080", // Укажите источник вашего клиента
+		AllowCredentials: true,                    // Включение поддержки учетных данных
+	}))
 	return a.runHttpServer()
 }
 
@@ -68,7 +77,7 @@ func (a *App) initConfig() error {
 
 func (a *App) initServiceProvider() error {
 	var err error
-	a.serviceProvider, err = newServiceProvider(a.logger, a.db, a.validator, a.config)
+	a.serviceProvider, err = newServiceProvider(a.logger, a.db, a.validator, a.config, a.cache)
 	if err != nil {
 		return err
 	}
@@ -77,8 +86,6 @@ func (a *App) initServiceProvider() error {
 
 func (a *App) initRouter() error {
 	v1 := a.app.Group("/api/v1")
-
-	v1.Get("/hello", a.serviceProvider.userProvider.UserImpl().Hello)
 
 	user := v1.Group("/user")
 	user.Get("/", a.serviceProvider.userProvider.UserImpl().GetAll)
@@ -91,7 +98,7 @@ func (a *App) initRouter() error {
 
 	product := v1.Group("/product")
 	product.Get("/", a.serviceProvider.productProvider.ProductImpl().GetAll)
-	product.Post("/", a.serviceProvider.productProvider.ProductImpl().Create)
+	product.Post("/", midleware.DeserializeUser(a.cache, a.db), a.serviceProvider.productProvider.ProductImpl().Create)
 	product.Get("/:id", a.serviceProvider.productProvider.ProductImpl().GetByID)
 	product.Put("/:id", a.serviceProvider.productProvider.ProductImpl().Update)
 	product.Delete("/:id", a.serviceProvider.productProvider.ProductImpl().Delete)

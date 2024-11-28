@@ -46,13 +46,6 @@ type IProductRepository interface {
 	Update(ctx context.Context, data *model.Product) error
 }
 
-type ITokenRepository interface {
-	Create(ctx context.Context, data *model.Token) error
-	GetByUserID(ctx context.Context, id string) (*model.Token, error)
-	Delete(ctx context.Context, id string) error
-	Update(ctx context.Context, data *model.Token) error
-}
-
 type IUserRepository interface {
 	Create(ctx context.Context, data *model.User) error
 	GetAll(ctx context.Context, offset int, limit int) ([]model.User, error)

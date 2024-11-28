@@ -30,13 +30,13 @@ func main() {
 	}
 	log.Info("✔  Database migrated")
 
-	_, err = redis.Connect(config.RedisUrl)
+	redis, err := redis.Connect(config.RedisUrl)
 	if err != nil {
 		log.Fatalf("✖ Connection error to redis: %v", err)
 	}
 	log.Info("🌏︎ Redis connected")
 
-	a, err := app.NewApp(log, db.Db, validator, &config)
+	a, err := app.NewApp(log, db.Db, validator, &config, redis.RedisClient)
 	if err != nil {
 		log.Fatalf("✖ Failed to init app: %s", err.Error())
 	}

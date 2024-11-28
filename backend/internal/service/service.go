@@ -9,12 +9,13 @@ import (
 
 type IUserService interface {
 	Register(ctx context.Context, user *dto.Register) error
-	Login(ctx context.Context, user *dto.Login) (string, error)
-	Logout(ctx context.Context) error
+	Login(ctx context.Context, user *dto.Login) (string, string, error)
+	Logout(ctx context.Context, refreshToken string, accessTokenUUID string) error
+	RefreshAccessToken(ctx context.Context, refreshToken string) (string, error)
+
 	GetByID(ctx context.Context, id string) (model.User, error)
 	GetAll(ctx context.Context, offset int, limit int) ([]model.User, error)
 	Update(ctx context.Context, data *dto.UpdateUser, id string) error
-	Hello(ctx context.Context) string
 }
 
 type IProductService interface {

@@ -15,5 +15,5 @@ func (i *Implementation) GetAll(ctx *fiber.Ctx) error {
 		return ctx.Status(code).JSON(msg)
 	}
 
-	return ctx.Status(200).JSON(products)
+	return ctx.Status(200).JSON(fiber.Map{"status": "success", "data": products})
 }
