@@ -1,11 +1,16 @@
 package product
 
-import "context"
+import (
+	"context"
+
+	"github.com/Fi44er/sdmedik/backend/pkg/errors"
+)
 
 func (s *service) Delete(ctx context.Context, id string) error {
-	s.logger.Info("Deleting product in service...")
 	if err := s.repo.Delete(ctx, id); err != nil {
-		s.logger.Errorf("Failed to delete product: %v", err)
+		if err.Error() == "Product not found" {
+			return errors.New(404, "Product not found")
+		}
 		return err
 	}
 	return nil

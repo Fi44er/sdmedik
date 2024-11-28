@@ -1,19 +1,13 @@
 package user
 
 import (
-	"github.com/Fi44er/sdmedik/backend/internal/dto"
 	"github.com/Fi44er/sdmedik/backend/pkg/errors"
 	"github.com/gofiber/fiber/v2"
 )
 
-func (i *Implementation) Login(ctx *fiber.Ctx) error {
-	user := new(dto.Login)
-
-	if err := ctx.BodyParser(&user); err != nil {
-		return ctx.Status(400).JSON("Failed to parse body")
-	}
-
-	accessToken, refreshToken, err := i.userService.Login(ctx.Context(), user)
+func (i *Implementation) RefreshAccessToken(ctx *fiber.Ctx) error {
+	refreshToken := ctx.Cookies("refresh_token")
+	accessToken, err := i.userService.RefreshAccessToken(ctx.Context(), refreshToken)
 	if err != nil {
 		code, msg := errors.GetErroField(err)
 		return ctx.Status(code).JSON(msg)
@@ -24,15 +18,6 @@ func (i *Implementation) Login(ctx *fiber.Ctx) error {
 		Value:    accessToken,
 		Path:     "/",
 		MaxAge:   i.config.AccessTokenMaxAge * 60,
-		Secure:   false,
-		HTTPOnly: true,
-	})
-
-	ctx.Cookie(&fiber.Cookie{
-		Name:     "refresh_token",
-		Value:    refreshToken,
-		Path:     "/",
-		MaxAge:   i.config.RefreshTokenMaxAge * 60,
 		Secure:   false,
 		HTTPOnly: true,
 	})

@@ -9,6 +9,7 @@ import (
 	userService "github.com/Fi44er/sdmedik/backend/internal/service/user"
 	"github.com/Fi44er/sdmedik/backend/pkg/logger"
 	"github.com/go-playground/validator/v10"
+	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
 )
 
@@ -21,14 +22,16 @@ type UserProvider struct {
 	db        *gorm.DB
 	validator *validator.Validate
 	config    *config.Config
+	cache     *redis.Client
 }
 
-func NewUserProvider(logger *logger.Logger, validator *validator.Validate, db *gorm.DB, config *config.Config) *UserProvider {
+func NewUserProvider(logger *logger.Logger, validator *validator.Validate, db *gorm.DB, config *config.Config, cache *redis.Client) *UserProvider {
 	return &UserProvider{
 		logger:    logger,
 		validator: validator,
 		db:        db,
 		config:    config,
+		cache:     cache,
 	}
 }
 
@@ -41,7 +44,7 @@ func (s *UserProvider) UserRepository() repository.IUserRepository {
 
 func (s *UserProvider) UserService() service.IUserService {
 	if s.userService == nil {
-		s.userService = userService.NewService(s.logger, s.UserRepository(), s.validator, s.config)
+		s.userService = userService.NewService(s.logger, s.UserRepository(), s.validator, s.config, s.cache)
 	}
 
 	return s.userService
