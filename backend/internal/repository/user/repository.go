@@ -2,6 +2,7 @@ package user
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/Fi44er/sdmedik/backend/internal/model"
 	def "github.com/Fi44er/sdmedik/backend/internal/repository"
@@ -85,20 +86,34 @@ func (r *repository) GetAll(ctx context.Context, offset int, limit int) ([]model
 
 func (r *repository) Update(ctx context.Context, data *model.User) error {
 	r.logger.Info("Updating user...")
-	if err := r.db.WithContext(ctx).Model(data).Updates(data).Error; err != nil {
+	result := r.db.WithContext(ctx).Model(data).Updates(data)
+	if err := result.Error; err != nil {
 		r.logger.Errorf("Failed to update user: %v", err)
 		return err
 	}
+
+	if result.RowsAffected == 0 {
+		r.logger.Warnf("User with ID %s not found", data.ID)
+		return fmt.Errorf("User not found")
+	}
+
 	r.logger.Info("User updated successfully")
 	return nil
 }
 
 func (r *repository) Delete(ctx context.Context, id string) error {
 	r.logger.Infof("Deleting user with ID: %s...", id)
-	if err := r.db.WithContext(ctx).Where("id = ?", id).Delete(&model.User{}).Error; err != nil {
+	result := r.db.WithContext(ctx).Where("id = ?", id).Delete(&model.User{})
+	if err := result.Error; err != nil {
 		r.logger.Errorf("Failed to delete user: %v", err)
 		return err
 	}
+
+	if result.RowsAffected == 0 {
+		r.logger.Warnf("User with ID %s not found", id)
+		return fmt.Errorf("User not found")
+	}
+
 	r.logger.Infof("User deleted by ID: %v successfully", id)
 	return nil
 }
