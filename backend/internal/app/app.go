@@ -95,6 +95,7 @@ func (a *App) initRouter() error {
 	auth := v1.Group("/auth")
 	auth.Post("/register", a.serviceProvider.userProvider.UserImpl().Register)
 	auth.Post("/login", a.serviceProvider.userProvider.UserImpl().Login)
+	auth.Post("/logout", midleware.DeserializeUser(a.cache, a.db), a.serviceProvider.userProvider.UserImpl().Logout)
 
 	product := v1.Group("/product")
 	product.Get("/", a.serviceProvider.productProvider.ProductImpl().GetAll)
