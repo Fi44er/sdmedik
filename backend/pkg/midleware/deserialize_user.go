@@ -60,6 +60,5 @@ func DeserializeUser(cache *redis.Client, db *gorm.DB) fiber.Handler {
 		ctx.Locals("access_token_uuid", tokenClaims.TokenUUID)
 
 		return ctx.Next()
-
 	}
 }

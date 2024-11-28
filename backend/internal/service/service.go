@@ -16,6 +16,7 @@ type IUserService interface {
 	GetByID(ctx context.Context, id string) (model.User, error)
 	GetAll(ctx context.Context, offset int, limit int) ([]model.User, error)
 	Update(ctx context.Context, data *dto.UpdateUser, id string) error
+	Delete(ctx context.Context, id string) error
 }
 
 type IProductService interface {
