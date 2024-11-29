@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import React from "react";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 
 const Product = [
   {
@@ -84,99 +85,88 @@ const Product = [
   },
 ];
 
-export default function CatalogDynamicPage() {
+export default function Basket() {
   return (
-    <Box sx={{ mt: 5, mb: 5 }}>
+    <Box
+      sx={{
+        width: { xs: "100%", md: "64.5%" },
+      }}
+    >
+      <Typography variant="h4">Корзина</Typography>
       <Grid
         container
-        spacing={{ xs: 2, md: 3 }}
+        spacing={{ xs: 2, md: 5 }}
         columns={{ xs: 4, sm: 4, md: 4 }}
+        sx={{ mt: 4 }}
       >
-        {Product.map((e) => (
-          <Grid item key={e.id} xs={1} sm={1} md={1}>
-            <Card
-              sx={{
-                width: { xs: "100%", lg: "261px" },
-                background: "#F5FCFF",
-              }}
-            >
-              <Box
+        {Product.map((e) => {
+          return (
+            <Grid item key={e.id} xs={1} sm={1} md={1}>
+              <Card
                 sx={{
+                  width: { xs: "100%", lg: "100%" },
+                  background: "#F5FCFF",
                   display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
+                  p: { xs: 0, md: 3 },
                 }}
               >
-                <CardMedia
-                  component="img"
-                  image={e.image}
-                  alt={"wheelchair"}
-                  sx={{
-                    width: "200px",
-                    height: { xs: "200px", sm: "200px", md: "200px" },
-                    objectFit: "cover",
-                  }}
-                />
-              </Box>
-
-              <CardContent>
-                <CardHeader title={e.title} />
-                <Typography variant="body2" color="text.secondary">
-                  {e.country}
-                </Typography>
                 <Box
                   sx={{
                     display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
+                    justifyContent: "center",
+                    pt: 3,
+                    pl: 3,
                   }}
                 >
-                  <Typography variant="h6" sx={{ color: "black" }}>
-                    {e.price}
-                  </Typography>
-                  <Typography
-                    variant="body2"
+                  <CardMedia
+                    component="img"
+                    image={e.image}
+                    alt={"wheelchair"}
                     sx={{
-                      color: "text.secondary",
-                      textDecoration: "line-through",
+                      width: { xs: "125px", md: "200px" },
+                      height: { xs: "125px", sm: "200px", md: "200px" },
+                      objectFit: "cover",
                     }}
-                  >
-                    {e.price} 
-                  </Typography>
+                  />
                 </Box>
 
-                <Box
+                <CardContent
                   sx={{
                     display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    mt: "20px",
+                    flexDirection: { xs: "column", md: "unset" },
                   }}
                 >
-                  <Button
+                  <Box>
+                    <CardHeader title={e.title} sx={{ p: { xs: 0, md: 2 } }} />
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{ ml: { xs: 0, md: 2 } }}
+                    >
+                      {e.country}
+                    </Typography>
+                  </Box>
+                  <Box
                     sx={{
-                      width: "157px",
-                      height: "50px",
-                      border: `2px solid #00B3A4`,
-                      borderRadius: "20px",
-                      color: "#00B3A4",
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      flexDirection: { xs: "unset", md: "column-reverse" },
+                      mt: "20px",
                     }}
-                    variant="outlined"
                   >
-                    В 1 клик
-                  </Button>
-                  <IconButton>
-                    <img
-                      style={{ width: "50px", height: "50px" }}
-                      src="/public/basket_cards.png"
-                      alt=""
-                    />
-                  </IconButton>
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
+                    <Typography variant="h6" sx={{ color: "black" }}>
+                      {e.price}
+                    </Typography>
+                    <IconButton>
+                      <DeleteOutlineIcon color="error" fontSize="large" />
+                    </IconButton>
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
+          );
+        })}
       </Grid>
     </Box>
   );

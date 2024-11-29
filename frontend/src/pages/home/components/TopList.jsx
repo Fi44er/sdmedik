@@ -15,7 +15,7 @@ import React from "react";
 export default function TopList() {
   return (
     <Box>
-      <img src="/public/Line 1.png" alt="" />
+      <img style={{ width: "100%" }} src="/public/Line 1.png" alt="" />
       <Box sx={{ mt: 3 }}>
         <Typography variant="h6" color="Black">
           Лучшие товары
@@ -29,7 +29,7 @@ export default function TopList() {
             <Grid item xs={1} sm={1} md={1} key={index}>
               <Card
                 sx={{
-                  width: "276px",
+                  width: { xs: "100%", lg: "276px" },
                   background: "#F5FCFF",
                 }}
               >
@@ -65,7 +65,7 @@ export default function TopList() {
                       alignItems: "center",
                     }}
                   >
-                    <Typography variant="h6" sx={{ color: "#004B8D" }}>
+                    <Typography variant="h6" sx={{ color: "#39C8B8" }}>
                       124456 руб. 
                     </Typography>
                     <Typography
@@ -91,7 +91,7 @@ export default function TopList() {
                       sx={{
                         width: "157px",
                         height: "50px",
-                        background: "#1E90FF",
+                        background: `linear-gradient(95.61deg, #A5DED1 4.71%, #00B3A4 97.25%)`,
                         borderRadius: "10px",
                       }}
                       variant="contained"
@@ -101,7 +101,7 @@ export default function TopList() {
                     <IconButton>
                       <img
                         style={{ width: "50px", height: "50px" }}
-                        src="/public/basket.png"
+                        src="/public/basket_cards.png"
                         alt=""
                       />
                     </IconButton>
@@ -111,6 +111,20 @@ export default function TopList() {
             </Grid>
           ))}
         </Grid>
+        <Box sx={{ mt: 4, mb: 4, display: "flex", justifyContent: "right" }}>
+          <Button
+            sx={{
+              width: "160px",
+              height: "50px",
+              fontSize: "18px",
+              border: "2px solid #2CC0B3",
+              color: "#2CC0B3",
+            }}
+            variant="outlined"
+          >
+            Все акции
+          </Button>
+        </Box>
       </Box>
     </Box>
   );

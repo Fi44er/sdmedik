@@ -9,49 +9,61 @@ export default function PaymantsInfo() {
         justifyContent: "space-between",
         background: `linear-gradient(280.17deg, #00B3A4 -56.17%, #66D1C6 100%)`,
         borderRadius: "10px",
-        padding: "70px",
+        padding: { xs: "20px", lg: "70px" },
       }}
     >
       <Box
         sx={{
-          width: "50%",
           display: "flex",
-          flexDirection: "column",
-          gridGap: 20,
+          flexDirection: { xs: "column", lg: "unset" },
+          gridGap: { xs: "40px", lg: 0 },
         }}
       >
-        <Typography variant="h2" color="white">
-          Оплата электронным сертификатом
-        </Typography>
-        <Typography variant="h6" color="white" component="p">
-          Теперь оплачивать покупки на нашем сайте вы можете и электронным
-          сертификатом
-        </Typography>
-        <Button
+        <Box
           sx={{
+            width: "50%",
             display: "flex",
-            justifyContent: "left",
-            background: "#87CEEB",
-            width: "max-content",
-            padding: "13px 39px",
-            color: "white",
-            fontSize: "18px",
+            flexDirection: "column",
+            gridGap: 20,
           }}
         >
-          Подробнее
-        </Button>
-      </Box>
-      <Box sx={{ width: "50%" }}>
-        <CardMedia
-          component="img"
-          image="/public/Group 31.png"
-          alt="title"
-          sx={{
-            width: "100%",
-            height: { xs: "200px", sm: "300px", md: "400px" },
-            objectFit: "cover",
-          }}
-        />
+          <Typography
+            variant="h2"
+            color="white"
+            sx={{ fontSize: { xs: "40px", lg: "60px" } }}
+          >
+            Оплата электронным сертификатом
+          </Typography>
+          <Typography variant="h6" color="white" component="p">
+            Теперь оплачивать покупки на нашем сайте вы можете и электронным
+            сертификатом
+          </Typography>
+          <Button
+            sx={{
+              display: "flex",
+              justifyContent: "left",
+              background: `linear-gradient(95.61deg, #A5DED1 4.71%, #00B3A4 97.25%)`,
+              width: "max-content",
+              padding: "13px 39px",
+              color: "white",
+              fontSize: "18px",
+            }}
+          >
+            Подробнее
+          </Button>
+        </Box>
+        <Box sx={{ width: { xs: "100%", lg: "50%" } }}>
+          <CardMedia
+            component="img"
+            image="/public/Group 31.png"
+            alt="title"
+            sx={{
+              width: "100%",
+              height: { xs: "300px", sm: "300px", md: "400px" },
+              objectFit: "cover",
+            }}
+          />
+        </Box>
       </Box>
     </Box>
   );

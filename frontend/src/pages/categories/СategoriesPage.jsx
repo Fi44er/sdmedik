@@ -144,14 +144,14 @@ export default function СategoriesPage() {
             <Grid item xs={1} sm={1} md={1} key={item.id}>
               <Card
                 sx={{
-                  width: "276px",
+                  width: { xs: "340px", md: "276px" },
                   background: "#F5FCFF",
                   borderRadius: "20px",
-                  height: "350px",
-                  textAlign: "center",
+                  height: "360px",
                   display: "flex",
                   flexDirection: "column",
                   justifyContent: "space-around",
+                  textAlign: "center",
                 }}
                 onClick={(e) => {
                   e.preventDefault();
@@ -170,9 +170,9 @@ export default function СategoriesPage() {
                     image={`/public/wheelchair.png`}
                     alt={"wheelchair"}
                     sx={{
-                      width: "200px",
+                      width: { xs: "270px", md: "180px", lg: "200px" },
                       height: {
-                        xs: "200px",
+                        xs: "270px",
                         sm: "200px",
                         md: "200px",
                         lg: "200px",
