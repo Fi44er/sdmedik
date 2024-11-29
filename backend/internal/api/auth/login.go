@@ -1,4 +1,4 @@
-package user
+package auth
 
 import (
 	"github.com/Fi44er/sdmedik/backend/internal/dto"
@@ -13,7 +13,7 @@ func (i *Implementation) Login(ctx *fiber.Ctx) error {
 		return ctx.Status(400).JSON("Failed to parse body")
 	}
 
-	accessToken, refreshToken, err := i.userService.Login(ctx.Context(), user)
+	accessToken, refreshToken, err := i.authService.Login(ctx.Context(), user)
 	if err != nil {
 		code, msg := errors.GetErroField(err)
 		return ctx.Status(code).JSON(msg)

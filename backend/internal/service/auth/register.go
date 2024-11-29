@@ -1,4 +1,4 @@
-package user
+package auth
 
 import (
 	"context"
@@ -16,7 +16,7 @@ func (s *service) Register(ctx context.Context, dto *dto.Register) error {
 	}
 
 	var user model.User
-	existUser, err := s.repo.GetByEmail(ctx, dto.Email)
+	existUser, err := s.userService.GetByEmail(ctx, dto.Email)
 	if err != nil {
 		return err
 	}
@@ -30,7 +30,7 @@ func (s *service) Register(ctx context.Context, dto *dto.Register) error {
 		return err
 	}
 
-	if err := s.repo.Create(ctx, &user); err != nil {
+	if err := s.userService.Create(ctx, &user); err != nil {
 		return err
 	}
 

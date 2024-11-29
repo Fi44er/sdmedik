@@ -1,4 +1,4 @@
-package user
+package auth
 
 import (
 	"github.com/Fi44er/sdmedik/backend/pkg/errors"
@@ -7,7 +7,7 @@ import (
 
 func (i *Implementation) RefreshAccessToken(ctx *fiber.Ctx) error {
 	refreshToken := ctx.Cookies("refresh_token")
-	accessToken, err := i.userService.RefreshAccessToken(ctx.Context(), refreshToken)
+	accessToken, err := i.authService.RefreshAccessToken(ctx.Context(), refreshToken)
 	if err != nil {
 		code, msg := errors.GetErroField(err)
 		return ctx.Status(code).JSON(msg)

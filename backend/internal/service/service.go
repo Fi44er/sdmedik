@@ -8,15 +8,19 @@ import (
 )
 
 type IUserService interface {
+	Create(ctx context.Context, user *model.User) error
+	GetByID(ctx context.Context, id string) (model.User, error)
+	GetByEmail(ctx context.Context, email string) (model.User, error)
+	GetAll(ctx context.Context, offset int, limit int) ([]model.User, error)
+	Update(ctx context.Context, data *dto.UpdateUser, id string) error
+	Delete(ctx context.Context, id string) error
+}
+
+type IAuthService interface {
 	Register(ctx context.Context, user *dto.Register) error
 	Login(ctx context.Context, user *dto.Login) (string, string, error)
 	Logout(ctx context.Context, refreshToken string, accessTokenUUID string) error
 	RefreshAccessToken(ctx context.Context, refreshToken string) (string, error)
-
-	GetByID(ctx context.Context, id string) (model.User, error)
-	GetAll(ctx context.Context, offset int, limit int) ([]model.User, error)
-	Update(ctx context.Context, data *dto.UpdateUser, id string) error
-	Delete(ctx context.Context, id string) error
 }
 
 type IProductService interface {

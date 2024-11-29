@@ -1,4 +1,4 @@
-package user
+package auth
 
 import (
 	"context"
@@ -14,12 +14,9 @@ func (s *service) Login(ctx context.Context, dto *dto.Login) (string, string, er
 		return "", "", errors.New(400, err.Error())
 	}
 
-	existUser, err := s.repo.GetByEmail(ctx, dto.Email)
+	existUser, err := s.userService.GetByEmail(ctx, dto.Email)
 	if err != nil {
 		return "", "", err
-	}
-	if existUser.ID == "" {
-		return "", "", errors.New(404, "User not found")
 	}
 
 	if !utils.ComparePassword(existUser.Password, dto.Password) {

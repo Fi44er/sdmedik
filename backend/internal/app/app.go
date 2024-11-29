@@ -93,9 +93,9 @@ func (a *App) initRouter() error {
 	user.Put("/:id", a.serviceProvider.userProvider.UserImpl().Update)
 
 	auth := v1.Group("/auth")
-	auth.Post("/register", a.serviceProvider.userProvider.UserImpl().Register)
-	auth.Post("/login", a.serviceProvider.userProvider.UserImpl().Login)
-	auth.Post("/logout", midleware.DeserializeUser(a.cache, a.db), a.serviceProvider.userProvider.UserImpl().Logout)
+	auth.Post("/register", a.serviceProvider.authProvider.AuthImpl().Register)
+	auth.Post("/login", a.serviceProvider.authProvider.AuthImpl().Login)
+	auth.Post("/logout", midleware.DeserializeUser(a.cache, a.db), a.serviceProvider.authProvider.AuthImpl().Logout)
 
 	product := v1.Group("/product")
 	product.Get("/", a.serviceProvider.productProvider.ProductImpl().GetAll)

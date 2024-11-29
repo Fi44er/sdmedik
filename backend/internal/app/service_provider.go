@@ -13,6 +13,7 @@ type serviceProvider struct {
 	httpConfig      config.HTTPConfig
 	userProvider    provider.UserProvider
 	productProvider provider.ProductProvider
+	authProvider    provider.AuthProvider
 
 	logger    *logger.Logger
 	db        *gorm.DB
@@ -21,11 +22,11 @@ type serviceProvider struct {
 	cache     *redis.Client
 }
 
-func newServiceProvider(logger *logger.Logger, db *gorm.DB, valivalidator *validator.Validate, config *config.Config, cache *redis.Client) (*serviceProvider, error) {
+func newServiceProvider(logger *logger.Logger, db *gorm.DB, validator *validator.Validate, config *config.Config, cache *redis.Client) (*serviceProvider, error) {
 	a := &serviceProvider{
 		logger:    logger,
 		db:        db,
-		validator: valivalidator,
+		validator: validator,
 		config:    config,
 		cache:     cache,
 	}
@@ -41,6 +42,7 @@ func (s *serviceProvider) initDeps() error {
 	inits := []func() error{
 		s.initUserProvider,
 		s.initProductProvider,
+		s.initAuthProvider,
 	}
 
 	for _, init := range inits {
@@ -60,6 +62,11 @@ func (s *serviceProvider) initUserProvider() error {
 
 func (s *serviceProvider) initProductProvider() error {
 	s.productProvider = *provider.NewProductProvider(s.logger, s.db)
+	return nil
+}
+
+func (s *serviceProvider) initAuthProvider() error {
+	s.authProvider = *provider.NewAuthProvider(s.logger, s.validator, s.config, s.cache, s.userProvider.UserService())
 	return nil
 }
 
