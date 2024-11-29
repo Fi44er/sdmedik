@@ -1,4 +1,4 @@
-package user
+package auth
 
 import (
 	"time"
@@ -11,7 +11,7 @@ func (i *Implementation) Logout(ctx *fiber.Ctx) error {
 	refreshToken := ctx.Cookies("refresh_token")
 	accessTokenUUID := ctx.Locals("access_token_uuid")
 
-	if err := i.userService.Logout(ctx.Context(), refreshToken, accessTokenUUID.(string)); err != nil {
+	if err := i.authService.Logout(ctx.Context(), refreshToken, accessTokenUUID.(string)); err != nil {
 		code, msg := errors.GetErroField(err)
 		return ctx.Status(code).JSON(msg)
 	}

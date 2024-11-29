@@ -25,7 +25,13 @@ type UserProvider struct {
 	cache     *redis.Client
 }
 
-func NewUserProvider(logger *logger.Logger, validator *validator.Validate, db *gorm.DB, config *config.Config, cache *redis.Client) *UserProvider {
+func NewUserProvider(
+	logger *logger.Logger,
+	validator *validator.Validate,
+	db *gorm.DB,
+	config *config.Config,
+	cache *redis.Client,
+) *UserProvider {
 	return &UserProvider{
 		logger:    logger,
 		validator: validator,

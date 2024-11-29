@@ -1,4 +1,4 @@
-package user
+package auth
 
 import (
 	"context"
@@ -24,7 +24,7 @@ func (s *service) RefreshAccessToken(ctx context.Context, refreshToken string) (
 		return "", errors.New(403, "Could not refresh access token")
 	}
 
-	user, err := s.repo.GetByID(ctx, userID)
+	user, err := s.userService.GetByID(ctx, userID)
 	if err != nil {
 		return "", err
 	}

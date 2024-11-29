@@ -14,8 +14,9 @@ type ProductProvider struct {
 	productRepository repository.IProductRepository
 	productService    service.IProductService
 	productImpl       *product.Implementation
-	logger            *logger.Logger
-	db                *gorm.DB
+
+	logger *logger.Logger
+	db     *gorm.DB
 }
 
 func NewProductProvider(logger *logger.Logger, db *gorm.DB) *ProductProvider {
