@@ -8,10 +8,17 @@ import (
 )
 
 type Config struct {
-	HTTPHost    string `mapstructure:"HTTP_HOST"`
-	HTTPPort    string `mapstructure:"HTTP_PORT"`
-	PostgresUrl string `mapstructure:"POSTGRES_URL"`
-	RedisUrl    string `mapstructure:"REDIS_URL"`
+	HTTPHost            string        `mapstructure:"HTTP_HOST"`
+	HTTPPort            string        `mapstructure:"HTTP_PORT"`
+	PostgresUrl         string        `mapstructure:"POSTGRES_URL"`
+	RedisUrl            string        `mapstructure:"REDIS_URL"`
+	VerifyCodeExpiredIn time.Duration `mapstructure:"VERIFY_CODE_EXPIRED_IN"`
+
+	MailHost     string `mapstructure:"MAIL_HOST"`
+	MailUser     string `mapstructure:"MAIL_USER"`
+	MailPassword string `mapstructure:"MAIL_PASSWORD"`
+	MailFrom     string `mapstructure:"MAIL_FROM"`
+	MailPort     string `mapstructure:"MAIL_PORT"`
 
 	AccessTokenPrivateKey  string        `mapstructure:"ACCESS_TOKEN_PRIVATE_KEY"`
 	RefreshTokenPrivateKey string        `mapstructure:"REFRESH_TOKEN_PRIVATE_KEY"`

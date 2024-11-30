@@ -21,6 +21,8 @@ type IAuthService interface {
 	Login(ctx context.Context, user *dto.Login) (string, string, error)
 	Logout(ctx context.Context, refreshToken string, accessTokenUUID string) error
 	RefreshAccessToken(ctx context.Context, refreshToken string) (string, error)
+	// VerifyCode(ctx context.Context, code string) error
+	SendCode(ctx context.Context, email string) error
 }
 
 type IProductService interface {
