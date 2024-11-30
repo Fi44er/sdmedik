@@ -24,34 +24,30 @@ var (
 func GetLogger() *Logger {
 	once.Do(func() {
 		log := logrus.New()
-
-		// Устанавливаем формат вывода
 		log.SetFormatter(&logrus.TextFormatter{
 			FullTimestamp:   true,
 			ForceColors:     true,
 			TimestampFormat: "2006-01-02 15:04:05", // Изменяем формат времени
 		})
-
-		// Устанавливаем уровень логирования
 		log.SetLevel(logrus.DebugLevel)
-
-		// Устанавливаем вывод в консоль
 		log.SetOutput(os.Stdout)
-
 		instance = &Logger{log} // Инициализируем экземпляр логгера
 	})
 	return instance
 }
 
-// logWithCaller добавляет информацию о вызове
 func (l *Logger) logWithCaller(level logrus.Level, msg string) {
 	_, file, line, ok := runtime.Caller(2) // Используем 2, чтобы получить информацию о вызове логгера
 	if ok {
 		fileLine := fmt.Sprintf("%s:%d", path.Base(file), line)
-
-		// Добавляем ANSI-коды для цвета (например, зеленый)
-		coloredFileLine := fmt.Sprintf("\033[32m%s\033[0m", fileLine) // Зеленый цвет
-
+		color := "\033[0m" // По умолчанию (без цвета)
+		switch level {
+		case logrus.ErrorLevel:
+			color = "\033[31m" // Красный для ошибок
+		case logrus.WarnLevel:
+			color = "\033[33m" // Желтый для предупреждений
+		}
+		coloredFileLine := fmt.Sprintf("%s%s\033[0m", color, fileLine)
 		l.Logger.Log(level, fmt.Sprintf("%s %s", coloredFileLine, msg))
 	} else {
 		l.Logger.Log(level, msg)
