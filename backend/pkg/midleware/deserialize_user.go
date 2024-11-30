@@ -11,7 +11,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func DeserializeUser(cache *redis.Client, db *gorm.DB) fiber.Handler {
+func DeserializeUser(cache *redis.Client, db *gorm.DB, config *config.Config) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
 		var accessToken string
 		authorization := ctx.Get("Authorization")
@@ -29,8 +29,6 @@ func DeserializeUser(cache *redis.Client, db *gorm.DB) fiber.Handler {
 			})
 		}
 
-		config, _ := config.LoadConfig(".")
-
 		tokenClaims, err := utils.ValidateToken(accessToken, config.AccessTokenPublicKey)
 		if err != nil {
 			return ctx.Status(401).JSON(fiber.Map{
@@ -41,7 +39,7 @@ func DeserializeUser(cache *redis.Client, db *gorm.DB) fiber.Handler {
 
 		userID, err := cache.Get(ctx.Context(), tokenClaims.TokenUUID).Result()
 		if err == redis.Nil {
-			return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			return ctx.Status(401).JSON(fiber.Map{
 				"status":  "fail",
 				"message": "Token is invalid or session has expired",
 			})

@@ -95,11 +95,11 @@ func (a *App) initRouter() error {
 	auth := v1.Group("/auth")
 	auth.Post("/register", a.serviceProvider.authProvider.AuthImpl().Register)
 	auth.Post("/login", a.serviceProvider.authProvider.AuthImpl().Login)
-	auth.Post("/logout", midleware.DeserializeUser(a.cache, a.db), a.serviceProvider.authProvider.AuthImpl().Logout)
+	auth.Post("/logout", midleware.DeserializeUser(a.cache, a.db, a.config), a.serviceProvider.authProvider.AuthImpl().Logout)
 
 	product := v1.Group("/product")
 	product.Get("/", a.serviceProvider.productProvider.ProductImpl().GetAll)
-	product.Post("/", midleware.DeserializeUser(a.cache, a.db), a.serviceProvider.productProvider.ProductImpl().Create)
+	product.Post("/", midleware.DeserializeUser(a.cache, a.db, a.config), a.serviceProvider.productProvider.ProductImpl().Create)
 	product.Get("/:id", a.serviceProvider.productProvider.ProductImpl().GetByID)
 	product.Put("/:id", a.serviceProvider.productProvider.ProductImpl().Update)
 	product.Delete("/:id", a.serviceProvider.productProvider.ProductImpl().Delete)
