@@ -5,7 +5,7 @@ import (
 
 	"github.com/Fi44er/sdmedik/backend/internal/config"
 	"github.com/Fi44er/sdmedik/backend/pkg/logger"
-	"github.com/Fi44er/sdmedik/backend/pkg/midleware"
+	"github.com/Fi44er/sdmedik/backend/pkg/middleware"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -95,11 +95,13 @@ func (a *App) initRouter() error {
 	auth := v1.Group("/auth")
 	auth.Post("/register", a.serviceProvider.authProvider.AuthImpl().Register)
 	auth.Post("/login", a.serviceProvider.authProvider.AuthImpl().Login)
-	auth.Post("/logout", midleware.DeserializeUser(a.cache, a.db, a.config), a.serviceProvider.authProvider.AuthImpl().Logout)
+	auth.Post("/logout", middleware.DeserializeUser(a.cache, a.db, a.config), a.serviceProvider.authProvider.AuthImpl().Logout)
+	auth.Post("/send-code", a.serviceProvider.authProvider.AuthImpl().SendCode)
+	auth.Post("/verify-code", a.serviceProvider.authProvider.AuthImpl().VerifyCode)
 
 	product := v1.Group("/product")
 	product.Get("/", a.serviceProvider.productProvider.ProductImpl().GetAll)
-	product.Post("/", midleware.DeserializeUser(a.cache, a.db, a.config), a.serviceProvider.productProvider.ProductImpl().Create)
+	product.Post("/", middleware.DeserializeUser(a.cache, a.db, a.config), a.serviceProvider.productProvider.ProductImpl().Create)
 	product.Get("/:id", a.serviceProvider.productProvider.ProductImpl().GetByID)
 	product.Put("/:id", a.serviceProvider.productProvider.ProductImpl().Update)
 	product.Delete("/:id", a.serviceProvider.productProvider.ProductImpl().Delete)

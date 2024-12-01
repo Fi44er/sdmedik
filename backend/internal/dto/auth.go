@@ -11,3 +11,12 @@ type Login struct {
 	Email    string `json:"email" validate:"required,email"`
 	Password string `json:"password" validate:"required"`
 }
+
+type VerifyCode struct {
+	Email string `json:"email" validate:"required,email"`
+	Code  string `json:"code" validate:"required"`
+}
+
+type SendCode struct {
+	Email string `json:"email" validate:"required,email"`
+}

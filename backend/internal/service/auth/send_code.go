@@ -2,30 +2,31 @@ package auth
 
 import (
 	"context"
-	"encoding/hex"
 
 	"github.com/Fi44er/sdmedik/backend/pkg/errors"
 	"github.com/Fi44er/sdmedik/backend/pkg/mailer"
 	"github.com/Fi44er/sdmedik/backend/pkg/utils"
-	"golang.org/x/crypto/blake2b"
 )
 
 func (s *service) SendCode(ctx context.Context, email string) error {
 	code := utils.GenerateCode(6)
-	h, err := blake2b.New256(nil)
+	hashEmail, err := utils.HashString(email)
 	if err != nil {
+		s.logger.Errorf("Error during generating hash: %s", err.Error())
 		return err
 	}
-	h.Write([]byte(email))
-	hashBytes := h.Sum(nil)
-	hashEmail := hex.EncodeToString(hashBytes)
 
 	expiredIn := s.config.VerifyCodeExpiredIn
 	if err := s.cache.Set(ctx, "verification_codes_"+hashEmail, code, expiredIn).Err(); err != nil {
+		s.logger.Errorf("Error during saving verification code: %s", err.Error())
 		return errors.New(422, err.Error())
 	}
 
-	mailer.SendMail(s.config.MailFrom, s.config.MailPassword, s.config.MailHost, s.config.MailPort, email)
-
+	s.logger.Info("Sending email verification code...")
+	if err := mailer.SendMail(s.config.MailFrom, s.config.MailPassword, s.config.MailHost, s.config.MailPort, email); err != nil {
+		return err
+	}
+	s.logger.Info("Email sent")
+	s.logger.Info(code)
 	return nil
 }
