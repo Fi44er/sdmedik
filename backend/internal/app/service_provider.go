@@ -10,10 +10,11 @@ import (
 )
 
 type serviceProvider struct {
-	httpConfig      config.HTTPConfig
-	userProvider    provider.UserProvider
-	productProvider provider.ProductProvider
-	authProvider    provider.AuthProvider
+	httpConfig       config.HTTPConfig
+	userProvider     provider.UserProvider
+	productProvider  provider.ProductProvider
+	authProvider     provider.AuthProvider
+	categoryProvider provider.CategoryProvider
 
 	logger    *logger.Logger
 	db        *gorm.DB
@@ -41,6 +42,7 @@ func newServiceProvider(logger *logger.Logger, db *gorm.DB, validator *validator
 func (s *serviceProvider) initDeps() error {
 	inits := []func() error{
 		s.initUserProvider,
+		s.initCategoryProvider,
 		s.initProductProvider,
 		s.initAuthProvider,
 	}
@@ -60,13 +62,18 @@ func (s *serviceProvider) initUserProvider() error {
 	return nil
 }
 
-func (s *serviceProvider) initProductProvider() error {
-	s.productProvider = *provider.NewProductProvider(s.logger, s.db)
+func (s *serviceProvider) initAuthProvider() error {
+	s.authProvider = *provider.NewAuthProvider(s.logger, s.validator, s.config, s.cache, s.userProvider.UserService())
 	return nil
 }
 
-func (s *serviceProvider) initAuthProvider() error {
-	s.authProvider = *provider.NewAuthProvider(s.logger, s.validator, s.config, s.cache, s.userProvider.UserService())
+func (s *serviceProvider) initProductProvider() error {
+	s.productProvider = *provider.NewProductProvider(s.logger, s.db, s.validator, s.categoryProvider.CategoryService())
+	return nil
+}
+
+func (s *serviceProvider) initCategoryProvider() error {
+	s.categoryProvider = *provider.NewCategoryProvider(s.logger, s.db, s.validator)
 	return nil
 }
 

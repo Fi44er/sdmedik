@@ -1,4 +1,4 @@
-package product
+package category
 
 import (
 	"github.com/Fi44er/sdmedik/backend/internal/dto"
@@ -7,12 +7,12 @@ import (
 )
 
 func (i *Implementation) Create(ctx *fiber.Ctx) error {
-	product := new(dto.CreateProduct)
-	if err := ctx.BodyParser(&product); err != nil {
+	category := new(dto.CreateCategory)
+	if err := ctx.BodyParser(&category); err != nil {
 		return ctx.Status(400).JSON("Failed to parse body")
 	}
 
-	if err := i.productService.Create(ctx.Context(), product); err != nil {
+	if err := i.categoryService.Create(ctx.Context(), category); err != nil {
 		code, msg := errors.GetErroField(err)
 		return ctx.Status(code).JSON(msg)
 	}

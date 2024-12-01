@@ -26,9 +26,17 @@ type IAuthService interface {
 }
 
 type IProductService interface {
-	Create(ctx context.Context, product *model.Product) error
+	Create(ctx context.Context, product *dto.CreateProduct) error
 	GetAll(ctx context.Context, offset int, limit int) ([]model.Product, error)
 	GetByID(ctx context.Context, id string) (model.Product, error)
 	Update(ctx context.Context, product *model.Product) error
 	Delete(ctx context.Context, id string) error
+}
+
+type ICategoryService interface {
+	Create(ctx context.Context, category *dto.CreateCategory) error
+	GetAll(ctx context.Context) ([]model.Category, error)
+	GetByID(ctx context.Context, id int) (model.Category, error)
+	Delete(ctx context.Context, id int) error
+	GetByIDs(ctx context.Context, ids []int) ([]model.Category, error)
 }

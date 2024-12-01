@@ -105,6 +105,13 @@ func (a *App) initRouter() error {
 	product.Get("/:id", a.serviceProvider.productProvider.ProductImpl().GetByID)
 	product.Put("/:id", a.serviceProvider.productProvider.ProductImpl().Update)
 	product.Delete("/:id", a.serviceProvider.productProvider.ProductImpl().Delete)
+
+	category := v1.Group("/category")
+	category.Get("/", a.serviceProvider.categoryProvider.CategoryImpl().GetAll)
+	category.Post("/", middleware.DeserializeUser(a.cache, a.db, a.config), a.serviceProvider.categoryProvider.CategoryImpl().Create)
+	category.Get("/:id", a.serviceProvider.categoryProvider.CategoryImpl().GetByID)
+	category.Delete("/:id", a.serviceProvider.categoryProvider.CategoryImpl().Delete)
+
 	return nil
 }
 

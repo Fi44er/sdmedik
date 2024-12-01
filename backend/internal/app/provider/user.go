@@ -41,25 +41,25 @@ func NewUserProvider(
 	}
 }
 
-func (s *UserProvider) UserRepository() repository.IUserRepository {
-	if s.userRepository == nil {
-		s.userRepository = userRepository.NewRepository(s.logger, s.db)
+func (p *UserProvider) UserRepository() repository.IUserRepository {
+	if p.userRepository == nil {
+		p.userRepository = userRepository.NewRepository(p.logger, p.db)
 	}
-	return s.userRepository
+	return p.userRepository
 }
 
-func (s *UserProvider) UserService() service.IUserService {
-	if s.userService == nil {
-		s.userService = userService.NewService(s.logger, s.UserRepository(), s.validator, s.config, s.cache)
+func (p *UserProvider) UserService() service.IUserService {
+	if p.userService == nil {
+		p.userService = userService.NewService(p.logger, p.UserRepository(), p.validator, p.config, p.cache)
 	}
 
-	return s.userService
+	return p.userService
 }
 
-func (s *UserProvider) UserImpl() *user.Implementation {
-	if s.userImpl == nil {
-		s.userImpl = user.NewImplementation(s.UserService(), s.config)
+func (p *UserProvider) UserImpl() *user.Implementation {
+	if p.userImpl == nil {
+		p.userImpl = user.NewImplementation(p.UserService(), p.config)
 	}
 
-	return s.userImpl
+	return p.userImpl
 }
