@@ -38,16 +38,16 @@ func NewAuthProvider(
 	}
 }
 
-func (s *AuthProvider) AuthService() service.IAuthService {
-	if s.authService == nil {
-		s.authService = authService.NewService(s.logger, s.validator, s.config, s.cache, s.userService)
+func (p *AuthProvider) AuthService() service.IAuthService {
+	if p.authService == nil {
+		p.authService = authService.NewService(p.logger, p.validator, p.config, p.cache, p.userService)
 	}
-	return s.authService
+	return p.authService
 }
 
-func (s *AuthProvider) AuthImpl() *auth.Implementation {
-	if s.authImpl == nil {
-		s.authImpl = auth.NewImplementation(s.AuthService(), s.config)
+func (p *AuthProvider) AuthImpl() *auth.Implementation {
+	if p.authImpl == nil {
+		p.authImpl = auth.NewImplementation(p.AuthService(), p.config)
 	}
-	return s.authImpl
+	return p.authImpl
 }

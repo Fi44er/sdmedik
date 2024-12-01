@@ -7,6 +7,7 @@ import (
 	"github.com/Fi44er/sdmedik/backend/internal/service"
 	productService "github.com/Fi44er/sdmedik/backend/internal/service/product"
 	"github.com/Fi44er/sdmedik/backend/pkg/logger"
+	"github.com/go-playground/validator/v10"
 	"gorm.io/gorm"
 )
 
@@ -15,36 +16,46 @@ type ProductProvider struct {
 	productService    service.IProductService
 	productImpl       *product.Implementation
 
-	logger *logger.Logger
-	db     *gorm.DB
+	logger    *logger.Logger
+	db        *gorm.DB
+	validator *validator.Validate
+
+	categoryService service.ICategoryService
 }
 
-func NewProductProvider(logger *logger.Logger, db *gorm.DB) *ProductProvider {
+func NewProductProvider(
+	logger *logger.Logger,
+	db *gorm.DB,
+	validator *validator.Validate,
+	categoryService service.ICategoryService,
+) *ProductProvider {
 	return &ProductProvider{
-		logger: logger,
-		db:     db,
+		logger:          logger,
+		db:              db,
+		validator:       validator,
+		categoryService: categoryService,
 	}
 }
 
-func (s *ProductProvider) ProductRepository() repository.IProductRepository {
-	if s.productRepository == nil {
-		s.productRepository = productRepository.NewRepository(s.logger, s.db)
+func (p *ProductProvider) ProductRepository() repository.IProductRepository {
+	if p.productRepository == nil {
+		p.productRepository = productRepository.NewRepository(p.logger, p.db)
 	}
-	return s.productRepository
+	return p.productRepository
 }
 
-func (s *ProductProvider) ProductService() service.IProductService {
-	if s.productService == nil {
-		s.productService = productService.NewService(s.ProductRepository(), s.logger)
+func (p *ProductProvider) ProductService() service.IProductService {
+	if p.productService == nil {
+		p.productService = productService.NewService(p.ProductRepository(), p.logger, p.validator, p.categoryService)
 	}
 
-	return s.productService
+	return p.productService
 }
 
-func (s *ProductProvider) ProductImpl() *product.Implementation {
-	if s.productImpl == nil {
-		s.productImpl = product.NewImplementation(s.ProductService())
+func (p *ProductProvider) ProductImpl() *product.Implementation {
+	if p.productImpl == nil {
+		p.productImpl = product.NewImplementation(p.ProductService())
 	}
 
-	return s.productImpl
+	return p.productImpl
 }

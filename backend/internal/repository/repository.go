@@ -8,10 +8,10 @@ import (
 
 type ICategoryRepository interface {
 	Create(ctx context.Context, data *model.Category) error
-	GetAll(ctx context.Context) ([]*model.Category, error)
-	GetByID(ctx context.Context, id int) (*model.Category, error)
+	GetAll(ctx context.Context) ([]model.Category, error)
+	GetByID(ctx context.Context, id int) (model.Category, error)
 	Delete(ctx context.Context, id int) error
-	Update(ctx context.Context, data *model.Category) error
+	GetByIDs(ctx context.Context, ids []int) ([]model.Category, error)
 }
 
 type IImageRepository interface {
