@@ -2,7 +2,9 @@ package auth
 
 import (
 	"context"
+	"encoding/json"
 	"regexp"
+	"time"
 
 	"github.com/Fi44er/sdmedik/backend/internal/dto"
 	"github.com/Fi44er/sdmedik/backend/internal/model"
@@ -27,6 +29,7 @@ func (s *service) Register(ctx context.Context, dto *dto.Register) error {
 	if err != nil {
 		return err
 	}
+
 	if existUser.ID != "" {
 		return errors.New(409, "user with this email already exists")
 	}
@@ -37,11 +40,24 @@ func (s *service) Register(ctx context.Context, dto *dto.Register) error {
 		return err
 	}
 
-	if err := s.userService.Create(ctx, &user); err != nil {
+	s.SendCode(ctx, dto.Email)
+
+	hashEmail, err := utils.HashString(dto.Email)
+	if err != nil {
+		s.logger.Errorf("Error during generating hash: %s", err.Error())
 		return err
 	}
 
-	s.SendCode(ctx, dto.Email)
+	data, err := json.Marshal(dto)
+	if err != nil {
+		s.logger.Errorf("Error during marshaling dto to JSON: %s", err.Error())
+		return err
+	}
+
+	if err := s.cache.Set(ctx, "temp_user_"+hashEmail, data, time.Minute*10).Err(); err != nil {
+		s.logger.Errorf("Error during caching temp user data: %s", err.Error())
+		return err
+	}
 
 	return nil
 }

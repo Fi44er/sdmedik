@@ -11,9 +11,19 @@ type User struct {
 	Password    string `gorm:"type:varchar(255);not null" json:"password"`
 	FIO         string `gorm:"type:varchar(255);not null" json:"fio"`
 	PhoneNumber string `gorm:"type:varchar(255);not null" json:"phone_number"`
+	RoleID      int    `gorm:"not null" json:"role_id"`
+	Role        Role   `gorm:"foreignKey:RoleID" json:"role"`
 }
 
 func (u *User) BeforeCreate(tx *gorm.DB) error {
 	u.ID = uuid.New().String()
+
+	var userRole Role
+	if err := tx.First(&userRole, "name = ?", "user").Error; err != nil {
+		return err
+	}
+
+	u.RoleID = userRole.ID
+
 	return nil
 }
