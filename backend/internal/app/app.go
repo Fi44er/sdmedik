@@ -36,9 +36,6 @@ func NewApp(logger *logger.Logger, db *gorm.DB, vavalidator *validator.Validate,
 		cache:     cache,
 	}
 
-	if err := a.initDeps(); err != nil {
-		return nil, err
-	}
 	return a, nil
 }
 
@@ -47,6 +44,11 @@ func (a *App) Run() error {
 		AllowOrigins:     "http://127.0.0.1:8080, http://localhost:5173", // Укажите источник вашего клиента
 		AllowCredentials: true,                                           // Включение поддержки учетных данных
 	}))
+
+	if err := a.initDeps(); err != nil {
+		return err
+	}
+
 	return a.runHttpServer()
 }
 
