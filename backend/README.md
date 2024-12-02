@@ -1,5 +1,24 @@
-# Бэкенд проекта
+# Backend
 
-## Описание
+## Установка
 
-Этот проект представляет собой бэкенд-часть приложения, разработанного с использованием Go. Он обеспечивает API для взаимодействия с фронтендом и управляет данными приложения.
+Для установки приложения вам потребуется:
+
+- [Docker engine](https://docs.docker.com/engine/) (версия 24.x. или выше)
+- [Docker compose](https://www.npmjs.com/) (версия 2.x. или выше)
+
+```bash
+git clone https://github.com/Fi44er/sdmedik.git
+cd ./sdmedik/backend
+   ```
+## Запуск
+
+Запуск postgres и redis контейнеров
+
+```bash
+docker compose up
+```
+
+## Swagger
+
+Доступ к документации можно получить по адресу: *http://127.0.0.1:8080/swagger/index.html*
