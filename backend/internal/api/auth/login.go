@@ -15,7 +15,7 @@ import (
 // @Produce json
 // @Param user body dto.Login true "User  login credentials"
 // @Success 200 {object} response.Response "OK"
-// @Router /login [post]
+// @Router /auth/login [post]
 func (i *Implementation) Login(ctx *fiber.Ctx) error {
 	user := new(dto.Login)
 

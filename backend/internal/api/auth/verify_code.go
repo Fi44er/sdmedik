@@ -15,7 +15,7 @@ import (
 // @Produce json
 // @Param user body dto.VerifyCode true "User verification code"
 // @Success 200 {object} response.Response "Successful verification response"
-// @Router /verify-code [post]
+// @Router /auth/verify-code [post]
 func (i *Implementation) VerifyCode(ctx *fiber.Ctx) error {
 	data := new(dto.VerifyCode)
 	if err := ctx.BodyParser(&data); err != nil {

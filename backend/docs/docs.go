@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/login": {
+        "/auth/login": {
             "post": {
                 "description": "Logs in a user and returns access and refresh tokens",
                 "consumes": [
@@ -49,7 +49,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/logout": {
+        "/auth/logout": {
             "post": {
                 "description": "Logs out a user by clearing the access and refresh tokens",
                 "consumes": [
@@ -72,7 +72,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/refresh": {
+        "/auth/refresh": {
             "post": {
                 "description": "Refreshes the access token using the provided refresh token",
                 "consumes": [
@@ -95,7 +95,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/register": {
+        "/auth/register": {
             "post": {
                 "description": "Registers a new user with the provided data",
                 "consumes": [
@@ -129,7 +129,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/send-code": {
+        "/auth/send-code": {
             "post": {
                 "description": "Sends a verification code to the provided email address",
                 "consumes": [
@@ -163,7 +163,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/verify-code": {
+        "/auth/verify-code": {
             "post": {
                 "description": "Verifies the code sent to the user's email",
                 "consumes": [
