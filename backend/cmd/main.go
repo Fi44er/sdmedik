@@ -1,6 +1,7 @@
 package main
 
 import (
+	_ "github.com/Fi44er/sdmedik/backend/docs"
 	"github.com/Fi44er/sdmedik/backend/internal/app"
 	"github.com/Fi44er/sdmedik/backend/internal/config"
 	"github.com/Fi44er/sdmedik/backend/pkg/database"
@@ -8,6 +9,12 @@ import (
 	"github.com/Fi44er/sdmedik/backend/pkg/redis"
 	"github.com/go-playground/validator/v10"
 )
+
+//	@title				sdmedik API
+//	@version		1.0
+//	@description	Swagger docs from sdmedik backend
+//	@host			127.0.0.1:8080
+//	@BasePath		/api/v1/
 
 func main() {
 	log := logger.GetLogger()

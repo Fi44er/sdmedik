@@ -2,10 +2,20 @@ package auth
 
 import (
 	"github.com/Fi44er/sdmedik/backend/internal/dto"
+	_ "github.com/Fi44er/sdmedik/backend/internal/response"
 	"github.com/Fi44er/sdmedik/backend/pkg/errors"
 	"github.com/gofiber/fiber/v2"
 )
 
+// Login godoc
+// @Summary Login user
+// @Description Logs in a user and returns access and refresh tokens
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param user body dto.Login true "User  login credentials"
+// @Success 200 {object} response.Response "OK"
+// @Router /login [post]
 func (i *Implementation) Login(ctx *fiber.Ctx) error {
 	user := new(dto.Login)
 
