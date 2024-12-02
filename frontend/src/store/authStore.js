@@ -1,22 +1,27 @@
 import { create } from "zustand";
 import axios from "axios";
-import { url } from "../constants/contants";
 import { useNavigate } from "react-router-dom";
 
 const useAuthStore = create((set, get) => ({
-  username: "",
+  email: "",
+  fio: "",
   password: "",
-  setUsername: (username) => set({ username }),
+  phone_number: "",
+  setEmail: (email) => set({ email }),
+  setFio: (fio) => set({ fio }),
+  setPhone_number: (phone_number) => set({ phone_number }),
   setPassword: (password) => set({ password }),
 
-  AuthFunc: async () => {
-    const { username, password } = useAuthStore.getState();
+  registerFunc: async () => {
+    const { email, fio, phone_number, password } = useAuthStore.getState();
 
     try {
       const response = await axios.post(
-        `${url}/api/v1/auth/login`,
+        `http://localhost:8080/api/v1/auth/register`,
         {
-          username,
+          email,
+          fio,
+          phone_number,
           password,
         },
         {
@@ -32,7 +37,6 @@ const useAuthStore = create((set, get) => ({
       } else {
         alert("Неправильный логин или пароль");
       }
-      checkUserAuth();
     } catch (error) {
       // Если произошла ошибка, очищаем статус аутентификации
       alert(

@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import React, { useState } from "react";
 import { motion } from "framer-motion";
+import useAuthStore from "../../store/authStore";
 
 const scaleVariants = {
   hidden: {
@@ -29,15 +30,21 @@ const scaleVariants = {
 };
 
 export default function Register() {
+  const {
+    email,
+    setEmail,
+    fio,
+    setFio,
+    phone_number,
+    setPhone_number,
+    password,
+    setPassword,
+    registerFunc,
+  } = useAuthStore();
   const [showConfirmation, setShowConfirmation] = useState(false);
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [fullName, setFullName] = useState("");
-  const [password, setPassword] = useState("");
 
-  const handleRegister = () => {
-    // Здесь вы можете добавить логику для отправки данных на сервер.
-    // После успешной отправки данных откройте окно подтверждения.
+  const handleRegister = async () => {
+    await registerFunc();
     setShowConfirmation(true);
   };
 
@@ -93,8 +100,8 @@ export default function Register() {
                 variant="outlined"
                 label="Телефон"
                 placeholder="+79228442121"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
+                value={phone_number}
+                onChange={(e) => setPhone_number(e.target.value)}
                 sx={{
                   "& .MuiOutlinedInput-root": {
                     "&.Mui-focused fieldset": {
@@ -112,8 +119,8 @@ export default function Register() {
                 variant="outlined"
                 label="ФИО"
                 placeholder="Иванов Дмитрий Сергеевич"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
+                value={fio}
+                onChange={(e) => setFio(e.target.value)}
                 sx={{
                   "& .MuiOutlinedInput-root": {
                     "&.Mui-focused fieldset": {
@@ -132,7 +139,7 @@ export default function Register() {
                 label="Пороль"
                 type="password"
                 value={password}
-                onChange={(e) => setFullName(e.target.value)}
+                onChange={(e) => setPassword(e.target.value)}
                 sx={{
                   "& .MuiOutlinedInput-root": {
                     "&.Mui-focused fieldset": {
