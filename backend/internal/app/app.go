@@ -44,8 +44,8 @@ func NewApp(logger *logger.Logger, db *gorm.DB, vavalidator *validator.Validate,
 
 func (a *App) Run() error {
 	a.app.Use(cors.New(cors.Config{
-		AllowOrigins:     "http://127.0.0.1:8080", // Укажите источник вашего клиента
-		AllowCredentials: true,                    // Включение поддержки учетных данных
+		AllowOrigins:     "http://127.0.0.1:8080, http://localhost:5173", // Укажите источник вашего клиента
+		AllowCredentials: true,                                           // Включение поддержки учетных данных
 	}))
 	return a.runHttpServer()
 }
