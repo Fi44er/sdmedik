@@ -1,10 +1,19 @@
 package auth
 
 import (
+	_ "github.com/Fi44er/sdmedik/backend/internal/response"
 	"github.com/Fi44er/sdmedik/backend/pkg/errors"
 	"github.com/gofiber/fiber/v2"
 )
 
+// RefreshAccessToken godoc
+// @Summary Refresh access token
+// @Description Refreshes the access token using the provided refresh token
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Success 200 {object} response.Response "Successful refresh response"
+// @Router /refresh [post]
 func (i *Implementation) RefreshAccessToken(ctx *fiber.Ctx) error {
 	refreshToken := ctx.Cookies("refresh_token")
 	accessToken, err := i.authService.RefreshAccessToken(ctx.Context(), refreshToken)

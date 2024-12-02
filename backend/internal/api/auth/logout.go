@@ -3,10 +3,19 @@ package auth
 import (
 	"time"
 
+	_ "github.com/Fi44er/sdmedik/backend/internal/response"
 	"github.com/Fi44er/sdmedik/backend/pkg/errors"
 	"github.com/gofiber/fiber/v2"
 )
 
+// Logout godoc
+// @Summary Logout user
+// @Description Logs out a user by clearing the access and refresh tokens
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Success 200 {object} response.Response "Successful logout response"
+// @Router /logout [post]
 func (i *Implementation) Logout(ctx *fiber.Ctx) error {
 	refreshToken := ctx.Cookies("refresh_token")
 	accessTokenUUID := ctx.Locals("access_token_uuid")

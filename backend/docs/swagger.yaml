@@ -1,0 +1,179 @@
+basePath: /api/v1/
+definitions:
+  dto.Login:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  dto.Register:
+    properties:
+      email:
+        type: string
+      fio:
+        type: string
+      password:
+        minLength: 6
+        type: string
+      phone_number:
+        type: string
+    required:
+    - email
+    - fio
+    - password
+    - phone_number
+    type: object
+  dto.SendCode:
+    properties:
+      email:
+        type: string
+    required:
+    - email
+    type: object
+  dto.VerifyCode:
+    properties:
+      code:
+        type: string
+      email:
+        type: string
+    required:
+    - code
+    - email
+    type: object
+  response.Response:
+    properties:
+      message:
+        type: string
+      status:
+        type: string
+    type: object
+host: 127.0.0.1:8080
+info:
+  contact: {}
+  description: Swagger docs from sdmedik backend
+  title: sdmedik API
+  version: "1.0"
+paths:
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Logs in a user and returns access and refresh tokens
+      parameters:
+      - description: User  login credentials
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/dto.Login'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Login user
+      tags:
+      - auth
+  /logout:
+    post:
+      consumes:
+      - application/json
+      description: Logs out a user by clearing the access and refresh tokens
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful logout response
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Logout user
+      tags:
+      - auth
+  /refresh:
+    post:
+      consumes:
+      - application/json
+      description: Refreshes the access token using the provided refresh token
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful refresh response
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Refresh access token
+      tags:
+      - auth
+  /register:
+    post:
+      consumes:
+      - application/json
+      description: Registers a new user with the provided data
+      parameters:
+      - description: User Register
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/dto.Register'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful registration response
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: User registration
+      tags:
+      - auth
+  /send-code:
+    post:
+      consumes:
+      - application/json
+      description: Sends a verification code to the provided email address
+      parameters:
+      - description: User email
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/dto.SendCode'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful code sending response
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Send verification code
+      tags:
+      - auth
+  /verify-code:
+    post:
+      consumes:
+      - application/json
+      description: Verifies the code sent to the user's email
+      parameters:
+      - description: User verification code
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/dto.VerifyCode'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful verification response
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Verify the provided code
+      tags:
+      - auth
+swagger: "2.0"

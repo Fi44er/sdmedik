@@ -9,6 +9,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/swagger" // swagger handler
 	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
 )
@@ -85,6 +86,8 @@ func (a *App) initServiceProvider() error {
 }
 
 func (a *App) initRouter() error {
+	a.app.Get("/swagger/*", swagger.HandlerDefault)
+
 	v1 := a.app.Group("/api/v1")
 
 	user := v1.Group("/user")
