@@ -13,7 +13,7 @@ import (
 // @Accept json
 // @Produce json
 // @Success 200 {object} response.Response "Successful refresh response"
-// @Router /refresh [post]
+// @Router /auth/refresh [post]
 func (i *Implementation) RefreshAccessToken(ctx *fiber.Ctx) error {
 	refreshToken := ctx.Cookies("refresh_token")
 	accessToken, err := i.authService.RefreshAccessToken(ctx.Context(), refreshToken)

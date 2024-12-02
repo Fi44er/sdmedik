@@ -15,7 +15,7 @@ import (
 // @Produce json
 // @Param user body dto.SendCode true "User email"
 // @Success 200 {object} response.Response "Successful code sending response"
-// @Router /send-code [post]
+// @Router /auth/send-code [post]
 func (i *Implementation) SendCode(ctx *fiber.Ctx) error {
 	data := new(dto.SendCode)
 

@@ -58,7 +58,7 @@ info:
   title: sdmedik API
   version: "1.0"
 paths:
-  /login:
+  /auth/login:
     post:
       consumes:
       - application/json
@@ -80,7 +80,7 @@ paths:
       summary: Login user
       tags:
       - auth
-  /logout:
+  /auth/logout:
     post:
       consumes:
       - application/json
@@ -95,7 +95,7 @@ paths:
       summary: Logout user
       tags:
       - auth
-  /refresh:
+  /auth/refresh:
     post:
       consumes:
       - application/json
@@ -110,7 +110,7 @@ paths:
       summary: Refresh access token
       tags:
       - auth
-  /register:
+  /auth/register:
     post:
       consumes:
       - application/json
@@ -132,7 +132,7 @@ paths:
       summary: User registration
       tags:
       - auth
-  /send-code:
+  /auth/send-code:
     post:
       consumes:
       - application/json
@@ -154,7 +154,7 @@ paths:
       summary: Send verification code
       tags:
       - auth
-  /verify-code:
+  /auth/verify-code:
     post:
       consumes:
       - application/json

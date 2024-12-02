@@ -15,7 +15,7 @@ import (
 // @Accept json
 // @Produce json
 // @Success 200 {object} response.Response "Successful logout response"
-// @Router /logout [post]
+// @Router /auth/logout [post]
 func (i *Implementation) Logout(ctx *fiber.Ctx) error {
 	refreshToken := ctx.Cookies("refresh_token")
 	accessTokenUUID := ctx.Locals("access_token_uuid")

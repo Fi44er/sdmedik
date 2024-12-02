@@ -15,7 +15,7 @@ import (
 // @Produce json
 // @Param user body dto.Register true "User Register"
 // @Success 200 {object} response.Response "Successful registration response"
-// @Router /register [post]
+// @Router /auth/register [post]
 func (i *Implementation) Register(ctx *fiber.Ctx) error {
 	data := new(dto.Register)
 	if err := ctx.BodyParser(&data); err != nil {

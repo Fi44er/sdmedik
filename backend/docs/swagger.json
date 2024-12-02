@@ -9,7 +9,7 @@
     "host": "127.0.0.1:8080",
     "basePath": "/api/v1/",
     "paths": {
-        "/login": {
+        "/auth/login": {
             "post": {
                 "description": "Logs in a user and returns access and refresh tokens",
                 "consumes": [
@@ -43,7 +43,7 @@
                 }
             }
         },
-        "/logout": {
+        "/auth/logout": {
             "post": {
                 "description": "Logs out a user by clearing the access and refresh tokens",
                 "consumes": [
@@ -66,7 +66,7 @@
                 }
             }
         },
-        "/refresh": {
+        "/auth/refresh": {
             "post": {
                 "description": "Refreshes the access token using the provided refresh token",
                 "consumes": [
@@ -89,7 +89,7 @@
                 }
             }
         },
-        "/register": {
+        "/auth/register": {
             "post": {
                 "description": "Registers a new user with the provided data",
                 "consumes": [
@@ -123,7 +123,7 @@
                 }
             }
         },
-        "/send-code": {
+        "/auth/send-code": {
             "post": {
                 "description": "Sends a verification code to the provided email address",
                 "consumes": [
@@ -157,7 +157,7 @@
                 }
             }
         },
-        "/verify-code": {
+        "/auth/verify-code": {
             "post": {
                 "description": "Verifies the code sent to the user's email",
                 "consumes": [
