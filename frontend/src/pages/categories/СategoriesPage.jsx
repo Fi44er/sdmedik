@@ -152,6 +152,7 @@ export default function СategoriesPage() {
                   flexDirection: "column",
                   justifyContent: "space-around",
                   textAlign: "center",
+                  cursor: "pointer",
                 }}
                 onClick={(e) => {
                   e.preventDefault();

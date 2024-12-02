@@ -81,6 +81,8 @@ export default function Header() {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const [selectedRegion, setSelectedRegion] = useState(regions[0]);
+  const [menuLk, setMenuLk] = React.useState(null);
+  const openLk = Boolean(menuLk);
 
   const handleRegionChange = (event) => {
     setSelectedRegion(event.target.value);
@@ -91,6 +93,12 @@ export default function Header() {
   };
   const handleClose = () => {
     setAnchorEl(null);
+  };
+  const handleClickLk = (event) => {
+    setMenuLk(event.currentTarget);
+  };
+  const handleCloseLk = () => {
+    setMenuLk(null);
   };
 
   const toggleDrawer = (open) => (event) => {
@@ -256,9 +264,31 @@ export default function Header() {
               })}
             </Nav>
             <Box>
-              <IconButton>
+              <IconButton
+                id="lk-button"
+                aria-controls={openLk ? "lk-menu" : undefined}
+                aria-haspopup="true"
+                aria-expanded={openLk ? "true" : undefined}
+                onClick={handleClickLk}
+              >
                 <img src="/public/Profile.png" alt="" />
               </IconButton>
+              <Menu
+                id="lk-menu"
+                anchorEl={menuLk}
+                open={openLk}
+                onClose={handleCloseLk}
+                MenuListProps={{
+                  "aria-labelledby": "lk-button",
+                }}
+              >
+                <MenuItem onClick={handleCloseLk}>
+                  <Link href="/auth">Войти</Link>
+                </MenuItem>
+                <MenuItem onClick={handleCloseLk}>
+                  <Link href="/register">Регистрация</Link>
+                </MenuItem>
+              </Menu>
               <IconButton
                 onClick={(e) => {
                   e.preventDefault();

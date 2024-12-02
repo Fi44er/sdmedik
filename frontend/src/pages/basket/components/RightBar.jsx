@@ -12,7 +12,7 @@ export default function RightBar() {
   return (
     <Box
       sx={{
-        mt: { xs: 0, md: "80px" },
+        mt: { xs: 0, md: "75px" },
         width: { xs: "100%", md: "29.5%" },
       }}
     >
@@ -31,6 +31,7 @@ export default function RightBar() {
               display: "flex",
               flexDirection: "column",
               gridGap: 15,
+              mt:4
             }}
           >
             <Typography variant="h6">Применить сертификат</Typography>
@@ -44,7 +45,14 @@ export default function RightBar() {
                 pr: "30px",
               }}
             />
-            <Button variant="contained">Применить</Button>
+            <Button
+              variant="contained"
+              sx={{
+                background: "#00B3A4",
+              }}
+            >
+              Применить
+            </Button>
           </Box>
           <Box
             sx={{
@@ -67,7 +75,9 @@ export default function RightBar() {
               mt: 5,
             }}
           >
-            <Button variant="contained">Перейти к оплате</Button>
+            <Button variant="contained" sx={{
+              background: "#00B3A4",
+            }}>Перейти к оплате</Button>
           </Box>
         </Container>
       </Paper>

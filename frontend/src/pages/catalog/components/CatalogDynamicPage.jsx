@@ -98,6 +98,11 @@ export default function CatalogDynamicPage() {
               sx={{
                 width: { xs: "100%", lg: "261px" },
                 background: "#F5FCFF",
+                cursor:"pointer"
+              }}
+              onClick={(e) => {
+                e.preventDefault();
+                window.location.href = `/product/${e.id}`;
               }}
             >
               <Box

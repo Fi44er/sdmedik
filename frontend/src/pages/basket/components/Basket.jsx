@@ -85,11 +85,12 @@ const Product = [
   },
 ];
 
-export default function Basket() {
+export default function   Basket() {
   return (
     <Box
       sx={{
         width: { xs: "100%", md: "64.5%" },
+        mb:4
       }}
     >
       <Typography variant="h4">Корзина</Typography>

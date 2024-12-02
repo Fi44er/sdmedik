@@ -9,6 +9,8 @@ import About from "../pages/about/About";
 import Return_policy from "../pages/return_policy/Return_policy";
 import Deteils from "../pages/deteils/Deteils";
 import ProductDynamicPage from "../pages/Product/ProductDynamicPage";
+import Auth from "../pages/account/Auth";
+import Register from "../pages/account/Register";
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -50,6 +52,15 @@ export const router = createBrowserRouter([
   {
     path: "/deteils", // динамический маршрут
     element: <Deteils />, // Исправлено имя компонента
+  },
+
+  {
+    path: "/auth",
+    element: <Auth />,
+  },
+  {
+    path: "/register",
+    element: <Register />,
   },
   //   {
   //     path: "/Admin",

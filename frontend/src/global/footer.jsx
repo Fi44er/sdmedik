@@ -73,12 +73,12 @@ export default function Footer() {
                 })}
               </Box>
               <Box sx={{ display: "flex", flexDirection: "column" }}>
-                <Typography variant="h6">+7 999 999 12 34</Typography>
-                <Typography variant="h6">+7 999 999 12 34</Typography>
-                <Typography variant="h6">+7 999 999 12 34</Typography>
-                <Typography sx={{ mt: 6, color: "#93B97F" }} variant="h6">
+                <Typography variant="h6">+7 (903) 086 3091</Typography>
+                <Typography variant="h6">+7 (909) 617 8196</Typography>
+                <Typography variant="h6">+7 (353) 293 5241</Typography>
+                <Link sx={{ mt: 6 }} variant="h6" color="primary" href="/">
                   olimp1-info@yandex.ru
-                </Typography>
+                </Link>
               </Box>
             </Box>
           </Box>
