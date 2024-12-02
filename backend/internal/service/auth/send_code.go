@@ -23,10 +23,32 @@ func (s *service) SendCode(ctx context.Context, email string) error {
 	}
 
 	s.logger.Info("Sending email verification code...")
-	if err := mailer.SendMail(s.config.MailFrom, s.config.MailPassword, s.config.MailHost, s.config.MailPort, email); err != nil {
+	m, err := mailer.NewMailer(
+		s.config.MailHost,                // SMTP-хост
+		s.config.MailPort,                // Порт
+		s.config.MailFrom,                // Ваш email
+		s.config.MailPassword,            // Пароль от почты
+		"pkg/mailer/template/index.html", // Путь к шаблону
+		5,                                // Размер пула соединений
+	)
+
+	if err != nil {
+		s.logger.Fatalf("Failed to initialize mailer: %v", err)
 		return err
 	}
-	s.logger.Info("Email sent")
+
+	templateData := struct {
+		Code string
+	}{
+		Code: code,
+	}
+
+	m.SendMailAsync(
+		s.config.MailFrom, // Отправитель
+		email,             // Получатель
+		"Код подтверждения регистрации", // Тема письма
+		templateData, // Данные для шаблона
+	)
 	s.logger.Info(code)
 	return nil
 }
