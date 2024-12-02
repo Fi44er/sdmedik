@@ -31,12 +31,7 @@ const useAuthStore = create((set, get) => ({
 
       // Логируем весь ответ
       console.log("Response:", response);
-
       // Проверяем только статус ответа
-      if (response.status === 200) {
-      } else {
-        alert("Неправильный логин или пароль");
-      }
     } catch (error) {
       // Если произошла ошибка, очищаем статус аутентификации
       alert(
