@@ -50,7 +50,7 @@ func (r *repository) GetAll(ctx context.Context) ([]model.Category, error) {
 func (r *repository) GetByID(ctx context.Context, id int) (model.Category, error) {
 	r.logger.Info("Fetching category...")
 	var category model.Category
-	if err := r.db.WithContext(ctx).First(&category, id).Error; err != nil {
+	if err := r.db.WithContext(ctx).Preload("Products").First(&category, id).Error; err != nil {
 		r.logger.Errorf("Failed to fetch category: %v", err)
 		return model.Category{}, err
 	}

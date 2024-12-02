@@ -17,7 +17,7 @@ func GetPriceAndArticle(ctx context.Context, link, region string) (string, strin
 		// get product price
 		chromedp.Evaluate(`document.querySelector(".header__address a.js-open-modal").click();`, nil),
 		chromedp.WaitVisible("#modal-city", chromedp.ByID),
-		chromedp.SendKeys("#w3", region, chromedp.NodeVisible),
+		chromedp.SendKeys("#w1", region, chromedp.NodeVisible),
 		chromedp.WaitVisible("#suggest-container", chromedp.ByID),
 		chromedp.WaitVisible(".ymaps-2-1-79-suggest-item-0", chromedp.ByQuery),
 		chromedp.Evaluate(`document.querySelector(".ymaps-2-1-79-suggest-item-0 .ymaps-2-1-79-search__suggest-item").click();`, nil),

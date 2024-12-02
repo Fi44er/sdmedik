@@ -38,7 +38,7 @@ func (r *repository) Create(ctx context.Context, data *model.Product) error {
 func (r *repository) GetByID(ctx context.Context, id string) (model.Product, error) {
 	r.logger.Infof("Fetching product with ID: %s...", id)
 	var product model.Product
-	if err := r.db.WithContext(ctx).Where("id = ?", id).First(&product).Error; err != nil {
+	if err := r.db.WithContext(ctx).Preload("Categories").Where("id = ?", id).First(&product).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			r.logger.Warnf("Product with ID %s not found", id)
 			return product, nil
@@ -61,7 +61,7 @@ func (r *repository) GetAll(ctx context.Context, offset int, limit int) ([]model
 		limit = -1
 	}
 
-	if err := r.db.WithContext(ctx).Offset(offset).Limit(limit).Find(&products).Error; err != nil {
+	if err := r.db.WithContext(ctx).Preload("Categories").Offset(offset).Limit(limit).Find(&products).Error; err != nil {
 		r.logger.Errorf("Failed to fetch products: %v", err)
 		return nil, err
 	}
