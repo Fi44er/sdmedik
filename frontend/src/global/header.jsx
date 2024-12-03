@@ -13,20 +13,9 @@ import {
   Drawer,
   List,
   ListItem,
-  ListItemText,
   Select,
-  InputLabel,
-  FormControl,
   Menu,
-  TextField,
-  InputAdornment,
-  Autocomplete,
-  Input,
   Container,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Paper,
 } from "@mui/material";
 import { withStyles } from "@mui/styles";
 import React, { useState } from "react";
@@ -45,7 +34,7 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   },
 }));
 
-const Nav = styled("div")(({ theme }) => ({
+const Nav = styled("Box")(({ theme }) => ({
   width: "max-content",
   background: "#FAFAFA",
   borderRadius: "15px",
@@ -176,10 +165,10 @@ export default function Header() {
             </Box>
             <Search>
               <SearchIcon fontSize="medium" />
-              <input
+              <InputBase
                 type="text"
                 placeholder="Поиск по товарам"
-                style={{
+                sx={{
                   width: "100%",
                   height: "90%",
                   border: "none",

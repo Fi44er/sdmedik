@@ -9,6 +9,8 @@ import {
 } from "@mui/material";
 import React from "react";
 import { motion } from "framer-motion"; // Импортируем motion
+import { useNavigate } from "react-router-dom"; // Импортируем useNavigate
+import useAuthStore from "../../store/authStore";
 
 const scaleVariants = {
   hidden: {
@@ -27,6 +29,13 @@ const scaleVariants = {
 };
 
 export default function Auth() {
+  const navigate = useNavigate();
+  const { email, setEmail, password, setPassword, loginFunc } = useAuthStore();
+
+  const handleAuth = async () => {
+    await loginFunc(navigate);
+  };
+
   return (
     <Box sx={{ display: "flex", justifyContent: "center" }}>
       <motion.div
@@ -51,6 +60,8 @@ export default function Auth() {
                 variant="outlined"
                 label="Email"
                 placeholder="your@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 sx={{
                   "& .MuiOutlinedInput-root": {
                     "&.Mui-focused fieldset": {
@@ -69,6 +80,8 @@ export default function Auth() {
                 label="Пороль"
                 placeholder="Пороль"
                 type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 sx={{
                   "& .MuiOutlinedInput-root": {
                     "&.Mui-focused fieldset": {
@@ -82,7 +95,11 @@ export default function Auth() {
                   },
                 }}
               />
-              <Button variant="contained" sx={{ background: "#2CC0B3" }}>
+              <Button
+                variant="contained"
+                sx={{ background: "#2CC0B3" }}
+                onClick={handleAuth}
+              >
                 Войти
               </Button>
             </Box>

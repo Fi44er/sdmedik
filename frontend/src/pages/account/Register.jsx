@@ -12,6 +12,7 @@ import {
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import useAuthStore from "../../store/authStore";
+import { useNavigate } from "react-router-dom";
 
 const scaleVariants = {
   hidden: {
@@ -40,12 +41,16 @@ export default function Register() {
     password,
     setPassword,
     registerFunc,
+    showConfirmation,
+    setShowConfirmation,
     code,
     setCode,
+
     verifyFunc,
   } = useAuthStore();
-  const [showConfirmation, setShowConfirmation] = useState(false);
+
   const [error, setError] = useState(null);
+  const navigate = useNavigate()
 
   const handleRegister = async () => {
     await registerFunc();
@@ -56,21 +61,7 @@ export default function Register() {
   };
 
   const handleVerify = async () => {
-    try {
-      // Ваш код для отправки данных на сервер
-      const response = await verifyFunc();
-
-      // Если отправка успешна, показываем модальное окно
-      if (response.success) {
-        setShowConfirmation(true);
-      } else {
-        // Если есть ошибка, устанавливаем сообщение об ошибке
-        setError(response.message);
-      }
-    } catch (err) {
-      // Обработка ошибки (например, ошибка сети)
-      setError("Произошла ошибка при отправке данных.");
-    }
+    await verifyFunc(navigate);
   };
 
   return (

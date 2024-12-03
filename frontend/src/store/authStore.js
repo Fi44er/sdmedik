@@ -1,16 +1,21 @@
 import { create } from "zustand";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 const useAuthStore = create((set, get) => ({
   email: "",
   fio: "",
   password: "",
   phone_number: "",
+  showConfirmation: false,
+  code: "",
   setEmail: (email) => set({ email }),
   setFio: (fio) => set({ fio }),
   setPhone_number: (phone_number) => set({ phone_number }),
   setPassword: (password) => set({ password }),
+  setShowConfirmation: (showConfirmation) =>
+    set({ showConfirmation: showConfirmation }),
+  setCode: (code) => set({ code }),
 
   registerFunc: async () => {
     const { email, fio, phone_number, password } = useAuthStore.getState();
@@ -29,19 +34,48 @@ const useAuthStore = create((set, get) => ({
         }
       );
       console.log("Response:", response);
+
+      // Исправлено: проверка статуса ответа
+      if (response.data.status === "success") {
+        set({ showConfirmation: true });
+      } else {
+        alert(
+          "Ошибка регистрации: " +
+            (response.data.message || "неизвестная ошибка")
+        );
+      }
     } catch (error) {
-      // Если произошла ошибка, очищаем статус аутентификации
       alert(
-        "Ошибка авторизации: не правильный логин или пороль  " + error.message
+        "Ошибка регистрации: " +
+          (error.response?.data?.message || error.message)
+      );
+      console.error("Error Registrations:", error);
+    }
+  },
+  loginFunc: async () => {
+    const { email, password } = useAuthStore.getState();
+    try {
+      const response = await axios.post(
+        `http://localhost:8080/api/v1/auth/login`,
+        {
+          email,
+          password,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+      console.log("login", response);
+    } catch (error) {
+      alert(
+        "Ошибка авторизации: " +
+          (error.response?.data?.message || error.message)
       );
       console.error("Error Auth:", error);
     }
   },
-  code: "",
 
-  setCode: (code) => set({ code }),
-
-  verifyFunc: async () => {
+  verifyFunc: async (navigate) => {
     const { email, code } = useAuthStore.getState();
 
     try {
@@ -56,12 +90,13 @@ const useAuthStore = create((set, get) => ({
         }
       );
       console.log("Response:", response);
+      if (response.data.status === "success") {
+        navigate("/auth");
+      }
     } catch (error) {
       // Если произошла ошибка, очищаем статус аутентификации
-      alert(
-        "Ошибка авторизации: не правильный логин или пороль  " + error.message
-      );
-      console.error("Error Auth:", error);
+      alert("Ошибка: не правильный код верефикации" + error.message);
+      console.error("Error Verify:", error);
     }
   },
 
