@@ -93,6 +93,7 @@ func (a *App) initRouter() error {
 	v1 := a.app.Group("/api/v1")
 
 	user := v1.Group("/user")
+	user.Get("/me", middleware.DeserializeUser(a.cache, a.db, a.config), a.serviceProvider.userProvider.UserImpl().GetMy)
 	user.Get("/", a.serviceProvider.userProvider.UserImpl().GetAll)
 	user.Get("/:id", a.serviceProvider.userProvider.UserImpl().GetByID)
 	user.Put("/:id", a.serviceProvider.userProvider.UserImpl().Update)

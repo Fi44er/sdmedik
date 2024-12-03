@@ -11,7 +11,7 @@ import (
 	"github.com/chromedp/chromedp"
 )
 
-const MAIN_URL = "https://ktsr.sfr.gov.ru/ru-RU/product/product/order86n/184"
+const MAIN_URL = "https://ktsr.sfr.gov.ru/ru-RU/product/product/order86n/168"
 
 func main() {
 	Run()
@@ -47,6 +47,10 @@ func Run() {
 
 	var links []string
 
+	if len(pagintioLinks) == 0 {
+		pagintioLinks = append(pagintioLinks, MAIN_URL)
+	}
+
 	for _, link := range pagintioLinks {
 		if err := utils.NavigateTo(ctx, link); err != nil {
 			log.Fatal(err)
@@ -58,8 +62,6 @@ func Run() {
 		}
 
 		links = append(links, productLinks...)
-		fmt.Printf("Array: %v\n", links)
-
 	}
 
 	go func() {
