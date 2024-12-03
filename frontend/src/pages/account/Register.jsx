@@ -40,6 +40,9 @@ export default function Register() {
     password,
     setPassword,
     registerFunc,
+    code,
+    setCode,
+    verifyFunc,
   } = useAuthStore();
   const [showConfirmation, setShowConfirmation] = useState(false);
 
@@ -49,6 +52,11 @@ export default function Register() {
   };
 
   const handleConfirmationClose = () => {
+    setShowConfirmation(false);
+  };
+
+  const handleVerify = async () => {
+    await verifyFunc();
     setShowConfirmation(false);
   };
 
@@ -215,6 +223,8 @@ export default function Register() {
             variant="outlined"
             label="Введите код подтверждения"
             placeholder="Код"
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
             sx={{
               mt: 2,
               width: "100%",
@@ -233,7 +243,7 @@ export default function Register() {
           <Button
             variant="contained"
             sx={{ mt: 2, background: "#2CC0B3" }}
-            onClick={handleConfirmationClose}
+            onClick={handleVerify}
           >
             Подтвердить
           </Button>

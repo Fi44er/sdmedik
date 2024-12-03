@@ -28,10 +28,34 @@ const useAuthStore = create((set, get) => ({
           withCredentials: true,
         }
       );
-
-      // Логируем весь ответ
       console.log("Response:", response);
-      // Проверяем только статус ответа
+    } catch (error) {
+      // Если произошла ошибка, очищаем статус аутентификации
+      alert(
+        "Ошибка авторизации: не правильный логин или пороль  " + error.message
+      );
+      console.error("Error Auth:", error);
+    }
+  },
+  code: "",
+
+  setCode: (code) => set({ code }),
+
+  verifyFunc: async () => {
+    const { email, code } = useAuthStore.getState();
+
+    try {
+      const response = await axios.post(
+        `http://localhost:8080/api/v1/auth/verify-code`,
+        {
+          email,
+          code,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+      console.log("Response:", response);
     } catch (error) {
       // Если произошла ошибка, очищаем статус аутентификации
       alert(
