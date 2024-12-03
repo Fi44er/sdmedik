@@ -40,7 +40,12 @@ func NewAuthProvider(
 
 func (p *AuthProvider) AuthService() service.IAuthService {
 	if p.authService == nil {
-		p.authService = authService.NewService(p.logger, p.validator, p.config, p.cache, p.userService)
+		serviceAuth, err := authService.NewService(p.logger, p.validator, p.config, p.cache, p.userService)
+		if err != nil {
+			p.logger.Errorf("Error during initializing auth service: %s", err.Error())
+			return nil
+		}
+		p.authService = serviceAuth
 	}
 	return p.authService
 }
