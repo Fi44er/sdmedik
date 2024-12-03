@@ -45,10 +45,10 @@ export default function Register() {
     verifyFunc,
   } = useAuthStore();
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleRegister = async () => {
     await registerFunc();
-    setShowConfirmation(true);
   };
 
   const handleConfirmationClose = () => {
@@ -56,8 +56,21 @@ export default function Register() {
   };
 
   const handleVerify = async () => {
-    await verifyFunc();
-    setShowConfirmation(false);
+    try {
+      // Ваш код для отправки данных на сервер
+      const response = await verifyFunc();
+
+      // Если отправка успешна, показываем модальное окно
+      if (response.success) {
+        setShowConfirmation(true);
+      } else {
+        // Если есть ошибка, устанавливаем сообщение об ошибке
+        setError(response.message);
+      }
+    } catch (err) {
+      // Обработка ошибки (например, ошибка сети)
+      setError("Произошла ошибка при отправке данных.");
+    }
   };
 
   return (
