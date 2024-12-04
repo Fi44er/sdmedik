@@ -40,3 +40,10 @@ type ICategoryService interface {
 	Delete(ctx context.Context, id int) error
 	GetByIDs(ctx context.Context, ids []int) ([]model.Category, error)
 }
+
+type ICharacteristicService interface {
+	Create(ctx context.Context, characteristic *dto.CreateCharacteristic) error
+	GetByID(ctx context.Context, id int) (model.Characteristic, error)
+	GetByCategoryID(ctx context.Context, categoryID int) ([]model.Characteristic, error)
+	Delete(ctx context.Context, id int) error
+}

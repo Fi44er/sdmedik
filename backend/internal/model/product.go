@@ -6,13 +6,14 @@ import (
 )
 
 type Product struct {
-	ID          string     `gorm:"primaryKey;type:string;" json:"id"`
-	Article     string     `gorm:"type:varchar(255);not null,unique" json:"article"`
-	Name        string     `gorm:"type:varchar(255);not null" json:"name"`
-	Description string     `gorm:"type:text" json:"description"`
-	Categories  []Category `gorm:"many2many:product_categories;" json:"categories"`
-	Prices      []Price    `gorm:"foreignKey:ProductID" json:"prices"` // Связь с ценами
-	Images      []Image    `gorm:"foreignKey:ProductID" json:"images"`
+	ID                   string                `gorm:"primaryKey;type:varchar(36);" json:"id"`
+	Article              string                `gorm:"type:varchar(255);not null,unique" json:"article"`
+	Name                 string                `gorm:"type:varchar(255);not null" json:"name"`
+	Description          string                `gorm:"type:text" json:"description"`
+	Categories           []Category            `gorm:"many2many:product_categories;" json:"categories"`
+	Prices               []Price               `gorm:"foreignKey:ProductID" json:"prices"` // Связь с ценами
+	Images               []Image               `gorm:"foreignKey:ProductID" json:"images"`
+	CharacteristicValues []CharacteristicValue `gorm:"foreignKey:ProductID" json:"characteristic_values"`
 }
 
 func (p *Product) BeforeCreate(tx *gorm.DB) error {

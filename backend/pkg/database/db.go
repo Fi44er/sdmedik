@@ -2,6 +2,7 @@ package database
 
 import (
 	"log"
+	"time"
 
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
@@ -36,6 +37,7 @@ func ConnectDb(url string) (Database, error) {
 
 	sqlDB.SetMaxIdleConns(20)
 	sqlDB.SetMaxOpenConns(200)
+	sqlDB.SetConnMaxLifetime(time.Hour)
 
 	return DB, nil
 }

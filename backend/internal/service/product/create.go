@@ -2,7 +2,6 @@ package product
 
 import (
 	"context"
-	"log"
 
 	"github.com/Fi44er/sdmedik/backend/internal/dto"
 	"github.com/Fi44er/sdmedik/backend/internal/model"
@@ -37,7 +36,6 @@ func (s *service) Create(ctx context.Context, product *dto.CreateProduct) error 
 	// 	product.Categories = append(product.Categories, category)
 	// }
 	//
-	log.Println(modelProduct)
 
 	if err := s.repo.Create(ctx, &modelProduct); err != nil {
 		return err
