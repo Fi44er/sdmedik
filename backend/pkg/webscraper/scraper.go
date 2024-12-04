@@ -11,7 +11,7 @@ import (
 	"github.com/chromedp/chromedp"
 )
 
-const MAIN_URL = "https://ktsr.sfr.gov.ru/ru-RU/product/product/order86n/168"
+const MAIN_URL = "https://ktsr.sfr.gov.ru/ru-RU/product/product/order86n/184"
 
 func main() {
 	Run()
@@ -23,8 +23,8 @@ func Run() {
 	jobs := make(chan structs.Job, 100)
 	results := make(chan structs.Result, 100)
 
-	var products []structs.Product
-	var productsMu sync.Mutex
+	// var products []structs.Products
+	// var productsMu sync.Mutex
 
 	opts := append(chromedp.DefaultExecAllocatorOptions[:],
 		chromedp.Flag("headless", false), // Отключаем безголовый режим
@@ -81,6 +81,7 @@ func Run() {
 		go utils.Worker(allocCtx, jobs, results, &wgWorkers)
 	}
 
+	products := make(map[string]structs.Products)
 	var wgResults sync.WaitGroup
 	wgResults.Add(1)
 	go func() {
@@ -90,9 +91,23 @@ func Run() {
 				log.Printf("Ошибка: %v", res.Err)
 				continue
 			}
-			productsMu.Lock()
-			products = append(products, res.Product)
-			productsMu.Unlock()
+
+			if product, exist := products[res.Product.Article]; exist {
+				product.RegionPrices = append(product.RegionPrices, structs.RegionPrice{
+					Region: res.Product.Region,
+					Price:  res.Product.Price,
+				})
+			} else {
+				products[res.Product.Article] = structs.Products{
+					Article: res.Product.Article,
+					RegionPrices: []structs.RegionPrice{
+						{
+							Region: res.Product.Region,
+							Price:  res.Product.Price,
+						},
+					},
+				}
+			}
 		}
 	}()
 
