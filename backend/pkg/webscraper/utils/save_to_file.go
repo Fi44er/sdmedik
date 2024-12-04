@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-func SaveToFile[T any](products []T, filename string) error {
+func SaveToFile[T any](products map[string]T, filename string) error {
 	jsonData, err := json.MarshalIndent(products, "", "  ")
 	if err != nil {
 		return err
