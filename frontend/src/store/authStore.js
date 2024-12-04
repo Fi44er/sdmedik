@@ -52,7 +52,7 @@ const useAuthStore = create((set, get) => ({
       console.error("Error Registrations:", error);
     }
   },
-  loginFunc: async () => {
+  loginFunc: async (navigate) => {
     const { email, password } = useAuthStore.getState();
     try {
       const response = await axios.post(
@@ -66,6 +66,9 @@ const useAuthStore = create((set, get) => ({
         }
       );
       console.log("login", response);
+      if (response.data.status === "success") {
+        navigate("/profile");
+      }
     } catch (error) {
       alert(
         "Ошибка авторизации: " +

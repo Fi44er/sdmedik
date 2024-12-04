@@ -11,6 +11,7 @@ import Deteils from "../pages/deteils/Deteils";
 import ProductDynamicPage from "../pages/Product/ProductDynamicPage";
 import Auth from "../pages/account/Auth";
 import Register from "../pages/account/Register";
+import UserAccount from "../pages/account/UserAccount";
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -61,6 +62,10 @@ export const router = createBrowserRouter([
   {
     path: "/register",
     element: <Register />,
+  },
+  {
+    path: "/profile",
+    element: <UserAccount />,
   },
   //   {
   //     path: "/Admin",
