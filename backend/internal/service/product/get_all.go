@@ -8,6 +8,7 @@ import (
 )
 
 func (s *service) GetAll(ctx context.Context, offset int, limit int) ([]model.Product, error) {
+	context.Background()
 	products, err := s.repo.GetAll(ctx, offset, limit)
 	if err != nil {
 		return nil, err

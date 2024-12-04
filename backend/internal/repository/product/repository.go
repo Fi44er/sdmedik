@@ -17,7 +17,10 @@ type repository struct {
 	logger *logger.Logger
 }
 
-func NewRepository(logger *logger.Logger, db *gorm.DB) *repository {
+func NewRepository(
+	logger *logger.Logger,
+	db *gorm.DB,
+) *repository {
 	return &repository{
 		db:     db,
 		logger: logger,
