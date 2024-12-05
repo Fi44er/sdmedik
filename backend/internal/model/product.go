@@ -7,7 +7,7 @@ import (
 
 type Product struct {
 	ID                   string                `gorm:"primaryKey;type:varchar(36);" json:"id"`
-	Article              string                `gorm:"type:varchar(255);not null,unique" json:"article"`
+	Article              string                `gorm:"type:varchar(255);not null;unique" json:"article"`
 	Name                 string                `gorm:"type:varchar(255);not null" json:"name"`
 	Description          string                `gorm:"type:text" json:"description"`
 	Categories           []Category            `gorm:"many2many:product_categories;" json:"categories"`
