@@ -13,12 +13,20 @@ type service struct {
 	logger    *logger.Logger
 	repo      repository.ICategoryRepository
 	validator *validator.Validate
+
+	characteristicService def.ICharacteristicService
 }
 
-func NewService(repo repository.ICategoryRepository, logger *logger.Logger, validator *validator.Validate) *service {
+func NewService(
+	repo repository.ICategoryRepository,
+	logger *logger.Logger,
+	validator *validator.Validate,
+	characteristicService def.ICharacteristicService,
+) *service {
 	return &service{
-		repo:      repo,
-		logger:    logger,
-		validator: validator,
+		repo:                  repo,
+		logger:                logger,
+		validator:             validator,
+		characteristicService: characteristicService,
 	}
 }

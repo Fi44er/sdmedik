@@ -10,11 +10,13 @@ import (
 )
 
 type serviceProvider struct {
-	httpConfig       config.HTTPConfig
-	userProvider     provider.UserProvider
-	productProvider  provider.ProductProvider
-	authProvider     provider.AuthProvider
-	categoryProvider provider.CategoryProvider
+	httpConfig config.HTTPConfig
+
+	userProvider           provider.UserProvider
+	productProvider        provider.ProductProvider
+	authProvider           provider.AuthProvider
+	categoryProvider       provider.CategoryProvider
+	characteristicProvider provider.CharacteristicProvider
 
 	logger    *logger.Logger
 	db        *gorm.DB
@@ -42,6 +44,7 @@ func newServiceProvider(logger *logger.Logger, db *gorm.DB, validator *validator
 func (s *serviceProvider) initDeps() error {
 	inits := []func() error{
 		s.initUserProvider,
+		s.initCharacteristicProvider,
 		s.initCategoryProvider,
 		s.initProductProvider,
 		s.initAuthProvider,
@@ -72,8 +75,13 @@ func (s *serviceProvider) initProductProvider() error {
 	return nil
 }
 
+func (s *serviceProvider) initCharacteristicProvider() error {
+	s.characteristicProvider = *provider.NewCharacteristicProvider(s.logger, s.db, s.validator)
+	return nil
+}
+
 func (s *serviceProvider) initCategoryProvider() error {
-	s.categoryProvider = *provider.NewCategoryProvider(s.logger, s.db, s.validator)
+	s.categoryProvider = *provider.NewCategoryProvider(s.logger, s.db, s.validator, s.characteristicProvider.CharacteristicService())
 	return nil
 }
 

@@ -1,5 +1,31 @@
 basePath: /api/v1/
 definitions:
+  dto.CreateCategory:
+    properties:
+      characteristics:
+        items:
+          type: string
+        type: array
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  dto.CreateProduct:
+    properties:
+      category_ids:
+        items:
+          type: integer
+        type: array
+      description:
+        type: string
+      name:
+        type: string
+    required:
+    - category_ids
+    - description
+    - name
+    type: object
   dto.Login:
     properties:
       email:
@@ -44,10 +70,107 @@ definitions:
     - code
     - email
     type: object
+  model.Category:
+    properties:
+      characteristic:
+        items:
+          $ref: '#/definitions/model.Characteristic'
+        type: array
+      id:
+        type: integer
+      name:
+        type: string
+      products:
+        items:
+          $ref: '#/definitions/model.Product'
+        type: array
+    type: object
+  model.Characteristic:
+    properties:
+      category_id:
+        type: integer
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  model.CharacteristicValue:
+    properties:
+      characteristic_id:
+        type: integer
+      id:
+        type: integer
+      product_id:
+        type: string
+      value:
+        type: string
+    type: object
+  model.Image:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      product_id:
+        type: string
+    type: object
+  model.Price:
+    properties:
+      id:
+        type: string
+      price:
+        type: number
+      product_id:
+        type: string
+      region_id:
+        type: string
+    type: object
+  model.Product:
+    properties:
+      article:
+        type: string
+      categories:
+        items:
+          $ref: '#/definitions/model.Category'
+        type: array
+      characteristic_values:
+        items:
+          $ref: '#/definitions/model.CharacteristicValue'
+        type: array
+      description:
+        type: string
+      id:
+        type: string
+      images:
+        items:
+          $ref: '#/definitions/model.Image'
+        type: array
+      name:
+        type: string
+      prices:
+        description: Связь с ценами
+        items:
+          $ref: '#/definitions/model.Price'
+        type: array
+    type: object
   response.Response:
     properties:
       message:
         type: string
+      status:
+        type: string
+    type: object
+  response.ResponseData:
+    properties:
+      data: {}
+      status:
+        type: string
+    type: object
+  response.ResponseListData:
+    properties:
+      data:
+        items: {}
+        type: array
       status:
         type: string
     type: object
@@ -176,4 +299,193 @@ paths:
       summary: Verify the provided code
       tags:
       - auth
+  /category:
+    get:
+      consumes:
+      - application/json
+      description: Gets all categories
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseListData'
+      summary: Get all categories
+      tags:
+      - category
+    post:
+      consumes:
+      - application/json
+      description: Creates a new category
+      parameters:
+      - description: Category data
+        in: body
+        name: category
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateCategory'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseData'
+      summary: Create a new category
+      tags:
+      - category
+  /category/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a category
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseData'
+      summary: Delete a category
+      tags:
+      - category
+    get:
+      consumes:
+      - application/json
+      description: Gets a category by ID
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseData'
+      summary: Get a category by ID
+      tags:
+      - category
+  /product:
+    get:
+      consumes:
+      - application/json
+      description: Gets all products
+      parameters:
+      - description: Offset
+        in: query
+        name: offset
+        type: integer
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseListData'
+      summary: Get all products
+      tags:
+      - product
+    post:
+      consumes:
+      - application/json
+      description: Creates a new product
+      parameters:
+      - description: Product details
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateProduct'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseData'
+      summary: Create a new product
+      tags:
+      - product
+  /product/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a product
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseData'
+      summary: Delete a product
+      tags:
+      - product
+    get:
+      consumes:
+      - application/json
+      description: Gets a product by ID
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseData'
+      summary: Get a product by ID
+      tags:
+      - product
+    put:
+      consumes:
+      - application/json
+      description: Updates a product
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Product details
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/model.Product'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseData'
+      summary: Update a product
+      tags:
+      - product
 swagger: "2.0"

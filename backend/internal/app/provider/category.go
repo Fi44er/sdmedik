@@ -19,13 +19,21 @@ type CategoryProvider struct {
 	logger    *logger.Logger
 	db        *gorm.DB
 	validator *validator.Validate
+
+	characteristicService service.ICharacteristicService
 }
 
-func NewCategoryProvider(logger *logger.Logger, db *gorm.DB, validator *validator.Validate) *CategoryProvider {
+func NewCategoryProvider(
+	logger *logger.Logger,
+	db *gorm.DB,
+	validator *validator.Validate,
+	characteristicService service.ICharacteristicService,
+) *CategoryProvider {
 	return &CategoryProvider{
-		logger:    logger,
-		db:        db,
-		validator: validator,
+		logger:                logger,
+		db:                    db,
+		validator:             validator,
+		characteristicService: characteristicService,
 	}
 }
 
@@ -38,7 +46,7 @@ func (p *CategoryProvider) CategoryRepository() repository.ICategoryRepository {
 
 func (p *CategoryProvider) CategoryService() service.ICategoryService {
 	if p.categoryService == nil {
-		p.categoryService = categoryService.NewService(p.CategoryRepository(), p.logger, p.validator)
+		p.categoryService = categoryService.NewService(p.CategoryRepository(), p.logger, p.validator, p.characteristicService)
 	}
 
 	return p.categoryService

@@ -7,6 +7,15 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+// GetByID godoc
+// @Summary Get a category by ID
+// @Description Gets a category by ID
+// @Tags category
+// @Accept json
+// @Produce json
+// @Param id path string true "Category ID"
+// @Success 200 {object} response.ResponseData "OK"
+// @Router /category/{id} [get]
 func (i *Implementation) GetByID(ctx *fiber.Ctx) error {
 	id, _ := strconv.Atoi(ctx.Params("id"))
 

@@ -6,6 +6,15 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+// Create godoc
+// @Summary Create a new category
+// @Description Creates a new category
+// @Tags category
+// @Accept json
+// @Produce json
+// @Param category body dto.CreateCategory true "Category data"
+// @Success 200 {object} response.ResponseData "OK"
+// @Router /category [post]
 func (i *Implementation) Create(ctx *fiber.Ctx) error {
 	category := new(dto.CreateCategory)
 	if err := ctx.BodyParser(&category); err != nil {
