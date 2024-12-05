@@ -13,6 +13,8 @@ definitions:
     type: object
   dto.CreateProduct:
     properties:
+      article:
+        type: string
       category_ids:
         items:
           type: integer
@@ -22,6 +24,7 @@ definitions:
       name:
         type: string
     required:
+    - article
     - category_ids
     - description
     - name

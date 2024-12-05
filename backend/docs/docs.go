@@ -506,11 +506,15 @@ const docTemplate = `{
         "dto.CreateProduct": {
             "type": "object",
             "required": [
+                "article",
                 "category_ids",
                 "description",
                 "name"
             ],
             "properties": {
+                "article": {
+                    "type": "string"
+                },
                 "category_ids": {
                     "type": "array",
                     "items": {
