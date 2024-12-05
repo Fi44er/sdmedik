@@ -34,7 +34,7 @@ type IProductService interface {
 }
 
 type ICategoryService interface {
-	Create(ctx context.Context, category *dto.CreateCategory) error
+	Create(ctx context.Context, data *dto.CreateCategory) error
 	GetAll(ctx context.Context) ([]model.Category, error)
 	GetByID(ctx context.Context, id int) (model.Category, error)
 	Delete(ctx context.Context, id int) error
@@ -43,6 +43,7 @@ type ICategoryService interface {
 
 type ICharacteristicService interface {
 	Create(ctx context.Context, characteristic *dto.CreateCharacteristic) error
+	CreateMany(ctx context.Context, characteristics *[]model.Characteristic) error
 	GetByID(ctx context.Context, id int) (model.Characteristic, error)
 	GetByCategoryID(ctx context.Context, categoryID int) ([]model.Characteristic, error)
 	Delete(ctx context.Context, id int) error

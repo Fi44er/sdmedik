@@ -6,6 +6,16 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+// Update godoc
+// @Summary Update a product
+// @Description Updates a product
+// @Tags product
+// @Accept json
+// @Produce json
+// @Param id path string true "Product ID"
+// @Param product body model.Product true "Product details"
+// @Success 200 {object} response.ResponseData "OK"
+// @Router /product/{id} [put]
 func (i *Implementation) Update(ctx *fiber.Ctx) error {
 	id := ctx.Params("id")
 	product := new(model.Product)

@@ -33,7 +33,8 @@ type IUserRepository interface {
 
 type ICharacteristicRepository interface {
 	Create(ctx context.Context, data *model.Characteristic) error
+	CreateMany(ctx context.Context, data *[]model.Characteristic) error
 	GetByID(ctx context.Context, id int) (model.Characteristic, error)
-	GetByCategoryID(ctx context.Context, categoryID string) ([]model.Characteristic, error)
-	Delete(ctx context.Context, id string) error
+	GetByCategoryID(ctx context.Context, categoryID int) ([]model.Characteristic, error)
+	Delete(ctx context.Context, id int) error
 }
