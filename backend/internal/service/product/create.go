@@ -28,15 +28,6 @@ func (s *service) Create(ctx context.Context, product *dto.CreateProduct) error 
 
 	modelProduct.Categories = categories
 
-	// for _, id := range categoryIDs {
-	// 	var category Category
-	// 	if err := db.First(&category, id).Error; err != nil {
-	// 		return err // Если категория не найдена, возвращаем ошибку
-	// 	}
-	// 	product.Categories = append(product.Categories, category)
-	// }
-	//
-
 	if err := s.repo.Create(ctx, &modelProduct); err != nil {
 		return err
 	}

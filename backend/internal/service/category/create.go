@@ -41,8 +41,8 @@ func (s *service) Create(ctx context.Context, data *dto.CreateCategory) error {
 		if err := s.characteristicService.CreateMany(ctx, &characteristics); err != nil {
 			return err
 		}
-	}
 
+	}
 	s.logger.Info("Category created successfully")
 	return nil
 }

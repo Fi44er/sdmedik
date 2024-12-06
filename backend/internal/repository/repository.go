@@ -38,3 +38,10 @@ type ICharacteristicRepository interface {
 	GetByCategoryID(ctx context.Context, categoryID int) ([]model.Characteristic, error)
 	Delete(ctx context.Context, id int) error
 }
+
+type ICharacteristicValueRepository interface {
+	Create(ctx context.Context, data *model.CharacteristicValue) error
+	CreateMany(ctx context.Context, data *[]model.CharacteristicValue) error
+	GetByID(ctx context.Context, id int) (model.CharacteristicValue, error)
+	Delete(ctx context.Context, id int) error
+}

@@ -39,7 +39,7 @@ func (r *repository) GetAll(ctx context.Context) ([]model.Category, error) {
 
 	r.logger.Info("Fetching categories...")
 	var categories []model.Category
-	if err := r.db.WithContext(ctx).Find(&categories).Error; err != nil {
+	if err := r.db.WithContext(ctx).Preload("Characteristics").Find(&categories).Error; err != nil {
 		r.logger.Errorf("Failed to fetch categories: %v", err)
 		return nil, err
 	}
@@ -84,4 +84,8 @@ func (r *repository) GetByIDs(ctx context.Context, ids []int) ([]model.Category,
 	}
 	r.logger.Info("Categories fetched successfully")
 	return categories, nil
+}
+
+func (r *repository) BeginTransaction() *gorm.DB {
+	return r.db.Begin()
 }
