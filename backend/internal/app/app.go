@@ -104,6 +104,7 @@ func (a *App) initRouter() error {
 	auth.Post("/logout", middleware.DeserializeUser(a.cache, a.db, a.config), a.serviceProvider.authProvider.AuthImpl().Logout)
 	auth.Post("/send-code", a.serviceProvider.authProvider.AuthImpl().SendCode)
 	auth.Post("/verify-code", a.serviceProvider.authProvider.AuthImpl().VerifyCode)
+	auth.Post("/refresh", a.serviceProvider.authProvider.AuthImpl().RefreshAccessToken)
 
 	product := v1.Group("/product")
 	product.Get("/", a.serviceProvider.productProvider.ProductImpl().GetAll)

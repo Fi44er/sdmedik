@@ -4,7 +4,15 @@ import (
 	"context"
 
 	"github.com/Fi44er/sdmedik/backend/internal/model"
+	"gorm.io/gorm"
 )
+
+type ITransactionManager interface {
+	BeginTransaction(ctx context.Context) (*gorm.DB, error)
+	Commit(tx *gorm.DB) error
+	Rollback(tx *gorm.DB)
+	WithTransaction(tx *gorm.DB) *gorm.DB
+}
 
 type ICategoryRepository interface {
 	Create(ctx context.Context, data *model.Category) error

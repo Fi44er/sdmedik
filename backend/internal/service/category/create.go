@@ -33,8 +33,9 @@ func (s *service) Create(ctx context.Context, data *dto.CreateCategory) error {
 		var characteristics []model.Characteristic
 		for _, characteristic := range data.Characteristics {
 			characteristics = append(characteristics, model.Characteristic{
-				Name:       characteristic,
+				Name:       characteristic.Name,
 				CategoryID: modelCategory.ID,
+				DataType:   model.Type(characteristic.DataType),
 			})
 		}
 
