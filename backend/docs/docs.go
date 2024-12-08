@@ -486,6 +486,21 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "dto.CharacteristicWithoutCategoryID": {
+            "type": "object",
+            "required": [
+                "data_type",
+                "name"
+            ],
+            "properties": {
+                "data_type": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.CreateCategory": {
             "type": "object",
             "required": [
@@ -495,7 +510,7 @@ const docTemplate = `{
                 "characteristics": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "$ref": "#/definitions/dto.CharacteristicWithoutCategoryID"
                     }
                 },
                 "name": {
@@ -623,6 +638,9 @@ const docTemplate = `{
                 "category_id": {
                     "type": "integer"
                 },
+                "data_type": {
+                    "$ref": "#/definitions/model.Type"
+                },
                 "id": {
                     "type": "integer"
                 },
@@ -720,6 +738,21 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "model.Type": {
+            "type": "string",
+            "enum": [
+                "string",
+                "int",
+                "float",
+                "bool"
+            ],
+            "x-enum-varnames": [
+                "TypeString",
+                "TypeInt",
+                "TypeFloat",
+                "TypeBool"
+            ]
         },
         "response.Response": {
             "type": "object",

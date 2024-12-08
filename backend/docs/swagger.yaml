@@ -1,10 +1,20 @@
 basePath: /api/v1/
 definitions:
+  dto.CharacteristicWithoutCategoryID:
+    properties:
+      data_type:
+        type: string
+      name:
+        type: string
+    required:
+    - data_type
+    - name
+    type: object
   dto.CreateCategory:
     properties:
       characteristics:
         items:
-          type: string
+          $ref: '#/definitions/dto.CharacteristicWithoutCategoryID'
         type: array
       name:
         type: string
@@ -92,6 +102,8 @@ definitions:
     properties:
       category_id:
         type: integer
+      data_type:
+        $ref: '#/definitions/model.Type'
       id:
         type: integer
       name:
@@ -156,6 +168,18 @@ definitions:
           $ref: '#/definitions/model.Price'
         type: array
     type: object
+  model.Type:
+    enum:
+    - string
+    - int
+    - float
+    - bool
+    type: string
+    x-enum-varnames:
+    - TypeString
+    - TypeInt
+    - TypeFloat
+    - TypeBool
   response.Response:
     properties:
       message:

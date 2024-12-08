@@ -7,6 +7,7 @@ import (
 	"github.com/Fi44er/sdmedik/backend/pkg/database"
 	"github.com/Fi44er/sdmedik/backend/pkg/logger"
 	"github.com/Fi44er/sdmedik/backend/pkg/redis"
+	"github.com/Fi44er/sdmedik/backend/pkg/utils"
 	"github.com/go-playground/validator/v10"
 )
 
@@ -19,6 +20,7 @@ import (
 func main() {
 	log := logger.GetLogger()
 	validator := validator.New()
+	validator.RegisterValidation("characteristic_type", utils.CustomTypeValidator)
 
 	config, err := config.LoadConfig(".")
 	if err != nil {
