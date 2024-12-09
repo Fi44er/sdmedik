@@ -16,6 +16,18 @@ func (s *service) Create(ctx context.Context, data *dto.CreateCategory) error {
 		return errors.New(400, err.Error())
 	}
 
+	tx, err := s.transactionManagerRepo.BeginTransaction(ctx)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			s.logger.Error("Transaction rollback")
+			s.transactionManagerRepo.Rollback(tx)
+			panic(r) // Переподнимаем панику
+		}
+	}()
+
 	category := dto.CategoryWithoutCharacteristics{
 		Name: data.Name,
 	}
@@ -25,7 +37,9 @@ func (s *service) Create(ctx context.Context, data *dto.CreateCategory) error {
 		return err
 	}
 
-	if err := s.repo.Create(ctx, &modelCategory); err != nil {
+	if err := s.repo.Create(ctx, &modelCategory, tx); err != nil {
+		s.logger.Errorf("Transaction rollback %v", err)
+		s.transactionManagerRepo.Rollback(tx)
 		return err
 	}
 
@@ -39,11 +53,18 @@ func (s *service) Create(ctx context.Context, data *dto.CreateCategory) error {
 			})
 		}
 
-		if err := s.characteristicService.CreateMany(ctx, &characteristics); err != nil {
+		if err := s.characteristicService.CreateMany(ctx, &characteristics, tx); err != nil {
+			s.transactionManagerRepo.Rollback(tx)
+			s.logger.Errorf("Transaction rollback %v", err)
 			return err
 		}
-
 	}
+
+	s.logger.Info("Category created in repository...")
+	if err := s.transactionManagerRepo.Commit(tx); err != nil {
+		return err
+	}
+
 	s.logger.Info("Category created successfully")
 	return nil
 }

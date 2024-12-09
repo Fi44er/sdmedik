@@ -1,6 +1,8 @@
 package provider
 
 import (
+	"log"
+
 	"github.com/Fi44er/sdmedik/backend/internal/api/category"
 	"github.com/Fi44er/sdmedik/backend/internal/repository"
 	categoryRepository "github.com/Fi44er/sdmedik/backend/internal/repository/category"
@@ -20,7 +22,8 @@ type CategoryProvider struct {
 	db        *gorm.DB
 	validator *validator.Validate
 
-	characteristicService service.ICharacteristicService
+	characteristicService  service.ICharacteristicService
+	transactionManagerRepo repository.ITransactionManager
 }
 
 func NewCategoryProvider(
@@ -28,12 +31,14 @@ func NewCategoryProvider(
 	db *gorm.DB,
 	validator *validator.Validate,
 	characteristicService service.ICharacteristicService,
+	transactionManagerRepo repository.ITransactionManager,
 ) *CategoryProvider {
 	return &CategoryProvider{
-		logger:                logger,
-		db:                    db,
-		validator:             validator,
-		characteristicService: characteristicService,
+		logger:                 logger,
+		db:                     db,
+		validator:              validator,
+		characteristicService:  characteristicService,
+		transactionManagerRepo: transactionManagerRepo,
 	}
 }
 
@@ -45,8 +50,11 @@ func (p *CategoryProvider) CategoryRepository() repository.ICategoryRepository {
 }
 
 func (p *CategoryProvider) CategoryService() service.ICategoryService {
+	if p.transactionManagerRepo == nil {
+		log.Println("БЛЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯТь")
+	}
 	if p.categoryService == nil {
-		p.categoryService = categoryService.NewService(p.CategoryRepository(), p.logger, p.validator, p.characteristicService)
+		p.categoryService = categoryService.NewService(p.CategoryRepository(), p.logger, p.validator, p.characteristicService, p.transactionManagerRepo)
 	}
 
 	return p.categoryService

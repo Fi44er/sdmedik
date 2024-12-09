@@ -3,16 +3,12 @@ package transactionmanager
 import (
 	"context"
 
+	def "github.com/Fi44er/sdmedik/backend/internal/repository"
 	"github.com/Fi44er/sdmedik/backend/pkg/logger"
 	"gorm.io/gorm"
 )
 
-type ITransactionManager interface {
-	BeginTransaction(ctx context.Context) (*gorm.DB, error)
-	Commit(tx *gorm.DB) error
-	Rollback(tx *gorm.DB)
-	WithTransaction(tx *gorm.DB) *gorm.DB
-}
+var _ def.ITransactionManager = (*Manager)(nil)
 
 type Manager struct {
 	db     *gorm.DB

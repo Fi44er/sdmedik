@@ -14,7 +14,8 @@ type service struct {
 	repo      repository.ICategoryRepository
 	validator *validator.Validate
 
-	characteristicService def.ICharacteristicService
+	characteristicService  def.ICharacteristicService
+	transactionManagerRepo repository.ITransactionManager
 }
 
 func NewService(
@@ -22,11 +23,13 @@ func NewService(
 	logger *logger.Logger,
 	validator *validator.Validate,
 	characteristicService def.ICharacteristicService,
+	transactionManagerRepo repository.ITransactionManager,
 ) *service {
 	return &service{
-		repo:                  repo,
-		logger:                logger,
-		validator:             validator,
-		characteristicService: characteristicService,
+		repo:                   repo,
+		logger:                 logger,
+		validator:              validator,
+		characteristicService:  characteristicService,
+		transactionManagerRepo: transactionManagerRepo,
 	}
 }

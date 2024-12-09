@@ -15,7 +15,7 @@ type ITransactionManager interface {
 }
 
 type ICategoryRepository interface {
-	Create(ctx context.Context, data *model.Category) error
+	Create(ctx context.Context, data *model.Category, tx *gorm.DB) error
 	GetAll(ctx context.Context) ([]model.Category, error)
 	GetByID(ctx context.Context, id int) (model.Category, error)
 	Delete(ctx context.Context, id int) error
@@ -41,7 +41,7 @@ type IUserRepository interface {
 
 type ICharacteristicRepository interface {
 	Create(ctx context.Context, data *model.Characteristic) error
-	CreateMany(ctx context.Context, data *[]model.Characteristic) error
+	CreateMany(ctx context.Context, data *[]model.Characteristic, tx *gorm.DB) error
 	GetByID(ctx context.Context, id int) (model.Characteristic, error)
 	GetByCategoryID(ctx context.Context, categoryID int) ([]model.Characteristic, error)
 	Delete(ctx context.Context, id int) error
