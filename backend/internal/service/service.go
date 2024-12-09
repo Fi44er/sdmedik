@@ -5,6 +5,7 @@ import (
 
 	"github.com/Fi44er/sdmedik/backend/internal/dto"
 	"github.com/Fi44er/sdmedik/backend/internal/model"
+	"gorm.io/gorm"
 )
 
 type IUserService interface {
@@ -43,7 +44,7 @@ type ICategoryService interface {
 
 type ICharacteristicService interface {
 	Create(ctx context.Context, characteristic *dto.CreateCharacteristic) error
-	CreateMany(ctx context.Context, characteristics *[]model.Characteristic) error
+	CreateMany(ctx context.Context, characteristics *[]model.Characteristic, tx *gorm.DB) error
 	GetByID(ctx context.Context, id int) (model.Characteristic, error)
 	GetByCategoryID(ctx context.Context, categoryID int) ([]model.Characteristic, error)
 	Delete(ctx context.Context, id int) error

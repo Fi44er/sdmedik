@@ -1,6 +1,8 @@
 package app
 
 import (
+	"log"
+
 	"github.com/Fi44er/sdmedik/backend/internal/app/provider"
 	"github.com/Fi44er/sdmedik/backend/internal/config"
 	"github.com/Fi44er/sdmedik/backend/pkg/logger"
@@ -12,11 +14,12 @@ import (
 type serviceProvider struct {
 	httpConfig config.HTTPConfig
 
-	userProvider           provider.UserProvider
-	productProvider        provider.ProductProvider
-	authProvider           provider.AuthProvider
-	categoryProvider       provider.CategoryProvider
-	characteristicProvider provider.CharacteristicProvider
+	userProvider               provider.UserProvider
+	productProvider            provider.ProductProvider
+	authProvider               provider.AuthProvider
+	categoryProvider           provider.CategoryProvider
+	characteristicProvider     provider.CharacteristicProvider
+	transactionManagerProvider provider.TransactionManagerProvider
 
 	logger    *logger.Logger
 	db        *gorm.DB
@@ -43,6 +46,7 @@ func newServiceProvider(logger *logger.Logger, db *gorm.DB, validator *validator
 
 func (s *serviceProvider) initDeps() error {
 	inits := []func() error{
+		s.initTransactionManagerProvider,
 		s.initUserProvider,
 		s.initCharacteristicProvider,
 		s.initCategoryProvider,
@@ -57,6 +61,11 @@ func (s *serviceProvider) initDeps() error {
 		}
 	}
 
+	return nil
+}
+
+func (s *serviceProvider) initTransactionManagerProvider() error {
+	s.transactionManagerProvider = *provider.NewTransactionManagerProvider(s.logger, s.db)
 	return nil
 }
 
@@ -81,7 +90,15 @@ func (s *serviceProvider) initCharacteristicProvider() error {
 }
 
 func (s *serviceProvider) initCategoryProvider() error {
-	s.categoryProvider = *provider.NewCategoryProvider(s.logger, s.db, s.validator, s.characteristicProvider.CharacteristicService())
+	if s.transactionManagerProvider.TransactionManager() == nil {
+		log.Println("оооооо курва")
+	}
+	s.categoryProvider = *provider.NewCategoryProvider(
+		s.logger,
+		s.db, s.validator,
+		s.characteristicProvider.CharacteristicService(),
+		s.transactionManagerProvider.TransactionManager(),
+	)
 	return nil
 }
 

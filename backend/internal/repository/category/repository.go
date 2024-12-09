@@ -24,9 +24,14 @@ func NewRepository(logger *logger.Logger, db *gorm.DB) *repository {
 	}
 }
 
-func (r *repository) Create(ctx context.Context, data *model.Category) error {
+func (r *repository) Create(ctx context.Context, data *model.Category, tx *gorm.DB) error {
 	r.logger.Info("Creating category...")
-	if err := r.db.WithContext(ctx).Create(data).Error; err != nil {
+	db := tx
+	if db == nil {
+		db = r.db
+	}
+
+	if err := db.WithContext(ctx).Create(data).Error; err != nil {
 		r.logger.Errorf("Failed to create category: %v", err)
 		return err
 	}
