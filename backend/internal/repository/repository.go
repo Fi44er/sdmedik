@@ -49,7 +49,7 @@ type ICharacteristicRepository interface {
 
 type ICharacteristicValueRepository interface {
 	Create(ctx context.Context, data *model.CharacteristicValue) error
-	CreateMany(ctx context.Context, data *[]model.CharacteristicValue) error
-	GetByID(ctx context.Context, id int) (model.CharacteristicValue, error)
-	Delete(ctx context.Context, id int) error
+	CreateMany(ctx context.Context, data *[]model.CharacteristicValue, tx *gorm.DB) error
+	// GetByID(ctx context.Context, id int) (model.CharacteristicValue, error)
+	// Delete(ctx context.Context, id int) error
 }

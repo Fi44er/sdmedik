@@ -1,4 +1,4 @@
-package product
+package characteristicvalue
 
 import (
 	"github.com/Fi44er/sdmedik/backend/internal/repository"
@@ -7,27 +7,22 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-var _ def.IProductService = (*service)(nil)
+var _ def.ICharacteristicValueService = (*service)(nil)
 
 type service struct {
 	logger    *logger.Logger
-	repo      repository.IProductRepository
 	validator *validator.Validate
-
-	categoryService            def.ICategoryService
-	characteristicValueService def.ICharacteristicValueService
+	repo      repository.ICharacteristicValueRepository
 }
 
 func NewService(
-	repo repository.IProductRepository,
 	logger *logger.Logger,
 	validator *validator.Validate,
-	categoryService def.ICategoryService,
+	repo repository.ICharacteristicValueRepository,
 ) *service {
 	return &service{
-		repo:            repo,
-		logger:          logger,
-		validator:       validator,
-		categoryService: categoryService,
+		logger:    logger,
+		validator: validator,
+		repo:      repo,
 	}
 }

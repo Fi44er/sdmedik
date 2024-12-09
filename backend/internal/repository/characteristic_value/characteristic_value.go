@@ -35,3 +35,20 @@ func (r *repository) Create(ctx context.Context, data *model.CharacteristicValue
 	r.logger.Infof("Characteristic value created successfully")
 	return nil
 }
+
+func (r *repository) CreateMany(ctx context.Context, data *[]model.CharacteristicValue, tx *gorm.DB) error {
+	r.logger.Info("Creating characteristic values...")
+	db := tx
+	if db == nil {
+		r.logger.Error("Transaction is nil")
+		db = r.db
+	}
+
+	if err := db.WithContext(ctx).Create(data).Error; err != nil {
+		r.logger.Errorf("Failed to create characteristic values: %v", err)
+		return err
+	}
+
+	r.logger.Infof("Characteristic values created successfully")
+	return nil
+}
