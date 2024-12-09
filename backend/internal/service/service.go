@@ -49,3 +49,8 @@ type ICharacteristicService interface {
 	GetByCategoryID(ctx context.Context, categoryID int) ([]model.Characteristic, error)
 	Delete(ctx context.Context, id int) error
 }
+
+type ICharacteristicValueService interface {
+	Create(ctx context.Context, characteristicValue *dto.CreateCharacteristicValue) error
+	CreateMany(ctx context.Context, characteristicValues *[]model.CharacteristicValue, tx *gorm.DB) error
+}
