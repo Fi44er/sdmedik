@@ -54,6 +54,10 @@ export default function PaymantsInfo() {
                 color: "white",
                 fontSize: "18px",
               }}
+              onClick={(e) => {
+                e.preventDefault();
+                window.location.href = "/certificate";
+              }}
             >
               Подробнее
             </Button>

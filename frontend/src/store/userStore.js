@@ -16,9 +16,11 @@ const useUserStore = create((set, get) => ({
   },
   Logout: () => {
     try {
-      const response = axios.post(`${url}/api/v1/auth/logout`, {
-        withCredentials: true,
-      });
+      const response = axios.post(
+        `http://localhost:8080/api/v1/auth/logout`,
+        {},
+        { withCredentials: true }
+      );
     } catch (error) {
       console.error("Ошибка при выходе:", error); // Рекомендуется обработать ошибку
     }

@@ -12,6 +12,7 @@ import ProductDynamicPage from "../pages/Product/ProductDynamicPage";
 import Auth from "../pages/account/Auth";
 import Register from "../pages/account/Register";
 import UserAccount from "../pages/account/UserAccount";
+import Electronic_certificate from "../pages/electronic_certificate/Electronic_certificate";
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -21,11 +22,6 @@ export const router = createBrowserRouter([
     path: "/catalog",
     element: <СategoriesPage />,
   },
-
-  //   {
-  //     path: "/news",
-  //     element: <News />,
-  //   },
   {
     path: "/products/:id", // динамический маршрут
     element: <CatalogsLayout />, // Исправлено имя компонента
@@ -53,6 +49,10 @@ export const router = createBrowserRouter([
   {
     path: "/deteils", // динамический маршрут
     element: <Deteils />, // Исправлено имя компонента
+  },
+  {
+    path: "/certificate", // динамический маршрут
+    element: <Electronic_certificate />, // Исправлено имя компонента
   },
 
   {

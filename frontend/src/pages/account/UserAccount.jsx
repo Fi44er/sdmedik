@@ -8,6 +8,7 @@ import {
   CardContent,
   CardHeader,
   IconButton,
+  Button,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import Grid from "@mui/material/Grid2";
@@ -30,7 +31,7 @@ const Product = [
 ];
 
 export default function UserAccount() {
-  const { getUserInfo, user } = useUserStore();
+  const { getUserInfo, user, Logout } = useUserStore();
   const [loading, setLoading] = useState(true); // Состояние загрузки
 
   useEffect(() => {
@@ -58,7 +59,7 @@ export default function UserAccount() {
 
   // Если данные загружены, отображаем их
   return (
-    <Box>
+    <Box sx={{ mt: 3, mb: 3 }}>
       <Container>
         <Box
           sx={{
@@ -76,15 +77,16 @@ export default function UserAccount() {
               <Typography variant="h5">{user.data.fio}</Typography>
               <Typography variant="h6">{user.data.email}</Typography>
               <Typography variant="h6">{user.data.phone_number}</Typography>
-              
+              <Button variant="contained" color="error" onClick={Logout}>
+                Выйти
+              </Button>
             </Box>
           ) : (
             <Typography>No user data available</Typography>
           )}
         </Box>
-        <Box>
-          <Typography>Заказы</Typography>
-
+        <Box sx={{ mt: 3 }}>
+          <Typography variant="h3">Заказы</Typography>
           <Box>
             <Grid
               container
