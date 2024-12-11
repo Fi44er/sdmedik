@@ -83,7 +83,7 @@ func (r *repository) Delete(ctx context.Context, id int) error {
 func (r *repository) GetByIDs(ctx context.Context, ids []int) ([]model.Category, error) {
 	r.logger.Info("Fetching categories...")
 	var categories []model.Category
-	if err := r.db.WithContext(ctx).Find(&categories, ids).Error; err != nil {
+	if err := r.db.WithContext(ctx).Preload("Characteristics").Find(&categories, ids).Error; err != nil {
 		r.logger.Errorf("Failed to fetch categories: %v", err)
 		return nil, err
 	}

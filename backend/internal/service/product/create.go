@@ -2,6 +2,7 @@ package product
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/Fi44er/sdmedik/backend/internal/dto"
 	"github.com/Fi44er/sdmedik/backend/internal/model"
@@ -30,6 +31,8 @@ func (s *service) Create(ctx context.Context, product *dto.CreateProduct) error 
 	if err != nil {
 		return err
 	}
+
+	fmt.Println(categories)
 
 	tx, err := s.transactionManagerRepo.BeginTransaction(ctx)
 	if err != nil {
