@@ -22,6 +22,7 @@ import React, { useState } from "react";
 import SearchIcon from "@mui/icons-material/Search";
 import MenuIcon from "@mui/icons-material/Menu";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import Cookies from "js-cookie";
 
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   display: "flex",
@@ -277,6 +278,11 @@ export default function Header() {
                 <MenuItem onClick={handleCloseLk}>
                   <Link href="/register">Регистрация</Link>
                 </MenuItem>
+                {Cookies.get("logged_in") && (
+                  <MenuItem onClick={handleCloseLk}>
+                    <Link href="/profile">Личный кабинет</Link>
+                  </MenuItem>
+                )}
               </Menu>
               <IconButton
                 onClick={(e) => {

@@ -18,7 +18,7 @@ export default function Electronic_certificate() {
       <Container>
         <Box sx={{ display: "flex", justifyContent: "center" }}>
           <Typography component="h1" variant="h2">
-            Политика возврата
+            Электронные сертификаты
           </Typography>
         </Box>
         <Box sx={{ width: "100%" }}>

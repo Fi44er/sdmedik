@@ -13,6 +13,8 @@ import {
 import React, { useEffect, useState } from "react";
 import Grid from "@mui/material/Grid2";
 import useUserStore from "../../store/userStore";
+import { useNavigate } from "react-router-dom";
+
 const Product = [
   {
     id: 1,
@@ -77,7 +79,15 @@ export default function UserAccount() {
               <Typography variant="h5">{user.data.fio}</Typography>
               <Typography variant="h6">{user.data.email}</Typography>
               <Typography variant="h6">{user.data.phone_number}</Typography>
-              <Button variant="contained" color="error" onClick={Logout}>
+              <Button
+                variant="contained"
+                color="error"
+                onClick={(e) => {
+                  e.preventDefault();
+                  window.location.href = "/";
+                  Logout();
+                }}
+              >
                 Выйти
               </Button>
             </Box>

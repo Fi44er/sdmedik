@@ -21,6 +21,7 @@ const useUserStore = create((set, get) => ({
         {},
         { withCredentials: true }
       );
+      
     } catch (error) {
       console.error("Ошибка при выходе:", error); // Рекомендуется обработать ошибку
     }

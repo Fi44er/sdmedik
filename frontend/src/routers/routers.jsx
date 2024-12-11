@@ -13,6 +13,21 @@ import Auth from "../pages/account/Auth";
 import Register from "../pages/account/Register";
 import UserAccount from "../pages/account/UserAccount";
 import Electronic_certificate from "../pages/electronic_certificate/Electronic_certificate";
+import { Navigate } from "react-router-dom";
+import Cookies from "js-cookie";
+import Admin from "../pages/admin/Admin";
+
+const UsersRoute = ({ children }) => {
+  const isLoggedIn = Cookies.get("logged_in") === "true";
+
+  if (!isLoggedIn) {
+    return <Navigate to="/" replace />;
+  }
+  return children;
+};
+
+export default UsersRoute;
+
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -65,10 +80,14 @@ export const router = createBrowserRouter([
   },
   {
     path: "/profile",
-    element: <UserAccount />,
+    element: (
+      <UsersRoute>
+        <UserAccount />
+      </UsersRoute>
+    ),
   },
-  //   {
-  //     path: "/Admin",
-  //     element: <Admin />,
-  //   },
+    {
+      path: "/Admin",
+      element: <Admin />,
+    },
 ]);
