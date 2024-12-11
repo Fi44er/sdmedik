@@ -51,6 +51,6 @@ type ICharacteristicService interface {
 }
 
 type ICharacteristicValueService interface {
-	Create(ctx context.Context, characteristicValue *dto.CreateCharacteristicValue) error
+	Create(ctx context.Context, characteristicValue *dto.CharacteristicValue) error
 	CreateMany(ctx context.Context, characteristicValues *[]model.CharacteristicValue, tx *gorm.DB) error
 }

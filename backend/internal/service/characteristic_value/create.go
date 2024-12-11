@@ -9,7 +9,7 @@ import (
 	"github.com/Fi44er/sdmedik/backend/pkg/utils"
 )
 
-func (s *service) Create(ctx context.Context, characteristicValue *dto.CreateCharacteristicValue) error {
+func (s *service) Create(ctx context.Context, characteristicValue *dto.CharacteristicValue) error {
 	if err := s.validator.Struct(characteristicValue); err != nil {
 		return errors.New(400, err.Error())
 	}

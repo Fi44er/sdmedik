@@ -20,20 +20,27 @@ type ProductProvider struct {
 	db        *gorm.DB
 	validator *validator.Validate
 
-	categoryService service.ICategoryService
+	categoryService            service.ICategoryService
+	characteristicValueService service.ICharacteristicValueService
+	transactionManagerRepo     repository.ITransactionManager
 }
 
 func NewProductProvider(
 	logger *logger.Logger,
 	db *gorm.DB,
 	validator *validator.Validate,
+
 	categoryService service.ICategoryService,
+	characteristicValueService service.ICharacteristicValueService,
+	transactionManagerRepo repository.ITransactionManager,
 ) *ProductProvider {
 	return &ProductProvider{
-		logger:          logger,
-		db:              db,
-		validator:       validator,
-		categoryService: categoryService,
+		logger:                     logger,
+		db:                         db,
+		validator:                  validator,
+		categoryService:            categoryService,
+		characteristicValueService: characteristicValueService,
+		transactionManagerRepo:     transactionManagerRepo,
 	}
 }
 
@@ -46,7 +53,14 @@ func (p *ProductProvider) ProductRepository() repository.IProductRepository {
 
 func (p *ProductProvider) ProductService() service.IProductService {
 	if p.productService == nil {
-		p.productService = productService.NewService(p.ProductRepository(), p.logger, p.validator, p.categoryService)
+		p.productService = productService.NewService(
+			p.ProductRepository(),
+			p.logger,
+			p.validator,
+			p.categoryService,
+			p.characteristicValueService,
+			p.transactionManagerRepo,
+		)
 	}
 
 	return p.productService
