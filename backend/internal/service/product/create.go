@@ -5,6 +5,7 @@ import (
 
 	"github.com/Fi44er/sdmedik/backend/internal/dto"
 	"github.com/Fi44er/sdmedik/backend/internal/model"
+
 	"github.com/Fi44er/sdmedik/backend/pkg/errors"
 	"github.com/Fi44er/sdmedik/backend/pkg/utils"
 )
@@ -16,8 +17,27 @@ func (s *service) Create(ctx context.Context, product *dto.CreateProduct) error 
 		return errors.New(400, err.Error())
 	}
 
+	tx, err := s.transactionManagerRepo.BeginTransaction(ctx)
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		if r := recover(); r != nil {
+			s.logger.Error("Transaction rollback")
+			s.transactionManagerRepo.Rollback(tx)
+			panic(r) // Переподнимаем панику
+		}
+	}()
+
+	productWithputCharacteristic := dto.Product{
+		Article:     product.Article,
+		Name:        product.Name,
+		Description: product.Description,
+	}
+
 	var modelProduct model.Product
-	if err := utils.DtoToModel(product, &modelProduct); err != nil {
+	if err := utils.DtoToModel(&productWithputCharacteristic, &modelProduct); err != nil {
 		return err
 	}
 
@@ -28,7 +48,26 @@ func (s *service) Create(ctx context.Context, product *dto.CreateProduct) error 
 
 	modelProduct.Categories = categories
 
-	if err := s.repo.Create(ctx, &modelProduct); err != nil {
+	if err := s.repo.Create(ctx, &modelProduct, tx); err != nil {
+		s.transactionManagerRepo.Rollback(tx)
+		return err
+	}
+
+	var characteristicsValue []model.CharacteristicValue
+	for _, values := range product.CharacteristicValues {
+		characteristicsValue = append(characteristicsValue, model.CharacteristicValue{
+			Value:            values.Value,
+			CharacteristicID: values.CharacteristicID,
+			ProductID:        modelProduct.ID,
+		})
+	}
+
+	if err := s.characteristicValueService.CreateMany(ctx, &characteristicsValue, tx); err != nil {
+		s.transactionManagerRepo.Rollback(tx)
+		return err
+	}
+
+	if err := s.transactionManagerRepo.Commit(tx); err != nil {
 		return err
 	}
 

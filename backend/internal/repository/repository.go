@@ -23,7 +23,7 @@ type ICategoryRepository interface {
 }
 
 type IProductRepository interface {
-	Create(ctx context.Context, data *model.Product) error
+	Create(ctx context.Context, data *model.Product, tx *gorm.DB) error
 	GetAll(ctx context.Context, offset int, limit int) ([]model.Product, error)
 	GetByID(ctx context.Context, id string) (model.Product, error)
 	Delete(ctx context.Context, id string) error

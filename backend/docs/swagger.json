@@ -480,10 +480,20 @@
         }
     },
     "definitions": {
+        "dto.CharacteristicValue": {
+            "type": "object",
+            "properties": {
+                "characteristic_id": {
+                    "type": "integer"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.CharacteristicWithoutCategoryID": {
             "type": "object",
             "required": [
-                "data_type",
                 "name"
             ],
             "properties": {
@@ -498,6 +508,7 @@
         "dto.CreateCategory": {
             "type": "object",
             "required": [
+                "characteristics",
                 "name"
             ],
             "properties": {
@@ -517,6 +528,7 @@
             "required": [
                 "article",
                 "category_ids",
+                "characteristic_values",
                 "description",
                 "name"
             ],
@@ -528,6 +540,12 @@
                     "type": "array",
                     "items": {
                         "type": "integer"
+                    }
+                },
+                "characteristic_values": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.CharacteristicValue"
                     }
                 },
                 "description": {

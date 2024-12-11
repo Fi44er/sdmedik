@@ -14,12 +14,13 @@ import (
 type serviceProvider struct {
 	httpConfig config.HTTPConfig
 
-	userProvider               provider.UserProvider
-	productProvider            provider.ProductProvider
-	authProvider               provider.AuthProvider
-	categoryProvider           provider.CategoryProvider
-	characteristicProvider     provider.CharacteristicProvider
-	transactionManagerProvider provider.TransactionManagerProvider
+	userProvider                provider.UserProvider
+	productProvider             provider.ProductProvider
+	authProvider                provider.AuthProvider
+	categoryProvider            provider.CategoryProvider
+	characteristicProvider      provider.CharacteristicProvider
+	transactionManagerProvider  provider.TransactionManagerProvider
+	characteristicValueProvider provider.CharacteristicValueProvider
 
 	logger    *logger.Logger
 	db        *gorm.DB
@@ -48,6 +49,7 @@ func (s *serviceProvider) initDeps() error {
 	inits := []func() error{
 		s.initTransactionManagerProvider,
 		s.initUserProvider,
+		s.initCharacteristicValueProvider,
 		s.initCharacteristicProvider,
 		s.initCategoryProvider,
 		s.initProductProvider,
@@ -80,12 +82,24 @@ func (s *serviceProvider) initAuthProvider() error {
 }
 
 func (s *serviceProvider) initProductProvider() error {
-	s.productProvider = *provider.NewProductProvider(s.logger, s.db, s.validator, s.categoryProvider.CategoryService())
+	s.productProvider = *provider.NewProductProvider(
+		s.logger,
+		s.db,
+		s.validator,
+		s.categoryProvider.CategoryService(),
+		s.characteristicValueProvider.CharacteristicValueService(),
+		s.transactionManagerProvider.TransactionManager(),
+	)
 	return nil
 }
 
 func (s *serviceProvider) initCharacteristicProvider() error {
 	s.characteristicProvider = *provider.NewCharacteristicProvider(s.logger, s.db, s.validator)
+	return nil
+}
+
+func (s *serviceProvider) initCharacteristicValueProvider() error {
+	s.characteristicValueProvider = *provider.NewChracteristicValueProvider(s.logger, s.db, s.validator)
 	return nil
 }
 

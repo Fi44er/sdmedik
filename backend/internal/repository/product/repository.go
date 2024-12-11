@@ -27,8 +27,14 @@ func NewRepository(
 	}
 }
 
-func (r *repository) Create(ctx context.Context, data *model.Product) error {
+func (r *repository) Create(ctx context.Context, data *model.Product, tx *gorm.DB) error {
 	r.logger.Info("Creating product...")
+
+	db := tx
+	if db == nil {
+		db = r.db
+	}
+
 	if err := r.db.WithContext(ctx).Create(data).Error; err != nil {
 		r.logger.Errorf("Failed to create product: %v", err)
 		return err

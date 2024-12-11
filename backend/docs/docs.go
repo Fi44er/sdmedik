@@ -486,10 +486,20 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "dto.CharacteristicValue": {
+            "type": "object",
+            "properties": {
+                "characteristic_id": {
+                    "type": "integer"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.CharacteristicWithoutCategoryID": {
             "type": "object",
             "required": [
-                "data_type",
                 "name"
             ],
             "properties": {
@@ -504,6 +514,7 @@ const docTemplate = `{
         "dto.CreateCategory": {
             "type": "object",
             "required": [
+                "characteristics",
                 "name"
             ],
             "properties": {
@@ -523,6 +534,7 @@ const docTemplate = `{
             "required": [
                 "article",
                 "category_ids",
+                "characteristic_values",
                 "description",
                 "name"
             ],
@@ -534,6 +546,12 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "type": "integer"
+                    }
+                },
+                "characteristic_values": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.CharacteristicValue"
                     }
                 },
                 "description": {
