@@ -17,6 +17,20 @@ func (s *service) Create(ctx context.Context, product *dto.CreateProduct) error 
 		return errors.New(400, err.Error())
 	}
 
+	existArticle, err := s.repo.GetByArticle(ctx, product.Article)
+	if err != nil {
+		return err
+	}
+
+	if existArticle.ID != "" {
+		return errors.New(400, "Product with this article already exists")
+	}
+
+	categories, err := s.categoryService.GetByIDs(ctx, product.CategoryIDs)
+	if err != nil {
+		return err
+	}
+
 	tx, err := s.transactionManagerRepo.BeginTransaction(ctx)
 	if err != nil {
 		return err
@@ -41,11 +55,6 @@ func (s *service) Create(ctx context.Context, product *dto.CreateProduct) error 
 		return err
 	}
 
-	categories, err := s.categoryService.GetByIDs(ctx, product.CategoryIDs)
-	if err != nil {
-		return err
-	}
-
 	modelProduct.Categories = categories
 
 	if err := s.repo.Create(ctx, &modelProduct, tx); err != nil {
@@ -64,6 +73,7 @@ func (s *service) Create(ctx context.Context, product *dto.CreateProduct) error 
 
 	if err := s.characteristicValueService.CreateMany(ctx, &characteristicsValue, tx); err != nil {
 		s.transactionManagerRepo.Rollback(tx)
+		s.logger.Errorf("Transaction rollback %v: ", err)
 		return err
 	}
 
