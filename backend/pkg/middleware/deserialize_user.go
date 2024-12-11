@@ -5,6 +5,7 @@ import (
 
 	"github.com/Fi44er/sdmedik/backend/internal/config"
 	"github.com/Fi44er/sdmedik/backend/internal/model"
+	"github.com/Fi44er/sdmedik/backend/internal/response"
 	"github.com/Fi44er/sdmedik/backend/pkg/utils"
 	"github.com/gofiber/fiber/v2"
 	"github.com/redis/go-redis/v9"
@@ -54,7 +55,7 @@ func DeserializeUser(cache *redis.Client, db *gorm.DB, config *config.Config) fi
 			})
 		}
 
-		ctx.Locals("user", &user)
+		ctx.Locals("user", response.FilterUserResponse(&user))
 		ctx.Locals("access_token_uuid", tokenClaims.TokenUUID)
 
 		return ctx.Next()
