@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   TextField,
@@ -8,6 +8,7 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
+  Typography,
 } from "@mui/material";
 import { Delete as DeleteIcon } from "@mui/icons-material";
 import useCategoryStore from "../../store/categoryStore";
@@ -17,7 +18,7 @@ export default function Admin() {
   const [characteristics, setCharacteristics] = useState([
     { data_type: "string", name: "" },
   ]);
-  const { createCategory } = useCategoryStore();
+  const { createCategory, getAllCategory, category } = useCategoryStore();
 
   const handleCharacteristicChange = (index, value, type) => {
     const newCharacteristics = [...characteristics];
@@ -47,6 +48,10 @@ export default function Admin() {
     createCategory(data);
     console.log("data:", data);
   };
+
+  useEffect(() => {
+    getAllCategory();
+  }, []);
 
   return (
     <Box
@@ -106,6 +111,15 @@ export default function Admin() {
       <Button type="submit" variant="contained">
         Сохранить категорию
       </Button>
+      <Box>
+        {Array.isArray(category) && category.length > 0 ? (
+          category.map((e, index) => (
+            <Typography key={index}>{e.name}</Typography>
+          ))
+        ) : (
+          <Typography>No categories available</Typography>
+        )}
+      </Box>
     </Box>
   );
 }
