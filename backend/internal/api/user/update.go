@@ -2,10 +2,21 @@ package user
 
 import (
 	"github.com/Fi44er/sdmedik/backend/internal/dto"
+	_ "github.com/Fi44er/sdmedik/backend/internal/response"
 	"github.com/Fi44er/sdmedik/backend/pkg/errors"
 	"github.com/gofiber/fiber/v2"
 )
 
+// Update godoc
+// @Summary Update user
+// @Description Update user
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param id path string true "User ID"
+// @Param user body dto.UpdateUser true "User update data"
+// @Success 200 {object} response.Response "OK"
+// @Router /user/{id} [put]
 func (i *Implementation) Update(ctx *fiber.Ctx) error {
 	id := ctx.Params("id")
 	data := new(dto.UpdateUser)
