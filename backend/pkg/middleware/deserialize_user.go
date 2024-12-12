@@ -47,7 +47,7 @@ func DeserializeUser(cache *redis.Client, db *gorm.DB, config *config.Config) fi
 		}
 
 		var user model.User
-		err = db.First(&user, "id = ?", userID).Error
+		err = db.Preload("Role").First(&user, "id = ?", userID).Error
 		if err == gorm.ErrRecordNotFound {
 			return ctx.Status(403).JSON(fiber.Map{
 				"status":  "fail",
