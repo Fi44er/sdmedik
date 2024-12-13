@@ -136,6 +136,7 @@ export default function СategoriesPage() {
   const { fetchCategory, category } = useCategoryStore();
   useEffect(() => {
     fetchCategory();
+    console.log(category.data);
   }, []);
   return (
     <Box sx={{ mt: 5, mb: 5 }}>

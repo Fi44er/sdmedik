@@ -118,11 +118,16 @@ export default function Admin() {
             <div key={index}>
               <h2>{item.name}</h2>
               <p>{item.description}</p>
+
             </div>
           ))
         ) : (
           <p>Данных нет</p>
         )}
+      </Box>
+
+      <Box>
+        
       </Box>
     </Box>
   );

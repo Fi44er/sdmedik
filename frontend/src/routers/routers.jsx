@@ -16,6 +16,7 @@ import Electronic_certificate from "../pages/electronic_certificate/Electronic_c
 import { Navigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import Admin from "../pages/admin/Admin";
+import CreateProduct from "../pages/admin/create_product/CreateProduct";
 
 const UsersRoute = ({ children }) => {
   const isLoggedIn = Cookies.get("logged_in") === "true";
@@ -86,8 +87,12 @@ export const router = createBrowserRouter([
       </UsersRoute>
     ),
   },
-    {
-      path: "/Admin",
-      element: <Admin />,
-    },
+  {
+    path: "/Admin",
+    element: <Admin />,
+  },
+  {
+    path: "/create_product",
+    element: <CreateProduct />,
+  },
 ]);
