@@ -3,10 +3,21 @@ import axios from "axios";
 
 const useCategoryStore = create((set, get) => ({
   category: [],
+  categoryId:{},
   fetchCategory: async () => {
     try {
       const response = await axios.get(`http://localhost:8080/api/v1/category`);
       set({ category: response.data });
+    } catch (error) {
+      console.error("Error fetching category:", error);
+    }
+  },
+  fetchCategoryId: async (id) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8080/api/v1/category/${id}`
+      );
+      set({ categoryId: response.data });
     } catch (error) {
       console.error("Error fetching category:", error);
     }
