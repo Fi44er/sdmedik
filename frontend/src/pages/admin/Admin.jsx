@@ -18,7 +18,7 @@ export default function Admin() {
   const [characteristics, setCharacteristics] = useState([
     { data_type: "string", name: "" },
   ]);
-  const { createCategory, getAllCategory, category } = useCategoryStore();
+  const { createCategory, fetchCategory, category } = useCategoryStore();
 
   const handleCharacteristicChange = (index, value, type) => {
     const newCharacteristics = [...characteristics];
@@ -50,7 +50,8 @@ export default function Admin() {
   };
 
   useEffect(() => {
-    getAllCategory();
+    fetchCategory();
+    console.log(category);
   }, []);
 
   return (
@@ -67,6 +68,13 @@ export default function Admin() {
         onChange={(e) => setName(e.target.value)}
         sx={{ mb: 2 }}
       />
+      <IconButton
+        onClick={() => removeCharacteristic(index)}
+        color="error"
+        sx={{ ml: 1 }}
+      >
+        <DeleteIcon />
+      </IconButton>
       {characteristics.map((characteristic, index) => (
         <Box
           key={index}
@@ -96,13 +104,6 @@ export default function Admin() {
               handleCharacteristicChange(index, e.target.value, "name")
             }
           />
-          <IconButton
-            onClick={() => removeCharacteristic(index)}
-            color="error"
-            sx={{ ml: 1 }}
-          >
-            <DeleteIcon />
-          </IconButton>
         </Box>
       ))}
       <Button variant="outlined" onClick={addCharacteristic} sx={{ mb: 2 }}>
@@ -112,12 +113,15 @@ export default function Admin() {
         Сохранить категорию
       </Button>
       <Box>
-        {Array.isArray(category) && category.length > 0 ? (
-          category.map((e, index) => (
-            <Typography key={index}>{e.name}</Typography>
+        {Array.isArray(category.data) && category.data.length > 0 ? (
+          category.data.map((item, index) => (
+            <div key={index}>
+              <h2>{item.name}</h2>
+              <p>{item.description}</p>
+            </div>
           ))
         ) : (
-          <Typography>No categories available</Typography>
+          <p>Данных нет</p>
         )}
       </Box>
     </Box>

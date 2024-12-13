@@ -10,7 +10,8 @@ import {
 
 import Grid from "@mui/material/Grid2";
 
-import React from "react";
+import React, { useEffect } from "react";
+import useCategoryStore from "../../store/categoryStore";
 
 const Catalogs = [
   {
@@ -132,6 +133,10 @@ const Catalogs = [
 ];
 
 export default function СategoriesPage() {
+  const { fetchCategory, category } = useCategoryStore();
+  useEffect(() => {
+    fetchCategory();
+  }, []);
   return (
     <Box sx={{ mt: 5, mb: 5 }}>
       <Container>
@@ -140,62 +145,66 @@ export default function СategoriesPage() {
           spacing={{ xs: 2, md: 2 }}
           columns={{ xs: 4, sm: 4, md: 4 }}
         >
-          {Catalogs.map((item) => (
-            <Grid item xs={1} sm={1} md={1} key={item.id}>
-              <Card
-                sx={{
-                  width: { xs: "340px", md: "276px" },
-                  background: "#F5FCFF",
-                  borderRadius: "20px",
-                  height: "360px",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-around",
-                  textAlign: "center",
-                  cursor: "pointer",
-                }}
-                onClick={(e) => {
-                  e.preventDefault();
-                  window.location.href = `/products/${item.id}`;
-                }}
-              >
-                <Box
+          {Array.isArray(category.data) && category.data.length > 0 ? (
+            category.data.map((item) => (
+              <Grid item xs={1} sm={1} md={1} key={item.id}>
+                <Card
                   sx={{
+                    width: { xs: "340px", md: "276px" },
+                    background: "#F5FCFF",
+                    borderRadius: "20px",
+                    height: "360px",
                     display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
+                    flexDirection: "column",
+                    justifyContent: "space-around",
+                    textAlign: "center",
+                    cursor: "pointer",
+                  }}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    window.location.href = `/products/${item.id}`;
                   }}
                 >
-                  <CardMedia
-                    component="img"
-                    image={`/public/wheelchair.png`}
-                    alt={"wheelchair"}
+                  <Box
                     sx={{
-                      width: { xs: "270px", md: "180px", lg: "200px" },
-                      height: {
-                        xs: "270px",
-                        sm: "200px",
-                        md: "200px",
-                        lg: "200px",
-                      },
-                      objectFit: "cover",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
                     }}
-                  />
-                </Box>
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <CardContent>
-                    <Typography variant="h6">{item.name}</Typography>
-                  </CardContent>
-                </Box>
-              </Card>
-            </Grid>
-          ))}
+                  >
+                    <CardMedia
+                      component="img"
+                      image={`/public/wheelchair.png`}
+                      alt={"wheelchair"}
+                      sx={{
+                        width: { xs: "270px", md: "180px", lg: "200px" },
+                        height: {
+                          xs: "270px",
+                          sm: "200px",
+                          md: "200px",
+                          lg: "200px",
+                        },
+                        objectFit: "cover",
+                      }}
+                    />
+                  </Box>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <CardContent>
+                      <Typography variant="h6">{item.name}</Typography>
+                    </CardContent>
+                  </Box>
+                </Card>
+              </Grid>
+            ))
+          ) : (
+            <Typography variant="h6">Нет данных</Typography>
+          )}
         </Grid>
       </Container>
     </Box>

@@ -1,51 +1,62 @@
 import { create } from "zustand";
 import axios from "axios";
-import { useState } from "react";
 
 const useCategoryStore = create((set, get) => ({
   category: [],
+  fetchCategory: async () => {
+    try {
+      const response = await axios.get(`http://localhost:8080/api/v1/category`);
+      set({ category: response.data });
+    } catch (error) {
+      console.error("Error fetching category:", error);
+    }
+  },
+
+  refreshToken: async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:8080/api/v1/auth/refresh",
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  },
+
   createCategory: async (data) => {
     try {
       const response = await axios.post(
         "http://localhost:8080/api/v1/category",
         data,
         {
-          withCredentials: true, // Если нужно отправлять куки
+          withCredentials: true,
         }
       );
       console.log("Response:", response.data);
       // Обработка успешного ответа
       if (response.data.status === "success") {
         alert("Категория успешно сохранена!");
+        get().fetchCategory(); // Обновляем список категорий после создания новой
       } else {
         alert("Ошибка: " + response.data.message);
       }
     } catch (error) {
       console.error("Error:", error);
-      alert(
-        "Ошибка при сохранении категории: " +
-          (error.response?.data?.message || error.message)
-      );
-    }
-  },
-  getAllCategory: async () => {
-    try {
-      const response = await axios.get(
-        "http://localhost:8080/api/v1/category",
-        {},
-        {
-          withCredentials: true,
-        }
-      );
-      set({ category: response.data });
-      console.log("Response:", response.data);
-    } catch (error) {
-      console.error("Error:", error);
-      alert(
-        "Ошибка при получении категорий: " +
-          (error.response?.data?.message || error.message)
-      );
+      if (error.response.status === 401) {
+        // Если статус 401, обновляем токены и повторяем запрос
+        await get().refreshToken();
+        await get().createCategory(data); // Повторяем запрос
+      } else {
+        alert(
+          "Ошибка при сохранении категории: " +
+            (error.response?.data?.message || error.message)
+        );
+      }
     }
   },
 }));
+
 export default useCategoryStore;
