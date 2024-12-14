@@ -20,6 +20,7 @@ func ValidateCharacteristicValue(categories []model.Category, values []dto.Chara
 		characteristicType, _ := characteristicsMap[value.CharacteristicID]
 		switch characteristicType {
 		case "string":
+			continue
 		case "int":
 			_, err := strconv.Atoi(value.Value)
 			if err != nil {

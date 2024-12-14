@@ -20,6 +20,7 @@ type ICategoryRepository interface {
 	GetByID(ctx context.Context, id int) (model.Category, error)
 	Delete(ctx context.Context, id int) error
 	GetByIDs(ctx context.Context, ids []int) ([]model.Category, error)
+	GetByName(ctx context.Context, name string) (model.Category, error)
 }
 
 type IProductRepository interface {

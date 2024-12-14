@@ -18,6 +18,7 @@ func Worker(baseCtx context.Context, jobs <-chan structs.Job, results chan<- str
 
 	for job := range jobs {
 		for _, region := range constants.Subjects {
+			log.Println("region: ", region)
 			price, article, err := GetPriceAndArticle(ctx, job.Link, region)
 			if err != nil {
 				log.Println(err)

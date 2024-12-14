@@ -2,7 +2,6 @@ package category
 
 import (
 	"context"
-
 	"github.com/Fi44er/sdmedik/backend/internal/model"
 )
 

@@ -10,10 +10,17 @@ import (
 )
 
 func (s *service) Create(ctx context.Context, data *dto.CreateCategory) error {
-	s.logger.Info("Creating category in service...")
-
 	if err := s.validator.Struct(data); err != nil {
 		return errors.New(400, err.Error())
+	}
+
+	existProduct, err := s.repo.GetByName(ctx, data.Name)
+	if err != nil {
+		return err
+	}
+
+	if existProduct.Name != "" {
+		return errors.New(409, "Category already exist")
 	}
 
 	tx, err := s.transactionManagerRepo.BeginTransaction(ctx)
@@ -64,7 +71,5 @@ func (s *service) Create(ctx context.Context, data *dto.CreateCategory) error {
 	if err := s.transactionManagerRepo.Commit(tx); err != nil {
 		return err
 	}
-
-	s.logger.Info("Category created successfully")
 	return nil
 }
