@@ -11,8 +11,6 @@ import (
 )
 
 func (s *service) Create(ctx context.Context, product *dto.CreateProduct) error {
-	s.logger.Info("Creating product in service...")
-
 	if err := s.validator.Struct(product); err != nil {
 		return errors.New(400, err.Error())
 	}
@@ -78,7 +76,6 @@ func (s *service) Create(ctx context.Context, product *dto.CreateProduct) error 
 
 	if err := s.characteristicValueService.CreateMany(ctx, &characteristicsValue, tx); err != nil {
 		s.transactionManagerRepo.Rollback(tx)
-		s.logger.Errorf("Transaction rollback %v: ", err)
 		return err
 	}
 
@@ -86,6 +83,5 @@ func (s *service) Create(ctx context.Context, product *dto.CreateProduct) error 
 		return err
 	}
 
-	s.logger.Info("Product created successfully")
 	return nil
 }

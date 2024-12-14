@@ -30,18 +30,15 @@ func (r *repository) Create(ctx context.Context, data *model.Category, tx *gorm.
 	if db == nil {
 		db = r.db
 	}
-
 	if err := db.WithContext(ctx).Create(data).Error; err != nil {
 		r.logger.Errorf("Failed to create category: %v", err)
 		return err
 	}
-
 	r.logger.Infof("Category created successfully")
 	return nil
 }
 
 func (r *repository) GetAll(ctx context.Context) ([]model.Category, error) {
-
 	r.logger.Info("Fetching categories...")
 	var categories []model.Category
 	if err := r.db.WithContext(ctx).Preload("Characteristics").Find(&categories).Error; err != nil {
@@ -53,13 +50,24 @@ func (r *repository) GetAll(ctx context.Context) ([]model.Category, error) {
 }
 
 func (r *repository) GetByID(ctx context.Context, id int) (model.Category, error) {
-	r.logger.Info("Fetching category...")
+	r.logger.Info("Fetching category by id...")
 	var category model.Category
 	if err := r.db.WithContext(ctx).Preload("Products").First(&category, id).Error; err != nil {
-		r.logger.Errorf("Failed to fetch category: %v", err)
+		r.logger.Errorf("Failed to fetch category by id: %v", err)
 		return model.Category{}, err
 	}
-	r.logger.Info("Category fetched successfully")
+	r.logger.Info("Category fetched by id successfully")
+	return category, nil
+}
+
+func (r *repository) GetByName(ctx context.Context, name string) (model.Category, error) {
+	r.logger.Info("Fetching category by name...")
+	var category model.Category
+	if err := r.db.WithContext(ctx).First(&category, "name = ?", name).Error; err != nil {
+		r.logger.Errorf("Failed to fetch category by name: %v", err)
+		return model.Category{}, err
+	}
+	r.logger.Info("Category fetched by name successfully")
 	return category, nil
 }
 
@@ -70,27 +78,21 @@ func (r *repository) Delete(ctx context.Context, id int) error {
 		r.logger.Errorf("Failed to delete category: %v", err)
 		return err
 	}
-
 	if result.RowsAffected == 0 {
 		r.logger.Warnf("Category with ID %v not found", id)
 		return fmt.Errorf("Category not found")
 	}
-
 	r.logger.Info("Category deleted successfully")
 	return nil
 }
 
 func (r *repository) GetByIDs(ctx context.Context, ids []int) ([]model.Category, error) {
-	r.logger.Info("Fetching categories...")
+	r.logger.Info("Fetching categories by ids...")
 	var categories []model.Category
 	if err := r.db.WithContext(ctx).Preload("Characteristics").Find(&categories, ids).Error; err != nil {
-		r.logger.Errorf("Failed to fetch categories: %v", err)
+		r.logger.Errorf("Failed to fetch categories by ids: %v", err)
 		return nil, err
 	}
-	r.logger.Info("Categories fetched successfully")
+	r.logger.Info("Categories fetched by ids successfully")
 	return categories, nil
-}
-
-func (r *repository) BeginTransaction() *gorm.DB {
-	return r.db.Begin()
 }
