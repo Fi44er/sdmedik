@@ -8,18 +8,19 @@ import {
   Typography,
 } from "@mui/material";
 import React from "react";
-import { motion } from "framer-motion"; // Импортируем motion
-import { useNavigate } from "react-router-dom"; // Импортируем useNavigate
+import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import useAuthStore from "../../store/authStore";
+import { useForm } from "react-hook-form";
 
 const scaleVariants = {
   hidden: {
     opacity: 0,
-    scale: 0, // Начальное состояние (уменьшенный)
+    scale: 0,
   },
   visible: {
     opacity: 1,
-    scale: 1, // Конечное состояние (нормальный размер)
+    scale: 1,
     transition: {
       type: "spring",
       stiffness: 100,
@@ -30,19 +31,25 @@ const scaleVariants = {
 
 export default function Auth() {
   const navigate = useNavigate();
-  const { email, setEmail, password, setPassword, loginFunc } = useAuthStore();
+  const { loginFunc } = useAuthStore();
 
-  const handleAuth = async () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  const handleAuth = async (data) => {
     await loginFunc(navigate);
   };
 
   return (
     <Box sx={{ display: "flex", justifyContent: "center" }}>
       <motion.div
-        initial="hidden" // Начальное состояние
-        animate="visible" // Конечное состояние
-        variants={scaleVariants} // Используем определенные варианты анимации
-        style={{ transformOrigin: "center" }} // Устанавливаем точку трансформации в центр
+        initial="hidden"
+        animate="visible"
+        variants={scaleVariants}
+        style={{ transformOrigin: "center" }}
       >
         <Paper sx={{ p: 2, mt: 5, mb: 5, width: { xs: 320, md: 500 } }}>
           <Container>
@@ -54,54 +61,74 @@ export default function Auth() {
                 Sdmedik
               </Typography>
             </Box>
-            <Box sx={{ display: "flex", flexDirection: "column", gridGap: 30 }}>
+            <Box sx={{ display: "flex", flexDirection: "column" }}>
               <Typography variant="h4">Вход</Typography>
-              <TextField
-                variant="outlined"
-                label="Email"
-                placeholder="your@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    "&.Mui-focused fieldset": {
-                      borderColor: "#2CC0B3", // Изменение цвета рамки при фокусе
-                    },
-                  },
-                  "& .MuiInputLabel-root": {
-                    "&.Mui-focused": {
-                      color: "#2CC0B3", // Изменение цвета метки при фокусе
-                    },
-                  },
+              <form
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gridGap: 30,
+                  marginTop: "20px",
                 }}
-              />
-              <TextField
-                variant="outlined"
-                label="Пороль"
-                placeholder="Пороль"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    "&.Mui-focused fieldset": {
-                      borderColor: "#2CC0B3", // Изменение цвета рамки при фокусе
-                    },
-                  },
-                  "& .MuiInputLabel-root": {
-                    "&.Mui-focused": {
-                      color: "#2CC0B3", // Изменение цвета метки при фокусе
-                    },
-                  },
-                }}
-              />
-              <Button
-                variant="contained"
-                sx={{ background: "#2CC0B3" }}
-                onClick={handleAuth}
+                onSubmit={handleSubmit(handleAuth)}
               >
-                Войти
-              </Button>
+                <TextField
+                  variant="outlined"
+                  label="Email"
+                  placeholder="your@email.com"
+                  {...register("email", {
+                    required: "Email is required",
+                    pattern: {
+                      value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                      message: "Не правильный или не коректный email address",
+                    },
+                  })}
+                  error={!!errors.email}
+                  helperText={errors.email ? errors.email.message : ""}
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      "&.Mui-focused fieldset": {
+                        borderColor: "#2CC0B3",
+                      },
+                    },
+                    "& .MuiInputLabel-root": {
+                      "&.Mui-focused": {
+                        color: "#2CC0B3",
+                      },
+                    },
+                  }}
+                />
+                <TextField
+                  variant="outlined"
+                  label="Пароль"
+                  placeholder="Пароль"
+                  type="password"
+                  {...register("password", {
+                    required: "Password is required",
+                  })}
+                  error={!!errors.password}
+                  helperText={errors.password ? errors.password.message : ""}
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      "&.Mui-focused fieldset": {
+                        borderColor: "#2CC0B3",
+                      },
+                    },
+                    "& .MuiInputLabel-root": {
+                      "&.Mui-focused": {
+                        color: "#2CC0B3",
+                      },
+                    },
+                  }}
+                />
+                <Button
+                  variant="contained"
+                  sx={{ background: "#2CC0B3" }}
+                  type="submit"
+                >
+                  Войти
+                </Button>
+              </form>
             </Box>
             <Box
               sx={{

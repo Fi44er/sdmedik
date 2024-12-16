@@ -17,6 +17,7 @@ import { Navigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import Admin from "../pages/admin/Admin";
 import CreateProduct from "../pages/admin/create_product/CreateProduct";
+import Contacts from "../pages/contacts/Contacts";
 
 const UsersRoute = ({ children }) => {
   const isLoggedIn = Cookies.get("logged_in") === "true";
@@ -69,6 +70,10 @@ export const router = createBrowserRouter([
   {
     path: "/certificate", // динамический маршрут
     element: <Electronic_certificate />, // Исправлено имя компонента
+  },
+  {
+    path: "/contacts", // динамический маршрут
+    element: <Contacts />, // Исправлено имя компонента
   },
 
   {

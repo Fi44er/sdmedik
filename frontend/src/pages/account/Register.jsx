@@ -13,6 +13,7 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import useAuthStore from "../../store/authStore";
 import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
 
 const scaleVariants = {
   hidden: {
@@ -48,9 +49,14 @@ export default function Register() {
 
     verifyFunc,
   } = useAuthStore();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
 
   const [error, setError] = useState(null);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const handleRegister = async () => {
     await registerFunc();
@@ -89,90 +95,135 @@ export default function Register() {
             </Box>
             <Box sx={{ display: "flex", flexDirection: "column", gridGap: 30 }}>
               <Typography variant="h4">Регистрация</Typography>
-              <TextField
-                variant="outlined"
-                label="Email"
-                placeholder="your@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    "&.Mui-focused fieldset": {
-                      borderColor: "#2CC0B3",
-                    },
-                  },
-                  "& .MuiInputLabel-root": {
-                    "&.Mui-focused": {
-                      color: "#2CC0B3",
-                    },
-                  },
+              <form
+                onSubmit={handleSubmit(handleRegister)}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gridGap: 30,
+                  marginTop: "10px",
                 }}
-              />
-              <TextField
-                variant="outlined"
-                label="Телефон"
-                placeholder="+79228442121"
-                value={phone_number}
-                onChange={(e) => setPhone_number(e.target.value)}
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    "&.Mui-focused fieldset": {
-                      borderColor: "#2CC0B3",
-                    },
-                  },
-                  "& .MuiInputLabel-root": {
-                    "&.Mui-focused": {
-                      color: "#2CC0B3",
-                    },
-                  },
-                }}
-              />
-              <TextField
-                variant="outlined"
-                label="ФИО"
-                placeholder="Иванов Дмитрий Сергеевич"
-                value={fio}
-                onChange={(e) => setFio(e.target.value)}
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    "&.Mui-focused fieldset": {
-                      borderColor: "#2CC0B3",
-                    },
-                  },
-                  "& .MuiInputLabel-root": {
-                    "&.Mui-focused": {
-                      color: "#2CC0B3",
-                    },
-                  },
-                }}
-              />
-              <TextField
-                variant="outlined"
-                label="Пороль"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    "&.Mui-focused fieldset": {
-                      borderColor: "#2CC0B3",
-                    },
-                  },
-                  "& .MuiInputLabel-root": {
-                    "&.Mui-focused": {
-                      color: "#2CC0B3",
-                    },
-                  },
-                }}
-              />
-              <Button
-                type="button"
-                variant="contained"
-                sx={{ background: "#2CC0B3" }}
-                onClick={handleRegister}
               >
-                Зарегистрироваться
-              </Button>
+                <TextField
+                  variant="outlined"
+                  label="Email"
+                  placeholder="your@email.com"
+                  {...register("email", {
+                    required: "Это поле обязательно для заполнения",
+                    pattern: {
+                      value: /^\S+@\S+$/i,
+                      message: "Неправильный формат email",
+                    },
+                  })}
+                  error={!!errors.email}
+                  helperText={errors.email ? errors.email.message : ""}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      "&.Mui-focused fieldset": {
+                        borderColor: "#2CC0B3",
+                      },
+                    },
+                    "& .MuiInputLabel-root": {
+                      "&.Mui-focused": {
+                        color: "#2CC0B3",
+                      },
+                    },
+                  }}
+                />
+                <TextField
+                  variant="outlined"
+                  label="Телефон"
+                  placeholder="+79228442121"
+                  {...register("phone_number", {
+                    required: "Это поле обязательно для заполнения",
+                    minLength: {
+                      value: 11,
+                      message:
+                        "Неправильный формат номера телефона,номер телефона должен быть 11 цифр",
+                    },
+                  })}
+                  error={!!errors.phone_number}
+                  helperText={
+                    errors.phone_number ? errors.phone_number.message : ""
+                  }
+                  value={phone_number}
+                  onChange={(e) => setPhone_number(e.target.value)}
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      "&.Mui-focused fieldset": {
+                        borderColor: "#2CC0B3",
+                      },
+                    },
+                    "& .MuiInputLabel-root": {
+                      "&.Mui-focused": {
+                        color: "#2CC0B3",
+                      },
+                    },
+                  }}
+                />
+                <TextField
+                  variant="outlined"
+                  label="ФИО"
+                  placeholder="Иванов Дмитрий Сергеевич"
+                  value={fio}
+                  {...register("fio", {
+                    required: "Это поле обязательно для заполнения",
+                  })}
+                  error={!!errors.fio}
+                  helperText={errors.fio ? errors.fio.message : ""}
+                  onChange={(e) => setFio(e.target.value)}
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      "&.Mui-focused fieldset": {
+                        borderColor: "#2CC0B3",
+                      },
+                    },
+                    "& .MuiInputLabel-root": {
+                      "&.Mui-focused": {
+                        color: "#2CC0B3",
+                      },
+                    },
+                  }}
+                />
+                <TextField
+                  variant="outlined"
+                  label="Пороль"
+                  type="password"
+                  {...register("password", {
+                    required: "Это поле обязательно для заполнения",
+                    minLength: {
+                      value: 6,
+                      message: "Пороль не может быть кароче 6 символов",
+                    },
+                  })}
+                  error={!!errors.password}
+                  helperText={errors.password ? errors.password.message : ""}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      "&.Mui-focused fieldset": {
+                        borderColor: "#2CC0B3",
+                      },
+                    },
+                    "& .MuiInputLabel-root": {
+                      "&.Mui-focused": {
+                        color: "#2CC0B3",
+                      },
+                    },
+                  }}
+                />
+                <Button
+                  type="submit"
+                  variant="contained"
+                  sx={{ background: "#2CC0B3" }}
+                  onClick={handleRegister}
+                >
+                  Зарегистрироваться
+                </Button>
+              </form>
             </Box>
             <Box
               sx={{
