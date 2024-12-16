@@ -13,3 +13,12 @@ type Product struct {
 	Name        string `json:"name" validate:"required"`
 	Description string `json:"description" validate:"required"`
 }
+
+type ProductSearchCriteria struct {
+	ID         string `query:"id" gorm:"id"`
+	Article    string `query:"article" gorm:"article"`
+	Name       string `query:"name" gorm:"name"`
+	CategoryID int    `query:"category_id" gorm:"category_id"`
+	Offset     int    `query:"offset" gorm:"offset"`
+	Limit      int    `query:"limit" gorm:"limit"`
+}
