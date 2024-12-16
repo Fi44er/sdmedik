@@ -6,6 +6,7 @@ import {
   FormControlLabel,
   Button,
   Container,
+  Paper,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import useCategoryStore from "../../../store/categoryStore";
@@ -95,102 +96,122 @@ export default function CreateProduct() {
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit}>
+    <Box sx={{ mt: 5, mb: 5 }}>
       <Container>
-        <Typography variant="h4">Создать продукт</Typography>
-        <TextField
-          label="Название"
-          value={product.name}
-          onChange={(e) => setProduct({ ...product, name: e.target.value })}
-          fullWidth
-          margin="normal"
-        />
-        <TextField
-          label="Артикул"
-          value={product.article}
-          onChange={(e) => setProduct({ ...product, article: e.target.value })}
-          fullWidth
-          margin="normal"
-        />
-        <TextField
-          label="Описание"
-          value={product.description}
-          onChange={(e) =>
-            setProduct({ ...product, description: e.target.value })
-          }
-          fullWidth
-          margin="normal"
-          multiline
-          rows={4}
-        />
-        <Box sx={{ display: "flex" }}>
-          {Array.isArray(category.data) && category.data.length > 0 ? (
-            category.data.map((item) => (
-              <FormControlLabel
-                key={item.id}
-                control={
-                  <Checkbox
-                    checked={selectedCategories.includes(item.id)} // Проверяем, выбран ли ID
-                    onChange={() => handleCheckboxChange(item.id)}
-                  />
+        <Paper>
+          <Container sx={{ p: 2 }}>
+            <Typography
+              variant="h4"
+              sx={{ display: "flex", justifyContent: "center" }}
+            >
+              Создать продукт
+            </Typography>
+            <Box component="form" onSubmit={handleSubmit}>
+              <TextField
+                label="Название"
+                value={product.name}
+                onChange={(e) =>
+                  setProduct({ ...product, name: e.target.value })
                 }
-                label={item.name}
+                fullWidth
+                margin="normal"
               />
-            ))
-          ) : (
-            <p>Данных нет</p>
-          )}
-        </Box>
-        <Typography variant="h6">Характеристики</Typography>
-        {Array.isArray(characteristics) &&
-          characteristics.map((char) => {
-            if (char.data_type === "bool") {
-              return (
-                <Box key={char.id}>
-                  <FormControlLabel
-                    control={<Typography>{char.name}</Typography>}
-                  />
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={characteristicValues[char.id] === true}
-                        onChange={() => handleValueChange(char.id, true)}
-                      />
-                    }
-                    label="Да"
-                  />
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={characteristicValues[char.id] === false}
-                        onChange={() => handleValueChange(char.id, false)}
-                      />
-                    }
-                    label="Нет"
-                  />
-                </Box>
-              );
-            } else {
-              return (
+              <TextField
+                label="Артикул"
+                value={product.article}
+                onChange={(e) =>
+                  setProduct({ ...product, article: e.target.value })
+                }
+                fullWidth
+                margin="normal"
+              />
+              <TextField
+                label="Описание"
+                value={product.description}
+                onChange={(e) =>
+                  setProduct({ ...product, description: e.target.value })
+                }
+                fullWidth
+                margin="normal"
+                multiline
+                rows={4}
+              />
+              <Box>
                 <Box>
-                  <Typography>
-                    {char.name}: {characteristicValues[char.id]}
-                  </Typography>
-                  <TextField
-                    key={char.id}
-                    label={`Значение для ${char.name}`}
-                    value={characteristicValues[char.id] || ""}
-                    onChange={(e) => handleValueChange(char.id, e.target.value)}
-                    fullWidth
-                    margin="normal"
-                  />
+                  <Typography variant="h5">Категории</Typography>
                 </Box>
-              );
-            }
-          })}
-        <Button type="submit" variant="contained" color="primary">
-          Создать продукт
-        </Button>
+                <Box sx={{ display: "flex", flexWrap: "wrap" }}>
+                  {Array.isArray(category.data) && category.data.length > 0 ? (
+                    category.data.map((item) => (
+                      <Box>
+                        <FormControlLabel
+                          key={item.id}
+                          control={
+                            <Checkbox
+                              checked={selectedCategories.includes(item.id)} // Проверяем, выбран ли ID
+                              onChange={() => handleCheckboxChange(item.id)}
+                            />
+                          }
+                          label={item.name}
+                        />
+                      </Box>
+                    ))
+                  ) : (
+                    <p>Данных нет</p>
+                  )}
+                </Box>
+              </Box>
+              <Typography variant="h6">Характеристики</Typography>
+              {Array.isArray(characteristics) &&
+                characteristics.map((char) => {
+                  if (char.data_type === "bool") {
+                    return (
+                      <Box key={char.id}>
+                        <Typography>{char.name}</Typography>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={characteristicValues[char.id] === true}
+                              onChange={() => handleValueChange(char.id, true)}
+                            />
+                          }
+                          label="Да"
+                        />
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={characteristicValues[char.id] === false}
+                              onChange={() => handleValueChange(char.id, false)}
+                            />
+                          }
+                          label="Нет"
+                        />
+                      </Box>
+                    );
+                  } else {
+                    return (
+                      <Box>
+                        <Typography>{char.name}:</Typography>
+                        <TextField
+                          key={char.id}
+                          label={`Значение для ${char.name}`}
+                          value={characteristicValues[char.id] || ""}
+                          onChange={(e) =>
+                            handleValueChange(char.id, e.target.value)
+                          }
+                          fullWidth
+                          margin="normal"
+                        />
+                      </Box>
+                    );
+                  }
+                })}
+              <Button type="submit" variant="contained" color="primary">
+                Создать продукт
+              </Button>
+            </Box>
+          </Container>
+        </Paper>
       </Container>
     </Box>
   );

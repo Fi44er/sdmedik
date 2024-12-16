@@ -9,9 +9,11 @@ import {
   FormControl,
   InputLabel,
   Typography,
+  Container,
 } from "@mui/material";
 import { Delete as DeleteIcon } from "@mui/icons-material";
 import useCategoryStore from "../../store/categoryStore";
+import AdminProductTable from "./components_admin_page/AdminProductTable";
 
 export default function Admin() {
   const [name, setName] = useState("");
@@ -55,80 +57,12 @@ export default function Admin() {
   }, []);
 
   return (
-    <Box
-      component="form"
-      onSubmit={handleSubmit}
-      sx={{ maxWidth: 400, margin: "auto" }}
-    >
-      <TextField
-        label="Название категории"
-        variant="outlined"
-        fullWidth
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        sx={{ mb: 2 }}
-      />
-      <IconButton
-        onClick={() => removeCharacteristic(index)}
-        color="error"
-        sx={{ ml: 1 }}
-      >
-        <DeleteIcon />
-      </IconButton>
-      {characteristics.map((characteristic, index) => (
-        <Box
-          key={index}
-          sx={{ display: "flex", flexDirection: "column-reverse", mb: 1 }}
-        >
-          <FormControl fullWidth sx={{ mr: 1 }}>
-            <label sx={{}}>Тип данных</label>
-            <Select
-              value={characteristic.data_type}
-              onChange={(e) =>
-                handleCharacteristicChange(index, e.target.value, "data_type")
-              }
-              required
-            >
-              <MenuItem value="string">Строковое значение</MenuItem>
-              <MenuItem value="int">Целочисленое значние</MenuItem>
-              <MenuItem value="float">Дробное значение</MenuItem>
-              <MenuItem value="bool">Есть\нету</MenuItem>
-            </Select>
-          </FormControl>
-          <TextField
-            label={`Характеристика ${index + 1}`}
-            variant="outlined"
-            fullWidth
-            value={characteristic.name}
-            onChange={(e) =>
-              handleCharacteristicChange(index, e.target.value, "name")
-            }
-          />
+    <Box sx={{ mt: 5, mb: 5 }}>
+      <Container>
+        <Box>
+          <AdminProductTable />
         </Box>
-      ))}
-      <Button variant="outlined" onClick={addCharacteristic} sx={{ mb: 2 }}>
-        Добавить характеристику
-      </Button>
-      <Button type="submit" variant="contained">
-        Сохранить категорию
-      </Button>
-      <Box>
-        {Array.isArray(category.data) && category.data.length > 0 ? (
-          category.data.map((item, index) => (
-            <div key={index}>
-              <h2>{item.name}</h2>
-              <p>{item.description}</p>
-
-            </div>
-          ))
-        ) : (
-          <p>Данных нет</p>
-        )}
-      </Box>
-
-      <Box>
-        
-      </Box>
+      </Container>
     </Box>
   );
 }
