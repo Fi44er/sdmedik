@@ -28,10 +28,9 @@ type IAuthService interface {
 
 type IProductService interface {
 	Create(ctx context.Context, product *dto.CreateProduct) error
-	GetAll(ctx context.Context, offset int, limit int) ([]model.Product, error)
-	GetByID(ctx context.Context, id string) (model.Product, error)
 	Update(ctx context.Context, product *model.Product) error
 	Delete(ctx context.Context, id string) error
+	Get(ctx context.Context, criteria dto.ProductSearchCriteria) ([]model.Product, error)
 }
 
 type ICategoryService interface {

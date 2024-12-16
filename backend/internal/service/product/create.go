@@ -15,12 +15,12 @@ func (s *service) Create(ctx context.Context, product *dto.CreateProduct) error 
 		return errors.New(400, err.Error())
 	}
 
-	existArticle, err := s.repo.GetByArticle(ctx, product.Article)
+	existArticle, err := s.repo.Get(ctx, dto.ProductSearchCriteria{Article: product.Article})
 	if err != nil {
 		return err
 	}
 
-	if existArticle.ID != "" {
+	if existArticle[0].ID != "" {
 		return errors.New(400, "Product with this article already exists")
 	}
 
@@ -74,9 +74,11 @@ func (s *service) Create(ctx context.Context, product *dto.CreateProduct) error 
 		})
 	}
 
-	if err := s.characteristicValueService.CreateMany(ctx, &characteristicsValue, tx); err != nil {
-		s.transactionManagerRepo.Rollback(tx)
-		return err
+	if len(characteristicsValue) != 0 {
+		if err := s.characteristicValueService.CreateMany(ctx, &characteristicsValue, tx); err != nil {
+			s.transactionManagerRepo.Rollback(tx)
+			return err
+		}
 	}
 
 	if err := s.transactionManagerRepo.Commit(tx); err != nil {

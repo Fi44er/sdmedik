@@ -3,7 +3,9 @@ package product
 import (
 	"context"
 	"fmt"
+	"reflect"
 
+	"github.com/Fi44er/sdmedik/backend/internal/dto"
 	"github.com/Fi44er/sdmedik/backend/internal/model"
 	def "github.com/Fi44er/sdmedik/backend/internal/repository"
 	"github.com/Fi44er/sdmedik/backend/pkg/logger"
@@ -44,55 +46,6 @@ func (r *repository) Create(ctx context.Context, data *model.Product, tx *gorm.D
 	return nil
 }
 
-func (r *repository) GetByID(ctx context.Context, id string) (model.Product, error) {
-	r.logger.Infof("Fetching product with ID: %s...", id)
-	var product model.Product
-	if err := r.db.WithContext(ctx).Preload("Categories").Where("id = ?", id).First(&product).Error; err != nil {
-		if err == gorm.ErrRecordNotFound {
-			r.logger.Warnf("Product with ID %s not found", id)
-			return product, nil
-		}
-		r.logger.Errorf("Failed to fetch product with ID %s: %v", id, err)
-		return model.Product{}, err
-	}
-	r.logger.Info("Product fetched successfully")
-	return product, nil
-}
-
-func (r *repository) GetByArticle(ctx context.Context, article string) (model.Product, error) {
-	r.logger.Infof("Fetching product with article: %s...", article)
-	var product model.Product
-	if err := r.db.WithContext(ctx).Preload("Categories").Where("article = ?", article).First(&product).Error; err != nil {
-		if err == gorm.ErrRecordNotFound {
-			r.logger.Warnf("Product with article %s not found", article)
-			return product, nil
-		}
-		r.logger.Errorf("Failed to fetch product with article %s: %v", article, err)
-		return model.Product{}, err
-	}
-	r.logger.Info("Product fetched successfully")
-	return product, nil
-}
-
-func (r *repository) GetAll(ctx context.Context, offset int, limit int) ([]model.Product, error) {
-	r.logger.Info("Fetching productr...")
-	var products []model.Product
-	if offset == 0 {
-		offset = -1
-	}
-
-	if limit == 0 {
-		limit = -1
-	}
-
-	if err := r.db.WithContext(ctx).Preload("Categories").Offset(offset).Limit(limit).Find(&products).Error; err != nil {
-		r.logger.Errorf("Failed to fetch products: %v", err)
-		return nil, err
-	}
-	r.logger.Info("Products fetched successfully")
-	return products, nil
-}
-
 func (r *repository) Update(ctx context.Context, data *model.Product) error {
 	r.logger.Info("Updating product...")
 
@@ -126,4 +79,54 @@ func (r *repository) Delete(ctx context.Context, id string) error {
 
 	r.logger.Infof("Product deleted by ID: %v successfully", id)
 	return nil
+}
+
+func (r *repository) Get(ctx context.Context, criteria dto.ProductSearchCriteria) ([]model.Product, error) {
+	var product []model.Product
+
+	// Динамическое построение условий через рефлексию
+	conditions := make(map[string]interface{})
+	val := reflect.ValueOf(criteria)
+	typ := reflect.TypeOf(criteria)
+
+	for i := 0; i < val.NumField(); i++ {
+		field := typ.Field(i)
+		value := val.Field(i)
+
+		if !value.IsZero() { // Проверяем, заполнено ли поле
+			conditions[field.Tag.Get("gorm")] = value.Interface()
+		}
+	}
+
+	request := r.db.WithContext(ctx).Preload("Categories")
+
+	if criteria.CategoryID != 0 {
+		request = request.Joins("JOIN product_categories ON product_categories.product_id = products.id").
+			Where("product_categories.category_id = ?", criteria.CategoryID)
+	}
+
+	if criteria.Offset != 0 {
+		request = request.Offset(criteria.Offset)
+		delete(conditions, "offset")
+	}
+
+	if criteria.Limit != 0 {
+		request = request.Limit(criteria.Limit)
+		delete(conditions, "limit")
+	}
+
+	// Выполняем запрос с условиями
+	r.logger.Infof("%v", conditions)
+	err := request.Where(conditions).Find(&product).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			r.logger.Warnf("Product not found with provided criteria")
+			return product, nil
+		}
+		r.logger.Errorf("Failed to fetch product: %v", err)
+		return nil, err
+	}
+
+	r.logger.Info("Product fetched successfully")
+	return product, nil
 }
