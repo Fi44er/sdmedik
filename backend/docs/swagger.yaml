@@ -46,8 +46,6 @@ definitions:
         type: string
     required:
     - article
-    - category_ids
-    - characteristic_values
     - description
     - name
     type: object
@@ -430,8 +428,24 @@ paths:
     get:
       consumes:
       - application/json
-      description: Gets all products
+      description: Gets a product
       parameters:
+      - description: Product ID
+        in: query
+        name: id
+        type: string
+      - description: Product article
+        in: query
+        name: article
+        type: string
+      - description: Product name
+        in: query
+        name: name
+        type: string
+      - description: Category ID
+        in: query
+        name: category_id
+        type: integer
       - description: Offset
         in: query
         name: offset
@@ -446,8 +460,8 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ResponseListData'
-      summary: Get all products
+            $ref: '#/definitions/response.ResponseData'
+      summary: Get a product
       tags:
       - product
     post:
@@ -490,26 +504,6 @@ paths:
           schema:
             $ref: '#/definitions/response.ResponseData'
       summary: Delete a product
-      tags:
-      - product
-    get:
-      consumes:
-      - application/json
-      description: Gets a product by ID
-      parameters:
-      - description: Product ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseData'
-      summary: Get a product by ID
       tags:
       - product
     put:

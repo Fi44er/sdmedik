@@ -7,6 +7,20 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+// Get godoc
+// @Summary Get a product
+// @Description Gets a product
+// @Tags product
+// @Accept json
+// @Produce json
+// @Param id query string false "Product ID"
+// @Param article query string false "Product article"
+// @Param name query string false "Product name"
+// @Param category_id query integer false "Category ID"
+// @Param offset query integer false "Offset"
+// @Param limit query integer false "Limit"
+// @Success 200 {object} response.ResponseData "OK"
+// @Router /product [get]
 func (i *Implementation) Get(ctx *fiber.Ctx) error {
 	params := ctx.Queries()
 	var criteria dto.ProductSearchCriteria

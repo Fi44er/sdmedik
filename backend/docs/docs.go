@@ -316,7 +316,7 @@ const docTemplate = `{
         },
         "/product": {
             "get": {
-                "description": "Gets all products",
+                "description": "Gets a product",
                 "consumes": [
                     "application/json"
                 ],
@@ -326,8 +326,32 @@ const docTemplate = `{
                 "tags": [
                     "product"
                 ],
-                "summary": "Get all products",
+                "summary": "Get a product",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Product ID",
+                        "name": "id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Product article",
+                        "name": "article",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Product name",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Category ID",
+                        "name": "category_id",
+                        "in": "query"
+                    },
                     {
                         "type": "integer",
                         "description": "Offset",
@@ -345,7 +369,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseListData"
+                            "$ref": "#/definitions/response.ResponseData"
                         }
                     }
                 }
@@ -384,36 +408,6 @@ const docTemplate = `{
             }
         },
         "/product/{id}": {
-            "get": {
-                "description": "Gets a product by ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "product"
-                ],
-                "summary": "Get a product by ID",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Product ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseData"
-                        }
-                    }
-                }
-            },
             "put": {
                 "description": "Updates a product",
                 "consumes": [
@@ -664,8 +658,6 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "article",
-                "category_ids",
-                "characteristic_values",
                 "description",
                 "name"
             ],
