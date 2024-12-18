@@ -9,21 +9,39 @@ import {
   Typography,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { Helmet } from "react-helmet";
 
 import React from "react";
 
 export default function Return_policy() {
   return (
     <Box>
+      <Helmet>
+        <title>Политика возврата - СД-МЕД</title>
+        <meta
+          name="description"
+          content="Узнайте о нашей политике возврата товаров и условиях возврата."
+        />
+        <meta
+          name="keywords"
+          content="возврат, политика возврата, товары, магазин"
+        />
+        <link
+          rel="canonical"
+          href="https://www.yourwebsite.com/return-policy"
+        />
+      </Helmet>
       <Container>
-        <Box sx={{ display: "flex", justifyContent: "center" }}>
-          <Typography component="h1" variant="h2">
-            Политика возврата
-          </Typography>
-        </Box>
-        <Box sx={{ width: "100%" }}>
-          <img style={{ width: "100%" }} src="/Line 1.png" alt="line" />
-        </Box>
+        <header>
+          <Box sx={{ display: "flex", justifyContent: "center" }}>
+            <Typography component="h1" variant="h2">
+              Политика возврата
+            </Typography>
+          </Box>
+          <Box sx={{ width: "100%" }}>
+            <img style={{ width: "100%" }} src="/Line 1.png" alt="line" />
+          </Box>
+        </header>
         <Box>
           <Typography variant="h5">
             Если по каким-либо причинам Вы решили отказаться от приобретенного

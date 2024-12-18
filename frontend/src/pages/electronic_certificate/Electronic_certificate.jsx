@@ -9,22 +9,42 @@ import {
   Typography,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { Helmet } from "react-helmet";
 
 import React from "react";
 
 export default function Electronic_certificate() {
   return (
     <Box sx={{ mb: 5 }}>
+      <Helmet>
+        <title>
+          Электронные сертификаты - Получите государственную поддержку
+        </title>
+        <meta
+          name="description"
+          content="Узнайте о электронных сертификатах для получения государственной поддержки на технические средства реабилитации."
+        />
+        <meta
+          name="keywords"
+          content="электронные сертификаты, государственная поддержка, технические средства реабилитации, инвалидность"
+        />
+        <link
+          rel="canonical"
+          href="https://example.com/electronic-certificate"
+        />
+      </Helmet>
       <Container>
-        <Box sx={{ display: "flex", justifyContent: "center" }}>
-          <Typography component="h1" variant="h2">
-            Электронные сертификаты
-          </Typography>
-        </Box>
-        <Box sx={{ width: "100%" }}>
-          <img style={{ width: "100%" }} src="/Line 1.png" alt="line" />
-        </Box>
-        <Box>
+        <header>
+          <Box sx={{ display: "flex", justifyContent: "center" }}>
+            <Typography component="h1" variant="h2">
+              Электронные сертификаты
+            </Typography>
+          </Box>
+          <Box sx={{ width: "100%" }}>
+            <img style={{ width: "100%" }} src="/Line 1.png" alt="line" />
+          </Box>
+        </header>
+        <Box component="section">
           <Box>
             <Typography variant="h5">
               Электронный сертификат (ЭС) - это новый платёжный инструмент, при

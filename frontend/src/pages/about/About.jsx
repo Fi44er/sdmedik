@@ -7,12 +7,25 @@ import {
   Typography,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-
+import { Helmet } from "react-helmet";
 import React from "react";
 
 export default function About() {
   return (
     <Box>
+      <Helmet>
+        <title>О нас - Средства реабилитации и медицинская техника</title>
+        <meta
+          name="description"
+          content="Мы предлагаем широкий выбор средств реабилитации, медицинских товаров и техники с 2000 года. Консультации и доставка."
+        />
+        <meta
+          name="keywords"
+          content="реабилитация, медицинские товары, медицинская техника, коляски, калоприемники, катетеры"
+        />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://yourwebsite.com/about" />
+      </Helmet>
       <Container>
         <Box sx={{ display: "flex", justifyContent: "center" }}>
           <Typography component="h1" variant="h2">

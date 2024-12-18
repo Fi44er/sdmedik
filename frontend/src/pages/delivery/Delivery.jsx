@@ -1,3 +1,5 @@
+import React from "react";
+import { Helmet } from "react-helmet";
 import {
   Box,
   Container,
@@ -7,11 +9,21 @@ import {
   Paper,
   Typography,
 } from "@mui/material";
-import React from "react";
 
 export default function Delivery() {
   return (
     <Box>
+      <Helmet>
+        <title>Доставка - СД-МЕД</title>
+        <meta
+          name="description"
+          content="Узнайте о доставке по Оренбургу и другим городам России. Бесплатная доставка по Оренбургу и информация о стоимости доставки в другие регионы."
+        />
+        <meta
+          name="keywords"
+          content="доставка, Оренбург, бесплатная доставка, доставка по России, курьерская доставка"
+        />
+      </Helmet>
       <Container>
         <Box sx={{ display: "flex", justifyContent: "center" }}>
           <Typography component="h1" variant="h2">
@@ -66,7 +78,7 @@ export default function Delivery() {
                     Стоимость доставки зависит от региона получателя (при
                     доставке компанией СДЭК на стоимость доставки влияет также
                     общий вес заказа). Стоимость доставки видно на странице
-                    оформления заказа после выбора региона проживания."
+                    оформления заказа после выбора региона проживания.
                   </Typography>
                 </ListItem>
               </List>

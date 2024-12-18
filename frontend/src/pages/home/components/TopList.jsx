@@ -9,8 +9,9 @@ import {
   Typography,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
-import { motion } from "framer-motion"; // Импортируем motion
+import { motion } from "framer-motion";
 import React, { useEffect, useState } from "react";
+import { Helmet } from "react-helmet";
 
 export default function TopList() {
   const [isVisible, setIsVisible] = useState(false);
@@ -23,7 +24,7 @@ export default function TopList() {
 
     if (componentPosition < windowHeight) {
       setIsVisible(true);
-      window.removeEventListener("scroll", handleScroll); // Убираем слушатель после появления
+      window.removeEventListener("scroll", handleScroll);
     }
   };
 
@@ -35,19 +36,33 @@ export default function TopList() {
   }, []);
 
   return (
-    <Box id="top-list">
+    <Box component="article" id="top-list">
+      <Helmet>
+        <title>Лучшие товары - Магазина СД-МЕД</title>
+        <meta
+          name="description"
+          content="Посмотрите лучшие товары нашего магазина."
+        />
+        <meta name="keywords" content="товары, магазин, кресло-коляска" />
+      </Helmet>
       <motion.div
-        initial={{ y: "100%", opacity: 0 }} // Начальное состояние (ниже экрана)
-        animate={{ y: isVisible ? 0 : "100%", opacity: isVisible ? 1 : 0 }} // Анимация при появлении
-        transition={{ duration: 1 }} // Длительность анимации
+        initial={{ y: "100%", opacity: 0 }}
+        animate={{ y: isVisible ? 0 : "100%", opacity: isVisible ? 1 : 0 }}
+        transition={{ duration: 1 }}
       >
-        <img style={{ width: "100%" }} src="/public/Line 1.png" alt="" />
+        <img style={{ width: "100%" }} src="/public/Line 1.png" alt="Линия" />
         <Box sx={{ mt: 3 }}>
-          <Typography variant="h5" color="Black" sx={{
-            mb:4
-          }}>
-            Лучшие товары
-          </Typography>
+          <header>
+            <Typography
+              variant="h5"
+              color="Black"
+              sx={{
+                mb: 4,
+              }}
+            >
+              Лучшие товары
+            </Typography>
+          </header>
           <Grid
             container
             spacing={{ xs: 2, md: 2 }}
@@ -71,7 +86,7 @@ export default function TopList() {
                     <CardMedia
                       component="img"
                       image={"/public/wheelchair.png"}
-                      alt={"wheelchair"}
+                      alt={"Кресло-коляска"}
                       sx={{
                         width: "200px",
                         height: { xs: "200px", sm: "200px", md: "200px" },
@@ -83,7 +98,7 @@ export default function TopList() {
                   <CardContent>
                     <CardHeader
                       title={
-                        "Кресло-коляска облегчённая механическая MEYRA Eurochair 2.750 "
+                        "Кресло-коляска облегчённая механическая MEYRA Eurochair 2.750"
                       }
                     />
                     <Box
@@ -94,7 +109,7 @@ export default function TopList() {
                       }}
                     >
                       <Typography variant="h6" sx={{ color: "#39C8B8" }}>
-                        124456 руб. 
+                        124456 руб.
                       </Typography>
                       <Typography
                         variant="body2"
@@ -103,7 +118,7 @@ export default function TopList() {
                           textDecoration: "line-through",
                         }}
                       >
-                        124456 руб. 
+                        124456 руб.
                       </Typography>
                     </Box>
 
@@ -121,8 +136,9 @@ export default function TopList() {
                           height: "50px",
                           background: `linear-gradient(95.61deg, #A5DED1 4.71%, #00B3A4 97.25%)`,
                           borderRadius: "10px",
+                          color: "#fff",
                         }}
-                        variant="contained"
+                        variant=" contained"
                       >
                         Подробнее
                       </Button>
@@ -130,7 +146,7 @@ export default function TopList() {
                         <img
                           style={{ width: "50px", height: "50px" }}
                           src="/public/basket_cards.png"
-                          alt=""
+                          alt="Корзина"
                         />
                       </IconButton>
                     </Box>

@@ -1,5 +1,6 @@
 import { Box, Button, CardMedia, Typography } from "@mui/material";
 import { motion } from "framer-motion";
+import { Helmet } from "react-helmet";
 import React from "react";
 
 export default function PaymantsInfo() {
@@ -9,7 +10,20 @@ export default function PaymantsInfo() {
       animate={{ y: 0 }} // Конечная позиция (по центру)
       transition={{ duration: 1.2 }} // Длительность анимации
     >
+      <Helmet>
+        <title>Оплата электронным сертификатом</title>
+        <meta
+          name="description"
+          content="Теперь оплачивать покупки на нашем сайте вы можете и электронным сертификатом."
+        />
+        <meta
+          name="keywords"
+          content="оплата, электронный сертификат, покупки"
+        />
+        <meta name="robots" content="index, follow" />
+      </Helmet>
       <Box
+        component="section"
         sx={{
           display: "flex",
           justifyContent: "space-between",
@@ -66,7 +80,7 @@ export default function PaymantsInfo() {
             <CardMedia
               component="img"
               image="/public/Group 31.png"
-              alt="title"
+              alt="Изображение, иллюстрирующее оплату электронным сертификатом"
               sx={{
                 width: "100%",
                 height: { xs: "300px", sm: "300px", md: "400px" },

@@ -8,6 +8,7 @@ import {
 } from "@mui/material";
 import { YMaps, Map, Placemark } from "react-yandex-maps";
 import React from "react";
+import { Helmet } from "react-helmet";
 
 export default function Contacts() {
   const addresses = [
@@ -40,6 +41,14 @@ export default function Contacts() {
 
   return (
     <Box sx={{ mb: 5 }}>
+      <Helmet>
+        <title>Контакты - Компании СД-МЕД</title>
+        <meta
+          name="description"
+          content="Контактная информация нашей компании"
+        />
+        <meta name="keywords" content="контакты, адрес, телефон" />
+      </Helmet>
       <Container>
         <Box sx={{ display: "flex", justifyContent: "center" }}>
           <Typography component="h1" variant="h2">
@@ -47,7 +56,11 @@ export default function Contacts() {
           </Typography>
         </Box>
         <Box sx={{ width: "100%" }}>
-          <img style={{ width: "100%" }} src="/Line 1.png" alt="line" />
+          <img
+            style={{ width: "100%" }}
+            src="/Line 1.png"
+            alt="Линия разделения"
+          />
         </Box>
         <Box
           sx={{
@@ -55,7 +68,7 @@ export default function Contacts() {
             justifyContent: "space-between",
             flexDirection: { xs: "column", md: "unset" },
             gridGap: 20,
-            mt:2
+            mt: 2,
           }}
         >
           <Box sx={{ width: { xs: "100%", md: "60%" } }}>
@@ -86,7 +99,7 @@ export default function Contacts() {
           >
             <Box sx={{ display: "flex", gridGap: 20 }}>
               <Box>
-                <img src="/Phone.png" alt="" />
+                <img src="/Phone.png" alt="Телефон" />
               </Box>
               <Box>
                 <Typography>+7 (903) 086 3091</Typography>
@@ -96,7 +109,7 @@ export default function Contacts() {
             </Box>
             <Box sx={{ display: "flex", gridGap: 20, alignItems: "center" }}>
               <Box>
-                <img src="/mail.png" alt="" />
+                <img src="/mail.png" alt="Почта" />
               </Box>
               <Box>
                 <Link>olimp1-info@yandex.ru</Link>
@@ -104,7 +117,7 @@ export default function Contacts() {
             </Box>
             <Box sx={{ display: "flex", gridGap: 20 }}>
               <Box>
-                <img src="/mark.png" alt="" />
+                <img src="/mark.png" alt="Адрес" />
               </Box>
               <Box>
                 <List>
