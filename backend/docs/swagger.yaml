@@ -1,12 +1,5 @@
 basePath: /api/v1/
 definitions:
-  dto.CharacteristicValue:
-    properties:
-      characteristic_id:
-        type: integer
-      value:
-        type: string
-    type: object
   dto.CharacteristicWithoutCategoryID:
     properties:
       data_type:
@@ -26,27 +19,6 @@ definitions:
         type: string
     required:
     - characteristics
-    - name
-    type: object
-  dto.CreateProduct:
-    properties:
-      article:
-        type: string
-      category_ids:
-        items:
-          type: integer
-        type: array
-      characteristic_values:
-        items:
-          $ref: '#/definitions/dto.CharacteristicValue'
-        type: array
-      description:
-        type: string
-      name:
-        type: string
-    required:
-    - article
-    - description
     - name
     type: object
   dto.Login:
@@ -466,15 +438,22 @@ paths:
       - product
     post:
       consumes:
-      - application/json
-      description: Creates a new product
+      - multipart/form-data
+      description: Creates a new product with metadata (JSON) and multiple files
       parameters:
-      - description: Product details
-        in: body
-        name: product
+      - description: Product metadata as JSON
+        in: formData
+        name: json
         required: true
-        schema:
-          $ref: '#/definitions/dto.CreateProduct'
+        type: string
+      - collectionFormat: csv
+        description: Product images (multiple files)
+        in: formData
+        items:
+          type: file
+        name: files
+        required: true
+        type: array
       produces:
       - application/json
       responses:

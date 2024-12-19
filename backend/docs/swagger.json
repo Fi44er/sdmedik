@@ -369,9 +369,9 @@
                 }
             },
             "post": {
-                "description": "Creates a new product",
+                "description": "Creates a new product with metadata (JSON) and multiple files",
                 "consumes": [
-                    "application/json"
+                    "multipart/form-data"
                 ],
                 "produces": [
                     "application/json"
@@ -382,13 +382,22 @@
                 "summary": "Create a new product",
                 "parameters": [
                     {
-                        "description": "Product details",
-                        "name": "product",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.CreateProduct"
-                        }
+                        "type": "string",
+                        "description": "Product metadata as JSON",
+                        "name": "json",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "file"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "Product images (multiple files)",
+                        "name": "files",
+                        "in": "formData",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -605,17 +614,6 @@
         }
     },
     "definitions": {
-        "dto.CharacteristicValue": {
-            "type": "object",
-            "properties": {
-                "characteristic_id": {
-                    "type": "integer"
-                },
-                "value": {
-                    "type": "string"
-                }
-            }
-        },
         "dto.CharacteristicWithoutCategoryID": {
             "type": "object",
             "required": [
@@ -642,37 +640,6 @@
                     "items": {
                         "$ref": "#/definitions/dto.CharacteristicWithoutCategoryID"
                     }
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "dto.CreateProduct": {
-            "type": "object",
-            "required": [
-                "article",
-                "description",
-                "name"
-            ],
-            "properties": {
-                "article": {
-                    "type": "string"
-                },
-                "category_ids": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
-                },
-                "characteristic_values": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/dto.CharacteristicValue"
-                    }
-                },
-                "description": {
-                    "type": "string"
                 },
                 "name": {
                     "type": "string"

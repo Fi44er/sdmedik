@@ -88,6 +88,8 @@ func (a *App) initServiceProvider() error {
 }
 
 func (a *App) initRouter() error {
+	a.app.Static("/api/v1/image", "./image")
+
 	a.app.Get("/swagger/*", swagger.HandlerDefault)
 
 	v1 := a.app.Group("/api/v1")

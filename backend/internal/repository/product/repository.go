@@ -98,7 +98,7 @@ func (r *repository) Get(ctx context.Context, criteria dto.ProductSearchCriteria
 		}
 	}
 
-	request := r.db.WithContext(ctx).Preload("Categories")
+	request := r.db.WithContext(ctx).Preload("Categories").Preload("Images")
 
 	if criteria.CategoryID != 0 {
 		request = request.Joins("JOIN product_categories ON product_categories.product_id = products.id").

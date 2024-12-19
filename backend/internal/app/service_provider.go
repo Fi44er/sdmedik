@@ -1,8 +1,6 @@
 package app
 
 import (
-	"log"
-
 	"github.com/Fi44er/sdmedik/backend/internal/app/provider"
 	"github.com/Fi44er/sdmedik/backend/internal/config"
 	"github.com/Fi44er/sdmedik/backend/pkg/logger"
@@ -21,6 +19,7 @@ type serviceProvider struct {
 	characteristicProvider      provider.CharacteristicProvider
 	transactionManagerProvider  provider.TransactionManagerProvider
 	characteristicValueProvider provider.CharacteristicValueProvider
+	imageProvider               provider.ImageProvider
 
 	logger    *logger.Logger
 	db        *gorm.DB
@@ -52,6 +51,7 @@ func (s *serviceProvider) initDeps() error {
 		s.initCharacteristicValueProvider,
 		s.initCharacteristicProvider,
 		s.initCategoryProvider,
+		s.initImageProvider,
 		s.initProductProvider,
 		s.initAuthProvider,
 	}
@@ -81,6 +81,11 @@ func (s *serviceProvider) initAuthProvider() error {
 	return nil
 }
 
+func (s *serviceProvider) initImageProvider() error {
+	s.imageProvider = *provider.NewImageProvider(s.logger, s.db, s.validator, s.config)
+	return nil
+}
+
 func (s *serviceProvider) initProductProvider() error {
 	s.productProvider = *provider.NewProductProvider(
 		s.logger,
@@ -89,6 +94,7 @@ func (s *serviceProvider) initProductProvider() error {
 		s.categoryProvider.CategoryService(),
 		s.characteristicValueProvider.CharacteristicValueService(),
 		s.transactionManagerProvider.TransactionManager(),
+		s.imageProvider.ImageService(),
 	)
 	return nil
 }
@@ -104,9 +110,6 @@ func (s *serviceProvider) initCharacteristicValueProvider() error {
 }
 
 func (s *serviceProvider) initCategoryProvider() error {
-	if s.transactionManagerProvider.TransactionManager() == nil {
-		log.Println("оооооо курва")
-	}
 	s.categoryProvider = *provider.NewCategoryProvider(
 		s.logger,
 		s.db, s.validator,
