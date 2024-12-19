@@ -1,6 +1,9 @@
 package product
 
 import (
+	"encoding/json"
+	"log"
+
 	"github.com/Fi44er/sdmedik/backend/internal/dto"
 	_ "github.com/Fi44er/sdmedik/backend/internal/response"
 	"github.com/Fi44er/sdmedik/backend/pkg/errors"
@@ -9,20 +12,40 @@ import (
 
 // Product godoc
 // @Summary Create a new product
-// @Description Creates a new product
+// @Description Creates a new product with metadata (JSON) and multiple files
 // @Tags product
-// @Accept json
+// @Accept multipart/form-data
 // @Produce json
-// @Param product body dto.CreateProduct true "Product details"
+// @Param json formData string true "Product metadata as JSON"
+// @Param files formData []file true "Product images (multiple files)"
 // @Success 200 {object} response.ResponseData "OK"
 // @Router /product [post]
 func (i *Implementation) Create(ctx *fiber.Ctx) error {
 	product := new(dto.CreateProduct)
-	if err := ctx.BodyParser(&product); err != nil {
+
+	jsonData := ctx.FormValue("json")
+	if err := json.Unmarshal([]byte(jsonData), product); err != nil {
 		return ctx.Status(400).JSON("Failed to parse body")
 	}
 
-	if err := i.productService.Create(ctx.Context(), product); err != nil {
+	form, err := ctx.MultipartForm()
+	if err != nil {
+		return ctx.Status(400).JSON(fiber.Map{"status": "error", "message": "Failed to parse multipart form"})
+	}
+
+	// Извлекаем массив файлов из поля "files"
+	files := form.File["files"]
+	if len(files) > 5 {
+		return ctx.Status(400).JSON(fiber.Map{"status": "error", "message": "Too many files"})
+	}
+
+	images := dto.Images{
+		Files: files,
+	}
+
+	log.Println(len(images.Files))
+
+	if err := i.productService.Create(ctx.Context(), product, &images); err != nil {
 		code, msg := errors.GetErroField(err)
 		return ctx.Status(code).JSON(msg)
 	}

@@ -1,0 +1,14 @@
+{
+  "article": "123-123-124",
+  "category_ids": [
+    1
+  ],
+  "characteristic_values": [
+    {
+      "characteristic_id": 1,
+      "value": "string"
+    }
+  ],
+  "description": "string",
+  "name": "string"
+}

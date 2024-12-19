@@ -13,6 +13,7 @@ type Config struct {
 	PostgresUrl         string        `mapstructure:"POSTGRES_URL"`
 	RedisUrl            string        `mapstructure:"REDIS_URL"`
 	VerifyCodeExpiredIn time.Duration `mapstructure:"VERIFY_CODE_EXPIRED_IN"`
+	ImageDir            string        `mapstructure:"IMAGE_DIR"`
 
 	MailHost     string `mapstructure:"MAIL_HOST"`
 	MailUser     string `mapstructure:"MAIL_USER"`

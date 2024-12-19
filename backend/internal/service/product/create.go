@@ -10,7 +10,7 @@ import (
 	"github.com/Fi44er/sdmedik/backend/pkg/utils"
 )
 
-func (s *service) Create(ctx context.Context, product *dto.CreateProduct) error {
+func (s *service) Create(ctx context.Context, product *dto.CreateProduct, images *dto.Images) error {
 	if err := s.validator.Struct(product); err != nil {
 		return errors.New(400, err.Error())
 	}
@@ -20,7 +20,7 @@ func (s *service) Create(ctx context.Context, product *dto.CreateProduct) error 
 		return err
 	}
 
-	if existArticle[0].ID != "" {
+	if len(existArticle) > 0 && existArticle[0].ID != "" {
 		return errors.New(400, "Product with this article already exists")
 	}
 
@@ -79,6 +79,16 @@ func (s *service) Create(ctx context.Context, product *dto.CreateProduct) error 
 			s.transactionManagerRepo.Rollback(tx)
 			return err
 		}
+	}
+
+	imageDto := dto.CreateImages{
+		ProductID: modelProduct.ID,
+		Images:    *images,
+	}
+
+	if err := s.imageService.CreateMany(ctx, &imageDto, tx); err != nil {
+		s.transactionManagerRepo.Rollback(tx)
+		return err
 	}
 
 	if err := s.transactionManagerRepo.Commit(tx); err != nil {
