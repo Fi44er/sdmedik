@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	url := "https://ktsr.sfr.gov.ru/ru-RU/service/compensation/product-header?region=RU-ORE&type=06&code=06-01-01"
+	url := "https://ktsr.sfr.gov.ru/ru-RU/service/compensation/product-header?region=RU-VGG&type=07&code=07-01-01"
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -27,7 +27,6 @@ func main() {
 	// req.Header.Set("X-CSRF-Token", "rubRkPiNqWYbCX6QI0I-rL_-OyhhinBDZR5OZCSEsu3IrYGnoOrfA3NEMeFic23Z_awMfRjIOzYyKX4maMefjA==")
 	req.Header.Set("X-Requested-With", "XMLHttpRequest")
 	req.Header.Set("Connection", "keep-alive")
-	req.Header.Set("Referer", "https://ktsr.sfr.gov.ru/ru-RU/product/view/06.01.01.0002")
 	// req.Header.Set("Cookie", "favorite=2aee8fa1fa5cdcc0cc132cba95f4ac1ec3fc4446c74bfcffe14bbfad7230a48fa%3A2%3A%7Bi%3A0%3Bs%3A8%3A%22favorite%22%3Bi%3A1%3Bs%3A128%3A%22_NCImZPk8xwHtPCeQY8MDN9ZHVulw-4w2pn_bK7vqK3H49mKs6JnGYcKdoqHKtCLTHFTfWRm1aE7sjB46EqtP4lku4BgWSgx-M44O29pS-adGb5EzCjvrzAePCoJmU5u%22%3B%7D; _ym_uid=1733215528322384010; _ym_d=1733215528; KTSRSESSID=WlxnoCMDTVrrwzWsQk-rA17M7jUYXipw5RYPhD-CGdMM%2CiruAoAiapXlBHELI2FdJImr8Hd1eUqYlejSApodJWTkF-kiIkCBTMj9jSNx8%2C2E%2CONAECpm07oLkH6r1N2Q; _csrf=4436a251adf1267fc7b6f44e5537c3b8a37d95e2819428371a311c3d61cacda3a%3A2%3A%7Bi%3A0%3Bs%3A5%3A%22_csrf%22%3Bi%3A1%3Bs%3A32%3A%22fKP7XgvehMOqA1SuBR7UyBKuW70BLC-a%22%3B%7D; _ym_isad=2")
 	req.Header.Set("Sec-Fetch-Dest", "empty")
 	req.Header.Set("Sec-Fetch-Mode", "cors")
