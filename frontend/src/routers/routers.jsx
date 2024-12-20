@@ -18,6 +18,7 @@ import Cookies from "js-cookie";
 import Admin from "../pages/admin/Admin";
 import CreateProduct from "../pages/admin/create_product/CreateProduct";
 import Contacts from "../pages/contacts/Contacts";
+import CreateCategory from "../pages/admin/create_category/CreateCategory";
 
 const UsersRoute = ({ children }) => {
   const isLoggedIn = Cookies.get("logged_in") === "true";
@@ -99,5 +100,9 @@ export const router = createBrowserRouter([
   {
     path: "/create_product",
     element: <CreateProduct />,
+  },
+  {
+    path: "/create_category",
+    element: <CreateCategory />,
   },
 ]);

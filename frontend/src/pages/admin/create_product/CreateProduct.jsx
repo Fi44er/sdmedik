@@ -7,10 +7,10 @@ import {
   Button,
   Container,
   Paper,
+  InputBase,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import useCategoryStore from "../../../store/categoryStore";
-import axios from "axios"; // Не забудьте импортировать axios
 import useProductStore from "../../../store/productStore";
 
 export default function CreateProduct() {
@@ -23,11 +23,12 @@ export default function CreateProduct() {
     characteristic_values: [],
     description: "",
     name: "",
+    images: [], // Добавлено состояние для изображений
   });
 
   const [characteristics, setCharacteristics] = useState([]);
-  const [selectedCategories, setSelectedCategories] = useState([]); // Изменено на массив
-  const [characteristicValues, setCharacteristicValues] = useState({}); // Добавлено состояние для значений характеристик
+  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [characteristicValues, setCharacteristicValues] = useState({});
 
   useEffect(() => {
     fetchCategory();
@@ -38,21 +39,18 @@ export default function CreateProduct() {
     setSelectedCategories((prevSelected) => {
       const isSelected = prevSelected.includes(id);
       const newSelected = isSelected
-        ? prevSelected.filter((categoryId) => categoryId !== id) // Удаляем ID, если он уже выбран
-        : [...prevSelected, id]; // Добавляем ID, если он не выбран
+        ? prevSelected.filter((categoryId) => categoryId !== id)
+        : [...prevSelected, id];
 
-      // Обновляем category_ids в product
       setProduct((prevProduct) => ({
         ...prevProduct,
         category_ids: newSelected,
       }));
 
-      // Обновляем характеристики в зависимости от выбранных категорий
       const selected = category.data.find((item) => item.id === id);
       if (selected) {
         setCharacteristics((prevCharacteristics) => {
           const newCharacteristics = selected.characteristic || [];
-          // Если категория была снята, удаляем характеристики
           if (isSelected) {
             return prevCharacteristics.filter(
               (char) =>
@@ -61,7 +59,7 @@ export default function CreateProduct() {
           } else {
             return [
               ...new Set([...prevCharacteristics, ...newCharacteristics]),
-            ]; // Уникальные характеристики
+            ];
           }
         });
       }
@@ -71,28 +69,46 @@ export default function CreateProduct() {
   };
 
   const handleValueChange = (id, value) => {
-    // Обновляем состояние при изменении значения инпута
     setCharacteristicValues((prevValues) => ({
       ...prevValues,
       [id]: value,
     }));
   };
 
+  const handleFileChange = (e) => {
+    const files = Array.from(e.target.files);
+    setProduct((prevProduct) => ({
+      ...prevProduct,
+      images: files,
+    }));
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Обновляем product с новыми значениями характеристик
-    const productData = {
-      ...product,
-      characteristic_values: Object.entries(characteristicValues).map(
-        ([id, value]) => ({
-          characteristic_id: Number(id), // Преобразуем id в число
+    const formData = new FormData();
+
+    // Добавляем данные продукта в FormData
+    formData.append("name", product.name);
+    formData.append("article", product.article);
+    formData.append("description", product.description);
+    product.category_ids.forEach((id) => formData.append("category_ids[]", id));
+    Object.entries(characteristicValues).forEach(([id, value]) => {
+      formData.append(
+        "characteristic_values[]",
+        JSON.stringify({
+          characteristic_id: Number(id),
           value: String(value),
         })
-      ),
-    };
-    console.log(productData);
-    createProduct(productData);
-    // Здесь можно добавить логику для отправки данных на сервер
+      );
+    });
+
+    // Добавляем изображения в FormData
+    product.images.forEach((file) => {
+      formData.append("images", file);
+    });
+
+    console.log(formData);
+    createProduct(formData);
   };
 
   return (
@@ -136,19 +152,24 @@ export default function CreateProduct() {
                 multiline
                 rows={4}
               />
+              <InputBase
+                type="file"
+                multiple
+                onChange={handleFileChange}
+                accept="image/*"
+              />
               <Box>
                 <Box>
                   <Typography variant="h5">Категории</Typography>
                 </Box>
-                <Box sx={{ display: "flex", flexWrap: "wrap" }}>
+                <Box sx={{ display: "flex", flexWrap: " wrap" }}>
                   {Array.isArray(category.data) && category.data.length > 0 ? (
                     category.data.map((item) => (
-                      <Box>
+                      <Box key={item.id}>
                         <FormControlLabel
-                          key={item.id}
                           control={
                             <Checkbox
-                              checked={selectedCategories.includes(item.id)} // Проверяем, выбран ли ID
+                              checked={selectedCategories.includes(item.id)}
                               onChange={() => handleCheckboxChange(item.id)}
                             />
                           }
@@ -190,10 +211,9 @@ export default function CreateProduct() {
                     );
                   } else {
                     return (
-                      <Box>
+                      <Box key={char.id}>
                         <Typography>{char.name}:</Typography>
                         <TextField
-                          key={char.id}
                           label={`Значение для ${char.name}`}
                           value={characteristicValues[char.id] || ""}
                           onChange={(e) =>
