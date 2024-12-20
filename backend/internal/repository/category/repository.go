@@ -63,7 +63,7 @@ func (r *repository) GetByID(ctx context.Context, id int) (model.Category, error
 func (r *repository) GetByName(ctx context.Context, name string) (model.Category, error) {
 	r.logger.Info("Fetching category by name...")
 	var category model.Category
-	if err := r.db.WithContext(ctx).First(&category, "name = ?", name).Error; err != nil {
+	if err := r.db.WithContext(ctx).Find(&category, "name = ?", name).Error; err != nil {
 		r.logger.Errorf("Failed to fetch category by name: %v", err)
 		return model.Category{}, err
 	}
