@@ -56,5 +56,5 @@ type ICharacteristicValueRepository interface {
 
 type IImageRepository interface {
 	CreateMany(ctx context.Context, data *[]model.Image, tx *gorm.DB) error
-	GetByProductID(ctx context.Context, productID string, tx *gorm.DB) ([]model.Image, error)
+	GetByID(ctx context.Context, productID *string, categoryID *int, tx *gorm.DB) ([]model.Image, error)
 }

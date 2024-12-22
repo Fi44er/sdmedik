@@ -43,7 +43,7 @@ func (r *repository) CreateMany(ctx context.Context, data *[]model.Image, tx *go
 	return nil
 }
 
-func (r *repository) GetByProductID(ctx context.Context, productID string, tx *gorm.DB) ([]model.Image, error) {
+func (r *repository) GetByID(ctx context.Context, productID *string, categoryID *int, tx *gorm.DB) ([]model.Image, error) {
 	r.logger.Info("Getting images...")
 	db := tx
 	if db == nil {
@@ -51,7 +51,16 @@ func (r *repository) GetByProductID(ctx context.Context, productID string, tx *g
 		db = r.db
 	}
 	var images []model.Image
-	if err := db.WithContext(ctx).Where("product_id = ?", productID).Find(&images).Error; err != nil {
+	request := db.WithContext(ctx)
+
+	// Проверяем, какой идентификатор передан
+	if productID != nil {
+		request = request.Where("product_id = ?", productID)
+	} else if categoryID != nil {
+		request = request.Where("category_id = ?", categoryID)
+	}
+
+	if err := request.Find(&images).Error; err != nil {
 		r.logger.Errorf("Failed to get images: %v", err)
 		return nil, err
 	}

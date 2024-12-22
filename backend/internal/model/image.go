@@ -6,9 +6,10 @@ import (
 )
 
 type Image struct {
-	ID        string `gorm:"primaryKey;type:string;" json:"id"`
-	ProductID string `gorm:"type:uuid;not null" json:"product_id"`
-	Name      string `gorm:"type:varchar(255);not null" json:"name"`
+	ID         string `gorm:"primaryKey;type:string;" json:"id"`
+	ProductID  string `gorm:"type:uuid;" json:"product_id"`
+	CategoryID int    `gorm:"type:uuid;" json:"category_id"`
+	Name       string `gorm:"type:varchar(255);not null" json:"name"`
 }
 
 func (i *Image) BeforeCreate(tx *gorm.DB) error {

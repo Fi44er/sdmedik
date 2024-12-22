@@ -7,6 +7,7 @@ type Images struct {
 }
 
 type CreateImages struct {
-	ProductID string `json:"product_id"`
-	Images    Images `json:"images"`
+	ProductID  string `json:"product_id"`
+	CategoryID int    `json:"category_id"`
+	Images     Images `json:"images"`
 }
