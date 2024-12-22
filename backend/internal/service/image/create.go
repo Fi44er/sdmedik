@@ -18,8 +18,9 @@ func (s *service) CreateMany(ctx context.Context, dto *dto.CreateImages, tx *gor
 	var limit int
 	var existImages []model.Image
 	var err error
+	var uploadedFiles []string
+	var images []model.Image
 
-	// Проверяем, передан ли ProductID или CategoryID
 	if dto.ProductID != "" {
 		existImages, err = s.repo.GetByID(ctx, &dto.ProductID, nil, tx)
 		limit = 5
@@ -34,23 +35,25 @@ func (s *service) CreateMany(ctx context.Context, dto *dto.CreateImages, tx *gor
 		return err
 	}
 
-	// Проверяем, не превышает ли количество изображений 5
 	if len(existImages)+len(dto.Images.Files) > limit {
 		errMsg := fmt.Sprintf("Limit of %d images exceeded", limit)
 		return errors.New(400, errMsg)
 	}
 
-	path := s.config.ImageDir
-	var images []model.Image
 	for _, image := range dto.Images.Files {
 		lastDot := strings.LastIndex(image.Filename, ".")
 		name := uuid.New().String() + image.Filename[lastDot:]
-		if err := utils.CompressImageFromMultipart(image, path+name, 40); err != nil {
+		fullPath := s.config.ImageDir + name
+		if err := utils.CompressImageFromMultipart(image, fullPath, 40); err != nil {
+			if err := utils.DeleteManyFiles(uploadedFiles); err != nil {
+				s.logger.Errorf("Failed to remove file %s: %v", uploadedFiles, err)
+			}
 			s.logger.Errorf("%v", err)
 			return err
 		}
 
-		// Создаем изображение с соответствующим идентификатором
+		uploadedFiles = append(uploadedFiles, fullPath)
+
 		newImage := model.Image{
 			Name: name,
 		}
@@ -63,6 +66,9 @@ func (s *service) CreateMany(ctx context.Context, dto *dto.CreateImages, tx *gor
 	}
 
 	if err := s.repo.CreateMany(ctx, &images, tx); err != nil {
+		if err := utils.DeleteManyFiles(uploadedFiles); err != nil {
+			s.logger.Errorf("Failed to remove file %s: %v", uploadedFiles, err)
+		}
 		return err
 	}
 

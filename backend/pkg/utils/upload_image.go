@@ -58,3 +58,11 @@ func CompressImageFromMultipart(fileHeader *multipart.FileHeader, outputPath str
 
 	return nil
 }
+func DeleteManyFiles(uploadedFiles []string) error {
+	for _, uploadedFile := range uploadedFiles {
+		if removeErr := os.Remove(uploadedFile); removeErr != nil {
+			return removeErr
+		}
+	}
+	return nil
+}
