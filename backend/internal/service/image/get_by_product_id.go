@@ -8,7 +8,7 @@ import (
 )
 
 func (s *service) GetByProductID(ctx context.Context, productID string, tx *gorm.DB) ([]model.Image, error) {
-	images, err := s.repo.GetByProductID(ctx, productID, tx)
+	images, err := s.repo.GetByID(ctx, &productID, nil, tx)
 	if err != nil {
 		return nil, err
 	}
