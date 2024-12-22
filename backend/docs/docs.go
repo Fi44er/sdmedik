@@ -220,9 +220,9 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "description": "Creates a new category",
+                "description": "Creates a new category with metadata (JSON) and a file (image)",
                 "consumes": [
-                    "application/json"
+                    "multipart/form-data"
                 ],
                 "produces": [
                     "application/json"
@@ -233,13 +233,18 @@ const docTemplate = `{
                 "summary": "Create a new category",
                 "parameters": [
                     {
-                        "description": "Category data",
-                        "name": "category",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.CreateCategory"
-                        }
+                        "type": "string",
+                        "description": "Category metadata as JSON",
+                        "name": "json",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "Category image file",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -620,38 +625,6 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "dto.CharacteristicWithoutCategoryID": {
-            "type": "object",
-            "required": [
-                "name"
-            ],
-            "properties": {
-                "data_type": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "dto.CreateCategory": {
-            "type": "object",
-            "required": [
-                "characteristics",
-                "name"
-            ],
-            "properties": {
-                "characteristics": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/dto.CharacteristicWithoutCategoryID"
-                    }
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
         "dto.Login": {
             "type": "object",
             "required": [
@@ -746,6 +719,12 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
+                "images": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Image"
+                    }
+                },
                 "name": {
                     "type": "string"
                 },
@@ -794,6 +773,9 @@ const docTemplate = `{
         "model.Image": {
             "type": "object",
             "properties": {
+                "category_id": {
+                    "type": "integer"
+                },
                 "id": {
                     "type": "string"
                 },

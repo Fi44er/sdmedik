@@ -50,8 +50,8 @@ func (s *serviceProvider) initDeps() error {
 		s.initUserProvider,
 		s.initCharacteristicValueProvider,
 		s.initCharacteristicProvider,
-		s.initCategoryProvider,
 		s.initImageProvider,
+		s.initCategoryProvider,
 		s.initProductProvider,
 		s.initAuthProvider,
 	}
@@ -115,6 +115,7 @@ func (s *serviceProvider) initCategoryProvider() error {
 		s.db, s.validator,
 		s.characteristicProvider.CharacteristicService(),
 		s.transactionManagerProvider.TransactionManager(),
+		s.imageProvider.ImageService(),
 	)
 	return nil
 }

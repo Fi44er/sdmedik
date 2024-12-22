@@ -1,8 +1,6 @@
 package provider
 
 import (
-	"log"
-
 	"github.com/Fi44er/sdmedik/backend/internal/api/category"
 	"github.com/Fi44er/sdmedik/backend/internal/repository"
 	categoryRepository "github.com/Fi44er/sdmedik/backend/internal/repository/category"
@@ -24,6 +22,7 @@ type CategoryProvider struct {
 
 	characteristicService  service.ICharacteristicService
 	transactionManagerRepo repository.ITransactionManager
+	imageService           service.IImageService
 }
 
 func NewCategoryProvider(
@@ -32,6 +31,7 @@ func NewCategoryProvider(
 	validator *validator.Validate,
 	characteristicService service.ICharacteristicService,
 	transactionManagerRepo repository.ITransactionManager,
+	imageService service.IImageService,
 ) *CategoryProvider {
 	return &CategoryProvider{
 		logger:                 logger,
@@ -39,6 +39,7 @@ func NewCategoryProvider(
 		validator:              validator,
 		characteristicService:  characteristicService,
 		transactionManagerRepo: transactionManagerRepo,
+		imageService:           imageService,
 	}
 }
 
@@ -50,11 +51,15 @@ func (p *CategoryProvider) CategoryRepository() repository.ICategoryRepository {
 }
 
 func (p *CategoryProvider) CategoryService() service.ICategoryService {
-	if p.transactionManagerRepo == nil {
-		log.Println("БЛЯЯЯЯЯЯЯЯЯЯЯЯЯЯЯТь")
-	}
 	if p.categoryService == nil {
-		p.categoryService = categoryService.NewService(p.CategoryRepository(), p.logger, p.validator, p.characteristicService, p.transactionManagerRepo)
+		p.categoryService = categoryService.NewService(
+			p.CategoryRepository(),
+			p.logger,
+			p.validator,
+			p.characteristicService,
+			p.transactionManagerRepo,
+			p.imageService,
+		)
 	}
 
 	return p.categoryService

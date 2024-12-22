@@ -58,9 +58,9 @@ func (s *service) CreateMany(ctx context.Context, dto *dto.CreateImages, tx *gor
 			Name: name,
 		}
 		if dto.ProductID != "" {
-			newImage.ProductID = dto.ProductID
+			newImage.ProductID = &dto.ProductID
 		} else if dto.CategoryID != 0 {
-			newImage.CategoryID = dto.CategoryID
+			newImage.CategoryID = &dto.CategoryID
 		}
 		images = append(images, newImage)
 	}

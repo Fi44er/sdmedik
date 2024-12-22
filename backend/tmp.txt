@@ -1,3 +1,5 @@
+=== create product json ===
+
 {
   "article": "123-123-124",
   "category_ids": [
@@ -10,5 +12,19 @@
     }
   ],
   "description": "string",
+  "name": "string"
+}
+
+
+
+=== create category json ===
+
+{
+  "characteristics": [
+    {
+      "data_type": "string",
+      "name": "string"
+    }
+  ],
   "name": "string"
 }

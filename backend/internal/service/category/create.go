@@ -9,7 +9,7 @@ import (
 	"github.com/Fi44er/sdmedik/backend/pkg/utils"
 )
 
-func (s *service) Create(ctx context.Context, data *dto.CreateCategory) error {
+func (s *service) Create(ctx context.Context, data *dto.CreateCategory, image *dto.Image) error {
 	if err := s.validator.Struct(data); err != nil {
 		return errors.New(400, err.Error())
 	}
@@ -67,7 +67,18 @@ func (s *service) Create(ctx context.Context, data *dto.CreateCategory) error {
 		}
 	}
 
-	s.logger.Info("Category created in repository...")
+	images := new(dto.Images)
+	images.Files = append(images.Files, image.File)
+	imageDto := dto.CreateImages{
+		CategoryID: modelCategory.ID,
+		Images:     *images,
+	}
+
+	if err := s.imageService.CreateMany(ctx, &imageDto, tx); err != nil {
+		s.transactionManagerRepo.Rollback(tx)
+		return err
+	}
+
 	if err := s.transactionManagerRepo.Commit(tx); err != nil {
 		return err
 	}

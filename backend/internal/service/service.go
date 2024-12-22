@@ -34,7 +34,7 @@ type IProductService interface {
 }
 
 type ICategoryService interface {
-	Create(ctx context.Context, data *dto.CreateCategory) error
+	Create(ctx context.Context, data *dto.CreateCategory, image *dto.Image) error
 	GetAll(ctx context.Context) ([]model.Category, error)
 	GetByID(ctx context.Context, id int) (model.Category, error)
 	Delete(ctx context.Context, id int) error
@@ -56,4 +56,5 @@ type ICharacteristicValueService interface {
 
 type IImageService interface {
 	CreateMany(ctx context.Context, dto *dto.CreateImages, tx *gorm.DB) error
+	DeleteByNames(ctx context.Context, names []string) error
 }
