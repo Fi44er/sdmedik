@@ -41,7 +41,7 @@ func (r *repository) Create(ctx context.Context, data *model.Category, tx *gorm.
 func (r *repository) GetAll(ctx context.Context) ([]model.Category, error) {
 	r.logger.Info("Fetching categories...")
 	var categories []model.Category
-	if err := r.db.WithContext(ctx).Preload("Characteristics").Find(&categories).Error; err != nil {
+	if err := r.db.WithContext(ctx).Preload("Characteristics").Preload("Images").Find(&categories).Error; err != nil {
 		r.logger.Errorf("Failed to fetch categories: %v", err)
 		return nil, err
 	}

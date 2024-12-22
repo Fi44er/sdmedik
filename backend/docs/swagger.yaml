@@ -1,26 +1,5 @@
 basePath: /api/v1/
 definitions:
-  dto.CharacteristicWithoutCategoryID:
-    properties:
-      data_type:
-        type: string
-      name:
-        type: string
-    required:
-    - name
-    type: object
-  dto.CreateCategory:
-    properties:
-      characteristics:
-        items:
-          $ref: '#/definitions/dto.CharacteristicWithoutCategoryID'
-        type: array
-      name:
-        type: string
-    required:
-    - characteristics
-    - name
-    type: object
   dto.Login:
     properties:
       email:
@@ -84,6 +63,10 @@ definitions:
         type: array
       id:
         type: integer
+      images:
+        items:
+          $ref: '#/definitions/model.Image'
+        type: array
       name:
         type: string
       products:
@@ -115,6 +98,8 @@ definitions:
     type: object
   model.Image:
     properties:
+      category_id:
+        type: integer
       id:
         type: string
       name:
@@ -336,15 +321,19 @@ paths:
       - category
     post:
       consumes:
-      - application/json
-      description: Creates a new category
+      - multipart/form-data
+      description: Creates a new category with metadata (JSON) and a file (image)
       parameters:
-      - description: Category data
-        in: body
-        name: category
+      - description: Category metadata as JSON
+        in: formData
+        name: json
         required: true
-        schema:
-          $ref: '#/definitions/dto.CreateCategory'
+        type: string
+      - description: Category image file
+        in: formData
+        name: file
+        required: true
+        type: file
       produces:
       - application/json
       responses:

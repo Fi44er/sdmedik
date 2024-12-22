@@ -2,7 +2,6 @@ package product
 
 import (
 	"encoding/json"
-	"log"
 
 	"github.com/Fi44er/sdmedik/backend/internal/dto"
 	_ "github.com/Fi44er/sdmedik/backend/internal/response"
@@ -42,8 +41,6 @@ func (i *Implementation) Create(ctx *fiber.Ctx) error {
 	images := dto.Images{
 		Files: files,
 	}
-
-	log.Println(len(images.Files))
 
 	if err := i.productService.Create(ctx.Context(), product, &images); err != nil {
 		code, msg := errors.GetErroField(err)

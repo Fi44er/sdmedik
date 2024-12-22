@@ -10,7 +10,6 @@ import (
 	def "github.com/Fi44er/sdmedik/backend/internal/repository"
 	"github.com/Fi44er/sdmedik/backend/pkg/logger"
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 )
 
 var _ def.IProductRepository = (*repository)(nil)
@@ -67,7 +66,7 @@ func (r *repository) Update(ctx context.Context, data *model.Product) error {
 
 func (r *repository) Delete(ctx context.Context, id string) error {
 	r.logger.Infof("Deleting product with ID: %s...", id)
-	result := r.db.WithContext(ctx).Unscoped().Select(clause.Associations).Where("id = ?", id).Delete(&model.Product{})
+	result := r.db.WithContext(ctx).Where("id = ?", id).Delete(&model.Product{})
 	if err := result.Error; err != nil {
 		r.logger.Errorf("Failed to delete product: %v", err)
 		return err
