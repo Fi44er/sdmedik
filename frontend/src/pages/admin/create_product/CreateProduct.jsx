@@ -84,34 +84,40 @@ export default function CreateProduct() {
   };
   const handleSubmit = (e) => {
     e.preventDefault();
-    const formData = new FormData();
 
-    // Добавляем данные продукта в FormData
-    formData.append("name", product.name);
-    formData.append("article", product.article);
-    formData.append("description", product.description);
-    product.category_ids.forEach((id) => formData.append("category_ids", id));
-    Object.entries(characteristicValues).forEach(([id, value]) => {
-      formData.append(
-        "characteristic_values",
-        JSON.stringify({
+    // Создаем объект с данными продукта
+    const productData = {
+      article: product.article,
+      category_ids: product.category_ids,
+      characteristic_values: Object.entries(characteristicValues).map(
+        ([id, value]) => ({
           characteristic_id: Number(id),
           value: String(value),
         })
-      );
-    });
+      ),
+      description: product.description,
+      name: product.name,
+    };
 
-    // Создаем массив для изображений
-    const imagesArray = product.images;
+    // Преобразуем объект в строку JSON
+    const jsonData = JSON.stringify(productData);
+
+    // Создаем FormData
+    const formData = new FormData();
+
+    // Добавляем JSON-строку в FormData
+    formData.append("json", jsonData);
 
     // Добавляем массив изображений в FormData
-    formData.append("files", JSON.stringify(imagesArray));
-
-    console.log(formData);
-    createProduct(formData);
-    formData.forEach((value, key) => {
-      console.log(key, value);
+    product.images.forEach((file) => {
+      formData.append("files", file);
     });
+
+    // Логируем JSON для проверки
+    console.log(jsonData);
+
+    // Отправляем данные
+    createProduct(formData); // Убедитесь, что функция createProduct может обрабатывать FormData
   };
 
   return (
