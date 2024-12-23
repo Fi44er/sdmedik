@@ -9,13 +9,16 @@ const useProductStore = create((set, get) => ({
     description: "",
     name: "",
   },
-  createProduct: async (productData) => {
+  createProduct: async (formData) => {
     try {
       const response = await axios.post(
         "http://localhost:8080/api/v1/product",
-        productData,
+        formData,
         {
           withCredentials: true,
+          headers: {
+            "Content-Type": "multipart/form-data", // Убедитесь, что заголовок установлен правильно
+          },
         }
       );
       // Обработка успешного ответа
@@ -26,7 +29,7 @@ const useProductStore = create((set, get) => ({
       if (error.response.status === 401) {
         // Если статус 401, обновляем токены и повторяем запрос
         await get().refreshToken();
-        await get().createProduct(productData); // Повторяем запрос
+        await get().createProduct(formData); // Повторяем запрос
       } else {
         alert(
           "Ошибка при сохранении продукта: " +

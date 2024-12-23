@@ -23,9 +23,9 @@ export default function CreateCategory() {
   const handleCharacteristicChange = (index, value, type) => {
     const newCharacteristics = [...characteristics];
     if (type === "name") {
-      newCharacteristics[index].name = value; // Изменяем только имя характеристики
+      newCharacteristics[index].name = value;
     } else if (type === "data_type") {
-      newCharacteristics[index].data_type = value; // Изменяем тип данных
+      newCharacteristics[index].data_type = value;
     }
     setCharacteristics(newCharacteristics);
   };
@@ -48,12 +48,25 @@ export default function CreateCategory() {
     createCategory(data);
     console.log("data:", data);
   };
+
   return (
     <Box
       component="form"
       onSubmit={handleSubmit}
-      sx={{ maxWidth: 400, margin: "auto" }}
+      sx={{
+        maxWidth: 400,
+        margin: "auto",
+        padding: 3,
+        borderRadius: 2,
+        boxShadow: 3,
+        backgroundColor: "#f5f5f5",
+        mt: 4,
+        mb: 4,
+      }}
     >
+      <Typography variant="h5" sx={{ mb: 2, textAlign: "center" }}>
+        Создать категорию
+      </Typography>
       <TextField
         label="Название категории"
         variant="outlined"
@@ -62,33 +75,11 @@ export default function CreateCategory() {
         onChange={(e) => setName(e.target.value)}
         sx={{ mb: 2 }}
       />
-      <IconButton
-        onClick={() => removeCharacteristic(index)}
-        color="error"
-        sx={{ ml: 1 }}
-      >
-        <DeleteIcon />
-      </IconButton>
       {characteristics.map((characteristic, index) => (
         <Box
           key={index}
-          sx={{ display: "flex", flexDirection: "column-reverse", mb: 1 }}
+          sx={{ display: "flex", flexDirection: "column", mb: 1 }}
         >
-          <FormControl fullWidth sx={{ mr: 1 }}>
-            <label sx={{}}>Тип данных</label>
-            <Select
-              value={characteristic.data_type}
-              onChange={(e) =>
-                handleCharacteristicChange(index, e.target.value, "data_type")
-              }
-              required
-            >
-              <MenuItem value="string">Строковое значение</MenuItem>
-              <MenuItem value="int">Целочисленое значние</MenuItem>
-              <MenuItem value="float">Дробное значение</MenuItem>
-              <MenuItem value="bool">Есть\нету</MenuItem>
-            </Select>
-          </FormControl>
           <TextField
             label={`Характеристика ${index + 1}`}
             variant="outlined"
@@ -97,25 +88,63 @@ export default function CreateCategory() {
             onChange={(e) =>
               handleCharacteristicChange(index, e.target.value, "name")
             }
+            sx={{ mb: 1 }}
           />
+          <FormControl fullWidth sx={{ mb: 1 }}>
+            <InputLabel>Тип данных</InputLabel>
+            <Select
+              value={characteristic.data_type}
+              onChange={(e) =>
+                handleCharacteristicChange(index, e.target.value, "data_type")
+              }
+              required
+            >
+              <MenuItem value="string">Строковое значение</MenuItem>
+              <MenuItem value="int">Целочисленое значение</MenuItem>
+              <MenuItem value="float">Дробное значение</MenuItem>
+              <MenuItem value="bool">Есть/нету</MenuItem>
+            </Select>
+          </FormControl>
+
+          <IconButton
+            onClick={() => removeCharacteristic(index)}
+            color="error"
+            sx={{ alignSelf: "flex-end" }}
+          >
+            <DeleteIcon />
+          </IconButton>
         </Box>
       ))}
       <Button variant="outlined" onClick={addCharacteristic} sx={{ mb: 2 }}>
         Добавить характеристику
       </Button>
-      <Button type="submit" variant="contained">
+      <Button
+        type="submit"
+        variant="contained"
+        sx={{ backgroundColor: "#3f51b5", color: "#fff" }}
+      >
         Сохранить категорию
       </Button>
-      <Box>
+      <Box sx={{ mt: 3 }}>
         {Array.isArray(category.data) && category.data.length > 0 ? (
           category.data.map((item, index) => (
-            <div key={index}>
-              <h2>{item.name}</h2>
-              <p>{item.description}</p>
-            </div>
+            <Box
+              key={index}
+              sx={{
+                border: "1px solid #ccc",
+                borderRadius: 1,
+                padding: 2,
+                mb: 2,
+              }}
+            >
+              <Typography variant="h6">{item.name}</Typography>
+              <Typography variant="body2">{item.description}</Typography>
+            </Box>
           ))
         ) : (
-          <p>Данных нет</p>
+          <Typography variant="body2" sx={{ textAlign: "center" }}>
+            Данных нет
+          </Typography>
         )}
       </Box>
     </Box>

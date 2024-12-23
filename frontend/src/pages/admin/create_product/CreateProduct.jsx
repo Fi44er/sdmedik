@@ -82,7 +82,6 @@ export default function CreateProduct() {
       images: files,
     }));
   };
-
   const handleSubmit = (e) => {
     e.preventDefault();
     const formData = new FormData();
@@ -91,10 +90,10 @@ export default function CreateProduct() {
     formData.append("name", product.name);
     formData.append("article", product.article);
     formData.append("description", product.description);
-    product.category_ids.forEach((id) => formData.append("category_ids[]", id));
+    product.category_ids.forEach((id) => formData.append("category_ids", id));
     Object.entries(characteristicValues).forEach(([id, value]) => {
       formData.append(
-        "characteristic_values[]",
+        "characteristic_values",
         JSON.stringify({
           characteristic_id: Number(id),
           value: String(value),
@@ -102,13 +101,17 @@ export default function CreateProduct() {
       );
     });
 
-    // Добавляем изображения в FormData
-    product.images.forEach((file) => {
-      formData.append("images", file);
-    });
+    // Создаем массив для изображений
+    const imagesArray = product.images;
+
+    // Добавляем массив изображений в FormData
+    formData.append("files", JSON.stringify(imagesArray));
 
     console.log(formData);
     createProduct(formData);
+    formData.forEach((value, key) => {
+      console.log(key, value);
+    });
   };
 
   return (
@@ -152,12 +155,22 @@ export default function CreateProduct() {
                 multiline
                 rows={4}
               />
-              <InputBase
+              <input
                 type="file"
                 multiple
                 onChange={handleFileChange}
                 accept="image/*"
               />
+              <Box>
+                {product.images.map((file, index) => (
+                  <img
+                    key={index}
+                    src={URL.createObjectURL(file)}
+                    alt="preview"
+                    width="100"
+                  />
+                ))}
+              </Box>
               <Box>
                 <Box>
                   <Typography variant="h5">Категории</Typography>
