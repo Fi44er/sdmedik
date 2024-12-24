@@ -21,7 +21,7 @@ func (s *service) Create(ctx context.Context, product *dto.CreateProduct, images
 	}
 
 	if len(existArticle) > 0 && existArticle[0].ID != "" {
-		return errors.New(400, "Product with this article already exists")
+		return errors.New(409, "Product with this article already exists")
 	}
 
 	categories, err := s.categoryService.GetByIDs(ctx, product.CategoryIDs)
@@ -47,14 +47,14 @@ func (s *service) Create(ctx context.Context, product *dto.CreateProduct, images
 		}
 	}()
 
-	productWithputCharacteristic := dto.Product{
+	productWithoutCharacteristic := dto.Product{
 		Article:     product.Article,
 		Name:        product.Name,
 		Description: product.Description,
 	}
 
 	var modelProduct model.Product
-	if err := utils.DtoToModel(&productWithputCharacteristic, &modelProduct); err != nil {
+	if err := utils.DtoToModel(&productWithoutCharacteristic, &modelProduct); err != nil {
 		return err
 	}
 

@@ -66,3 +66,20 @@ func (r *repository) GetByID(ctx context.Context, productID *string, categoryID 
 	}
 	return images, nil
 }
+
+func (r *repository) DeleteByIDs(ctx context.Context, id []string, tx *gorm.DB) error {
+	r.logger.Info("Deleting image...")
+	db := tx
+	if db == nil {
+		r.logger.Error("Transaction is nil")
+		db = r.db
+	}
+
+	if err := db.WithContext(ctx).Where("id IN (?)", id).Delete(&model.Image{}).Error; err != nil {
+		r.logger.Errorf("Failed to delete image: %v", err)
+		return err
+	}
+
+	r.logger.Infof("Image deleted successfully")
+	return nil
+}

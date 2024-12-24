@@ -423,9 +423,9 @@ const docTemplate = `{
         },
         "/product/{id}": {
             "put": {
-                "description": "Updates a product",
+                "description": "Updates a product with metadata (JSON) and multiple files",
                 "consumes": [
-                    "application/json"
+                    "multipart/form-data"
                 ],
                 "produces": [
                     "application/json"
@@ -443,13 +443,21 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "Product details",
-                        "name": "product",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.Product"
-                        }
+                        "type": "string",
+                        "description": "Product metadata as JSON",
+                        "name": "json",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "file"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "Product images (multiple files)",
+                        "name": "files",
+                        "in": "formData"
                     }
                 ],
                 "responses": {
@@ -706,160 +714,6 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
-        },
-        "model.Category": {
-            "type": "object",
-            "properties": {
-                "characteristic": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.Characteristic"
-                    }
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "images": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.Image"
-                    }
-                },
-                "name": {
-                    "type": "string"
-                },
-                "products": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.Product"
-                    }
-                }
-            }
-        },
-        "model.Characteristic": {
-            "type": "object",
-            "properties": {
-                "category_id": {
-                    "type": "integer"
-                },
-                "data_type": {
-                    "$ref": "#/definitions/model.Type"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.CharacteristicValue": {
-            "type": "object",
-            "properties": {
-                "characteristic_id": {
-                    "type": "integer"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "product_id": {
-                    "type": "string"
-                },
-                "value": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.Image": {
-            "type": "object",
-            "properties": {
-                "category_id": {
-                    "type": "integer"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "product_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.Price": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "string"
-                },
-                "price": {
-                    "type": "number"
-                },
-                "product_id": {
-                    "type": "string"
-                },
-                "region_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.Product": {
-            "type": "object",
-            "properties": {
-                "article": {
-                    "type": "string"
-                },
-                "categories": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.Category"
-                    }
-                },
-                "characteristic_values": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.CharacteristicValue"
-                    }
-                },
-                "description": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "images": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.Image"
-                    }
-                },
-                "name": {
-                    "type": "string"
-                },
-                "prices": {
-                    "description": "Связь с ценами",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.Price"
-                    }
-                }
-            }
-        },
-        "model.Type": {
-            "type": "string",
-            "enum": [
-                "string",
-                "int",
-                "float",
-                "bool"
-            ],
-            "x-enum-varnames": [
-                "TypeString",
-                "TypeInt",
-                "TypeFloat",
-                "TypeBool"
-            ]
         },
         "response.Response": {
             "type": "object",

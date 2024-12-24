@@ -16,6 +16,28 @@
 }
 
 
+=== update product json ===
+
+{
+  "name": "test update",
+  "description": "test update",
+  "category_ids": [
+    1
+  ],
+  "characteristic_values": [
+    {
+      "characteristic_id": 1,
+      "value": "string"
+    }
+  ],
+  "del_images": [
+    {
+      "id": "423ced76-1604-4a13-abb8-c68d82148bed",
+      "name": "9c386f70-8829-4742-8734-f6a774885e9f.png"
+    }
+  ]
+}
+
 
 === create category json ===
 

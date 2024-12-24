@@ -52,3 +52,20 @@ func (r *repository) CreateMany(ctx context.Context, data *[]model.Characteristi
 	r.logger.Infof("Characteristic values created successfully")
 	return nil
 }
+
+func (r *repository) DeleteByProductID(ctx context.Context, productID string, tx *gorm.DB) error {
+	r.logger.Info("Deleting characteristic values...")
+	db := tx
+	if db == nil {
+		r.logger.Error("Transaction is nil")
+		db = r.db
+	}
+
+	if err := db.WithContext(ctx).Where("product_id = ?", productID).Delete(&model.CharacteristicValue{}).Error; err != nil {
+		r.logger.Errorf("Failed to delete characteristic values: %v", err)
+		return err
+	}
+
+	r.logger.Infof("Characteristic values deleted successfully")
+	return nil
+}

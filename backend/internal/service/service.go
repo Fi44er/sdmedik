@@ -28,7 +28,7 @@ type IAuthService interface {
 
 type IProductService interface {
 	Create(ctx context.Context, product *dto.CreateProduct, images *dto.Images) error
-	Update(ctx context.Context, product *model.Product) error
+	Update(ctx context.Context, product *dto.UpdateProduct, images *dto.Images, id string) error
 	Delete(ctx context.Context, id string) error
 	Get(ctx context.Context, criteria dto.ProductSearchCriteria) ([]model.Product, error)
 }
@@ -52,9 +52,11 @@ type ICharacteristicService interface {
 type ICharacteristicValueService interface {
 	Create(ctx context.Context, characteristicValue *dto.CharacteristicValue) error
 	CreateMany(ctx context.Context, characteristicValues *[]model.CharacteristicValue, tx *gorm.DB) error
+	DeleteByProductID(ctx context.Context, productID string, tx *gorm.DB) error
 }
 
 type IImageService interface {
 	CreateMany(ctx context.Context, dto *dto.CreateImages, tx *gorm.DB) error
 	DeleteByNames(ctx context.Context, names []string) error
+	DeleteByIDs(ctx context.Context, ids []string, names []string, tx *gorm.DB) error
 }
