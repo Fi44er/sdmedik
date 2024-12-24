@@ -55,109 +55,6 @@ definitions:
     - code
     - email
     type: object
-  model.Category:
-    properties:
-      characteristic:
-        items:
-          $ref: '#/definitions/model.Characteristic'
-        type: array
-      id:
-        type: integer
-      images:
-        items:
-          $ref: '#/definitions/model.Image'
-        type: array
-      name:
-        type: string
-      products:
-        items:
-          $ref: '#/definitions/model.Product'
-        type: array
-    type: object
-  model.Characteristic:
-    properties:
-      category_id:
-        type: integer
-      data_type:
-        $ref: '#/definitions/model.Type'
-      id:
-        type: integer
-      name:
-        type: string
-    type: object
-  model.CharacteristicValue:
-    properties:
-      characteristic_id:
-        type: integer
-      id:
-        type: integer
-      product_id:
-        type: string
-      value:
-        type: string
-    type: object
-  model.Image:
-    properties:
-      category_id:
-        type: integer
-      id:
-        type: string
-      name:
-        type: string
-      product_id:
-        type: string
-    type: object
-  model.Price:
-    properties:
-      id:
-        type: string
-      price:
-        type: number
-      product_id:
-        type: string
-      region_id:
-        type: string
-    type: object
-  model.Product:
-    properties:
-      article:
-        type: string
-      categories:
-        items:
-          $ref: '#/definitions/model.Category'
-        type: array
-      characteristic_values:
-        items:
-          $ref: '#/definitions/model.CharacteristicValue'
-        type: array
-      description:
-        type: string
-      id:
-        type: string
-      images:
-        items:
-          $ref: '#/definitions/model.Image'
-        type: array
-      name:
-        type: string
-      prices:
-        description: Связь с ценами
-        items:
-          $ref: '#/definitions/model.Price'
-        type: array
-    type: object
-  model.Type:
-    enum:
-    - string
-    - int
-    - float
-    - bool
-    type: string
-    x-enum-varnames:
-    - TypeString
-    - TypeInt
-    - TypeFloat
-    - TypeBool
   response.Response:
     properties:
       message:
@@ -476,20 +373,26 @@ paths:
       - product
     put:
       consumes:
-      - application/json
-      description: Updates a product
+      - multipart/form-data
+      description: Updates a product with metadata (JSON) and multiple files
       parameters:
       - description: Product ID
         in: path
         name: id
         required: true
         type: string
-      - description: Product details
-        in: body
-        name: product
+      - description: Product metadata as JSON
+        in: formData
+        name: json
         required: true
-        schema:
-          $ref: '#/definitions/model.Product'
+        type: string
+      - collectionFormat: csv
+        description: Product images (multiple files)
+        in: formData
+        items:
+          type: file
+        name: files
+        type: array
       produces:
       - application/json
       responses:

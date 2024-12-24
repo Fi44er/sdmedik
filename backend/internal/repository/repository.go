@@ -26,7 +26,7 @@ type ICategoryRepository interface {
 
 type IProductRepository interface {
 	Create(ctx context.Context, data *model.Product, tx *gorm.DB) error
-	Delete(ctx context.Context, id string) error
+	Delete(ctx context.Context, id string, tx *gorm.DB) error
 	Update(ctx context.Context, data *model.Product) error
 
 	Get(ctx context.Context, criteria dto.ProductSearchCriteria) ([]model.Product, error)
@@ -52,9 +52,11 @@ type ICharacteristicRepository interface {
 type ICharacteristicValueRepository interface {
 	Create(ctx context.Context, data *model.CharacteristicValue) error
 	CreateMany(ctx context.Context, data *[]model.CharacteristicValue, tx *gorm.DB) error
+	DeleteByProductID(ctx context.Context, productID string, tx *gorm.DB) error
 }
 
 type IImageRepository interface {
 	CreateMany(ctx context.Context, data *[]model.Image, tx *gorm.DB) error
 	GetByID(ctx context.Context, productID *string, categoryID *int, tx *gorm.DB) ([]model.Image, error)
+	DeleteByIDs(ctx context.Context, id []string, tx *gorm.DB) error
 }

@@ -64,9 +64,14 @@ func (r *repository) Update(ctx context.Context, data *model.Product) error {
 	return nil
 }
 
-func (r *repository) Delete(ctx context.Context, id string) error {
+func (r *repository) Delete(ctx context.Context, id string, tx *gorm.DB) error {
 	r.logger.Infof("Deleting product with ID: %s...", id)
-	result := r.db.WithContext(ctx).Where("id = ?", id).Delete(&model.Product{})
+	db := tx
+	if db == nil {
+		r.logger.Error("Transaction is nil")
+		db = r.db
+	}
+	result := db.WithContext(ctx).Where("id = ?", id).Delete(&model.Product{})
 	if err := result.Error; err != nil {
 		r.logger.Errorf("Failed to delete product: %v", err)
 		return err
@@ -98,7 +103,7 @@ func (r *repository) Get(ctx context.Context, criteria dto.ProductSearchCriteria
 		}
 	}
 
-	request := r.db.WithContext(ctx).Preload("Categories").Preload("Images")
+	request := r.db.WithContext(ctx).Preload("Categories").Preload("Images").Preload("CharacteristicValues")
 
 	if criteria.CategoryID != 0 {
 		request = request.Joins("JOIN product_categories ON product_categories.product_id = products.id").

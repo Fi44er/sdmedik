@@ -28,7 +28,7 @@ func (s *service) Delete(ctx context.Context, id string) error {
 		}
 	}()
 
-	if err := s.repo.Delete(ctx, id); err != nil {
+	if err := s.repo.Delete(ctx, id, tx); err != nil {
 		if err.Error() == "Product not found" {
 			s.transactionManagerRepo.Rollback(tx)
 			return errors.New(404, "Product not found")
