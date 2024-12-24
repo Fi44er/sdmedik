@@ -7,12 +7,16 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/Fi44er/sdmedik/backend/pkg/webscraper/utils"
 	"github.com/andybalholm/brotli"
 	"golang.org/x/net/html"
 )
 
 func main() {
-	url := "https://ktsr.sfr.gov.ru/ru-RU/service/compensation/product-header?region=RU-VGG&type=07&code=07-01-01"
+	region := "RU-VGG"
+	article := "07-01-01"
+	articleType := strings.Split(article, "-")[0]
+	url := fmt.Sprintf("https://ktsr.sfr.gov.ru/ru-RU/service/compensation/product-header?region=%v&type=%v&code=%v", region, articleType, article)
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -24,10 +28,8 @@ func main() {
 	req.Header.Set("Accept", "text/html, */*; q=0.01")
 	req.Header.Set("Accept-Language", "ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3")
 	req.Header.Set("Accept-Encoding", "gzip, deflate, br, zstd")
-	// req.Header.Set("X-CSRF-Token", "rubRkPiNqWYbCX6QI0I-rL_-OyhhinBDZR5OZCSEsu3IrYGnoOrfA3NEMeFic23Z_awMfRjIOzYyKX4maMefjA==")
 	req.Header.Set("X-Requested-With", "XMLHttpRequest")
 	req.Header.Set("Connection", "keep-alive")
-	// req.Header.Set("Cookie", "favorite=2aee8fa1fa5cdcc0cc132cba95f4ac1ec3fc4446c74bfcffe14bbfad7230a48fa%3A2%3A%7Bi%3A0%3Bs%3A8%3A%22favorite%22%3Bi%3A1%3Bs%3A128%3A%22_NCImZPk8xwHtPCeQY8MDN9ZHVulw-4w2pn_bK7vqK3H49mKs6JnGYcKdoqHKtCLTHFTfWRm1aE7sjB46EqtP4lku4BgWSgx-M44O29pS-adGb5EzCjvrzAePCoJmU5u%22%3B%7D; _ym_uid=1733215528322384010; _ym_d=1733215528; KTSRSESSID=WlxnoCMDTVrrwzWsQk-rA17M7jUYXipw5RYPhD-CGdMM%2CiruAoAiapXlBHELI2FdJImr8Hd1eUqYlejSApodJWTkF-kiIkCBTMj9jSNx8%2C2E%2CONAECpm07oLkH6r1N2Q; _csrf=4436a251adf1267fc7b6f44e5537c3b8a37d95e2819428371a311c3d61cacda3a%3A2%3A%7Bi%3A0%3Bs%3A5%3A%22_csrf%22%3Bi%3A1%3Bs%3A32%3A%22fKP7XgvehMOqA1SuBR7UyBKuW70BLC-a%22%3B%7D; _ym_isad=2")
 	req.Header.Set("Sec-Fetch-Dest", "empty")
 	req.Header.Set("Sec-Fetch-Mode", "cors")
 	req.Header.Set("Sec-Fetch-Site", "same-origin")
@@ -59,32 +61,10 @@ func main() {
 		return
 	}
 
-	var certificatePrice string
-	var f func(*html.Node)
-	f = func(n *html.Node) {
-		if n.Type == html.ElementNode && n.Data == "div" {
-			for _, attr := range n.Attr {
-				if attr.Key == "class" && attr.Val == "catalog-products__info-price catalog-products__info-price_space" {
-					for c := n.FirstChild; c != nil; c = c.NextSibling {
-						if c.Type == html.ElementNode && c.Data == "span" {
-							for spanChild := c.FirstChild; spanChild != nil; spanChild = spanChild.NextSibling {
-								if spanChild.Type == html.TextNode {
-									certificatePrice += spanChild.Data
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		for c := n.FirstChild; c != nil; c = c.NextSibling {
-			f(c)
-		}
-	}
-	f(doc)
+	certificatePrice := utils.ParcePrice(doc)
 
-	if certificatePrice != "" {
-		fmt.Println("Стоимость сертификата:", strings.TrimSpace(certificatePrice))
+	if certificatePrice != 0 {
+		fmt.Println("Стоимость сертификата:", certificatePrice)
 	} else {
 		fmt.Println("Стоимость сертификата не найдена.")
 	}
