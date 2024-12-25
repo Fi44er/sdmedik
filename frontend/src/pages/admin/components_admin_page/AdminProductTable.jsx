@@ -48,15 +48,20 @@ const AdminProductTable = () => {
 
   const columns = [
     {
-      field: "image",
+      field: "images",
       headerName: "Фото",
-      width: 100,
+      width: 300,
       renderCell: (params) => (
-        <img
-          src={params.value}
-          alt="product"
-          style={{ width: 50, height: 50, borderRadius: "4px" }}
-        />
+        <Box sx={{ display: "flex", gap: 1 }}>
+          {params.value.map((image) => (
+            <img
+              key={image.id}
+              src={`http://127.0.0.1:8080/api/v1/image/${image.name}`} // Укажите правильный путь к изображению
+              alt="product"
+              style={{ width: 50, height: 50, borderRadius: "4px" }}
+            />
+          ))}
+        </Box>
       ),
     },
     { field: "name", headerName: "Название", width: 200 },
@@ -71,9 +76,7 @@ const AdminProductTable = () => {
       headerName: "Категория",
       width: 200,
       renderCell: (params) => (
-        <Box>
-          {params.value.map((category) => category.name).join(", ")}
-        </Box>
+        <Box>{params.value.map((category) => category.name).join(", ")}</Box>
       ),
     },
   ];

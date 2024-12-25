@@ -52,12 +52,24 @@ const useProductStore = create((set, get) => ({
     }
   },
   products: [],
-  fetchProducts: async () => {
+  fetchProducts: async (queryParams) => {
     try {
-      const response = await axios.get(`http://localhost:8080/api/v1/product`);
+      const response = await axios.get(`http://localhost:8080/api/v1/product`, {
+        params: queryParams,
+      });
       set({ products: response.data });
     } catch (error) {
-      console.error("Error fetching category:", error);
+      console.error("Error fetching product:", error);
+    }
+  },
+  fetchProductById: async () => {
+    try {
+      const response = await axios.get(`http://localhost:8080/api/v1/product`, {
+        params: { id: "d846ccf3-f3e1-4e6b-b37d-947b2c743c99" },
+      });
+      set({ products: response.data });
+    } catch (error) {
+      console.error("Error fetching product:", error);
     }
   },
 }));

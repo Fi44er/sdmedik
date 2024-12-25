@@ -12,13 +12,17 @@ import {
   CardMedia,
 } from "@mui/material";
 import { ArrowBack, ArrowForward } from "@mui/icons-material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/swiper-bundle.css"; // Импорт стилей Swiper
+import useProductStore from "../../store/productStore";
+import { useParams } from "react-router-dom";
 
 export default function ProductDetailPage() {
-  const [mainImage, setMainImage] = useState(0);
-  const images = ["/wheelchair.png", "/wheelchair.png", "/slideGalary1.png"];
+  const [mainImageIndex, setMainImageIndex] = useState(0);
+  const [images, setImages] = useState([]);
+  const { fetchProductById, products } = useProductStore();
+  const { name } = useParams();
 
   const productDetails = {
     title: "Инвалидная коляска Trend 40",
@@ -38,12 +42,27 @@ export default function ProductDetailPage() {
     ],
   };
 
-  const handlePrevImage = () => {
-    setMainImage((prev) => (prev === 0 ? images.length - 1 : prev - 1));
-  };
+  useEffect(() => {
+    fetchProductById(name);
+    console.log(products);
+  }, [name]);
+  useEffect(() => {
+    if (products.data && products.data.images) {
+      const fetchedImages = products.data.images.map(
+        (image) => `http://127.0.0.1:8080/api/v1/image/${image.name}`
+      );
+      setImages(fetchedImages); // Сохраните изображения в состоянии
+    }
+  }, [products.data]);
 
   const handleNextImage = () => {
-    setMainImage((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+    setMainImageIndex((prevIndex) => (prevIndex + 1) % images.length);
+  };
+
+  const handlePrevImage = () => {
+    setMainImageIndex(
+      (prevIndex) => (prevIndex - 1 + images.length) % images.length
+    );
   };
 
   return (
@@ -78,8 +97,8 @@ export default function ProductDetailPage() {
                 >
                   <CardMedia
                     component="img"
-                    image={images[mainImage]} // Отображаем основное изображение
-                    alt={`Product Image ${mainImage + 1}`}
+                    image={images[mainImageIndex]} // Отображаем основное изображение
+                    alt={`Product Image ${mainImageIndex + 1}`}
                     style={{
                       width: { xs: 300, sm: 350, md: 400 },
                       height: { xs: 300, sm: 350, md: 400 },
@@ -107,38 +126,49 @@ export default function ProductDetailPage() {
 
           {/* Превью лента изображений */}
           <Box sx={{ display: "flex", justifyContent: "center", marginTop: 2 }}>
-            {images.map((image, index) => (
-              <Button
-                variant="outlined"
-                key={index}
-                onClick={() => setMainImage(index)}
-                sx={{
-                  border: mainImage === index ? "2px solid #00B3A4" : "none",
-                  color: "#00B3A4",
-                  margin: 1,
-                }}
-              >
-                <img
-                  src={image}
-                  alt={`Thumbnail ${index + 1}`}
-                  style={{
-                    width: 100,
-                    height: 100,
-                    objectFit: "cover",
-
-                    borderRadius: "10px",
+            {products.data &&
+              products.data.images &&
+              products.data.images.map((image, index) => (
+                <Button
+                  variant="outlined"
+                  key={index}
+                  onClick={() => setMainImageIndex(index)}
+                  sx={{
+                    border:
+                      mainImageIndex === index ? "2px solid #00B3A4" : "none",
+                    color: "#00B3A4",
+                    margin: 1,
                   }}
-                />
-              </Button>
-            ))}
+                >
+                  <img
+                    src={`http://127.0.0.1:8080/api/v1/image/${image.name}`}
+                    alt={`Thumbnail ${index + 1}`}
+                    style={{
+                      width: 100,
+                      height: 100,
+                      objectFit: "cover",
+                      borderRadius: "10px",
+                    }}
+                  />
+                </Button>
+              ))}
           </Box>
         </Box>
 
         {/* Информация о товаре */}
         <Box sx={{ width: { xs: "100%", sm: "100%", md: "50%" } }}>
-          <Typography variant="h5">{productDetails.title}</Typography>
-          <Typography variant="subtitle1">{productDetails.brand}</Typography>
-          <Typography variant="h5">{productDetails.price}</Typography>
+          {products.data ? (
+            <Box>
+              <Typography variant="h5">{products.data.name}</Typography>
+              <Typography variant="subtitle1">
+                {products.data.article}
+              </Typography>
+              <Typography variant="h5">{productDetails.price}</Typography>
+              {/* Other components */}
+            </Box>
+          ) : (
+            <Typography>Loading...</Typography>
+          )}
           <Box sx={{ marginTop: 2 }}>
             <Button
               sx={{
@@ -174,7 +204,7 @@ export default function ProductDetailPage() {
 
       <Box sx={{ marginTop: 2 }}>
         <Typography variant="h6">Описание:</Typography>
-        <Typography>{productDetails.description}</Typography>
+        <Typography>{products.data?.description}</Typography>
       </Box>
       {/* Отзывы */}
       <Box sx={{ marginTop: 4 }}>

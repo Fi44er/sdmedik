@@ -9,82 +9,22 @@ import {
   Typography,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
-import React from "react";
+import React, { useEffect } from "react";
+import { useParams } from "react-router-dom";
+import useProductStore from "../../../store/productStore";
 
-const Product = [
-  {
-    id: 1,
-    title: `Инвалидная коляскаTrend 40`,
-    country: `Бельгия`,
-    price: `25000,00  ₽ `,
-    image: `/public/wheelchair.png`,
-  },
-  {
-    id: 2,
-    title: `Инвалидная коляскаTrend 40`,
-    country: `Бельгия`,
-    price: `25000,00  ₽ `,
-    image: `/public/wheelchair.png`,
-  },
-  {
-    id: 3,
-    title: `Инвалидная коляскаTrend 40`,
-    country: `Бельгия`,
-    price: `25000,00  ₽ `,
-    image: `/public/wheelchair.png`,
-  },
-  {
-    id: 4,
-    title: `Инвалидная коляскаTrend 40`,
-    country: `Бельгия`,
-    price: `25000,00  ₽ `,
-    image: `/public/wheelchair.png`,
-  },
-  {
-    id: 5,
-    title: `Инвалидная коляскаTrend 40`,
-    country: `Бельгия`,
-    price: `25000,00  ₽ `,
-    image: `/public/wheelchair.png`,
-  },
-  {
-    id: 6,
-    title: `Инвалидная коляскаTrend 40`,
-    country: `Бельгия`,
-    price: `25000,00  ₽ `,
-    image: `/public/wheelchair.png`,
-  },
-  {
-    id: 7,
-    title: `Инвалидная коляскаTrend 40`,
-    country: `Бельгия`,
-    price: `25000,00  ₽ `,
-    image: `/public/wheelchair.png`,
-  },
-  {
-    id: 8,
-    title: `Инвалидная коляскаTrend 40`,
-    country: `Бельгия`,
-    price: `25000,00  ₽ `,
-    image: `/public/wheelchair.png`,
-  },
-  {
-    id: 9,
-    title: `Инвалидная коляскаTrend 40`,
-    country: `Бельгия`,
-    price: `25000,00  ₽ `,
-    image: `/public/wheelchair.png`,
-  },
-  {
-    id: 10,
-    title: `Инвалидная коляскаTrend 40`,
-    country: `Бельгия`,
-    price: `25000,00  ₽ `,
-    image: `/public/wheelchair.png`,
-  },
-];
+
 
 export default function CatalogDynamicPage() {
+  const { category_id } = useParams();
+
+  const { fetchProducts, products } = useProductStore();
+
+  useEffect(() => {
+    fetchProducts(category_id);
+    console.log(products);
+  }, []);
+
   return (
     <Box sx={{ mt: 5, mb: 5 }}>
       <Grid
@@ -92,96 +32,99 @@ export default function CatalogDynamicPage() {
         spacing={{ xs: 2, md: 3 }}
         columns={{ xs: 4, sm: 4, md: 4 }}
       >
-        {Product.map((e) => (
-          <Grid item key={e.id} xs={1} sm={1} md={1}>
-            <Card
-              sx={{
-                width: { xs: "100%", lg: "261px" },
-                background: "#F5FCFF",
-                cursor:"pointer"
-              }}
-              onClick={(e) => {
-                e.preventDefault();
-                window.location.href = `/product/${e.id}`;
-              }}
-            >
-              <Box
+        {Array.isArray(products.data) && products.data.length > 0 ? (
+          products.data.map((e) => (
+            <Grid item key={e.id} xs={1} sm={1} md={1}>
+              <Card
                 sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
+                  width: { xs: "100%", lg: "261px" },
+                  background: "#F5FCFF",
+                  cursor: "pointer",
+                }}
+                onClick={(item) => {
+                  window.location.href = `/product/${e.name}`;
                 }}
               >
-                <CardMedia
-                  component="img"
-                  image={e.image}
-                  alt={"wheelchair"}
-                  sx={{
-                    width: "200px",
-                    height: { xs: "200px", sm: "200px", md: "200px" },
-                    objectFit: "cover",
-                  }}
-                />
-              </Box>
-
-              <CardContent>
-                <CardHeader title={e.title} />
-                <Typography variant="body2" color="text.secondary">
-                  {e.country}
-                </Typography>
                 <Box
                   sx={{
                     display: "flex",
-                    justifyContent: "space-between",
+                    justifyContent: "center",
                     alignItems: "center",
                   }}
                 >
-                  <Typography variant="h6" sx={{ color: "black" }}>
-                    {e.price}
-                  </Typography>
-                  <Typography
-                    variant="body2"
+                  <CardMedia
+                    component="img"
+                    image={`http://127.0.0.1:8080/api/v1/image/${e.images[0].name}`}
+                    alt={"wheelchair"}
                     sx={{
-                      color: "text.secondary",
-                      textDecoration: "line-through",
+                      width: "200px",
+                      height: { xs: "200px", sm: "200px", md: "200px" },
+                      objectFit: "cover",
                     }}
-                  >
-                    {e.price} 
-                  </Typography>
+                  />
                 </Box>
 
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    mt: "20px",
-                  }}
-                >
-                  <Button
+                <CardContent>
+                  <CardHeader title={e.name} />
+                  <Typography variant="body2" color="text.secondary">
+                    {e.article}
+                  </Typography>
+                  <Box
                     sx={{
-                      width: "157px",
-                      height: "50px",
-                      border: `2px solid #00B3A4`,
-                      borderRadius: "20px",
-                      color: "#00B3A4",
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
                     }}
-                    variant="outlined"
                   >
-                    В 1 клик
-                  </Button>
-                  <IconButton>
-                    <img
-                      style={{ width: "50px", height: "50px" }}
-                      src="/public/basket_cards.png"
-                      alt=""
-                    />
-                  </IconButton>
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
+                    <Typography variant="h6" sx={{ color: "black" }}>
+                      {e.price}20000
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: "text.secondary",
+                        textDecoration: "line-through",
+                      }}
+                    >
+                      {e.price} 20000
+                    </Typography>
+                  </Box>
+
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      mt: "20px",
+                    }}
+                  >
+                    <Button
+                      sx={{
+                        width: "157px",
+                        height: "50px",
+                        border: `2px solid #00B3A4`,
+                        borderRadius: "20px",
+                        color: "#00B3A4",
+                      }}
+                      variant="outlined"
+                    >
+                      В 1 клик
+                    </Button>
+                    <IconButton>
+                      <img
+                        style={{ width: "50px", height: "50px" }}
+                        src="/public/basket_cards.png"
+                        alt=""
+                      />
+                    </IconButton>
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))
+        ) : (
+          <Typography variant="h6">Нет данных</Typography>
+        )}
       </Grid>
     </Box>
   );

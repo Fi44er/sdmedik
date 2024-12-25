@@ -13,131 +13,14 @@ import Grid from "@mui/material/Grid2";
 import React, { useEffect } from "react";
 import useCategoryStore from "../../store/categoryStore";
 
-const Catalogs = [
-  {
-    id: 1,
-    name: "Кресла-коляски",
-    image: "/public/wheelchair.png",
-  },
-  {
-    id: 2,
-    name: "Кресло-стулья с санитарным оснащением",
-    image: "/public/wheelchair.png",
-  },
-  {
-    id: 3,
-    name: "Ходунки-опоры",
-    image: "/public/wheelchair.png",
-  },
-  {
-    id: 4,
-    name: `Противопролежневые
-     матрас и подушки`,
-    image: "/public/wheelchair.png",
-  },
-  {
-    id: 5,
-    name: "Средства реабилитации",
-    image: "/public/wheelchair.png",
-  },
-  {
-    id: 6,
-    name: "Подгузники для взрослых",
-    image: "/public/wheelchair.png",
-  },
-  {
-    id: 7,
-    name: "Подгузники для детей",
-    image: "/public/wheelchair.png",
-  },
-  {
-    id: 8,
-    name: "Пеленки",
-    image: "/public/wheelchair.png",
-  },
-  {
-    id: 9,
-    name: "Уходовая косметика и гигиена",
-    image: "/public/wheelchair.png",
-  },
-  {
-    id: 10,
-    name: "Катетеры",
-    image: "/public/wheelchair.png",
-  },
-  {
-    id: 11,
-    name: "Калоприемники",
-    image: "/public/wheelchair.png",
-  },
-  {
-    id: 12,
-    name: "Уроприемники",
-    image: "/public/wheelchair.png",
-  },
-  {
-    id: 13,
-    name: "Нарушение функции выделения",
-    image: "/public/wheelchair.png",
-  },
-  {
-    id: 14,
-    name: "Средства ухода за стомой",
-    image: "/public/wheelchair.png",
-  },
-  {
-    id: 15,
-    name: "Межсуставные жидкости и синовиальные протезы",
-    image: "/public/wheelchair.png",
-  },
-  {
-    id: 16,
-    name: "Специальная одежда",
-    image: "/public/wheelchair.png",
-  },
-  {
-    id: 17,
-    name: "Бандажи",
-    image: "/public/wheelchair.png",
-  },
-  {
-    id: 18,
-    name: "Корсеты",
-    image: "/public/wheelchair.png",
-  },
-  {
-    id: 19,
-    name: "Реклинаторы",
-    image: "/public/wheelchair.png",
-  },
-  {
-    id: 20,
-    name: "Туторы и аппараты",
-    image: "/public/wheelchair.png",
-  },
-  {
-    id: 21,
-    name: "Трости и костыли",
-    image: "/public/wheelchair.png",
-  },
-  {
-    id: 22,
-    name: "Протезы и ортезы",
-    image: "/public/wheelchair.png",
-  },
-  {
-    id: 23,
-    name: "Специальные устройства",
-    image: "/public/wheelchair.png",
-  },
-];
-
 export default function СategoriesPage() {
   const { fetchCategory, category } = useCategoryStore();
+
   useEffect(() => {
     fetchCategory();
     console.log(category.data);
   }, []);
+
   return (
     <Box sx={{ mt: 5, mb: 5 }}>
       <Container>
