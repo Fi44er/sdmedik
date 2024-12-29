@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"regexp"
 	"strconv"
+	"strings"
 
 	"golang.org/x/net/html"
 )
@@ -34,6 +35,7 @@ func ParcePrice(doc *html.Node) float64 {
 	f(doc)
 
 	cleaned := removeUnwantedCharacters(certificatePrice)
+	cleaned = strings.ReplaceAll(cleaned, ",", ".")
 
 	value, err := strconv.ParseFloat(cleaned, 64)
 	if err != nil {
