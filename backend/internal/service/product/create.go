@@ -20,7 +20,7 @@ func (s *service) Create(ctx context.Context, product *dto.CreateProduct, images
 		return err
 	}
 
-	if len(existArticle) > 0 && existArticle[0].ID != "" {
+	if len(*existArticle) > 0 && (*existArticle)[0].ID != "" {
 		return errors.New(409, "Product with this article already exists")
 	}
 
@@ -29,7 +29,7 @@ func (s *service) Create(ctx context.Context, product *dto.CreateProduct, images
 		return err
 	}
 
-	err = utils.ValidateCharacteristicValue(categories, product.CharacteristicValues)
+	err = utils.ValidateCharacteristicValue(*categories, product.CharacteristicValues)
 	if err != nil {
 		return err
 	}
@@ -51,6 +51,7 @@ func (s *service) Create(ctx context.Context, product *dto.CreateProduct, images
 		Article:     product.Article,
 		Name:        product.Name,
 		Description: product.Description,
+		Price:       product.Price,
 	}
 
 	var modelProduct model.Product
@@ -58,7 +59,7 @@ func (s *service) Create(ctx context.Context, product *dto.CreateProduct, images
 		return err
 	}
 
-	modelProduct.Categories = categories
+	modelProduct.Categories = *categories
 
 	if err := s.repo.Create(ctx, &modelProduct, tx); err != nil {
 		s.transactionManagerRepo.Rollback(tx)

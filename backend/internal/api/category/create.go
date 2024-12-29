@@ -11,6 +11,21 @@ import (
 // Create godoc
 // @Summary Create a new category
 // @Description Creates a new category with metadata (JSON) and a file (image)
+// @Description Example JSON:
+// @Description ```
+// @Description {
+// @Description 	"name": "category #1",
+// @Description 	"characteristics": [
+// @Description 		{
+// @Description 			"data_type": "string",
+// @Description 			"name": "characteristic #1"
+// @Description 		},
+// @Description 		{
+// @Description 			"data_type": "int",
+// @Description 			"name": "characteristic #2"
+// @Description 		}
+// @Description 	]
+// @Description }
 // @Tags category
 // @Accept multipart/form-data
 // @Produce json

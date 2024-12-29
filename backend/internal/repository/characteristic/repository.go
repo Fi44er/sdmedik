@@ -2,10 +2,10 @@ package characteristic
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/Fi44er/sdmedik/backend/internal/model"
 	def "github.com/Fi44er/sdmedik/backend/internal/repository"
+	"github.com/Fi44er/sdmedik/backend/pkg/constants"
 	"github.com/Fi44er/sdmedik/backend/pkg/logger"
 	"gorm.io/gorm"
 )
@@ -54,28 +54,28 @@ func (r *repository) CreateMany(ctx context.Context, data *[]model.Characteristi
 	return nil
 }
 
-func (r *repository) GetByID(ctx context.Context, id int) (model.Characteristic, error) {
+func (r *repository) GetByID(ctx context.Context, id int) (*model.Characteristic, error) {
 	r.logger.Infof("Fetching characteristic with ID: %v...", id)
-	var characteristic model.Characteristic
-	if err := r.db.WithContext(ctx).Where("id = ?", id).First(&characteristic).Error; err != nil {
+	characteristic := new(model.Characteristic)
+	if err := r.db.WithContext(ctx).Where("id = ?", id).First(characteristic).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			r.logger.Warnf("Characteristic with ID %v not found", id)
-			return characteristic, nil
+			return nil, nil
 		}
 		r.logger.Errorf("Failed to fetch characteristic with ID %v: %v", id, err)
-		return model.Characteristic{}, err
+		return nil, err
 	}
 	r.logger.Info("Characteristic fetched successfully")
 	return characteristic, nil
 }
 
-func (r *repository) GetByCategoryID(ctx context.Context, categoryID int) ([]model.Characteristic, error) {
+func (r *repository) GetByCategoryID(ctx context.Context, categoryID int) (*[]model.Characteristic, error) {
 	r.logger.Infof("Fetching characteristic with category ID: %v...", categoryID)
-	var characteristics []model.Characteristic
-	if err := r.db.WithContext(ctx).Where("category_id = ?", categoryID).Find(&characteristics).Error; err != nil {
+	characteristics := new([]model.Characteristic)
+	if err := r.db.WithContext(ctx).Where("category_id = ?", categoryID).Find(characteristics).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			r.logger.Warnf("Characteristic with category ID %v not found", categoryID)
-			return characteristics, nil
+			return nil, nil
 		}
 		r.logger.Errorf("Failed to fetch characteristic with category ID %v: %v", categoryID, err)
 		return nil, err
@@ -94,7 +94,7 @@ func (r *repository) Delete(ctx context.Context, id int) error {
 
 	if result.RowsAffected == 0 {
 		r.logger.Warnf("Characteristic with ID %v not found", id)
-		return fmt.Errorf("Characteristic not found")
+		return constants.ErrCharacteristicNotFound
 	}
 
 	r.logger.Infof("Characteristic deleted by ID: %v successfully", id)

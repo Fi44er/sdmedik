@@ -2,10 +2,13 @@ package product
 
 import (
 	"context"
+	"errors"
+	"reflect"
 
 	"github.com/Fi44er/sdmedik/backend/internal/dto"
 	"github.com/Fi44er/sdmedik/backend/internal/model"
-	"github.com/Fi44er/sdmedik/backend/pkg/errors"
+	"github.com/Fi44er/sdmedik/backend/pkg/constants"
+	custom_errors "github.com/Fi44er/sdmedik/backend/pkg/errors"
 	"github.com/Fi44er/sdmedik/backend/pkg/utils"
 )
 
@@ -16,7 +19,7 @@ func (s *service) Update(ctx context.Context, data *dto.UpdateProduct, images *d
 	imagesName := []string{}
 
 	if err := s.validator.Struct(data); err != nil {
-		return errors.New(400, err.Error())
+		return custom_errors.New(400, err.Error())
 	}
 
 	categories, err := s.categoryService.GetByIDs(ctx, data.CategoryIDs)
@@ -24,7 +27,7 @@ func (s *service) Update(ctx context.Context, data *dto.UpdateProduct, images *d
 		return err
 	}
 
-	err = utils.ValidateCharacteristicValue(categories, data.CharacteristicValues)
+	err = utils.ValidateCharacteristicValue(*categories, data.CharacteristicValues)
 	if err != nil {
 		return err
 	}
@@ -44,15 +47,24 @@ func (s *service) Update(ctx context.Context, data *dto.UpdateProduct, images *d
 
 	modelProduct.ID = id
 
-	if data.Name != "" {
-		modelProduct.Name = data.Name
-	}
+	dataValue := reflect.ValueOf(data).Elem()
+	modelValue := reflect.ValueOf(modelProduct).Elem()
 
-	if data.Description != "" {
-		modelProduct.Description = data.Description
+	for i := 0; i < dataValue.NumField(); i++ {
+		field := dataValue.Field(i)
+		if !field.IsZero() { // Проверяем, что поле не пустое
+			modelField := modelValue.FieldByName(dataValue.Type().Field(i).Name)
+			if modelField.IsValid() && modelField.CanSet() {
+				modelField.Set(field)
+			}
+		}
 	}
 
 	if err := s.repo.Update(ctx, modelProduct); err != nil {
+		if errors.Is(err, constants.ErrProductNotFound) {
+			s.transactionManagerRepo.Rollback(tx)
+			return custom_errors.New(404, "Product not found")
+		}
 		return err
 	}
 

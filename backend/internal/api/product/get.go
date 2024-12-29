@@ -33,8 +33,8 @@ func (i *Implementation) Get(ctx *fiber.Ctx) error {
 		return ctx.Status(code).JSON(msg)
 	}
 
-	if len(product) == 1 {
-		return ctx.Status(200).JSON(fiber.Map{"status": "success", "data": product[0]})
+	if len(*product) == 1 {
+		return ctx.Status(200).JSON(fiber.Map{"status": "success", "data": (*product)[0]})
 	}
 	return ctx.Status(200).JSON(fiber.Map{"status": "success", "data": product})
 }

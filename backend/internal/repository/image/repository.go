@@ -43,14 +43,14 @@ func (r *repository) CreateMany(ctx context.Context, data *[]model.Image, tx *go
 	return nil
 }
 
-func (r *repository) GetByID(ctx context.Context, productID *string, categoryID *int, tx *gorm.DB) ([]model.Image, error) {
+func (r *repository) GetByID(ctx context.Context, productID *string, categoryID *int, tx *gorm.DB) (*[]model.Image, error) {
 	r.logger.Info("Getting images...")
 	db := tx
 	if db == nil {
 		r.logger.Error("Transaction is nil")
 		db = r.db
 	}
-	var images []model.Image
+	images := new([]model.Image)
 	request := db.WithContext(ctx)
 
 	// Проверяем, какой идентификатор передан
@@ -60,7 +60,7 @@ func (r *repository) GetByID(ctx context.Context, productID *string, categoryID 
 		request = request.Where("category_id = ?", categoryID)
 	}
 
-	if err := request.Find(&images).Error; err != nil {
+	if err := request.Find(images).Error; err != nil {
 		r.logger.Errorf("Failed to get images: %v", err)
 		return nil, err
 	}

@@ -10,6 +10,8 @@ import (
 	"io"
 	"mime/multipart"
 	"os"
+
+	"github.com/gofiber/fiber/v2/log"
 )
 
 func CompressImageFromMultipart(fileHeader *multipart.FileHeader, outputPath string, quality int) error {
@@ -58,9 +60,15 @@ func CompressImageFromMultipart(fileHeader *multipart.FileHeader, outputPath str
 
 	return nil
 }
+
 func DeleteManyFiles(uploadedFiles []string) error {
 	for _, uploadedFile := range uploadedFiles {
 		if removeErr := os.Remove(uploadedFile); removeErr != nil {
+			if os.IsNotExist(removeErr) {
+				log.Warnf("File not found, skipping: %s", uploadedFile)
+				continue
+			}
+			log.Errorf("Error deleting file: %v", removeErr)
 			return removeErr
 		}
 	}

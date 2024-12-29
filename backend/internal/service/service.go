@@ -10,9 +10,9 @@ import (
 
 type IUserService interface {
 	Create(ctx context.Context, user *model.User) error
-	GetByID(ctx context.Context, id string) (model.User, error)
-	GetByEmail(ctx context.Context, email string) (model.User, error)
-	GetAll(ctx context.Context, offset int, limit int) ([]model.User, error)
+	GetByID(ctx context.Context, id string) (*model.User, error)
+	GetByEmail(ctx context.Context, email string) (*model.User, error)
+	GetAll(ctx context.Context, offset int, limit int) (*[]model.User, error)
 	Update(ctx context.Context, data *dto.UpdateUser, id string) error
 	Delete(ctx context.Context, id string) error
 }
@@ -30,22 +30,22 @@ type IProductService interface {
 	Create(ctx context.Context, product *dto.CreateProduct, images *dto.Images) error
 	Update(ctx context.Context, product *dto.UpdateProduct, images *dto.Images, id string) error
 	Delete(ctx context.Context, id string) error
-	Get(ctx context.Context, criteria dto.ProductSearchCriteria) ([]model.Product, error)
+	Get(ctx context.Context, criteria dto.ProductSearchCriteria) (*[]model.Product, error)
 }
 
 type ICategoryService interface {
 	Create(ctx context.Context, data *dto.CreateCategory, image *dto.Image) error
-	GetAll(ctx context.Context) ([]model.Category, error)
-	GetByID(ctx context.Context, id int) (model.Category, error)
+	GetAll(ctx context.Context) (*[]model.Category, error)
+	GetByID(ctx context.Context, id int) (*model.Category, error)
 	Delete(ctx context.Context, id int) error
-	GetByIDs(ctx context.Context, ids []int) ([]model.Category, error)
+	GetByIDs(ctx context.Context, ids []int) (*[]model.Category, error)
 }
 
 type ICharacteristicService interface {
 	Create(ctx context.Context, characteristic *dto.CreateCharacteristic) error
 	CreateMany(ctx context.Context, characteristics *[]model.Characteristic, tx *gorm.DB) error
-	GetByID(ctx context.Context, id int) (model.Characteristic, error)
-	GetByCategoryID(ctx context.Context, categoryID int) ([]model.Characteristic, error)
+	GetByID(ctx context.Context, id int) (*model.Characteristic, error)
+	GetByCategoryID(ctx context.Context, categoryID int) (*[]model.Characteristic, error)
 	Delete(ctx context.Context, id int) error
 }
 

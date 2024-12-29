@@ -14,12 +14,12 @@ func (s *service) Create(ctx context.Context, data *dto.CreateCharacteristic) er
 		return errors.New(400, err.Error())
 	}
 
-	var modelCharacteristic model.Characteristic
-	if err := utils.DtoToModel(data, &modelCharacteristic); err != nil {
+	modelCharacteristic := new(model.Characteristic)
+	if err := utils.DtoToModel(data, modelCharacteristic); err != nil {
 		return err
 	}
 
-	if err := s.repo.Create(ctx, &modelCharacteristic); err != nil {
+	if err := s.repo.Create(ctx, modelCharacteristic); err != nil {
 		return err
 	}
 

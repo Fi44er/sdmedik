@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func (s *service) GetByProductID(ctx context.Context, productID string, tx *gorm.DB) ([]model.Image, error) {
+func (s *service) GetByProductID(ctx context.Context, productID string, tx *gorm.DB) (*[]model.Image, error) {
 	images, err := s.repo.GetByID(ctx, &productID, nil, tx)
 	if err != nil {
 		return nil, err

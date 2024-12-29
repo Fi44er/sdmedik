@@ -17,11 +17,11 @@ type ITransactionManager interface {
 
 type ICategoryRepository interface {
 	Create(ctx context.Context, data *model.Category, tx *gorm.DB) error
-	GetAll(ctx context.Context) ([]model.Category, error)
-	GetByID(ctx context.Context, id int) (model.Category, error)
-	Delete(ctx context.Context, id int) error
-	GetByIDs(ctx context.Context, ids []int) ([]model.Category, error)
-	GetByName(ctx context.Context, name string) (model.Category, error)
+	GetAll(ctx context.Context) (*[]model.Category, error)
+	GetByID(ctx context.Context, id int) (*model.Category, error)
+	Delete(ctx context.Context, id int, tx *gorm.DB) error
+	GetByIDs(ctx context.Context, ids []int) (*[]model.Category, error)
+	GetByName(ctx context.Context, name string) (*model.Category, error)
 }
 
 type IProductRepository interface {
@@ -29,14 +29,14 @@ type IProductRepository interface {
 	Delete(ctx context.Context, id string, tx *gorm.DB) error
 	Update(ctx context.Context, data *model.Product) error
 
-	Get(ctx context.Context, criteria dto.ProductSearchCriteria) ([]model.Product, error)
+	Get(ctx context.Context, criteria dto.ProductSearchCriteria) (*[]model.Product, error)
 }
 
 type IUserRepository interface {
 	Create(ctx context.Context, data *model.User) error
-	GetAll(ctx context.Context, offset int, limit int) ([]model.User, error)
-	GetByID(ctx context.Context, id string) (model.User, error)
-	GetByEmail(ctx context.Context, email string) (model.User, error)
+	GetAll(ctx context.Context, offset int, limit int) (*[]model.User, error)
+	GetByID(ctx context.Context, id string) (*model.User, error)
+	GetByEmail(ctx context.Context, email string) (*model.User, error)
 	Delete(ctx context.Context, id string) error
 	Update(ctx context.Context, data *model.User) error
 }
@@ -44,8 +44,8 @@ type IUserRepository interface {
 type ICharacteristicRepository interface {
 	Create(ctx context.Context, data *model.Characteristic) error
 	CreateMany(ctx context.Context, data *[]model.Characteristic, tx *gorm.DB) error
-	GetByID(ctx context.Context, id int) (model.Characteristic, error)
-	GetByCategoryID(ctx context.Context, categoryID int) ([]model.Characteristic, error)
+	GetByID(ctx context.Context, id int) (*model.Characteristic, error)
+	GetByCategoryID(ctx context.Context, categoryID int) (*[]model.Characteristic, error)
 	Delete(ctx context.Context, id int) error
 }
 
@@ -57,6 +57,6 @@ type ICharacteristicValueRepository interface {
 
 type IImageRepository interface {
 	CreateMany(ctx context.Context, data *[]model.Image, tx *gorm.DB) error
-	GetByID(ctx context.Context, productID *string, categoryID *int, tx *gorm.DB) ([]model.Image, error)
+	GetByID(ctx context.Context, productID *string, categoryID *int, tx *gorm.DB) (*[]model.Image, error)
 	DeleteByIDs(ctx context.Context, id []string, tx *gorm.DB) error
 }

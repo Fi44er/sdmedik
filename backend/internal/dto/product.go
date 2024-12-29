@@ -4,14 +4,16 @@ type CreateProduct struct {
 	Article              string                `json:"article" validate:"required"`
 	Name                 string                `json:"name" validate:"required"`
 	Description          string                `json:"description" validate:"required"`
+	Price                float64               `json:"price"`
 	CategoryIDs          []int                 `json:"category_ids"`
 	CharacteristicValues []CharacteristicValue `json:"characteristic_values" validate:"dive"`
 }
 
 type Product struct {
-	Article     string `json:"article" validate:"required"`
-	Name        string `json:"name" validate:"required"`
-	Description string `json:"description" validate:"required"`
+	Article     string  `json:"article" validate:"required"`
+	Name        string  `json:"name" validate:"required"`
+	Description string  `json:"description" validate:"required"`
+	Price       float64 `json:"price"`
 }
 
 type ProductSearchCriteria struct {
@@ -26,6 +28,7 @@ type ProductSearchCriteria struct {
 type UpdateProduct struct {
 	Name                 string                `json:"name"`
 	Description          string                `json:"description"`
+	Price                float64               `json:"price"`
 	DelImages            []DelImage            `json:"del_images" validate:"dive"`
 	CategoryIDs          []int                 `json:"category_ids"`
 	CharacteristicValues []CharacteristicValue `json:"characteristic_values" validate:"dive"`
