@@ -189,7 +189,7 @@ export default function Register() {
                 />
                 <TextField
                   variant="outlined"
-                  label="Пороль"
+                  label="Пароль"
                   type="password"
                   {...register("password", {
                     required: "Это поле обязательно для заполнения",

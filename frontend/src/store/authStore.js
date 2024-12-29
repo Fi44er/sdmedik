@@ -52,7 +52,7 @@ const useAuthStore = create((set, get) => ({
       console.error("Error Registrations:", error);
     }
   },
-  loginFunc: async (navigate) => {
+  loginFunc: async (navigate, register) => {
     const { email, password } = useAuthStore.getState();
     try {
       const response = await axios.post(

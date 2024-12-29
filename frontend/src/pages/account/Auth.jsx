@@ -31,7 +31,7 @@ const scaleVariants = {
 
 export default function Auth() {
   const navigate = useNavigate();
-  const { loginFunc } = useAuthStore();
+  const { loginFunc, email, setEmail, password, setPassword } = useAuthStore();
 
   const {
     register,
@@ -85,6 +85,7 @@ export default function Auth() {
                   })}
                   error={!!errors.email}
                   helperText={errors.email ? errors.email.message : ""}
+                  onChange={(e) => setEmail(e.target.value)}
                   sx={{
                     "& .MuiOutlinedInput-root": {
                       "&.Mui-focused fieldset": {
@@ -108,6 +109,7 @@ export default function Auth() {
                   })}
                   error={!!errors.password}
                   helperText={errors.password ? errors.password.message : ""}
+                  onChange={(e) => setPassword(e.target.value)}
                   sx={{
                     "& .MuiOutlinedInput-root": {
                       "&.Mui-focused fieldset": {

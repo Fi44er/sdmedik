@@ -18,7 +18,7 @@ import AdminProductTable from "./components_admin_page/AdminProductTable";
 export default function Admin() {
   const [name, setName] = useState("");
   const [characteristics, setCharacteristics] = useState([
-    { data_type: "string", name: "" },
+    { data_type: "", name: "" },
   ]);
   const { createCategory, fetchCategory, category } = useCategoryStore();
 
