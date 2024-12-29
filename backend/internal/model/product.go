@@ -10,8 +10,9 @@ type Product struct {
 	Article              string                `gorm:"type:varchar(255);not null;unique" json:"article"`
 	Name                 string                `gorm:"type:varchar(255);not null" json:"name"`
 	Description          string                `gorm:"type:text" json:"description"`
+	Price                float64               `json:"price"`
 	Categories           []Category            `gorm:"many2many:product_categories;constraint:OnDelete:CASCADE" json:"categories"`
-	Prices               []Price               `gorm:"foreignKey:ProductID;constraint:OnDelete:CASCADE" json:"prices"` // Связь с ценами
+	Certificates         []Certificate         `gorm:"foreignKey:ProductID;constraint:OnDelete:CASCADE" json:"certificates"`
 	Images               []Image               `gorm:"foreignKey:ProductID;constraint:OnDelete:CASCADE" json:"images"`
 	CharacteristicValues []CharacteristicValue `gorm:"foreignKey:ProductID;constraint:OnDelete:CASCADE" json:"characteristic_values"`
 }

@@ -2,9 +2,11 @@ package product
 
 import (
 	"context"
+	"errors"
 
 	"github.com/Fi44er/sdmedik/backend/internal/dto"
-	"github.com/Fi44er/sdmedik/backend/pkg/errors"
+	"github.com/Fi44er/sdmedik/backend/pkg/constants"
+	custom_errors "github.com/Fi44er/sdmedik/backend/pkg/errors"
 )
 
 func (s *service) Delete(ctx context.Context, id string) error {
@@ -29,15 +31,15 @@ func (s *service) Delete(ctx context.Context, id string) error {
 	}()
 
 	if err := s.repo.Delete(ctx, id, tx); err != nil {
-		if err.Error() == "Product not found" {
+		if errors.Is(err, constants.ErrProductNotFound) {
 			s.transactionManagerRepo.Rollback(tx)
-			return errors.New(404, "Product not found")
+			return custom_errors.New(404, "Product not found")
 		}
 		s.transactionManagerRepo.Rollback(tx)
 		return err
 	}
 
-	for _, image := range product[0].Images {
+	for _, image := range (*product)[0].Images {
 		names = append(names, image.Name)
 	}
 

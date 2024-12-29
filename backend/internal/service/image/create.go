@@ -16,7 +16,7 @@ import (
 
 func (s *service) CreateMany(ctx context.Context, dto *dto.CreateImages, tx *gorm.DB) error {
 	var limit int
-	var existImages []model.Image
+	existImages := new([]model.Image)
 	var err error
 	var uploadedFiles []string
 	var images []model.Image
@@ -35,7 +35,7 @@ func (s *service) CreateMany(ctx context.Context, dto *dto.CreateImages, tx *gor
 		return err
 	}
 
-	if len(existImages)+len(dto.Images.Files) > limit {
+	if len(*existImages)+len(dto.Images.Files) > limit {
 		errMsg := fmt.Sprintf("Limit of %d images exceeded", limit)
 		return errors.New(400, errMsg)
 	}

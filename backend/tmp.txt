@@ -3,16 +3,17 @@
 {
   "article": "123-123-124",
   "category_ids": [
-    3
+    2
   ],
   "characteristic_values": [
     {
       "characteristic_id": 3,
-      "value": "string"
+      "value": "12"
     }
   ],
-  "description": "string",
-  "name": "string"
+  "description": "description #1",
+  "name": "product #1",
+  "price": 123.12
 }
 
 
@@ -22,18 +23,22 @@
   "name": "test update",
   "description": "test update",
   "category_ids": [
-    1
+    2
   ],
   "characteristic_values": [
     {
-      "characteristic_id": 1,
+      "characteristic_id": 2,
       "value": "string"
+    },
+    {
+      "characteristic_id": 3,
+      "value": "12"
     }
   ],
   "del_images": [
     {
-      "id": "423ced76-1604-4a13-abb8-c68d82148bed",
-      "name": "9c386f70-8829-4742-8734-f6a774885e9f.png"
+      "id": "8832ed62-0a19-40e2-81b3-4c971884e962",
+      "name": "cb44cbb3-aaf9-47a4-867c-f81dbc0485ab.jpg"
     }
   ]
 }
@@ -45,8 +50,12 @@
   "characteristics": [
     {
       "data_type": "string",
-      "name": "string"
+      "name": "characteristic #1"
+    },
+    {
+      "data_type": "int",
+      "name": "characteristic #2"
     }
   ],
-  "name": "string"
+  "name": "category #1"
 }

@@ -35,39 +35,39 @@ func (r *repository) Create(ctx context.Context, data *model.User) error {
 	return nil
 }
 
-func (r *repository) GetByID(ctx context.Context, id string) (model.User, error) {
+func (r *repository) GetByID(ctx context.Context, id string) (*model.User, error) {
 	r.logger.Infof("Fetching user with ID: %s...", id)
-	var user model.User
-	if err := r.db.WithContext(ctx).Where("id = ?", id).First(&user).Error; err != nil {
+	user := new(model.User)
+	if err := r.db.WithContext(ctx).Where("id = ?", id).First(user).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			r.logger.Warnf("User with ID %s not found", id)
-			return user, nil
+			return nil, nil
 		}
 		r.logger.Errorf("Failed to fetch user with ID %s: %v", id, err)
-		return model.User{}, err
+		return nil, err
 	}
 	r.logger.Info("User fetched successfully")
 	return user, nil
 }
 
-func (r *repository) GetByEmail(ctx context.Context, email string) (model.User, error) {
+func (r *repository) GetByEmail(ctx context.Context, email string) (*model.User, error) {
 	r.logger.Infof("Fetching user with email: %s...", email)
-	var user model.User
-	if err := r.db.WithContext(ctx).Where("email = ?", email).First(&user).Error; err != nil {
+	user := new(model.User)
+	if err := r.db.WithContext(ctx).Where("email = ?", email).First(user).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			r.logger.Warnf("User with email %s not found", email)
-			return user, nil
+			return nil, nil
 		}
 		r.logger.Errorf("Failed to fetch user with email %s: %v", email, err)
-		return model.User{}, err
+		return nil, err
 	}
 	r.logger.Info("User fetched successfully")
 	return user, nil
 }
 
-func (r *repository) GetAll(ctx context.Context, offset int, limit int) ([]model.User, error) {
+func (r *repository) GetAll(ctx context.Context, offset int, limit int) (*[]model.User, error) {
 	r.logger.Info("Fetching users...")
-	var users []model.User
+	users := new([]model.User)
 	if offset == 0 {
 		offset = -1
 	}
@@ -76,7 +76,7 @@ func (r *repository) GetAll(ctx context.Context, offset int, limit int) ([]model
 		limit = -1
 	}
 
-	if err := r.db.WithContext(ctx).Offset(offset).Limit(limit).Find(&users).Error; err != nil {
+	if err := r.db.WithContext(ctx).Offset(offset).Limit(limit).Find(users).Error; err != nil {
 		r.logger.Errorf("Failed to fetch users: %v", err)
 		return nil, err
 	}

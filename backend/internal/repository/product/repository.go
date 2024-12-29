@@ -2,12 +2,12 @@ package product
 
 import (
 	"context"
-	"fmt"
 	"reflect"
 
 	"github.com/Fi44er/sdmedik/backend/internal/dto"
 	"github.com/Fi44er/sdmedik/backend/internal/model"
 	def "github.com/Fi44er/sdmedik/backend/internal/repository"
+	"github.com/Fi44er/sdmedik/backend/pkg/constants"
 	"github.com/Fi44er/sdmedik/backend/pkg/logger"
 	"gorm.io/gorm"
 )
@@ -57,7 +57,7 @@ func (r *repository) Update(ctx context.Context, data *model.Product) error {
 
 	if result.RowsAffected == 0 {
 		r.logger.Warnf("Product with ID %s not found", data.ID)
-		return fmt.Errorf("Product not found")
+		return constants.ErrProductNotFound
 	}
 
 	r.logger.Info("Product updated successfully")
@@ -79,15 +79,15 @@ func (r *repository) Delete(ctx context.Context, id string, tx *gorm.DB) error {
 
 	if result.RowsAffected == 0 {
 		r.logger.Warnf("Product with ID %s not found", id)
-		return fmt.Errorf("Product not found")
+		return constants.ErrProductNotFound
 	}
 
 	r.logger.Infof("Product deleted by ID: %v successfully", id)
 	return nil
 }
 
-func (r *repository) Get(ctx context.Context, criteria dto.ProductSearchCriteria) ([]model.Product, error) {
-	var product []model.Product
+func (r *repository) Get(ctx context.Context, criteria dto.ProductSearchCriteria) (*[]model.Product, error) {
+	products := new([]model.Product)
 
 	// Динамическое построение условий через рефлексию
 	conditions := make(map[string]interface{})
@@ -122,16 +122,16 @@ func (r *repository) Get(ctx context.Context, criteria dto.ProductSearchCriteria
 
 	// Выполняем запрос с условиями
 	r.logger.Infof("%v", conditions)
-	err := request.Where(conditions).Find(&product).Error
+	err := request.Where(conditions).Find(products).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			r.logger.Warnf("Product not found with provided criteria")
-			return product, nil
+			return products, nil
 		}
 		r.logger.Errorf("Failed to fetch product: %v", err)
 		return nil, err
 	}
 
 	r.logger.Info("Product fetched successfully")
-	return product, nil
+	return products, nil
 }

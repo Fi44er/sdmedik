@@ -9,13 +9,13 @@ import (
 )
 
 func (s *service) Update(ctx context.Context, data *dto.UpdateUser, id string) error {
-	var user model.User
-	if err := utils.DtoToModel(data, &user); err != nil {
+	user := new(model.User)
+	if err := utils.DtoToModel(data, user); err != nil {
 		s.logger.Errorf("Error during conversion: %s", err.Error())
 		return err
 	}
 
-	if err := s.repo.Update(ctx, &user); err != nil {
+	if err := s.repo.Update(ctx, user); err != nil {
 		return err
 	}
 	return nil
