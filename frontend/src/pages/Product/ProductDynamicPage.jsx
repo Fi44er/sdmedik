@@ -22,7 +22,7 @@ export default function ProductDetailPage() {
   const [mainImageIndex, setMainImageIndex] = useState(0);
   const [images, setImages] = useState([]);
   const { fetchProductById, products } = useProductStore();
-  const { name } = useParams();
+  const { id } = useParams();
 
   const productDetails = {
     title: "Инвалидная коляска Trend 40",
@@ -43,9 +43,9 @@ export default function ProductDetailPage() {
   };
 
   useEffect(() => {
-    fetchProductById(name);
+    fetchProductById(id);
     console.log(products);
-  }, [name]);
+  }, [id]);
   useEffect(() => {
     if (products.data && products.data.images) {
       const fetchedImages = products.data.images.map(

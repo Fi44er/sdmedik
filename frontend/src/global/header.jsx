@@ -18,11 +18,12 @@ import {
   Container,
 } from "@mui/material";
 import { withStyles } from "@mui/styles";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import SearchIcon from "@mui/icons-material/Search";
 import MenuIcon from "@mui/icons-material/Menu";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Cookies from "js-cookie";
+import useAuthStore from "../store/authStore";
 
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   display: "flex",
@@ -58,20 +59,26 @@ const Search = styled("Box")(({ theme }) => ({
   alignItems: "center",
   paddingLeft: "25px",
 }));
-const regions = [
-  "г. Оренбург",
-  "г. Москва",
-  "г. Санкт-Петербург",
-  // Добавьте сюда остальные регионы
-  // ...
-];
 
 export default function Header() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
-  const [selectedRegion, setSelectedRegion] = useState(regions[0]);
   const [menuLk, setMenuLk] = React.useState(null);
+  const { isAuthenticated, setIsAuthenticated, checkAuthStatus } =
+    useAuthStore();
+
+  useEffect(() => {
+    // Проверяем состояние куки при монтировании компонента
+    checkAuthStatus();
+
+    // Устанавливаем интервал для проверки состояния куки
+    const intervalId = setInterval(checkAuthStatus, 1000); // Проверяем каждую секунду
+
+    // Очищаем интервал при размонтировании компонента
+    return () => clearInterval(intervalId);
+  }, [setIsAuthenticated]);
+
   const openLk = Boolean(menuLk);
 
   const handleRegionChange = (event) => {
@@ -147,21 +154,6 @@ export default function Header() {
                   src="/public/Logo_Header.png"
                   alt="logo"
                 />
-              </Box>
-              <Box sx={{ display: "flex", alignItems: "center" }}>
-                <Select
-                  value={selectedRegion}
-                  onChange={handleRegionChange}
-                  displayEmpty
-                  variant="standard"
-                  sx={{ marginLeft: 2 }}
-                >
-                  {regions.map((region) => (
-                    <MenuItem key={region} value={region}>
-                      {region}
-                    </MenuItem>
-                  ))}
-                </Select>
               </Box>
             </Box>
             <Search>
@@ -272,26 +264,31 @@ export default function Header() {
                   "aria-labelledby": "lk-button",
                 }}
               >
-                <MenuItem onClick={handleCloseLk}>
-                  <Link href="/auth">Войти</Link>
-                </MenuItem>
-                <MenuItem onClick={handleCloseLk}>
-                  <Link href="/register">Регистрация</Link>
-                </MenuItem>
-                {Cookies.get("logged_in") && (
-                  <MenuItem onClick={handleCloseLk}>
-                    <Link href="/profile">Личный кабинет</Link>
-                  </MenuItem>
-                )}
+                {isAuthenticated
+                  ? [
+                      <MenuItem key="profile" onClick={handleCloseLk}>
+                        <Link href="/profile">Личный кабинет</Link>
+                      </MenuItem>,
+                    ]
+                  : [
+                      <MenuItem key="login" onClick={handleCloseLk}>
+                        <Link href="/auth">Войти</Link>
+                      </MenuItem>,
+                      <MenuItem key="register" onClick={handleCloseLk}>
+                        <Link href="/register">Регистрация</Link>
+                      </MenuItem>,
+                    ]}
               </Menu>
-              <IconButton
-                onClick={(e) => {
-                  e.preventDefault();
-                  window.location.href = "/basket/:id";
-                }}
-              >
-                <img src="/public/basket_header.png" alt="" />
-              </IconButton>
+              {isAuthenticated && (
+                <IconButton
+                  onClick={(e) => {
+                    e.preventDefault();
+                    window.location.href = "/basket/:id";
+                  }}
+                >
+                  <img src="/public/basket_header.png" alt="" />
+                </IconButton>
+              )}
             </Box>
           </Box>
         </StyledToolbar>
@@ -319,19 +316,6 @@ export default function Header() {
               alt="Logo"
             />
           </Link>
-          <Select
-            value={selectedRegion}
-            onChange={handleRegionChange}
-            displayEmpty
-            variant="standard"
-            sx={{ marginLeft: 2 }}
-          >
-            {regions.map((region) => (
-              <MenuItem key={region} value={region}>
-                {region}
-              </MenuItem>
-            ))}
-          </Select>
           <IconButton
             edge="start"
             color="inherit"

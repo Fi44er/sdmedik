@@ -14,7 +14,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import useProductStore from "../../../store/productStore";
 
 const AdminProductTable = () => {
-  const { fetchProducts, products } = useProductStore();
+  const { fetchProducts, products, deleteProduct } = useProductStore();
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [categoryFilter, setCategoryFilter] = useState("");
   const [priceFilter, setPriceFilter] = useState("");
@@ -77,6 +77,32 @@ const AdminProductTable = () => {
       width: 200,
       renderCell: (params) => (
         <Box>{params.value.map((category) => category.name).join(", ")}</Box>
+      ),
+    },
+    {
+      field: "edit",
+      headerName: "Управление",
+      width: 200,
+      renderCell: (params) => (
+        <Box>
+          <Button
+            variant="contained"
+            color="error"
+            onClick={() => deleteProduct(params.id)}
+          >
+            удалить
+          </Button>
+          <Button
+            variant="contained"
+            color="info"
+            onClick={(e) => {
+              e.preventDefault();
+              window.location.href = "/";
+            }}
+          >
+            редактировать
+          </Button>
+        </Box>
       ),
     },
   ];

@@ -14,39 +14,82 @@ import { Delete as DeleteIcon } from "@mui/icons-material";
 import useCategoryStore from "../../../store/categoryStore";
 
 export default function CreateCategory() {
-  const [name, setName] = useState("");
-  const [characteristics, setCharacteristics] = useState([
-    { data_type: "string", name: "" },
-  ]);
-  const { createCategory, fetchCategory, category } = useCategoryStore();
+  const [category, setCategory] = useState({
+    name: "",
+    characteristics: [{ data_type: "string", name: "" }],
+    images: [], // Добавлено состояние для изображений
+  });
+  const { createCategory, fetchCategory } = useCategoryStore();
 
   const handleCharacteristicChange = (index, value, type) => {
-    const newCharacteristics = [...characteristics];
+    const newCharacteristics = [...category.characteristics];
     if (type === "name") {
       newCharacteristics[index].name = value;
     } else if (type === "data_type") {
       newCharacteristics[index].data_type = value;
     }
-    setCharacteristics(newCharacteristics);
+    // Correctly update the category state
+    setCategory({ ...category, characteristics: newCharacteristics });
   };
 
   const addCharacteristic = () => {
-    setCharacteristics([...characteristics, { data_type: "string", name: "" }]);
+    setCategory((prevCategory) => ({
+      ...prevCategory,
+      characteristics: [
+        ...prevCategory.characteristics,
+        { data_type: "string", name: "" },
+      ],
+    }));
   };
 
   const removeCharacteristic = (index) => {
-    const newCharacteristics = characteristics.filter((_, i) => i !== index);
-    setCharacteristics(newCharacteristics);
+    const newCharacteristics = category.characteristics.filter(
+      (_, i) => i !== index
+    );
+    setCategory({ ...category, characteristics: newCharacteristics });
+  };
+
+  const handleFileChange = (e) => {
+    const files = Array.from(e.target.files);
+    setCategory((prevCategory) => ({
+      ...prevCategory,
+      images: files,
+    }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const data = {
-      name: name,
-      characteristics: characteristics,
+
+    // Create an object with category data
+    const categoryData = {
+      name: category.name,
+      characteristics: category.characteristics.map((characteristic) => {
+        return {
+          data_type: characteristic.data_type,
+          name: characteristic.name,
+        };
+      }),
     };
-    createCategory(data);
-    console.log("data:", data);
+
+    // Convert object to JSON string
+    const jsonData = JSON.stringify(categoryData);
+
+    // Create FormData
+    const formData = new FormData();
+
+    // Add JSON string to FormData
+    formData.append("json", jsonData);
+
+    // Add array of images to FormData
+    category.images.forEach((file) => {
+      formData.append("file", file);
+    });
+
+    // Log JSON for verification
+    console.log(jsonData);
+
+    // Send data
+    createCategory(formData); // Ensure createCategory can handle FormData
   };
 
   return (
@@ -71,11 +114,17 @@ export default function CreateCategory() {
         label="Название категории"
         variant="outlined"
         fullWidth
-        value={name}
-        onChange={(e) => setName(e.target.value)}
+        value={category.name}
+        onChange={(e) => setCategory({ ...category, name: e.target.value })}
         sx={{ mb: 2 }}
       />
-      {characteristics.map((characteristic, index) => (
+      <input
+        type="file"
+        multiple
+        onChange={handleFileChange}
+        accept="image/*"
+      />
+      {category.characteristics.map((characteristic, index) => (
         <Box
           key={index}
           sx={{ display: "flex", flexDirection: "column", mb: 1 }}
@@ -125,28 +174,7 @@ export default function CreateCategory() {
       >
         Сохранить категорию
       </Button>
-      <Box sx={{ mt: 3 }}>
-        {Array.isArray(category.data) && category.data.length > 0 ? (
-          category.data.map((item, index) => (
-            <Box
-              key={index}
-              sx={{
-                border: "1px solid #ccc",
-                borderRadius: 1,
-                padding: 2,
-                mb: 2,
-              }}
-            >
-              <Typography variant="h6">{item.name}</Typography>
-              <Typography variant="body2">{item.description}</Typography>
-            </Box>
-          ))
-        ) : (
-          <Typography variant="body2" sx={{ textAlign: "center" }}>
-            Данных нет
-          </Typography>
-        )}
-      </Box>
+      <Box sx={{ mt: 3 }}></Box>
     </Box>
   );
 }

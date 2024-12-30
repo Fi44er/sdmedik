@@ -62,14 +62,23 @@ const useProductStore = create((set, get) => ({
       console.error("Error fetching product:", error);
     }
   },
-  fetchProductById: async () => {
+  fetchProductById: async (id, name) => {
     try {
       const response = await axios.get(`http://localhost:8080/api/v1/product`, {
-        params: { id: "d846ccf3-f3e1-4e6b-b37d-947b2c743c99" },
+        params: { id: id },
       });
       set({ products: response.data });
     } catch (error) {
       console.error("Error fetching product:", error);
+    }
+  },
+  deleteProduct: async (id) => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:8080/api/v1/product/${id}`
+      );
+    } catch (error) {
+      console.error("Error deleting product:", error);
     }
   },
 }));

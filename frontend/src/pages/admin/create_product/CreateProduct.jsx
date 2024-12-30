@@ -24,6 +24,7 @@ export default function CreateProduct() {
     description: "",
     name: "",
     images: [], // Добавлено состояние для изображений
+    price: 0,
   });
 
   const [characteristics, setCharacteristics] = useState([]);
@@ -97,6 +98,7 @@ export default function CreateProduct() {
       ),
       description: product.description,
       name: product.name,
+      price: product.price,
     };
 
     // Преобразуем объект в строку JSON
@@ -151,6 +153,19 @@ export default function CreateProduct() {
                 margin="normal"
               />
               <TextField
+                label="Цена"
+                value={product.price}
+                onChange={(e) => {
+                  const priceValue = parseFloat(e.target.value); // Преобразование в float
+                  setProduct({
+                    ...product,
+                    price: isNaN(priceValue) ? 0 : priceValue,
+                  }); // Установка значения
+                }}
+                fullWidth
+                margin="normal"
+              />
+              <TextField
                 label="Описание"
                 value={product.description}
                 onChange={(e) =>
@@ -161,6 +176,7 @@ export default function CreateProduct() {
                 multiline
                 rows={4}
               />
+
               <input
                 type="file"
                 multiple

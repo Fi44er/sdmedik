@@ -13,8 +13,6 @@ import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import useProductStore from "../../../store/productStore";
 
-
-
 export default function CatalogDynamicPage() {
   const { category_id } = useParams();
 
@@ -42,7 +40,7 @@ export default function CatalogDynamicPage() {
                   cursor: "pointer",
                 }}
                 onClick={(item) => {
-                  window.location.href = `/product/${e.name}`;
+                  window.location.href = `/product/${e.id}`;
                 }}
               >
                 <Box
@@ -77,7 +75,7 @@ export default function CatalogDynamicPage() {
                     }}
                   >
                     <Typography variant="h6" sx={{ color: "black" }}>
-                      {e.price}20000
+                      {e.price}
                     </Typography>
                     <Typography
                       variant="body2"
@@ -86,7 +84,7 @@ export default function CatalogDynamicPage() {
                         textDecoration: "line-through",
                       }}
                     >
-                      {e.price} 20000
+                      {e.price}
                     </Typography>
                   </Box>
 

@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import axios from "axios";
 import { useState } from "react";
+import Cookies from "js-cookie";
 
 const useAuthStore = create((set, get) => ({
   email: "",
@@ -9,6 +10,7 @@ const useAuthStore = create((set, get) => ({
   phone_number: "",
   showConfirmation: false,
   code: "",
+  isAuthenticated: false,
   setEmail: (email) => set({ email }),
   setFio: (fio) => set({ fio }),
   setPhone_number: (phone_number) => set({ phone_number }),
@@ -16,6 +18,12 @@ const useAuthStore = create((set, get) => ({
   setShowConfirmation: (showConfirmation) =>
     set({ showConfirmation: showConfirmation }),
   setCode: (code) => set({ code }),
+  setIsAuthenticated: (status) => set({ isAuthenticated: status }),
+
+  checkAuthStatus: () => {
+    const loggedIn = Cookies.get("logged_in");
+    get().setIsAuthenticated(!!loggedIn);
+  },
 
   registerFunc: async () => {
     const { email, fio, phone_number, password } = useAuthStore.getState();
@@ -52,8 +60,9 @@ const useAuthStore = create((set, get) => ({
       console.error("Error Registrations:", error);
     }
   },
+
   loginFunc: async (navigate, register) => {
-    const { email, password } = useAuthStore.getState();
+    const { email, password, showLogin } = useAuthStore.getState();
     try {
       const response = await axios.post(
         `http://localhost:8080/api/v1/auth/login`,

@@ -3,7 +3,7 @@ import axios from "axios";
 
 const useCategoryStore = create((set, get) => ({
   category: [],
-  categoryId:{},
+  categoryId: {},
   fetchCategory: async () => {
     try {
       const response = await axios.get(`http://localhost:8080/api/v1/category`);
@@ -37,13 +37,16 @@ const useCategoryStore = create((set, get) => ({
     }
   },
 
-  createCategory: async (data) => {
+  createCategory: async (formData) => {
     try {
       const response = await axios.post(
         "http://localhost:8080/api/v1/category",
-        data,
+        formData,
         {
           withCredentials: true,
+          headers: {
+            "Content-Type": "multipart/form-data", // Убедитесь, что заголовок установлен правильно
+          },
         }
       );
       console.log("Response:", response.data);

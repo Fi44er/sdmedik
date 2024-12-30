@@ -158,7 +158,7 @@ export default function TopList() {
           <Box sx={{ mt: 4, mb: 4, display: "flex", justifyContent: "right" }}>
             <Button
               sx={{
-                width: "160px",
+                width: "260px",
                 height: "50px",
                 fontSize: "18px",
                 border: "2px solid #2CC0B3",
@@ -166,7 +166,7 @@ export default function TopList() {
               }}
               variant="outlined"
             >
-              Все акции
+              Посмотреть все
             </Button>
           </Box>
         </Box>
