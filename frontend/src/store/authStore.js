@@ -2,6 +2,7 @@ import { create } from "zustand";
 import axios from "axios";
 import { useState } from "react";
 import Cookies from "js-cookie";
+import { toast } from "react-toastify";
 
 const useAuthStore = create((set, get) => ({
   email: "",
@@ -46,14 +47,10 @@ const useAuthStore = create((set, get) => ({
       // Исправлено: проверка статуса ответа
       if (response.data.status === "success") {
         set({ showConfirmation: true });
-      } else {
-        alert(
-          "Ошибка регистрации: " +
-            (response.data.message || "неизвестная ошибка")
-        );
+        toast.info("Пожалуйста, проверьте ваш email для подтверждения.");
       }
     } catch (error) {
-      alert(
+      toast.error(
         "Ошибка регистрации: " +
           (error.response?.data?.message || error.message)
       );
@@ -77,9 +74,10 @@ const useAuthStore = create((set, get) => ({
       console.log("login", response);
       if (response.data.status === "success") {
         navigate("/profile");
+        toast.success("Успешный вход!");
       }
     } catch (error) {
-      alert(
+      toast.error(
         "Ошибка авторизации: " +
           (error.response?.data?.message || error.message)
       );
@@ -104,10 +102,11 @@ const useAuthStore = create((set, get) => ({
       console.log("Response:", response);
       if (response.data.status === "success") {
         navigate("/auth");
+        toast.success("Код подтвержден!");
       }
     } catch (error) {
       // Если произошла ошибка, очищаем статус аутентификации
-      alert("Ошибка: не правильный код верефикации" + error.message);
+      toast.error("Ошибка: не правильный код верификации " + error.message);
       console.error("Error Verify:", error);
     }
   },

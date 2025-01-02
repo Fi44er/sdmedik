@@ -17,11 +17,20 @@ export default function CatalogDynamicPage() {
   const { category_id } = useParams();
 
   const { fetchProducts, products } = useProductStore();
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     fetchProducts(category_id);
     console.log(products);
   }, []);
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems =
+    Array.isArray(products.data) &&
+    products.data.length > 0 &&
+    products.data.slice(indexOfFirstItem, indexOfLastItem);
 
   return (
     <Box sx={{ mt: 5, mb: 5 }}>
@@ -30,8 +39,8 @@ export default function CatalogDynamicPage() {
         spacing={{ xs: 2, md: 3 }}
         columns={{ xs: 4, sm: 4, md: 4 }}
       >
-        {Array.isArray(products.data) && products.data.length > 0 ? (
-          products.data.map((e) => (
+        {Array.isArray(currentItems) && currentItems.length > 0 ? (
+          currentItems.map((e) => (
             <Grid item key={e.id} xs={1} sm={1} md={1}>
               <Card
                 sx={{
@@ -124,6 +133,30 @@ export default function CatalogDynamicPage() {
           <Typography variant="h6">Нет данных</Typography>
         )}
       </Grid>
+      <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
+        <Button
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
+        >
+          Назад
+        </Button>
+        <Typography sx={{ mx: 2 }}>
+          Страница {currentPage} из{" "}
+          {Math.ceil(products.data.length / itemsPerPage)}
+        </Typography>
+        <Button
+          onClick={() =>
+            setCurrentPage((prev) =>
+              Math.min(prev + 1, Math.ceil(products.data.length / itemsPerPage))
+            )
+          }
+          disabled={
+            currentPage === Math.ceil(products.data.length / itemsPerPage)
+          }
+        >
+          Вперед
+        </Button>
+      </Box>
     </Box>
   );
 }
