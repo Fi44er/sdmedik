@@ -109,6 +109,7 @@ func (a *App) initRouter() error {
 	auth.Post("/refresh", a.serviceProvider.authProvider.AuthImpl().RefreshAccessToken)
 
 	product := v1.Group("/product")
+	product.Get("/filter/:category_id", a.serviceProvider.productProvider.ProductImpl().GetFilter)
 	product.Get("/", a.serviceProvider.productProvider.ProductImpl().Get)
 	product.Post("/", middleware.DeserializeUser(a.cache, a.db, a.config), a.serviceProvider.productProvider.ProductImpl().Create)
 	product.Put("/:id", a.serviceProvider.productProvider.ProductImpl().Update)

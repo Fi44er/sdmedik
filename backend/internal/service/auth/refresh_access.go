@@ -29,7 +29,7 @@ func (s *service) RefreshAccessToken(ctx context.Context, refreshToken string) (
 		return "", err
 	}
 
-	if user.ID == "" {
+	if user == nil {
 		return "", errors.New(404, "User not found")
 	}
 

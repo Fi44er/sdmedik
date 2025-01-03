@@ -2,7 +2,6 @@ package auth
 
 import (
 	"context"
-
 	"github.com/Fi44er/sdmedik/backend/pkg/errors"
 	"github.com/Fi44er/sdmedik/backend/pkg/utils"
 )
@@ -16,6 +15,13 @@ func (s *service) SendCode(ctx context.Context, email string) error {
 	}
 
 	expiredIn := s.config.VerifyCodeExpiredIn
+
+	_, err = s.cache.Get(ctx, "temp_user_"+hashEmail).Result()
+	if err != nil {
+		s.logger.Errorf("Error during getting temp user data: %s", err.Error())
+		return errors.New(422, err.Error())
+	}
+
 	if err := s.cache.Set(ctx, "verification_codes_"+hashEmail, code, expiredIn).Err(); err != nil {
 		s.logger.Errorf("Error during saving verification code: %s", err.Error())
 		return errors.New(422, err.Error())

@@ -31,6 +31,7 @@ type IProductService interface {
 	Update(ctx context.Context, product *dto.UpdateProduct, images *dto.Images, id string) error
 	Delete(ctx context.Context, id string) error
 	Get(ctx context.Context, criteria dto.ProductSearchCriteria) (*[]model.Product, error)
+	GetFilter(ctx context.Context, categoryID int) error
 }
 
 type ICategoryService interface {

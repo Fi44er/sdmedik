@@ -1,111 +1,100 @@
 package main
 
 import (
-	"sort"
+	"encoding/json"
+	"fmt"
+	"strconv"
 
 	"github.com/Fi44er/sdmedik/backend/internal/model"
+	"github.com/samber/lo"
 )
 
 // Пример использования
 func main() {
-	imageProductID := "69aaa0bf-5b0f-4b37-9bae-b543c0648170.png"
-	data := []model.Product{
-		{
-			ID:           "9b4ed171-75f9-4288-bb4b-e49a4196faf6",
-			Article:      "123-123-124",
-			Name:         "product #1",
-			Description:  "description #1",
-			Price:        0,
-			Categories:   []model.Category{},
-			Certificates: nil,
-			Images: []model.Image{
-				{
-					ID:         "e535bd5b-f34a-45f7-926f-24cc5adf6eba",
-					ProductID:  &imageProductID,
-					CategoryID: nil,
-					Name:       "69aaa0bf-5b0f-4b37-9bae-b543c0648170.png",
-				},
-			},
-			CharacteristicValues: []model.CharacteristicValue{},
-		},
-		{
-			ID:          "cad1e905-a42f-4007-ac5e-a70b3c3ea52d",
-			Article:     "123-123-125",
-			Name:        "product #1",
-			Description: "description #1",
-			Price:       0,
-			Categories: []model.Category{
-				{
-					ID:              4,
-					Name:            "category #1",
-					Products:        nil,
-					Characteristics: nil,
-					Images:          nil,
-				},
-			},
-			Certificates: nil,
-			Images: []model.Image{
-				{
-					ID:         "80699a7c-a2bd-451d-85a8-2ca9f61a52bc",
-					ProductID:  &imageProductID,
-					CategoryID: nil,
-					Name:       "b6f01deb-8ac2-4458-bee0-6d833895c56b.jpg",
-				},
-			},
-			CharacteristicValues: []model.CharacteristicValue{
-				{
-					ID:               8,
-					Value:            "12",
-					CharacteristicID: 6,
-					ProductID:        "cad1e905-a42f-4007-ac5e-a70b3c3ea52d",
-				},
-			},
-		},
-		{
-			ID:          "2d693fa0-e621-45fd-ac3e-fabfa49b5ab7",
-			Article:     "123-123-126",
-			Name:        "test update",
-			Description: "test update",
-			Price:       123.12,
-			Categories: []model.Category{
-				{
-					ID:              4,
-					Name:            "category #1",
-					Products:        nil,
-					Characteristics: nil,
-					Images:          nil,
-				},
-			},
-			Certificates: nil,
-			Images: []model.Image{
-				{
-					ID:         "1cec9c03-9abd-475b-9c5a-0af03a8318b6",
-					ProductID:  &imageProductID,
-					CategoryID: nil,
-					Name:       "0b2aeeb5-a290-415b-8694-a01ff74eefe4.png",
-				},
-				{
-					ID:         "34a5323f-5523-4260-9d54-1991b02022ff",
-					ProductID:  &imageProductID,
-					CategoryID: nil,
-					Name:       "436ad287-5363-4de1-8ec6-28477eb2c255.jpg",
-				},
-			},
-			CharacteristicValues: []model.CharacteristicValue{
-				{
-					ID:               13,
-					Value:            "12",
-					CharacteristicID: 7,
-					ProductID:        "2d693fa0-e621-45fd-ac3e-fabfa49b5ab7",
-				},
-			},
-		},
+	data := generateProducts(20)
+
+	val := FilterByPriceRange(data, 10.0, 15.0)
+
+	jsonData, err := json.MarshalIndent(val, "", "  ")
+	if err != nil {
+		fmt.Println("Ошибка при преобразовании в JSON:", err)
+		return
 	}
 
-	sortArray := new([]model.Product)
-	characteristic := "12"
+	// Вывод результата
+	fmt.Println(string(jsonData))
+}
 
-	sort.Slice(data, func(i, j int) bool {
-
+func FilterByCharacteristicID(data []model.Product, characteristicID int) []model.Product {
+	return lo.Filter(data, func(product model.Product, _ int) bool {
+		return lo.ContainsBy(product.CharacteristicValues, func(charValue model.CharacteristicValue) bool {
+			return charValue.CharacteristicID == characteristicID
+		})
 	})
+}
+
+func FilterByPriceRange(data []model.Product, minPrice, maxPrice float64) []model.Product {
+	return lo.Filter(data, func(product model.Product, _ int) bool {
+		return product.Price >= minPrice && product.Price <= maxPrice
+	})
+}
+
+// generateProducts создает массив из n товаров
+func generateProducts(n int) []model.Product {
+	products := make([]model.Product, 0, n)
+
+	for i := 1; i <= n; i++ {
+		productID := "product-id-" + strconv.Itoa(i)
+		article := "article-" + strconv.Itoa(i)
+		name := "Product #" + strconv.Itoa(i)
+		description := "Description for product #" + strconv.Itoa(i)
+		price := float64(i) * 10.0 // Пример цены
+
+		// Категории
+		categories := []model.Category{
+			{
+				ID:   i,
+				Name: "Category #" + strconv.Itoa(i),
+			},
+		}
+
+		// Изображения
+		imageProductID := "image-product-id-" + strconv.Itoa(i)
+		images := []model.Image{
+			{
+				ID:         "image-id-" + strconv.Itoa(i),
+				ProductID:  &imageProductID,
+				CategoryID: nil,
+				Name:       "image-name-" + strconv.Itoa(i) + ".png",
+			},
+		}
+
+		// Характеристики
+		characteristicValues := []model.CharacteristicValue{
+			{
+				ID:               i,
+				Value:            "Value " + strconv.Itoa(i),
+				CharacteristicID: i,
+				ProductID:        productID,
+			},
+		}
+
+		// Создание продукта
+		product := model.Product{
+			ID:                   productID,
+			Article:              article,
+			Name:                 name,
+			Description:          description,
+			Price:                price,
+			Categories:           categories,
+			Certificates:         nil,
+			Images:               images,
+			CharacteristicValues: characteristicValues,
+		}
+
+		// Добавление продукта в массив
+		products = append(products, product)
+	}
+
+	return products
 }
