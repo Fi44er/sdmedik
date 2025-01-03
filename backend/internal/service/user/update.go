@@ -15,6 +15,8 @@ func (s *service) Update(ctx context.Context, data *dto.UpdateUser, id string) e
 		return err
 	}
 
+	user.ID = id
+
 	if err := s.repo.Update(ctx, user); err != nil {
 		return err
 	}

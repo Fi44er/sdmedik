@@ -2,10 +2,10 @@ package user
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/Fi44er/sdmedik/backend/internal/model"
 	def "github.com/Fi44er/sdmedik/backend/internal/repository"
+	"github.com/Fi44er/sdmedik/backend/pkg/constants"
 	"github.com/Fi44er/sdmedik/backend/pkg/logger"
 	"gorm.io/gorm"
 )
@@ -86,7 +86,7 @@ func (r *repository) GetAll(ctx context.Context, offset int, limit int) (*[]mode
 
 func (r *repository) Update(ctx context.Context, data *model.User) error {
 	r.logger.Info("Updating user...")
-	result := r.db.WithContext(ctx).Model(data).Updates(data)
+	result := r.db.WithContext(ctx).Model(data).Where("id = ?", data.ID).Updates(data)
 	if err := result.Error; err != nil {
 		r.logger.Errorf("Failed to update user: %v", err)
 		return err
@@ -94,7 +94,7 @@ func (r *repository) Update(ctx context.Context, data *model.User) error {
 
 	if result.RowsAffected == 0 {
 		r.logger.Warnf("User with ID %s not found", data.ID)
-		return fmt.Errorf("User not found")
+		return constants.ErrUserNotFound
 	}
 
 	r.logger.Info("User updated successfully")
@@ -111,7 +111,7 @@ func (r *repository) Delete(ctx context.Context, id string) error {
 
 	if result.RowsAffected == 0 {
 		r.logger.Warnf("User with ID %s not found", id)
-		return fmt.Errorf("User not found")
+		return constants.ErrUserNotFound
 	}
 
 	r.logger.Infof("User deleted by ID: %v successfully", id)

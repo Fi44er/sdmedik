@@ -2,8 +2,9 @@ package category
 
 import (
 	"context"
+
 	"github.com/Fi44er/sdmedik/backend/internal/model"
-	"github.com/Fi44er/sdmedik/backend/pkg/errors"
+	"github.com/Fi44er/sdmedik/backend/pkg/constants"
 )
 
 func (s *service) GetByID(ctx context.Context, id int) (*model.Category, error) {
@@ -12,8 +13,8 @@ func (s *service) GetByID(ctx context.Context, id int) (*model.Category, error) 
 		return nil, err
 	}
 
-	if category.ID == 0 {
-		return nil, errors.New(404, "Category not found")
+	if category == nil {
+		return nil, constants.ErrCategoryNotFound
 	}
 
 	return category, nil

@@ -27,6 +27,10 @@ func (s *service) VerifyCode(ctx context.Context, data *dto.VerifyCode) error {
 		return errors.New(400, "Invalid verification code")
 	}
 
+	if err := s.cache.Del(ctx, "verification_codes_"+hashEmail).Err(); err != nil {
+		s.logger.Errorf("Error during deleting verification code: %s", err.Error())
+	}
+
 	cacheUser, err := s.cache.Get(ctx, "temp_user_"+hashEmail).Result()
 	if err != nil {
 		s.logger.Errorf("Error during getting temp user data: %s", err.Error())
