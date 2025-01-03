@@ -18,29 +18,19 @@
 
 
 === update product json ===
-
 {
-  "name": "test update",
-  "description": "test update",
-  "category_ids": [
-    2
-  ],
-  "characteristic_values": [
-    {
-      "characteristic_id": 2,
-      "value": "string"
-    },
-    {
-      "characteristic_id": 3,
-      "value": "12"
-    }
-  ],
-  "del_images": [
-    {
-      "id": "8832ed62-0a19-40e2-81b3-4c971884e962",
-      "name": "cb44cbb3-aaf9-47a4-867c-f81dbc0485ab.jpg"
-    }
-  ]
+"name": "test update",
+"price": 123.12,
+"description": "test update",
+"category_ids": [
+4
+],
+"characteristic_values": [
+{
+"characteristic_id": 6,
+"value": "string"
+}
+]
 }
 
 

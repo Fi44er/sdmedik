@@ -49,11 +49,16 @@ func (s *service) Update(ctx context.Context, data *dto.UpdateProduct, images *d
 
 	dataValue := reflect.ValueOf(data).Elem()
 	modelValue := reflect.ValueOf(modelProduct).Elem()
-
 	for i := 0; i < dataValue.NumField(); i++ {
 		field := dataValue.Field(i)
-		if !field.IsZero() { // Проверяем, что поле не пустое
-			modelField := modelValue.FieldByName(dataValue.Type().Field(i).Name)
+		fieldName := dataValue.Type().Field(i).Name
+
+		if fieldName == "CharacteristicValues" {
+			continue
+		}
+
+		if !field.IsZero() {
+			modelField := modelValue.FieldByName(fieldName)
 			if modelField.IsValid() && modelField.CanSet() {
 				modelField.Set(field)
 			}
