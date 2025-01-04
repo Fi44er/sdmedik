@@ -30,7 +30,7 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   gridGap: "25px",
   flexDirection: "column",
   position: "relative",
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     // Используйте медиа-запрос для скрытия на мобильных устройствах
     display: "none",
   },
@@ -51,7 +51,7 @@ const Nav = styled("Box")(({ theme }) => ({
 }));
 const Search = styled("Box")(({ theme }) => ({
   height: "53px",
-  width: { xs: "100%", sm: "100%", md: "50%" },
+  width: { xs: "100%", sm: "100%", md: "100%" },
   border: "3px solid #87EBEB",
   borderRadius: "10px",
   color: "black",
@@ -73,7 +73,7 @@ export default function Header() {
     checkAuthStatus();
 
     // Устанавливаем интервал для проверки состояния куки
-    const intervalId = setInterval(checkAuthStatus, 1000); // Проверяем каждую секунду
+    const intervalId = setInterval(checkAuthStatus, 300000); // Проверяем каждую секунду
 
     // Очищаем интервал при размонтировании компонента
     return () => clearInterval(intervalId);
@@ -130,7 +130,7 @@ export default function Header() {
             sx={{
               width: "100%",
               display: "flex",
-              justifyContent: "space-around",
+              justifyContent:"space-between",
               alignItems: "center",
             }}
           >
@@ -267,15 +267,21 @@ export default function Header() {
                 {isAuthenticated
                   ? [
                       <MenuItem key="profile" onClick={handleCloseLk}>
-                        <Link href="/profile">Личный кабинет</Link>
+                        <Link sx={{ color: "#26BDB8" }} href="/profile">
+                          Личный кабинет
+                        </Link>
                       </MenuItem>,
                     ]
                   : [
                       <MenuItem key="login" onClick={handleCloseLk}>
-                        <Link href="/auth">Войти</Link>
+                        <Link sx={{ color: "#26BDB8" }} href="/auth">
+                          Войти
+                        </Link>
                       </MenuItem>,
                       <MenuItem key="register" onClick={handleCloseLk}>
-                        <Link href="/register">Регистрация</Link>
+                        <Link sx={{ color: "#26BDB8" }} href="/register">
+                          Регистрация
+                        </Link>
                       </MenuItem>,
                     ]}
               </Menu>
@@ -296,7 +302,7 @@ export default function Header() {
       {/* Burger menu */}
       <Toolbar
         sx={{
-          display: { xs: "flex", sm: "flex", md: "none" },
+          display: { xs: "flex", sm: "flex", md: "flex", lg: "none" },
           flexDirection: "column",
           gridGap: "20px",
         }}
@@ -324,7 +330,9 @@ export default function Header() {
             sx={{
               display: {
                 xs: "block",
-                sm: "none",
+                sm: "block",
+                md: "block",
+                lg: "none",
                 color: "#26BDB8",
               },
             }}
@@ -356,23 +364,11 @@ export default function Header() {
               }}
             />
           </Search>
-          <IconButton
-            onClick={(e) => {
-              e.preventDefault();
-              window.location.href = "/basket/:id";
-            }}
-          >
-            <img
-              style={{ width: "50px", height: "50px" }}
-              src="/public/basket_header.png"
-              alt=""
-            />
-          </IconButton>
         </Box>
       </Toolbar>
       <Drawer anchor="left" open={drawerOpen} onClose={toggleDrawer(false)}>
         <Box
-          sx={{ width: 250 }}
+          sx={{ width: 300 }}
           role="presentation"
           onClick={toggleDrawer(false)}
           onKeyDown={toggleDrawer(false)}
@@ -411,6 +407,54 @@ export default function Header() {
             >
               Каталог
             </Button>
+
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                ml: 4,
+                mt: 2,
+              }}
+            >
+              {isAuthenticated
+                ? [
+                    <Link sx={{ color: "#26BDB8" }} href="/profile">
+                      Личный кабинет
+                    </Link>,
+                  ]
+                : [
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gridGap: 10,
+                      }}
+                    >
+                      <Link sx={{ color: "#26BDB8" }} href="/auth">
+                        Войти
+                      </Link>
+                      <Link sx={{ color: "#26BDB8" }} href="/register">
+                        Регистрация
+                      </Link>
+                    </Box>,
+                  ]}
+              {isAuthenticated && (
+                <Box>
+                  <IconButton
+                    onClick={(e) => {
+                      e.preventDefault();
+                      window.location.href = "/basket/:id";
+                    }}
+                  >
+                    <img
+                      style={{ width: "50px" }}
+                      src="/public/basket_header.png"
+                      alt=""
+                    />
+                  </IconButton>
+                </Box>
+              )}
+            </Box>
           </List>
         </Box>
       </Drawer>

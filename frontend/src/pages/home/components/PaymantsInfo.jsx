@@ -35,8 +35,14 @@ export default function PaymantsInfo() {
         <Box
           sx={{
             display: "flex",
-            flexDirection: { xs: "column", lg: "unset" },
-            gridGap: { xs: "40px", lg: 0 },
+            flexDirection: {
+              xs: "column",
+              sm: "unset",
+              md: "unset",
+              lg: "unset",
+            },
+            justifyContent: { xs: "unset", md: "space-between" },
+            gridGap: { xs: "40px", md: 60, lg: 0 },
           }}
         >
           <Box
@@ -76,14 +82,14 @@ export default function PaymantsInfo() {
               Подробнее
             </Button>
           </Box>
-          <Box sx={{ width: { xs: "100%", lg: "50%" } }}>
+          <Box sx={{ width: { xs: "100%", md: "100%", lg: "50%" } }}>
             <CardMedia
               component="img"
               image="/public/Group 31.png"
               alt="Изображение, иллюстрирующее оплату электронным сертификатом"
               sx={{
-                width: "100%",
-                height: { xs: "300px", sm: "300px", md: "400px" },
+                width: { xs: "100%", sm: "50%", md: "80%", lg: "100%" },
+                height: { xs: "300px", sm: "300px", md: "350px", lg: "400px" },
                 objectFit: "cover",
               }}
             />

@@ -73,6 +73,7 @@ const useAuthStore = create((set, get) => ({
       );
       console.log("login", response);
       if (response.data.status === "success") {
+        get().checkAuthStatus();
         navigate("/profile");
         toast.success("Успешный вход!");
       }

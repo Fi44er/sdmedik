@@ -6,31 +6,35 @@ import {
   CardHeader,
   CardMedia,
   IconButton,
+  Pagination,
   Typography,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import useProductStore from "../../../store/productStore";
 
 export default function CatalogDynamicPage() {
   const { category_id } = useParams();
-
   const { fetchProducts, products } = useProductStore();
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const ProductsPerPage = 8;
 
   useEffect(() => {
     fetchProducts(category_id);
     console.log(products);
-  }, []);
+  }, [category_id, fetchProducts]); // Добавлен fetchProducts в зависимости
 
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems =
-    Array.isArray(products.data) &&
-    products.data.length > 0 &&
-    products.data.slice(indexOfFirstItem, indexOfLastItem);
+  const indexOfLastItem = currentPage * ProductsPerPage;
+  const indexOfFirstItem = indexOfLastItem - ProductsPerPage;
+  const currentProducts =
+    Array.isArray(products.data) && products.data.length > 0
+      ? products.data.slice(indexOfFirstItem, indexOfLastItem)
+      : [];
+
+  const handleChangePage = (event, value) => {
+    setCurrentPage(value);
+  };
 
   return (
     <Box sx={{ mt: 5, mb: 5 }}>
@@ -39,8 +43,8 @@ export default function CatalogDynamicPage() {
         spacing={{ xs: 2, md: 3 }}
         columns={{ xs: 4, sm: 4, md: 4 }}
       >
-        {Array.isArray(currentItems) && currentItems.length > 0 ? (
-          currentItems.map((e) => (
+        {currentProducts.length > 0 ? (
+          currentProducts.map((e) => (
             <Grid item key={e.id} xs={1} sm={1} md={1}>
               <Card
                 sx={{
@@ -48,7 +52,7 @@ export default function CatalogDynamicPage() {
                   background: "#F5FCFF",
                   cursor: "pointer",
                 }}
-                onClick={(item) => {
+                onClick={() => {
                   window.location.href = `/product/${e.id}`;
                 }}
               >
@@ -130,33 +134,23 @@ export default function CatalogDynamicPage() {
             </Grid>
           ))
         ) : (
-          <Typography variant="h6">Нет данных</Typography>
+          <Typography>Нет данных для отображения</Typography>
         )}
       </Grid>
-      <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
-        <Button
-          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-          disabled={currentPage === 1}
-        >
-          Назад
-        </Button>
-        <Typography sx={{ mx: 2 }}>
-          Страница {currentPage} из{" "}
-          {Math.ceil(products.data.length / itemsPerPage)}
-        </Typography>
-        <Button
-          onClick={() =>
-            setCurrentPage((prev) =>
-              Math.min(prev + 1, Math.ceil(products.data.length / itemsPerPage))
-            )
-          }
-          disabled={
-            currentPage === Math.ceil(products.data.length / itemsPerPage)
-          }
-        >
-          Вперед
-        </Button>
-      </Box>
+      {products && Array.isArray(products.data) && (
+        <Pagination
+          count={Math.ceil(products.data.length / ProductsPerPage)}
+          page={currentPage}
+          onChange={handleChangePage}
+          sx={{
+            mt: 4,
+            mb: 4,
+            display: "flex",
+            justifyContent: "center",
+            color: "#C152F0",
+          }}
+        />
+      )}
     </Box>
   );
 }

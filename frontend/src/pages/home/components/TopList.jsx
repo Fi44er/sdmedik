@@ -65,14 +65,14 @@ export default function TopList() {
           </header>
           <Grid
             container
-            spacing={{ xs: 2, md: 2 }}
+            spacing={{ xs: 2, md: 4, lg: 2 }}
             columns={{ xs: 4, sm: 4, md: 4 }}
           >
             {Array.from({ length: 4 }).map((_, index) => (
               <Grid item xs={1} sm={1} md={1} key={index}>
                 <Card
                   sx={{
-                    width: { xs: "100%", lg: "276px" },
+                    width: { xs: "100%", sm: "100%", md: "100%", lg: "276px" },
                     background: "#F5FCFF",
                   }}
                 >

@@ -163,7 +163,7 @@ export default function ProductDetailPage() {
               <Typography variant="subtitle1">
                 {products.data.article}
               </Typography>
-              <Typography variant="h5">{productDetails.price}</Typography>
+              <Typography variant="h5">{products.data.price}</Typography>
               {/* Other components */}
             </Box>
           ) : (
