@@ -368,6 +368,13 @@ const docTemplate = `{
                         "description": "Limit",
                         "name": "limit",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "example": "{\"price\":{\"min\":20,\"max\":100},\"characteristics\":[{\"characteristic_id\":1,\"values\":[\"string\"]}]}",
+                        "description": "Filters in JSON format",
+                        "name": "filters",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -423,7 +430,7 @@ const docTemplate = `{
         },
         "/product/filter/{category_id}": {
             "get": {
-                "description": "Gets a product",
+                "description": "Get a product filter",
                 "consumes": [
                     "application/json"
                 ],
