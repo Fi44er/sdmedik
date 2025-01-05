@@ -3,6 +3,7 @@ package product
 import (
 	"context"
 	"reflect"
+	"strconv"
 
 	"github.com/Fi44er/sdmedik/backend/internal/dto"
 	"github.com/Fi44er/sdmedik/backend/internal/model"
@@ -179,9 +180,14 @@ func (r *repository) Get(ctx context.Context, criteria dto.ProductSearchCriteria
 	// Фильтр по характеристикам
 	if len(criteria.Filters.Characteristics) > 0 {
 		for _, filter := range criteria.Filters.Characteristics {
-			request = request.Joins("JOIN characteristic_values ON characteristic_values.product_id = products.id").
-				Where("characteristic_values.characteristic_id = ?", filter.CharacteristicID).
-				Where("characteristic_values.value IN (?)", filter.Values)
+			// Создаем подзапрос для каждой характеристики
+			request = request.Joins(
+				"JOIN characteristic_values AS cv"+strconv.Itoa(filter.CharacteristicID)+" ON cv"+strconv.Itoa(filter.CharacteristicID)+".product_id = products.id",
+			).Where(
+				"cv"+strconv.Itoa(filter.CharacteristicID)+".characteristic_id = ?", filter.CharacteristicID,
+			).Where(
+				"cv"+strconv.Itoa(filter.CharacteristicID)+".value IN (?)", filter.Values,
+			)
 		}
 	}
 
