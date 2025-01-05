@@ -30,6 +30,7 @@ type IProductRepository interface {
 	Update(ctx context.Context, data *model.Product) error
 
 	Get(ctx context.Context, criteria dto.ProductSearchCriteria) (*[]model.Product, error)
+	// Get(ctx context.Context, conditions map[string]interface{}, offset, limit int) (*[]model.Product, error)
 }
 
 type IUserRepository interface {

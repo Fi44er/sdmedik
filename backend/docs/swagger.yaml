@@ -328,6 +328,11 @@ paths:
         in: query
         name: limit
         type: integer
+      - description: Filters in JSON format
+        example: '{"price":{"min":20,"max":100},"characteristics":[{"characteristic_id":1,"values":["string"]}]}'
+        in: query
+        name: filters
+        type: string
       produces:
       - application/json
       responses:
@@ -470,7 +475,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Gets a product
+      description: Get a product filter
       parameters:
       - description: Category ID
         in: path

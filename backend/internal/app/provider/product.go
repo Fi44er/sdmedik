@@ -24,6 +24,7 @@ type ProductProvider struct {
 	characteristicValueService service.ICharacteristicValueService
 	transactionManagerRepo     repository.ITransactionManager
 	imageService               service.IImageService
+	characteristicService      service.ICharacteristicService
 }
 
 func NewProductProvider(
@@ -35,6 +36,7 @@ func NewProductProvider(
 	characteristicValueService service.ICharacteristicValueService,
 	transactionManagerRepo repository.ITransactionManager,
 	imageService service.IImageService,
+	characteristicService service.ICharacteristicService,
 ) *ProductProvider {
 	return &ProductProvider{
 		logger:                     logger,
@@ -44,6 +46,7 @@ func NewProductProvider(
 		characteristicValueService: characteristicValueService,
 		transactionManagerRepo:     transactionManagerRepo,
 		imageService:               imageService,
+		characteristicService:      characteristicService,
 	}
 }
 
@@ -64,6 +67,7 @@ func (p *ProductProvider) ProductService() service.IProductService {
 			p.characteristicValueService,
 			p.transactionManagerRepo,
 			p.imageService,
+			p.characteristicService,
 		)
 	}
 

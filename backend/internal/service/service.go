@@ -5,6 +5,7 @@ import (
 
 	"github.com/Fi44er/sdmedik/backend/internal/dto"
 	"github.com/Fi44er/sdmedik/backend/internal/model"
+	"github.com/Fi44er/sdmedik/backend/internal/response"
 	"gorm.io/gorm"
 )
 
@@ -31,7 +32,7 @@ type IProductService interface {
 	Update(ctx context.Context, product *dto.UpdateProduct, images *dto.Images, id string) error
 	Delete(ctx context.Context, id string) error
 	Get(ctx context.Context, criteria dto.ProductSearchCriteria) (*[]model.Product, error)
-	GetFilter(ctx context.Context, categoryID int) error
+	GetFilter(ctx context.Context, categoryID int) (*response.ProductFilter, error)
 }
 
 type ICategoryService interface {

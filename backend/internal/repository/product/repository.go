@@ -86,6 +86,56 @@ func (r *repository) Delete(ctx context.Context, id string, tx *gorm.DB) error {
 	return nil
 }
 
+// func (r *repository) Get(ctx context.Context, criteria dto.ProductSearchCriteria) (*[]model.Product, error) {
+// 	products := new([]model.Product)
+//
+// 	// Динамическое построение условий через рефлексию
+// 	conditions := make(map[string]interface{})
+// 	val := reflect.ValueOf(criteria)
+// 	typ := reflect.TypeOf(criteria)
+//
+// 	for i := 0; i < val.NumField(); i++ {
+// 		field := typ.Field(i)
+// 		value := val.Field(i)
+//
+// 		if !value.IsZero() { // Проверяем, заполнено ли поле
+// 			conditions[field.Tag.Get("gorm")] = value.Interface()
+// 		}
+// 	}
+//
+// 	request := r.db.WithContext(ctx).Preload("Categories").Preload("Images").Preload("CharacteristicValues")
+//
+// 	if criteria.CategoryID != 0 {
+// 		request = request.Joins("JOIN product_categories ON product_categories.product_id = products.id").
+// 			Where("product_categories.category_id = ?", criteria.CategoryID)
+// 	}
+//
+// 	if criteria.Offset != 0 {
+// 		request = request.Offset(criteria.Offset)
+// 		delete(conditions, "offset")
+// 	}
+//
+// 	if criteria.Limit != 0 {
+// 		request = request.Limit(criteria.Limit)
+// 		delete(conditions, "limit")
+// 	}
+//
+// 	// Выполняем запрос с условиями
+// 	r.logger.Infof("%v", conditions)
+// 	err := request.Where(conditions).Find(products).Error
+// 	if err != nil {
+// 		if err == gorm.ErrRecordNotFound {
+// 			r.logger.Warnf("Product not found with provided criteria")
+// 			return products, nil
+// 		}
+// 		r.logger.Errorf("Failed to fetch product: %v", err)
+// 		return nil, err
+// 	}
+//
+// 	r.logger.Info("Product fetched successfully")
+// 	return products, nil
+// }
+
 func (r *repository) Get(ctx context.Context, criteria dto.ProductSearchCriteria) (*[]model.Product, error) {
 	products := new([]model.Product)
 
@@ -98,6 +148,11 @@ func (r *repository) Get(ctx context.Context, criteria dto.ProductSearchCriteria
 		field := typ.Field(i)
 		value := val.Field(i)
 
+		// Пропускаем поля с тегом gorm:"-"
+		if field.Tag.Get("gorm") == "-" {
+			continue
+		}
+
 		if !value.IsZero() { // Проверяем, заполнено ли поле
 			conditions[field.Tag.Get("gorm")] = value.Interface()
 		}
@@ -105,11 +160,32 @@ func (r *repository) Get(ctx context.Context, criteria dto.ProductSearchCriteria
 
 	request := r.db.WithContext(ctx).Preload("Categories").Preload("Images").Preload("CharacteristicValues")
 
+	// Фильтр по категории
 	if criteria.CategoryID != 0 {
 		request = request.Joins("JOIN product_categories ON product_categories.product_id = products.id").
 			Where("product_categories.category_id = ?", criteria.CategoryID)
 	}
 
+	// Фильтр по диапазону цен
+	if criteria.Filters.Price.Min > 0 || criteria.Filters.Price.Max > 0 {
+		if criteria.Filters.Price.Min > 0 {
+			request = request.Where("price >= ?", criteria.Filters.Price.Min)
+		}
+		if criteria.Filters.Price.Max > 0 {
+			request = request.Where("price <= ?", criteria.Filters.Price.Max)
+		}
+	}
+
+	// Фильтр по характеристикам
+	if len(criteria.Filters.Characteristics) > 0 {
+		for _, filter := range criteria.Filters.Characteristics {
+			request = request.Joins("JOIN characteristic_values ON characteristic_values.product_id = products.id").
+				Where("characteristic_values.characteristic_id = ?", filter.CharacteristicID).
+				Where("characteristic_values.value IN (?)", filter.Values)
+		}
+	}
+
+	// Пагинация
 	if criteria.Offset != 0 {
 		request = request.Offset(criteria.Offset)
 		delete(conditions, "offset")
@@ -121,7 +197,7 @@ func (r *repository) Get(ctx context.Context, criteria dto.ProductSearchCriteria
 	}
 
 	// Выполняем запрос с условиями
-	r.logger.Infof("%v", conditions)
+	r.logger.Infof("%v", criteria.Filters)
 	err := request.Where(conditions).Find(products).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {

@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"encoding/json"
 	"log"
 	"reflect"
 	"strconv"
@@ -20,6 +21,14 @@ func BindQueryToStruct(queryParams map[string]string, dest interface{}) {
 		if queryTag != "" {
 			if value, exists := queryParams[queryTag]; exists {
 				destField := destValue.Field(i)
+
+				// Если поле является вложенной структурой и содержит JSON
+				if field.Type.Kind() == reflect.Struct && queryTag == "filters" {
+					if err := json.Unmarshal([]byte(value), destField.Addr().Interface()); err != nil {
+						log.Printf("Failed to parse JSON for field %s: %v\n", field.Name, err)
+					}
+					continue
+				}
 
 				// Преобразование значения в тип поля структуры
 				if destField.CanSet() {

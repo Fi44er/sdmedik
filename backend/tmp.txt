@@ -49,3 +49,44 @@
   ],
   "name": "category #1"
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Filter: {
+  "price": {
+    "min": 0,
+    "max": 123.12
+  },
+  "characteristics": [
+  {
+    "name": "characteristic #1",
+    "values": [
+      "12"
+    ],
+  },
+  {
+    "name": "characteristic #2",
+    "values": [
+      12
+    ]
+  }
+  ],
+  "count": 0
+} 

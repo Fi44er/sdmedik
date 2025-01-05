@@ -95,6 +95,7 @@ func (s *serviceProvider) initProductProvider() error {
 		s.characteristicValueProvider.CharacteristicValueService(),
 		s.transactionManagerProvider.TransactionManager(),
 		s.imageProvider.ImageService(),
+		s.characteristicProvider.CharacteristicService(),
 	)
 	return nil
 }
