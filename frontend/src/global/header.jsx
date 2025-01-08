@@ -67,6 +67,8 @@ export default function Header() {
   const [menuLk, setMenuLk] = React.useState(null);
   const { isAuthenticated, setIsAuthenticated, checkAuthStatus } =
     useAuthStore();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchSuggestions, setSearchSuggestions] = useState([]);
 
   useEffect(() => {
     // Проверяем состояние куки при монтировании компонента
@@ -130,7 +132,8 @@ export default function Header() {
             sx={{
               width: "100%",
               display: "flex",
-              justifyContent:"space-between",
+              gridGap: 20,
+              justifyContent: "space-between",
               alignItems: "center",
             }}
           >
@@ -151,27 +154,88 @@ export default function Header() {
               >
                 <img
                   style={{ width: "100%" }}
-                  src="/public/Logo_Header.png"
+                  src="/medi_logo 2.png"
                   alt="logo"
                 />
               </Box>
             </Box>
-            <Search>
-              <SearchIcon fontSize="medium" />
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                width: "100%",
+                maxWidth: "500px",
+                position: "relative",
+              }}
+            >
+              {/* Поле поиска */}
               <InputBase
                 type="text"
                 placeholder="Поиск по товарам"
                 sx={{
+                  height: "53px",
                   width: "100%",
-                  height: "90%",
-                  border: "none",
-                  borderRadius: "30px",
-                  fontSize: "18px",
+                  border: "2px solid #87EBEB",
+                  borderRight: "none",
+                  paddingLeft: "20px",
+                  fontSize: "16px",
                   outline: "none",
-                  marginLeft: "10px",
+                  backgroundColor: "#FAFAFA",
                 }}
+                onChange={(e) => handleSearchInput(e.target.value)} // Обработка ввода
               />
-            </Search>
+
+              {/* Кнопка поиска */}
+              <Button
+                variant="contained"
+                sx={{
+                  height: "53px",
+                  borderTopLeftRadius: "0",
+                  borderBottomLeftRadius: "0",
+                  borderTopRightRadius: "10px",
+                  borderBottomRightRadius: "10px",
+                  backgroundColor: "#00B3A4",
+                  "&:hover": {
+                    backgroundColor: "#009688",
+                  },
+                }}
+                // onClick={}
+              >
+                <SearchIcon fontSize="large" />
+              </Button>
+
+              {/* Выпадающий список с подсказками */}
+              {searchSuggestions.length > 0 && (
+                <Box
+                  sx={{
+                    position: "absolute",
+                    top: "60px",
+                    left: 0,
+                    width: "100%",
+                    backgroundColor: "white",
+                    border: "1px solid #ddd",
+                    borderRadius: "5px",
+                    boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+                    zIndex: 1000,
+                  }}
+                >
+                  {searchSuggestions.map((suggestion, index) => (
+                    <MenuItem
+                      key={index}
+                      onClick={() => handleSuggestionClick(suggestion)}
+                      sx={{
+                        padding: "10px 20px",
+                        "&:hover": {
+                          backgroundColor: "#f5f5f5",
+                        },
+                      }}
+                    >
+                      {suggestion}
+                    </MenuItem>
+                  ))}
+                </Box>
+              )}
+            </Box>
             <Box sx={{ display: "flex", alignItems: "center", gridGap: 20 }}>
               <IconButton
                 id="basic-button"
@@ -348,22 +412,83 @@ export default function Header() {
             width: "100%",
           }}
         >
-          <Search>
-            <SearchIcon fontSize="medium" />
-            <input
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              width: "100%",
+              maxWidth: "800px",
+              position: "relative",
+            }}
+          >
+            {/* Поле поиска */}
+            <InputBase
               type="text"
               placeholder="Поиск по товарам"
-              style={{
+              sx={{
+                height: "53px",
                 width: "100%",
-                height: "90%",
-                border: "none",
-                borderRadius: "30px",
-                fontSize: "18px",
+                border: "2px solid #87EBEB",
+                borderRight: "none",
+                paddingLeft: "20px",
+                fontSize: "16px",
                 outline: "none",
-                marginLeft: "10px",
+                backgroundColor: "#FAFAFA",
               }}
+              onChange={(e) => handleSearchInput(e.target.value)} // Обработка ввода
             />
-          </Search>
+
+            {/* Кнопка поиска */}
+            <Button
+              variant="contained"
+              sx={{
+                height: "53px",
+                borderTopLeftRadius: "0",
+                borderBottomLeftRadius: "0",
+                borderTopRightRadius: "10px",
+                borderBottomRightRadius: "10px",
+                backgroundColor: "#00B3A4",
+                "&:hover": {
+                  backgroundColor: "#009688",
+                },
+              }}
+              // onClick={}
+            >
+              <SearchIcon fontSize="large" />
+            </Button>
+
+            {/* Выпадающий список с подсказками */}
+            {searchSuggestions.length > 0 && (
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: "60px",
+                  left: 0,
+                  width: "100%",
+                  backgroundColor: "white",
+                  border: "1px solid #ddd",
+                  borderRadius: "5px",
+                  boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+                  zIndex: 1000,
+                }}
+              >
+                {searchSuggestions.map((suggestion, index) => (
+                  <MenuItem
+                    key={index}
+                    onClick={() => handleSuggestionClick(suggestion)}
+                    sx={{
+                      padding: "10px 20px",
+                      "&:hover": {
+                        backgroundColor: "#f5f5f5",
+                      },
+                    }}
+                  >
+                    {suggestion}
+                  </MenuItem>
+                ))}
+              </Box>
+            )}
+          </Box>
         </Box>
       </Toolbar>
       <Drawer anchor="left" open={drawerOpen} onClose={toggleDrawer(false)}>

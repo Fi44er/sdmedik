@@ -13,16 +13,20 @@ import Grid from "@mui/material/Grid2";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import useProductStore from "../../../store/productStore";
+import useFilterStore from "../../../store/filterStore";
+import SidebarFilter from "./SidebarFilter";
 
 export default function CatalogDynamicPage() {
-  const { category_id } = useParams();
+  const { id } = useParams();
   const { fetchProducts, products } = useProductStore();
+
   const [currentPage, setCurrentPage] = useState(1);
-  const ProductsPerPage = 8;
+  const ProductsPerPage = 20;
+
+  const category_id = id;
 
   useEffect(() => {
     fetchProducts(category_id);
-    console.log(products);
   }, [category_id, fetchProducts]); // Добавлен fetchProducts в зависимости
 
   const indexOfLastItem = currentPage * ProductsPerPage;
@@ -37,7 +41,10 @@ export default function CatalogDynamicPage() {
   };
 
   return (
-    <Box sx={{ mt: 5, mb: 5 }}>
+    <Box sx={{ mt: 1, mb: 5 }}>
+      <Box sx={{ mb: 5 }}>
+        <SidebarFilter />
+      </Box>
       <Grid
         container
         spacing={{ xs: 2, md: 3 }}

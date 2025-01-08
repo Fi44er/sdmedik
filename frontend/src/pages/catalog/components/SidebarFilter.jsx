@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -16,8 +16,7 @@ import {
   AccordionSummary,
   AccordionDetails,
   FormControlLabel,
-  Radio,
-  RadioGroup,
+  Checkbox,
   TextField,
   styled,
   Paper,
@@ -25,6 +24,10 @@ import {
 import FilterListIcon from "@mui/icons-material/FilterList";
 import CloseIcon from "@mui/icons-material/Close";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import useFilterStore from "../../../store/filterStore";
+import { useParams } from "react-router-dom";
+import useProductStore from "../../../store/productStore";
+import stringify from "json-stringify-safe";
 
 const CustomTextField = styled(TextField)({
   "& .MuiOutlinedInput-root": {
@@ -42,60 +45,87 @@ const CustomTextField = styled(TextField)({
 
 const SidebarFilter = () => {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm")); // Определяем, мобильное ли устройство
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [priceRange, setPriceRange] = useState([20000, 30000]);
-  const [selectedOffer, setSelectedOffer] = useState("");
-  const [selectedColor, setSelectedColor] = useState("");
-  const [selectedBatteryType, setSelectedBatteryType] = useState("");
-  const [selectedMotorPower, setSelectedMotorPower] = useState("");
+  const [minPrice, setMinPrice] = useState(0);
+  const [maxPrice, setMaxPrice] = useState(0);
+  const [filtersApplied, setFiltersApplied] = useState(false);
+  const { fetchFilter, filters } = useFilterStore();
+  const { fetchProducts, products } = useProductStore();
+  const { id } = useParams();
+  const category_id = id;
 
-  const controlProps = (item) => ({
-    // checked: selectedValue === item,
-    // onChange: handleChange,
-    value: item,
-    name: "color-radio-button-demo",
-    inputProps: { "aria-label": item },
-  });
+  useEffect(() => {
+    fetchFilter(category_id);
+    console.log(filters);
+  }, [category_id]);
 
   const toggleDrawer = () => {
     setDrawerOpen(!drawerOpen);
   };
 
-  const handlePriceChange = (event, newValue) => {
-    setPriceRange(newValue);
+  const handleApplyFilters = () => {
+    // Ensure filters.data.characteristics is an array and has data
+  
+
+    // Construct the serializableFilters object
+    const serializableFilters = {
+      price: {
+        min: minPrice,
+        max: maxPrice,
+      },
+      characteristics: filters.data.characteristics.map((filter) => ({
+        characteristic_id: filter.id,
+        values: filter.values
+          .filter((value) => value.checked) // Only include checked values
+          .map((value) => value.value), // Extract only the value property
+      })),
+    };
+
+    // Convert to JSON string
+
+    // Fetch products with the filters
+    fetchProducts(category_id, serializableFilters);
+    console.log("Filters Data:", serializableFilters);
+
+    // Close the drawer and mark filters as applied
+    toggleDrawer();
+    setFiltersApplied(true);
   };
 
-  const handleApplyFilters = () => {
-    // Здесь вы можете добавить логику применения фильтров
-    toggleDrawer(); // Закрытие меню после применения фильтров
+  const handleResetFilters = () => {
+    setPriceRange([20000, 30000]);
+    setMinPrice(20000);
+    setMaxPrice(30000);
+    setFiltersApplied(false);
   };
 
   return (
     <Box sx={{ display: "flex" }}>
-      {isMobile && (
-        <Box sx={{ mt: 5 }}>
-          <Button
-            sx={{
-              background: "#00B3A4",
-              color: "white",
-              height: "50px",
-              width: "150px",
-            }}
-            onClick={toggleDrawer}
-          >
-            Фильрация
-            <FilterListIcon />
-          </Button>
-        </Box>
-      )}
+      <Box sx={{ mt: 5 }}>
+        <Button
+          sx={{
+            background: "#00B3A4",
+            color: "white",
+            height: "50px",
+            width: "150px",
+          }}
+          onClick={toggleDrawer}
+        >
+          Фильтрация
+          <FilterListIcon />
+        </Button>
+      </Box>
 
-      {/* Drawer для мобильной версии */}
       <Drawer
         anchor="left"
         open={drawerOpen}
         onClose={toggleDrawer}
-        sx={{ "& .MuiDrawer-paper": { width: "100vw", height: "100vh" } }} // Занимает весь экран
+        sx={{
+          "& .MuiDrawer-paper": {
+            width: { xs: "100%", sm: "100%", md: "350px" },
+            height: "100vh",
+          },
+        }}
       >
         <Box sx={{ padding: 2, height: "100vh", position: "relative" }}>
           <IconButton
@@ -104,7 +134,12 @@ const SidebarFilter = () => {
           >
             <CloseIcon />
           </IconButton>
-          <Typography variant="h6">Фильтрация</Typography>
+          <Typography
+            variant="h6"
+            sx={{ fontWeight: "bold", color: "#00B3A4" }}
+          >
+            Фильтрация
+          </Typography>
           <Box sx={{ mt: 2 }}>
             <Box sx={{ mb: 2 }}>
               <Typography variant="body">Цена</Typography>
@@ -112,897 +147,101 @@ const SidebarFilter = () => {
             <Box
               sx={{
                 display: "flex",
-                justifyContent: "center",
+                justifyContent: "space-between",
                 gridGap: "20px",
               }}
             >
-              <Box>
-                <label>От</label>
-                <CustomTextField
-                  variant="outlined"
-                  sx={{ width: "100%", mt: 2 }}
-                />
-              </Box>
-              <Box>
-                <label>До</label>
-                <CustomTextField
-                  variant="outlined"
-                  sx={{ width: "100%", mt: 2 }}
-                />
-              </Box>
+              <CustomTextField
+                variant="outlined"
+                placeholder="От"
+                onChange={setMinPrice}
+                sx={{ width: "48%", mt: 2, color: "#00B3A4" }}
+              />
+              <CustomTextField
+                variant="outlined"
+                placeholder="До"
+                onChange={setMaxPrice}
+                sx={{ width: "48%", mt: 2, color: "#00B3A4" }}
+              />
             </Box>
           </Box>
-          <FormControl fullWidth sx={{ mt: 2 }}>
-            <Accordion>
-              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                Наши предложения
-              </AccordionSummary>
-              <AccordionDetails
+
+          {Array.isArray(filters?.data?.characteristics) &&
+          filters.data.characteristics.length > 0 ? (
+            filters.data.characteristics.map((filter, index) => (
+              <FormControl fullWidth sx={{ mt: 2 }} key={index}>
+                <Accordion>
+                  <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                    {filter.name}
+                  </AccordionSummary>
+                  <AccordionDetails
+                    sx={{
+                      maxHeight: 200,
+                      overflow: "auto",
+                    }}
+                  >
+                    {filter.values.map((value, valueIndex) => (
+                      <FormControlLabel
+                        key={valueIndex}
+                        control={
+                          <Checkbox
+                            sx={{
+                              color: "#00B3A4",
+                              "&.Mui-checked": {
+                                color: "#00B3A4",
+                              },
+                            }}
+                            onChange={() => setFiltersApplied(true)}
+                          />
+                        }
+                        label={
+                          typeof value === "boolean"
+                            ? value
+                              ? "Да"
+                              : "Нет"
+                            : typeof value === "number"
+                            ? `${value} см`
+                            : value
+                        }
+                      />
+                    ))}
+                  </AccordionDetails>
+                </Accordion>
+              </FormControl>
+            ))
+          ) : (
+            <Typography>Данных нет</Typography>
+          )}
+          <Box sx={{ display: "flex", justifyContent: "space-between", mt: 3 }}>
+            <Button
+              variant="outlined"
+              sx={{
+                border: "2px solid #2CC0B3",
+                color: "#2CC0B3",
+                height: "50px",
+                width: "48%",
+              }}
+              onClick={handleApplyFilters}
+            >
+              Показать
+            </Button>
+            {filtersApplied && (
+              <Button
+                variant="contained"
                 sx={{
-                  maxHeight: 200,
-                  overflow: "auto",
+                  background: `#c0c0c0`,
+                  height: "50px",
+                  color: "black",
+                  width: "48%",
                 }}
+                onClick={handleResetFilters}
               >
-                <RadioGroup
-                  aria-labelledby="demo-radio-buttons-group-label"
-                  defaultValue="female"
-                  name="radio-buttons-group"
-                >
-                  <FormControlLabel
-                    value="female"
-                    control={
-                      <Radio
-                        {...controlProps("e")}
-                        sx={{
-                          color: "#00B3A4",
-                          "&.Mui-checked": {
-                            color: "#00B3A4",
-                          },
-                        }}
-                      />
-                    }
-                    label="Female"
-                  />
-                  <FormControlLabel
-                    value="female"
-                    control={
-                      <Radio
-                        {...controlProps("e")}
-                        sx={{
-                          color: "#00B3A4",
-                          "&.Mui-checked": {
-                            color: "#00B3A4",
-                          },
-                        }}
-                      />
-                    }
-                    label="Female"
-                  />
-                  <FormControlLabel
-                    value="female"
-                    control={
-                      <Radio
-                        {...controlProps("e")}
-                        sx={{
-                          color: "#00B3A4",
-                          "&.Mui-checked": {
-                            color: "#00B3A4",
-                          },
-                        }}
-                      />
-                    }
-                    label="Female"
-                  />
-                  <FormControlLabel
-                    value="female"
-                    control={
-                      <Radio
-                        {...controlProps("e")}
-                        sx={{
-                          color: "#00B3A4",
-                          "&.Mui-checked": {
-                            color: "#00B3A4",
-                          },
-                        }}
-                      />
-                    }
-                    label="Female"
-                  />
-                  <FormControlLabel
-                    value="female"
-                    control={
-                      <Radio
-                        {...controlProps("e")}
-                        sx={{
-                          color: "#00B3A4",
-                          "&.Mui-checked": {
-                            color: "#00B3A4",
-                          },
-                        }}
-                      />
-                    }
-                    label="Female"
-                  />
-                </RadioGroup>
-              </AccordionDetails>
-            </Accordion>
-          </FormControl>
-          <FormControl fullWidth sx={{ mt: 2 }}>
-            <Accordion>
-              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                Цвет рамы
-              </AccordionSummary>
-              <AccordionDetails
-                sx={{
-                  maxHeight: 200,
-                  overflow: "auto",
-                }}
-              >
-                <RadioGroup
-                  aria-labelledby="demo-radio-buttons-group-label"
-                  defaultValue="female"
-                  name="radio-buttons-group"
-                >
-                  <FormControlLabel
-                    value="female"
-                    control={
-                      <Radio
-                        {...controlProps("e")}
-                        sx={{
-                          color: "#00B3A4",
-                          "&.Mui-checked": {
-                            color: "#00B3A4",
-                          },
-                        }}
-                      />
-                    }
-                    label="Female"
-                  />
-                  <FormControlLabel
-                    value="female"
-                    control={
-                      <Radio
-                        {...controlProps("e")}
-                        sx={{
-                          color: "#00B3A4",
-                          "&.Mui-checked": {
-                            color: "#00B3A4",
-                          },
-                        }}
-                      />
-                    }
-                    label="Female"
-                  />
-                  <FormControlLabel
-                    value="female"
-                    control={
-                      <Radio
-                        {...controlProps("e")}
-                        sx={{
-                          color: "#00B3A4",
-                          "&.Mui-checked": {
-                            color: "#00B3A4",
-                          },
-                        }}
-                      />
-                    }
-                    label="Female"
-                  />
-                  <FormControlLabel
-                    value="female"
-                    control={
-                      <Radio
-                        {...controlProps("e")}
-                        sx={{
-                          color: "#00B3A4",
-                          "&.Mui-checked": {
-                            color: "#00B3A4",
-                          },
-                        }}
-                      />
-                    }
-                    label="Female"
-                  />
-                  <FormControlLabel
-                    value="female"
-                    control={
-                      <Radio
-                        {...controlProps("e")}
-                        sx={{
-                          color: "#00B3A4",
-                          "&.Mui-checked": {
-                            color: "#00B3A4",
-                          },
-                        }}
-                      />
-                    }
-                    label="Female"
-                  />
-                </RadioGroup>
-              </AccordionDetails>
-            </Accordion>
-          </FormControl>
-          <FormControl fullWidth sx={{ mt: 2 }}>
-            <Accordion>
-              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                Тип аккумулятора
-              </AccordionSummary>
-              <AccordionDetails
-                sx={{
-                  maxHeight: 200,
-                  overflow: "auto",
-                }}
-              >
-                <RadioGroup
-                  aria-labelledby="demo-radio-buttons-group-label"
-                  defaultValue="female"
-                  name="radio-buttons-group"
-                >
-                  <FormControlLabel
-                    value="female"
-                    control={
-                      <Radio
-                        {...controlProps("e")}
-                        sx={{
-                          color: "#00B3A4",
-                          "&.Mui-checked": {
-                            color: "#00B3A4",
-                          },
-                        }}
-                      />
-                    }
-                    label="Female"
-                  />
-                  <FormControlLabel
-                    value="female"
-                    control={
-                      <Radio
-                        {...controlProps("e")}
-                        sx={{
-                          color: "#00B3A4",
-                          "&.Mui-checked": {
-                            color: "#00B3A4",
-                          },
-                        }}
-                      />
-                    }
-                    label="Female"
-                  />
-                  <FormControlLabel
-                    value="female"
-                    control={
-                      <Radio
-                        {...controlProps("e")}
-                        sx={{
-                          color: "#00B3A4",
-                          "&.Mui-checked": {
-                            color: "#00B3A4",
-                          },
-                        }}
-                      />
-                    }
-                    label="Female"
-                  />
-                  <FormControlLabel
-                    value="female"
-                    control={
-                      <Radio
-                        {...controlProps("e")}
-                        sx={{
-                          color: "#00B3A4",
-                          "&.Mui-checked": {
-                            color: "#00B3A4",
-                          },
-                        }}
-                      />
-                    }
-                    label="Female"
-                  />
-                  <FormControlLabel
-                    value="female"
-                    control={
-                      <Radio
-                        {...controlProps("e")}
-                        sx={{
-                          color: "#00B3A4",
-                          "&.Mui-checked": {
-                            color: "#00B3A4",
-                          },
-                        }}
-                      />
-                    }
-                    label="Female"
-                  />
-                </RadioGroup>
-              </AccordionDetails>
-            </Accordion>
-          </FormControl>
-          <FormControl fullWidth sx={{ mt: 2 }}>
-            <Accordion>
-              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                Мощность электромотора
-              </AccordionSummary>
-              <AccordionDetails
-                sx={{
-                  maxHeight: 200,
-                  overflow: "auto",
-                }}
-              >
-                <RadioGroup
-                  aria-labelledby="demo-radio-buttons-group-label"
-                  defaultValue="female"
-                  name="radio-buttons-group"
-                >
-                  <FormControlLabel
-                    value="female"
-                    control={
-                      <Radio
-                        {...controlProps("e")}
-                        sx={{
-                          color: "#00B3A4",
-                          "&.Mui-checked": {
-                            color: "#00B3A4",
-                          },
-                        }}
-                      />
-                    }
-                    label="Female"
-                  />
-                  <FormControlLabel
-                    value="female"
-                    control={
-                      <Radio
-                        {...controlProps("e")}
-                        sx={{
-                          color: "#00B3A4",
-                          "&.Mui-checked": {
-                            color: "#00B3A4",
-                          },
-                        }}
-                      />
-                    }
-                    label="Female"
-                  />
-                  <FormControlLabel
-                    value="female"
-                    control={
-                      <Radio
-                        {...controlProps("e")}
-                        sx={{
-                          color: "#00B3A4",
-                          "&.Mui-checked": {
-                            color: "#00B3A4",
-                          },
-                        }}
-                      />
-                    }
-                    label="Female"
-                  />
-                  <FormControlLabel
-                    value="female"
-                    control={
-                      <Radio
-                        {...controlProps("e")}
-                        sx={{
-                          color: "#00B3A4",
-                          "&.Mui-checked": {
-                            color: "#00B3A4",
-                          },
-                        }}
-                      />
-                    }
-                    label="Female"
-                  />
-                  <FormControlLabel
-                    value="female"
-                    control={
-                      <Radio
-                        {...controlProps("e")}
-                        sx={{
-                          color: "#00B3A4",
-                          "&.Mui-checked": {
-                            color: "#00B3A4",
-                          },
-                        }}
-                      />
-                    }
-                    label="Female"
-                  />
-                </RadioGroup>
-              </AccordionDetails>
-            </Accordion>
-          </FormControl>
-          <Button
-            variant="contained"
-            sx={{
-              mt: 3,
-              background: `linear-gradient(91.54deg, #9FE1D2 -43.68%, #2AC8BB 142.9%, #14B8A9 142.9%)`,
-              borderRadius: "50px",
-              height: "50px",
-              width: "100%",
-            }}
-            // onClick={toggleDrawer}
-          >
-            Применить фильтры
-          </Button>
-          <Button
-            variant="contained"
-            sx={{
-              mt: 3,
-              background: `#BEF4F0`,
-              borderRadius: "50px",
-              height: "50px",
-              color: "black",
-              width: "100%",
-            }}
-          >
-            Очистить
-          </Button>
+                Сбросить все
+              </Button>
+            )}
+          </Box>
         </Box>
       </Drawer>
-
-      {/* Меню фильтров для десктопа всегда отображается */}
-      <Box
-        sx={{
-          width: "250px",
-          display: isMobile ? "none" : "block", // Скрыть на мобильной версии
-          padding: 2,
-        }}
-      >
-        <Box
-          sx={{
-            width: "100%",
-            background: "#00B3A4",
-            height: "40px",
-            borderRadius: "50px",
-          }}
-        >
-          <Typography
-            variant="h6"
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              color: "white",
-            }}
-          >
-            Фильтрация
-          </Typography>
-        </Box>
-        <Box sx={{ mt: 2 }}>
-          <Box sx={{ mb: 2 }}>
-            <Typography variant="body">Цена</Typography>
-          </Box>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              gridGap: "20px",
-            }}
-          >
-            <Box>
-              <label>От</label>
-              <CustomTextField
-                variant="outlined"
-                sx={{ width: "100%", mt: 2 }}
-              />
-            </Box>
-            <Box>
-              <label>До</label>
-              <CustomTextField
-                variant="outlined"
-                sx={{ width: "100%", mt: 2 }}
-              />
-            </Box>
-          </Box>
-        </Box>
-        <FormControl fullWidth sx={{ mt: 2 }}>
-          <Accordion>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              Наши предложения
-            </AccordionSummary>
-            <AccordionDetails
-              sx={{
-                maxHeight: 200,
-                overflow: "auto",
-              }}
-            >
-              <RadioGroup
-                aria-labelledby="demo-radio-buttons-group-label"
-                defaultValue="female"
-                name="radio-buttons-group"
-              >
-                <FormControlLabel
-                  value="female"
-                  control={
-                    <Radio
-                      {...controlProps("e")}
-                      sx={{
-                        color: "#00B3A4",
-                        "&.Mui-checked": {
-                          color: "#00B3A4",
-                        },
-                      }}
-                    />
-                  }
-                  label="Female"
-                />
-                <FormControlLabel
-                  value="female"
-                  control={
-                    <Radio
-                      {...controlProps("e")}
-                      sx={{
-                        color: "#00B3A4",
-                        "&.Mui-checked": {
-                          color: "#00B3A4",
-                        },
-                      }}
-                    />
-                  }
-                  label="Female"
-                />
-                <FormControlLabel
-                  value="female"
-                  control={
-                    <Radio
-                      {...controlProps("e")}
-                      sx={{
-                        color: "#00B3A4",
-                        "&.Mui-checked": {
-                          color: "#00B3A4",
-                        },
-                      }}
-                    />
-                  }
-                  label="Female"
-                />
-                <FormControlLabel
-                  value="female"
-                  control={
-                    <Radio
-                      {...controlProps("e")}
-                      sx={{
-                        color: "#00B3A4",
-                        "&.Mui-checked": {
-                          color: "#00B3A4",
-                        },
-                      }}
-                    />
-                  }
-                  label="Female"
-                />
-                <FormControlLabel
-                  value="female"
-                  control={
-                    <Radio
-                      {...controlProps("e")}
-                      sx={{
-                        color: "#00B3A4",
-                        "&.Mui-checked": {
-                          color: "#00B3A4",
-                        },
-                      }}
-                    />
-                  }
-                  label="Female"
-                />
-              </RadioGroup>
-            </AccordionDetails>
-          </Accordion>
-        </FormControl>
-        <FormControl fullWidth sx={{ mt: 2 }}>
-          <Accordion>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              Цвет рамы
-            </AccordionSummary>
-            <AccordionDetails
-              sx={{
-                maxHeight: 200,
-                overflow: "auto",
-              }}
-            >
-              <RadioGroup
-                aria-labelledby="demo-radio-buttons-group-label"
-                defaultValue="female"
-                name="radio-buttons-group"
-              >
-                <FormControlLabel
-                  value="female"
-                  control={
-                    <Radio
-                      {...controlProps("e")}
-                      sx={{
-                        color: "#00B3A4",
-                        "&.Mui-checked": {
-                          color: "#00B3A4",
-                        },
-                      }}
-                    />
-                  }
-                  label="Female"
-                />
-                <FormControlLabel
-                  value="female"
-                  control={
-                    <Radio
-                      {...controlProps("e")}
-                      sx={{
-                        color: "#00B3A4",
-                        "&.Mui-checked": {
-                          color: "#00B3A4",
-                        },
-                      }}
-                    />
-                  }
-                  label="Female"
-                />
-                <FormControlLabel
-                  value="female"
-                  control={
-                    <Radio
-                      {...controlProps("e")}
-                      sx={{
-                        color: "#00B3A4",
-                        "&.Mui-checked": {
-                          color: "#00B3A4",
-                        },
-                      }}
-                    />
-                  }
-                  label="Female"
-                />
-                <FormControlLabel
-                  value="female"
-                  control={
-                    <Radio
-                      {...controlProps("e")}
-                      sx={{
-                        color: "#00B3A4",
-                        "&.Mui-checked": {
-                          color: "#00B3A4",
-                        },
-                      }}
-                    />
-                  }
-                  label="Female"
-                />
-                <FormControlLabel
-                  value="female"
-                  control={
-                    <Radio
-                      {...controlProps("e")}
-                      sx={{
-                        color: "#00B3A4",
-                        "&.Mui-checked": {
-                          color: "#00B3A4",
-                        },
-                      }}
-                    />
-                  }
-                  label="Female"
-                />
-              </RadioGroup>
-            </AccordionDetails>
-          </Accordion>
-        </FormControl>
-        <FormControl fullWidth sx={{ mt: 2 }}>
-          <Accordion>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              Тип аккумулятора
-            </AccordionSummary>
-            <AccordionDetails
-              sx={{
-                maxHeight: 200,
-                overflow: "auto",
-              }}
-            >
-              <RadioGroup
-                aria-labelledby="demo-radio-buttons-group-label"
-                defaultValue="female"
-                name="radio-buttons-group"
-              >
-                <FormControlLabel
-                  value="female"
-                  control={
-                    <Radio
-                      {...controlProps("e")}
-                      sx={{
-                        color: "#00B3A4",
-                        "&.Mui-checked": {
-                          color: "#00B3A4",
-                        },
-                      }}
-                    />
-                  }
-                  label="Female"
-                />
-                <FormControlLabel
-                  value="female"
-                  control={
-                    <Radio
-                      {...controlProps("e")}
-                      sx={{
-                        color: "#00B3A4",
-                        "&.Mui-checked": {
-                          color: "#00B3A4",
-                        },
-                      }}
-                    />
-                  }
-                  label="Female"
-                />
-                <FormControlLabel
-                  value="female"
-                  control={
-                    <Radio
-                      {...controlProps("e")}
-                      sx={{
-                        color: "#00B3A4",
-                        "&.Mui-checked": {
-                          color: "#00B3A4",
-                        },
-                      }}
-                    />
-                  }
-                  label="Female"
-                />
-                <FormControlLabel
-                  value="female"
-                  control={
-                    <Radio
-                      {...controlProps("e")}
-                      sx={{
-                        color: "#00B3A4",
-                        "&.Mui-checked": {
-                          color: "#00B3A4",
-                        },
-                      }}
-                    />
-                  }
-                  label="Female"
-                />
-                <FormControlLabel
-                  value="female"
-                  control={
-                    <Radio
-                      {...controlProps("e")}
-                      sx={{
-                        color: "#00B3A4",
-                        "&.Mui-checked": {
-                          color: "#00B3A4",
-                        },
-                      }}
-                    />
-                  }
-                  label="Female"
-                />
-              </RadioGroup>
-            </AccordionDetails>
-          </Accordion>
-        </FormControl>
-        <FormControl fullWidth sx={{ mt: 2 }}>
-          <Accordion>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              Мощность электромотора
-            </AccordionSummary>
-            <AccordionDetails
-              sx={{
-                maxHeight: 200,
-                overflow: "auto",
-              }}
-            >
-              <RadioGroup
-                aria-labelledby="demo-radio-buttons-group-label"
-                defaultValue="female"
-                name="radio-buttons-group"
-              >
-                <FormControlLabel
-                  value="female"
-                  control={
-                    <Radio
-                      {...controlProps("e")}
-                      sx={{
-                        color: "#00B3A4",
-                        "&.Mui-checked": {
-                          color: "#00B3A4",
-                        },
-                      }}
-                    />
-                  }
-                  label="Female"
-                />
-                <FormControlLabel
-                  value="female"
-                  control={
-                    <Radio
-                      {...controlProps("e")}
-                      sx={{
-                        color: "#00B3A4",
-                        "&.Mui-checked": {
-                          color: "#00B3A4",
-                        },
-                      }}
-                    />
-                  }
-                  label="Female"
-                />
-                <FormControlLabel
-                  value="female"
-                  control={
-                    <Radio
-                      {...controlProps("e")}
-                      sx={{
-                        color: "#00B3A4",
-                        "&.Mui-checked": {
-                          color: "#00B3A4",
-                        },
-                      }}
-                    />
-                  }
-                  label="Female"
-                />
-                <FormControlLabel
-                  value="female"
-                  control={
-                    <Radio
-                      {...controlProps("e")}
-                      sx={{
-                        color: "#00B3A4",
-                        "&.Mui-checked": {
-                          color: "#00B3A4",
-                        },
-                      }}
-                    />
-                  }
-                  label="Female"
-                />
-                <FormControlLabel
-                  value="female"
-                  control={
-                    <Radio
-                      {...controlProps("e")}
-                      sx={{
-                        color: "#00B3A4",
-                        "&.Mui-checked": {
-                          color: "#00B3A4",
-                        },
-                      }}
-                    />
-                  }
-                  label="Female"
-                />
-              </RadioGroup>
-            </AccordionDetails>
-          </Accordion>
-        </FormControl>
-        <Button
-          variant="contained"
-          sx={{
-            mt: 3,
-            background: `linear-gradient(91.54deg, #9FE1D2 -43.68%, #2AC8BB 142.9%, #14B8A9 142.9%)`,
-            borderRadius: "50px",
-            height: "50px",
-            width: "100%",
-          }}
-          // onClick={toggleDrawer}
-        >
-          Применить фильтры
-        </Button>
-        <Button
-          variant="contained"
-          sx={{
-            mt: 3,
-            background: `#BEF4F0`,
-            borderRadius: "50px",
-            height: "50px",
-            color: "black",
-            width: "100%",
-          }}
-        >
-          Очистить
-        </Button>
-      </Box>
     </Box>
   );
 };

@@ -14,6 +14,7 @@ import { motion } from "framer-motion";
 import useAuthStore from "../../store/authStore";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
+import CloseIcon from "@mui/icons-material/Close";
 
 const scaleVariants = {
   hidden: {
@@ -256,6 +257,9 @@ export default function Register() {
           top: 400,
           left: { xs: 13, md: "37%" },
         }}
+        disableRestoreFocus // добавьте эту строку
+        disableAutoFocus // добавьте эту строку
+        hideBackdrop={true} // добавьте эту строку
       >
         <Box sx={{ p: 4, bgcolor: "white", borderRadius: 2, boxShadow: 3 }}>
           <Box
@@ -264,12 +268,22 @@ export default function Register() {
               alignItems: "center",
               gridGap: 15,
               mb: 2,
+              justifyContent: "space-between", // добавьте эту строку
             }}
           >
-            <img src="/previwLogo.svg" alt="" />
-            <Typography variant="h6" sx={{ color: "#2CC0B3" }}>
-              Sdmedik
-            </Typography>
+            <Box sx={{ display: "flex", alignItems: "center", gridGap: 15 }}>
+              <img src="/previwLogo.svg" alt="" />
+              <Typography variant="h6" sx={{ color: "#2CC0B3" }}>
+                Sdmedik
+              </Typography>
+            </Box>
+            <Button
+              variant="contained"
+              sx={{ mt: 2, background: "#2CC0B3" }}
+              onClick={handleConfirmationClose}
+            >
+              <CloseIcon />
+            </Button>
           </Box>
           <Typography id="confirmation-modal-title" variant="h6">
             Подтверждение почты

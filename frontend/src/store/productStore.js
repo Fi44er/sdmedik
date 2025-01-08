@@ -52,10 +52,24 @@ const useProductStore = create((set, get) => ({
     }
   },
   products: [],
-  fetchProducts: async (queryParams) => {
+  fetchProducts: async (
+    category_id,
+    article,
+    name,
+    offset,
+    limit,
+    serializableFilters
+  ) => {
     try {
       const response = await axios.get(`http://localhost:8080/api/v1/product`, {
-        params: queryParams,
+        params: {
+          category_id: category_id,
+          // article: article,
+          // offset: offset,
+          // name: name,
+          // limit: limit,
+          filters: serializableFilters,
+        },
       });
       set({ products: response.data });
     } catch (error) {

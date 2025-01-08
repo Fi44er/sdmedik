@@ -15,10 +15,10 @@ import UserAccount from "../pages/account/UserAccount";
 import Electronic_certificate from "../pages/electronic_certificate/Electronic_certificate";
 import { Navigate } from "react-router-dom";
 import Cookies from "js-cookie";
-import Admin from "../pages/admin/Admin";
 import CreateProduct from "../pages/admin/create_product/CreateProduct";
 import Contacts from "../pages/contacts/Contacts";
 import CreateCategory from "../pages/admin/create_category/CreateCategory";
+import AdminDashboard from "../pages/admin/AdminLayout";
 
 const UsersRoute = ({ children }) => {
   const isLoggedIn = Cookies.get("logged_in") === "true";
@@ -95,7 +95,7 @@ export const router = createBrowserRouter([
   },
   {
     path: "/Admin",
-    element: <Admin />,
+    element: <AdminDashboard />,
   },
   {
     path: "/create_product",

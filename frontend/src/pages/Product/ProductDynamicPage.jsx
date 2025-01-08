@@ -190,9 +190,9 @@ export default function ProductDetailPage() {
           <Box sx={{ marginTop: 2 }}>
             <Typography variant="h6">Характеристики:</Typography>
             <List>
-              {productDetails.features.map((feature, index) => (
+              {products.data?.characteristic_values?.map((feature, index) => (
                 <ListItem key={index}>
-                  <Typography>{feature}</Typography>
+                  <Typography>{feature.value}</Typography>
                 </ListItem>
               ))}
             </List>

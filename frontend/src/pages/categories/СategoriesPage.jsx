@@ -58,7 +58,7 @@ export default function СategoriesPage() {
                   >
                     <CardMedia
                       component="img"
-                      image={`/public/wheelchair.png`}
+                      image={`http://127.0.0.1:8080/api/v1/image/${item.images[0].name}`}
                       alt={"wheelchair"}
                       sx={{
                         width: { xs: "270px", md: "180px", lg: "200px" },
