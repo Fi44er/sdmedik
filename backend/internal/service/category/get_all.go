@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/Fi44er/sdmedik/backend/internal/model"
-	"github.com/Fi44er/sdmedik/backend/pkg/errors"
+	"github.com/Fi44er/sdmedik/backend/pkg/constants"
 )
 
 func (s *service) GetAll(ctx context.Context) (*[]model.Category, error) {
@@ -14,7 +14,7 @@ func (s *service) GetAll(ctx context.Context) (*[]model.Category, error) {
 	}
 
 	if len(*categories) == 0 {
-		return nil, errors.New(404, "Categories not found")
+		return nil, constants.ErrCategoryNotFound
 	}
 
 	return categories, nil

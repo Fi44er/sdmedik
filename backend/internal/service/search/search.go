@@ -2,12 +2,15 @@ package search
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/Fi44er/sdmedik/backend/internal/dto"
 	"github.com/Fi44er/sdmedik/backend/internal/response"
+	"github.com/Fi44er/sdmedik/backend/pkg/constants"
 	"github.com/blevesearch/bleve/v2"
 	"github.com/blevesearch/bleve/v2/analysis/analyzer/custom"
 	"github.com/blevesearch/bleve/v2/analysis/token/lowercase"
@@ -25,11 +28,12 @@ func (s *service) Search(ctx context.Context, query string) (*[]response.SearchR
 	booleanQuery := bleve.NewBooleanQuery()
 	for _, word := range words {
 		matchQuery := bleve.NewMatchQuery(word)
+		matchQuery.SetField("Name")
 		booleanQuery.AddMust(matchQuery)
 	}
 
 	searchRequest := bleve.NewSearchRequest(booleanQuery)
-	searchRequest.Fields = []string{"Name", "Price"} // Указываем, какие поля включить в результаты
+	searchRequest.Fields = []string{"Name", "Type"} // Указываем, какие поля включить в результаты
 	searchResult, err := s.index.Search(searchRequest)
 	if err != nil {
 		s.logger.Fatalf("Ошибка при поиске: %v", err)
@@ -38,8 +42,21 @@ func (s *service) Search(ctx context.Context, query string) (*[]response.SearchR
 
 	// Выводим результаты поиска
 	for _, hit := range searchResult.Hits {
-		name := hit.Fields["Name"]
-		resp = append(resp, response.SearchRes{ID: hit.ID, Name: name.(string)})
+		name := hit.Fields["Name"].(string)
+		typeElm := hit.Fields["Type"].(string)
+
+		element := response.SearchRes{
+			ID:   hit.ID,
+			Name: name,
+			Type: typeElm,
+		}
+
+		if typeElm == "category" {
+			resp = append([]response.SearchRes{element}, resp...)
+		} else {
+			// Иначе добавляем в конец среза
+			resp = append(resp, element)
+		}
 	}
 
 	return &resp, nil
@@ -86,6 +103,7 @@ func createIndex() (bleve.Index, error) {
 
 	productMapping := bleve.NewDocumentMapping()
 	productMapping.AddFieldMappingsAt("Name", mapping.NewTextFieldMapping())
+	productMapping.AddFieldMappingsAt("Type", mapping.NewTextFieldMapping())
 
 	indexMapping.AddDocumentMapping("product", productMapping)
 
@@ -103,20 +121,43 @@ func (s *service) addSampleProducts(ctx context.Context, index bleve.Index) erro
 	if err != nil {
 		return err
 	}
-	// Добавляем только те товары, которых нет в индексе
+
+	categories, err := s.categoryService.GetAll(ctx)
+	if err != nil {
+		if !errors.Is(err, constants.ErrCategoryNotFound) {
+			return err
+		}
+	}
+
 	for _, product := range *products {
-		// Проверяем, существует ли товар с таким ID в индексе
 		doc, err := index.Document(product.ID)
 		if err != nil {
 			return fmt.Errorf("ошибка при проверке документа с ID %s: %v", product.ID, err)
 		}
 
-		// Если товара нет в индексе, добавляем его
 		if doc == nil {
 			if err := index.Index(product.ID, map[string]interface{}{
 				"Name": product.Name,
+				"Type": "product",
 			}); err != nil {
 				return fmt.Errorf("ошибка при индексации товара с ID %s: %v", product.ID, err)
+			}
+		}
+	}
+
+	for _, category := range *categories {
+		idStr := strconv.Itoa(int(category.ID))
+		doc, err := index.Document(string(category.ID))
+		if err != nil {
+			return fmt.Errorf("ошибка при проверке документа с ID %v: %v", category.ID, err)
+		}
+
+		if doc == nil {
+			if err := index.Index(idStr, map[string]interface{}{
+				"Name": category.Name,
+				"Type": "category", // Указываем тип "category"
+			}); err != nil {
+				return fmt.Errorf("ошибка при индексации категории с ID %v: %v", category.ID, err)
 			}
 		}
 	}

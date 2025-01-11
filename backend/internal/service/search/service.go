@@ -15,7 +15,8 @@ type service struct {
 	logger    *logger.Logger
 	validator *validator.Validate
 
-	productService def.IProductService
+	productService  def.IProductService
+	categoryService def.ICategoryService
 
 	index bleve.Index
 }
@@ -24,6 +25,7 @@ func NewService(
 	logger *logger.Logger,
 	validator *validator.Validate,
 	productService def.IProductService,
+	categoryService def.ICategoryService,
 ) (*service, error) { // Возвращаем ошибку, если инициализация не удалась
 	// Создаем или загружаем индекс
 	index, err := createOrLoadIndex()
@@ -34,9 +36,10 @@ func NewService(
 
 	// Создаем сервис
 	svc := &service{
-		logger:         logger,
-		validator:      validator,
-		productService: productService,
+		logger:          logger,
+		validator:       validator,
+		productService:  productService,
+		categoryService: categoryService,
 
 		index: index,
 	}
