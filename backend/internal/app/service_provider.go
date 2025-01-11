@@ -124,7 +124,7 @@ func (s *serviceProvider) initCategoryProvider() error {
 }
 
 func (s *serviceProvider) initSearchProvider() error {
-	s.searchProvider = *provider.NewSearchProvider(s.logger, s.validator, s.productProvider.ProductService())
+	s.searchProvider = *provider.NewSearchProvider(s.logger, s.validator, s.productProvider.ProductService(), s.categoryProvider.CategoryService())
 	return nil
 }
 
