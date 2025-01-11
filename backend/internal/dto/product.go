@@ -24,6 +24,7 @@ type ProductSearchCriteria struct {
 	Offset     int            `query:"offset" gorm:"offset"`
 	Limit      int            `query:"limit" gorm:"limit"`
 	Filters    ProductFilters `query:"filters" gorm:"-"`
+	Minimal    bool           `query:"minimal" gorm:"-"`
 }
 
 type ProductFilters struct {

@@ -121,6 +121,9 @@ func (a *App) initRouter() error {
 	category.Get("/:id", a.serviceProvider.categoryProvider.CategoryImpl().GetByID)
 	category.Delete("/:id", a.serviceProvider.categoryProvider.CategoryImpl().Delete)
 
+	search := v1.Group("/search")
+	search.Get("/", a.serviceProvider.searchProvider.SearchImpl().Search)
+
 	return nil
 }
 

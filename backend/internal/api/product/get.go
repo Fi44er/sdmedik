@@ -19,6 +19,7 @@ import (
 // @Param category_id query integer false "Category ID"
 // @Param offset query integer false "Offset"
 // @Param limit query integer false "Limit"
+// @Param minimal query boolean false "Minimal"
 // @Param filters query string false "Filters in JSON format" example({"price":{"min":20,"max":100},"characteristics":[{"characteristic_id":1,"values":["string"]}]})
 // @Success 200 {object} response.ResponseData "OK"
 // @Router /product [get]

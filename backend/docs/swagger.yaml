@@ -328,6 +328,10 @@ paths:
         in: query
         name: limit
         type: integer
+      - description: Minimal
+        in: query
+        name: minimal
+        type: boolean
       - description: Filters in JSON format
         example: '{"price":{"min":20,"max":100},"characteristics":[{"characteristic_id":1,"values":["string"]}]}'
         in: query
@@ -492,6 +496,26 @@ paths:
       summary: Get a product
       tags:
       - product
+  /search:
+    get:
+      consumes:
+      - application/json
+      description: Search products
+      parameters:
+      - description: Search query
+        in: query
+        name: query
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseData'
+      summary: Search products
+      tags:
+      - search
   /user:
     get:
       consumes:
