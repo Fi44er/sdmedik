@@ -370,6 +370,12 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "boolean",
+                        "description": "Minimal",
+                        "name": "minimal",
+                        "in": "query"
+                    },
+                    {
                         "type": "string",
                         "example": "{\"price\":{\"min\":20,\"max\":100},\"characteristics\":[{\"characteristic_id\":1,\"values\":[\"string\"]}]}",
                         "description": "Filters in JSON format",
@@ -527,6 +533,37 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseData"
+                        }
+                    }
+                }
+            }
+        },
+        "/search": {
+            "get": {
+                "description": "Search products",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "search"
+                ],
+                "summary": "Search products",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Search query",
+                        "name": "query",
+                        "in": "query"
                     }
                 ],
                 "responses": {

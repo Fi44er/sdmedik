@@ -17,6 +17,9 @@ func Migrate(db *gorm.DB) error {
 		&model.CharacteristicValue{},
 		&model.Image{},
 		&model.Certificate{},
+		&model.Basket{},
+		&model.BasketItem{},
+		&model.OrderItem{},
 		&model.Order{},
 		&model.PaymentMethod{},
 	}

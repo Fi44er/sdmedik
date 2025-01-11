@@ -30,7 +30,6 @@ type IProductRepository interface {
 	Update(ctx context.Context, data *model.Product) error
 
 	Get(ctx context.Context, criteria dto.ProductSearchCriteria) (*[]model.Product, error)
-	// Get(ctx context.Context, conditions map[string]interface{}, offset, limit int) (*[]model.Product, error)
 }
 
 type IUserRepository interface {
@@ -60,4 +59,14 @@ type IImageRepository interface {
 	CreateMany(ctx context.Context, data *[]model.Image, tx *gorm.DB) error
 	GetByID(ctx context.Context, productID *string, categoryID *int, tx *gorm.DB) (*[]model.Image, error)
 	DeleteByIDs(ctx context.Context, id []string, tx *gorm.DB) error
+}
+
+type IBasketRepository interface {
+	Create(ctx context.Context, data *model.Basket) error
+	GetByUserID(ctx context.Context, userID string) (*model.Basket, error)
+}
+
+type IBasketItemRepository interface {
+	Create(ctx context.Context, data *model.BasketItem) error
+	Update(ctx context.Context, data *model.BasketItem) error
 }

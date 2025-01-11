@@ -20,6 +20,7 @@ type serviceProvider struct {
 	transactionManagerProvider  provider.TransactionManagerProvider
 	characteristicValueProvider provider.CharacteristicValueProvider
 	imageProvider               provider.ImageProvider
+	searchProvider              provider.SearchProvider
 
 	logger    *logger.Logger
 	db        *gorm.DB
@@ -54,6 +55,7 @@ func (s *serviceProvider) initDeps() error {
 		s.initCategoryProvider,
 		s.initProductProvider,
 		s.initAuthProvider,
+		s.initSearchProvider,
 	}
 
 	for _, init := range inits {
@@ -118,6 +120,11 @@ func (s *serviceProvider) initCategoryProvider() error {
 		s.transactionManagerProvider.TransactionManager(),
 		s.imageProvider.ImageService(),
 	)
+	return nil
+}
+
+func (s *serviceProvider) initSearchProvider() error {
+	s.searchProvider = *provider.NewSearchProvider(s.logger, s.validator, s.productProvider.ProductService())
 	return nil
 }
 
