@@ -15,32 +15,24 @@ type SearchProvider struct {
 	logger    *logger.Logger
 	validator *validator.Validate
 
-	productService  service.IProductService
-	categoryService service.ICategoryService
+	indexService service.IIndexService
 }
 
 func NewSearchProvider(
 	logger *logger.Logger,
 	validator *validator.Validate,
-	productService service.IProductService,
-	categoryService service.ICategoryService,
+	indexService service.IIndexService,
 ) *SearchProvider {
 	return &SearchProvider{
-		logger:          logger,
-		validator:       validator,
-		productService:  productService,
-		categoryService: categoryService,
+		logger:       logger,
+		validator:    validator,
+		indexService: indexService,
 	}
 }
 
 func (p *SearchProvider) SearchService() service.ISearchService {
 	if p.searchService == nil {
-		var err error
-		p.searchService, err = searchService.NewService(p.logger, p.validator, p.productService, p.categoryService)
-		if err != nil {
-			p.logger.Errorf("Error during initializing search service: %s", err.Error())
-			return nil
-		}
+		p.searchService = searchService.NewService(p.logger, p.validator, p.indexService)
 	}
 	return p.searchService
 }
