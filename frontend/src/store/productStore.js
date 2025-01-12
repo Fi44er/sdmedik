@@ -38,36 +38,56 @@ const useProductStore = create((set, get) => ({
       }
     }
   },
-  refreshToken: async () => {
+
+  updateProduct: async (id, formData) => {
     try {
-      const response = await axios.post(
-        "http://localhost:8080/api/v1/auth/refresh",
-        {},
+      const response = await axios.put(
+        `http://localhost:8080/api/v1/product/${id}`,
+        formData,
         {
           withCredentials: true,
+          headers: {
+            "Content-Type": "multipart/form-data", // Убедитесь, что заголовок установлен правильно
+          },
         }
       );
+      // Обработка успешного ответа
+      console.log("Продукт обновлен:", response.data);
     } catch (error) {
-      console.error("Error:", error);
+      // Обработка ошибки
+      console.error("Ошибка при обновлении продукта:", error);
+      if (error.response.status === 401) {
+        // Если статус 401, обновляем токены и повторяем запрос
+        await get().refreshToken();
+        await get().updateProduct(id, formData); // Повторяем запрос
+      } else {
+        alert(
+          "Ошибка при обновлении продукта: " +
+            (error.response?.data?.message || error.message)
+        );
+      }
     }
   },
+
+  deleteProduct: async (id) => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:8080/api/v1/product/${id}`
+      );
+    } catch (error) {
+      console.error("Error deleting product:", error);
+    }
+  },
+
   products: [],
   fetchProducts: async (
     category_id,
-    article,
-    name,
-    offset,
-    limit,
     serializableFilters
   ) => {
     try {
       const response = await axios.get(`http://localhost:8080/api/v1/product`, {
         params: {
           category_id: category_id,
-          // article: article,
-          // offset: offset,
-          // name: name,
-          // limit: limit,
           filters: serializableFilters,
         },
       });
@@ -86,13 +106,18 @@ const useProductStore = create((set, get) => ({
       console.error("Error fetching product:", error);
     }
   },
-  deleteProduct: async (id) => {
+
+  refreshToken: async () => {
     try {
-      const response = await axios.delete(
-        `http://localhost:8080/api/v1/product/${id}`
+      const response = await axios.post(
+        "http://localhost:8080/api/v1/auth/refresh",
+        {},
+        {
+          withCredentials: true,
+        }
       );
     } catch (error) {
-      console.error("Error deleting product:", error);
+      console.error("Error:", error);
     }
   },
 }));

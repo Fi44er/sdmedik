@@ -19,6 +19,7 @@ import CreateProduct from "../pages/admin/create_product/CreateProduct";
 import Contacts from "../pages/contacts/Contacts";
 import CreateCategory from "../pages/admin/create_category/CreateCategory";
 import AdminDashboard from "../pages/admin/AdminLayout";
+import UpdateProduct from "../pages/admin/update_product/UpdateProduct";
 
 const UsersRoute = ({ children }) => {
   const isLoggedIn = Cookies.get("logged_in") === "true";
@@ -100,6 +101,10 @@ export const router = createBrowserRouter([
   {
     path: "/create_product",
     element: <CreateProduct />,
+  },
+  {
+    path: "/update_product/:id",
+    element: <UpdateProduct />,
   },
   {
     path: "/create_category",

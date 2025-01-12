@@ -49,7 +49,8 @@ const SidebarFilter = () => {
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(0);
   const [filtersApplied, setFiltersApplied] = useState(false);
-  const { fetchFilter, filters } = useFilterStore();
+  const { fetchFilter, filters, selectedFilters, setSelectedFilters } =
+    useFilterStore();
   const { fetchProducts, products } = useProductStore();
   const { id } = useParams();
   const category_id = id;
@@ -63,40 +64,79 @@ const SidebarFilter = () => {
     setDrawerOpen(!drawerOpen);
   };
 
-  const handleApplyFilters = () => {
-    // Ensure filters.data.characteristics is an array and has data
-  
+  const handleCheckboxChange = (characteristicId, value) => {
+    const updatedCharacteristics = filters.data.characteristics.map(
+      (filter) => {
+        if (filter.id === characteristicId) {
+          return {
+            ...filter,
+            values: filter.values.map((val) =>
+              val.value === value ? { ...val, checked: !val.checked } : val
+            ),
+          };
+        }
+        return filter;
+      }
+    );
 
-    // Construct the serializableFilters object
+    setSelectedFilters({
+      ...filters,
+      data: {
+        ...filters.data,
+        characteristics: updatedCharacteristics,
+      },
+    });
+
+    // Принудительное обновление состояния компонента
+    setFiltersApplied(true);
+  };
+
+  const handleApplyFilters = () => {
+    if (!Array.isArray(filters?.data?.characteristics)) {
+      console.error("Характеристики не загружены или не являются массивом");
+      return;
+    }
+
     const serializableFilters = {
       price: {
         min: minPrice,
         max: maxPrice,
       },
-      characteristics: filters.data.characteristics.map((filter) => ({
-        characteristic_id: filter.id,
-        values: filter.values
-          .filter((value) => value.checked) // Only include checked values
-          .map((value) => value.value), // Extract only the value property
-      })),
+      characteristics: filters.data.characteristics
+        .filter((filter) => filter.values.some((value) => value.checked))
+        .map((filter) => ({
+          characteristic_id: filter.id,
+          values: filter.values
+            .filter((value) => value.checked)
+            .map((value) => value.value),
+        })),
     };
 
-    // Convert to JSON string
-
-    // Fetch products with the filters
+    console.log("Данные, отправляемые на сервер:", serializableFilters);
+    if (selectedFilters) {
+      setSelectedFilters(serializableFilters);
+    }
     fetchProducts(category_id, serializableFilters);
-    console.log("Filters Data:", serializableFilters);
-
-    // Close the drawer and mark filters as applied
     toggleDrawer();
     setFiltersApplied(true);
   };
 
   const handleResetFilters = () => {
-    setPriceRange([20000, 30000]);
-    setMinPrice(20000);
-    setMaxPrice(30000);
+    setMinPrice(0);
+    setMaxPrice(0);
     setFiltersApplied(false);
+    // Сбросить состояние характеристик
+    const resetCharacteristics = filters.data.characteristics.map((filter) => ({
+      ...filter,
+      values: filter.values.map((value) => ({ ...value, checked: false })),
+    }));
+    setSelectedFilters({
+      ...filters,
+      data: {
+        ...filters.data,
+        characteristics: resetCharacteristics,
+      },
+    });
   };
 
   return (
@@ -154,13 +194,13 @@ const SidebarFilter = () => {
               <CustomTextField
                 variant="outlined"
                 placeholder="От"
-                onChange={setMinPrice}
+                onChange={(e) => setMinPrice(Number(e.target.value))}
                 sx={{ width: "48%", mt: 2, color: "#00B3A4" }}
               />
               <CustomTextField
                 variant="outlined"
                 placeholder="До"
-                onChange={setMaxPrice}
+                onChange={(e) => setMaxPrice(Number(e.target.value))}
                 sx={{ width: "48%", mt: 2, color: "#00B3A4" }}
               />
             </Box>
@@ -180,18 +220,19 @@ const SidebarFilter = () => {
                       overflow: "auto",
                     }}
                   >
-                    {filter.values.map((value, valueIndex) => (
+                    {filter.values.map((value) => (
                       <FormControlLabel
-                        key={valueIndex}
+                        key={value.value}
                         control={
                           <Checkbox
                             sx={{
                               color: "#00B3A4",
-                              "&.Mui-checked": {
-                                color: "#00B3A4",
-                              },
+                              "&.Mui-checked": { color: "#00B3A4" },
                             }}
-                            onChange={() => setFiltersApplied(true)}
+                            checked={value.checked || false}
+                            onChange={() =>
+                              handleCheckboxChange(filter.id, value.value)
+                            }
                           />
                         }
                         label={

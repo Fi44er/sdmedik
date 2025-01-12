@@ -14,7 +14,7 @@ const MainContent = () => {
         </Paper>
       </Box>
 
-      <Box>
+      <Box sx={{ mt: 5 }}>
         <Paper sx={{ p: 2 }}>
           <Typography variant="h6" gutterBottom>
             Управление продуктами

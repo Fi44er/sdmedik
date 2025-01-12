@@ -24,14 +24,15 @@ import MenuIcon from "@mui/icons-material/Menu";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Cookies from "js-cookie";
 import useAuthStore from "../store/authStore";
-
+import useSearchStore from "../store/serchStore";
+import { useNavigate } from "react-router-dom";
+import Search from "./componets_header/Search";
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   display: "flex",
   gridGap: "25px",
   flexDirection: "column",
   position: "relative",
   [theme.breakpoints.down("lg")]: {
-    // Используйте медиа-запрос для скрытия на мобильных устройствах
     display: "none",
   },
 }));
@@ -45,19 +46,8 @@ const Nav = styled("Box")(({ theme }) => ({
   padding: "20px 40px",
   boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
   [theme.breakpoints.down("lg")]: {
-    // Используйте медиа-запрос для скрытия на мобильных устройствах
     display: "none",
   },
-}));
-const Search = styled("Box")(({ theme }) => ({
-  height: "53px",
-  width: { xs: "100%", sm: "100%", md: "100%" },
-  border: "3px solid #87EBEB",
-  borderRadius: "10px",
-  color: "black",
-  display: "flex",
-  alignItems: "center",
-  paddingLeft: "25px",
 }));
 
 export default function Header() {
@@ -67,19 +57,42 @@ export default function Header() {
   const [menuLk, setMenuLk] = React.useState(null);
   const { isAuthenticated, setIsAuthenticated, checkAuthStatus } =
     useAuthStore();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [searchSuggestions, setSearchSuggestions] = useState([]);
+
+  // Используем хранилище Zustand для поиска
+  const {
+    searchQuery,
+    searchSuggestions,
+    setSearchQuery,
+    setSearchSuggestions,
+    searchProducts,
+  } = useSearchStore();
 
   useEffect(() => {
-    // Проверяем состояние куки при монтировании компонента
     checkAuthStatus();
-
-    // Устанавливаем интервал для проверки состояния куки
-    const intervalId = setInterval(checkAuthStatus, 300000); // Проверяем каждую секунду
-
-    // Очищаем интервал при размонтировании компонента
+    const intervalId = setInterval(checkAuthStatus, 300000);
     return () => clearInterval(intervalId);
   }, [setIsAuthenticated]);
+
+  useEffect(() => {
+    console.log("Подсказки:", searchSuggestions);
+  }, [searchSuggestions]);
+
+  // Обработка ввода в поле поиска
+  const handleSearchInput = async (query) => {
+    setSearchQuery(query); // Обновляем состояние поискового запроса
+    if (query.length > 2) {
+      const suggestions = await searchProducts(query); // Выполняем поиск товаров
+      console.log("Результаты поиска:", suggestions); // Выводим результаты в консоль
+      setSearchSuggestions(suggestions); // Обновляем подсказки
+    } else {
+      setSearchSuggestions([]); // Очищаем подсказки, если запрос слишком короткий
+    }
+  };
+
+  // Обработка клика по подсказке
+  const handleSuggestionClick = (suggestion) => {
+    window.location.href = `/product/${suggestion.id}`; // Use the navigate function here
+  };
 
   const openLk = Boolean(menuLk);
 
@@ -111,7 +124,7 @@ export default function Header() {
   };
 
   const navItems = [
-    { text: "Доставка", href: "/delivery" },
+    { text: " Доставка", href: "/delivery" },
     { text: "Реквизиты", href: "/deteils" },
     {
       text: "Возврат",
@@ -121,7 +134,7 @@ export default function Header() {
       text: "О нас",
       href: "/about",
     },
-    { text: "Контакты", href: "/contacts" },
+    { text: "Контакты", href: "/contacts " },
   ];
 
   return (
@@ -159,83 +172,14 @@ export default function Header() {
                 />
               </Box>
             </Box>
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                width: "100%",
-                maxWidth: "500px",
-                position: "relative",
-              }}
-            >
-              {/* Поле поиска */}
-              <InputBase
-                type="text"
-                placeholder="Поиск по товарам"
-                sx={{
-                  height: "53px",
-                  width: "100%",
-                  border: "2px solid #87EBEB",
-                  borderRight: "none",
-                  paddingLeft: "20px",
-                  fontSize: "16px",
-                  outline: "none",
-                  backgroundColor: "#FAFAFA",
-                }}
-                onChange={(e) => handleSearchInput(e.target.value)} // Обработка ввода
-              />
 
-              {/* Кнопка поиска */}
-              <Button
-                variant="contained"
-                sx={{
-                  height: "53px",
-                  borderTopLeftRadius: "0",
-                  borderBottomLeftRadius: "0",
-                  borderTopRightRadius: "10px",
-                  borderBottomRightRadius: "10px",
-                  backgroundColor: "#00B3A4",
-                  "&:hover": {
-                    backgroundColor: "#009688",
-                  },
-                }}
-                // onClick={}
-              >
-                <SearchIcon fontSize="large" />
-              </Button>
+            <Search
+              searchQuery={searchQuery}
+              searchSuggestions={searchSuggestions}
+              handleSearchInput={handleSearchInput}
+              handleSuggestionClick={handleSuggestionClick}
+            />
 
-              {/* Выпадающий список с подсказками */}
-              {searchSuggestions.length > 0 && (
-                <Box
-                  sx={{
-                    position: "absolute",
-                    top: "60px",
-                    left: 0,
-                    width: "100%",
-                    backgroundColor: "white",
-                    border: "1px solid #ddd",
-                    borderRadius: "5px",
-                    boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-                    zIndex: 1000,
-                  }}
-                >
-                  {searchSuggestions.map((suggestion, index) => (
-                    <MenuItem
-                      key={index}
-                      onClick={() => handleSuggestionClick(suggestion)}
-                      sx={{
-                        padding: "10px 20px",
-                        "&:hover": {
-                          backgroundColor: "#f5f5f5",
-                        },
-                      }}
-                    >
-                      {suggestion}
-                    </MenuItem>
-                  ))}
-                </Box>
-              )}
-            </Box>
             <Box sx={{ display: "flex", alignItems: "center", gridGap: 20 }}>
               <IconButton
                 id="basic-button"
@@ -256,7 +200,9 @@ export default function Header() {
                 }}
               >
                 <MenuItem onClick={handleClose}>+7 (903) 086 3091</MenuItem>
-                <MenuItem onClick={handleClose}>+7 (909) 617 8196</MenuItem>
+                <MenuItem onClick={handleClose}>
+                  +7 (909 ```javascript ) 617 8196
+                </MenuItem>
                 <MenuItem onClick={handleClose}>+7 (353) 293 5241</MenuItem>
               </Menu>
               <Typography color="black">olimp1-info@yandex.ru</Typography>
@@ -272,7 +218,7 @@ export default function Header() {
           >
             <Box
               sx={{
-                display: "flex,",
+                display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
               }}
@@ -303,6 +249,7 @@ export default function Header() {
                     sx={{ ml: 2, mr: 2 }}
                     color="black"
                     href={item.href}
+                    key={item.text}
                   >
                     {item.text}
                   </Link>
@@ -412,83 +359,12 @@ export default function Header() {
             width: "100%",
           }}
         >
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              width: "100%",
-              maxWidth: "800px",
-              position: "relative",
-            }}
-          >
-            {/* Поле поиска */}
-            <InputBase
-              type="text"
-              placeholder="Поиск по товарам"
-              sx={{
-                height: "53px",
-                width: "100%",
-                border: "2px solid #87EBEB",
-                borderRight: "none",
-                paddingLeft: "20px",
-                fontSize: "16px",
-                outline: "none",
-                backgroundColor: "#FAFAFA",
-              }}
-              onChange={(e) => handleSearchInput(e.target.value)} // Обработка ввода
-            />
-
-            {/* Кнопка поиска */}
-            <Button
-              variant="contained"
-              sx={{
-                height: "53px",
-                borderTopLeftRadius: "0",
-                borderBottomLeftRadius: "0",
-                borderTopRightRadius: "10px",
-                borderBottomRightRadius: "10px",
-                backgroundColor: "#00B3A4",
-                "&:hover": {
-                  backgroundColor: "#009688",
-                },
-              }}
-              // onClick={}
-            >
-              <SearchIcon fontSize="large" />
-            </Button>
-
-            {/* Выпадающий список с подсказками */}
-            {searchSuggestions.length > 0 && (
-              <Box
-                sx={{
-                  position: "absolute",
-                  top: "60px",
-                  left: 0,
-                  width: "100%",
-                  backgroundColor: "white",
-                  border: "1px solid #ddd",
-                  borderRadius: "5px",
-                  boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-                  zIndex: 1000,
-                }}
-              >
-                {searchSuggestions.map((suggestion, index) => (
-                  <MenuItem
-                    key={index}
-                    onClick={() => handleSuggestionClick(suggestion)}
-                    sx={{
-                      padding: "10px 20px",
-                      "&:hover": {
-                        backgroundColor: "#f5f5f5",
-                      },
-                    }}
-                  >
-                    {suggestion}
-                  </MenuItem>
-                ))}
-              </Box>
-            )}
-          </Box>
+          <Search
+            searchQuery={searchQuery}
+            searchSuggestions={searchSuggestions}
+            handleSearchInput={handleSearchInput}
+            handleSuggestionClick={handleSuggestionClick}
+          />
         </Box>
       </Toolbar>
       <Drawer anchor="left" open={drawerOpen} onClose={toggleDrawer(false)}>
@@ -501,7 +377,7 @@ export default function Header() {
           <List>
             {navItems.map((item) => {
               return (
-                <ListItem>
+                <ListItem key={item.text}>
                   <Link
                     underline="hover"
                     sx={{ color: "#26BDB8", ml: 2 }}
@@ -543,7 +419,11 @@ export default function Header() {
             >
               {isAuthenticated
                 ? [
-                    <Link sx={{ color: "#26BDB8" }} href="/profile">
+                    <Link
+                      sx={{ color: "#26BDB8" }}
+                      href="/profile"
+                      key="profile"
+                    >
                       Личный кабинет
                     </Link>,
                   ]
@@ -554,6 +434,7 @@ export default function Header() {
                         flexDirection: "column",
                         gridGap: 10,
                       }}
+                      key="auth-links"
                     >
                       <Link sx={{ color: "#26BDB8" }} href="/auth">
                         Войти

@@ -25,17 +25,6 @@ export default function ProductDetailPage() {
   const { id } = useParams();
 
   const productDetails = {
-    title: "Инвалидная коляска Trend 40",
-    brand: "Ortonica",
-    price: "25000 ₽",
-    description:
-      "Кресло-коляска для инвалидов обеспечивает комфортное передвижение людям с нарушениями опорно-двигательного аппарата. Она выполнена из облегченного алюминия, оснащена регулировками, которые позволяют адаптировать коляску под особенности пользователя.",
-    features: [
-      "Грузоподъемность: 130кг",
-      "Регулируемая спинка",
-      "Легкий алюминиевый каркас",
-      "Подходит для самостоятельного передвижения и с помощью сопровождающего лица",
-    ],
     reviews: [
       { text: "Отличная коляска, очень удобная!", author: "Ирина", rating: 5 },
       { text: "Качество на высоте, рекомендую!", author: "Сергей", rating: 4 },
@@ -159,11 +148,13 @@ export default function ProductDetailPage() {
         <Box sx={{ width: { xs: "100%", sm: "100%", md: "50%" } }}>
           {products.data ? (
             <Box>
-              <Typography variant="h5">{products.data.name}</Typography>
-              <Typography variant="subtitle1">
-                {products.data.article}
+              <Typography variant="h5">
+                Название товара : {products.data.name}
               </Typography>
-              <Typography variant="h5">{products.data.price}</Typography>
+              <Typography variant="subtitle1">
+                Артикул: {products.data.article}
+              </Typography>
+              <Typography variant="h5">{products.data.price} р </Typography>
               {/* Other components */}
             </Box>
           ) : (

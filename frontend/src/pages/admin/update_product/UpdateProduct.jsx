@@ -16,11 +16,13 @@ import {
 import React, { useEffect, useState } from "react";
 import useCategoryStore from "../../../store/categoryStore";
 import useProductStore from "../../../store/productStore";
+import { useParams } from "react-router-dom";
 import { Delete as DeleteIcon } from "@mui/icons-material";
 
 export default function UpdateProduct() {
   const { fetchCategory, category } = useCategoryStore();
-  const { createProduct } = useProductStore();
+  const { updateProduct } = useProductStore();
+  const { id } = useParams();
 
   const [product, setProduct] = useState({
     article: "",
@@ -120,7 +122,7 @@ export default function UpdateProduct() {
       formData.append("files", file);
     });
 
-    await createProduct(formData);
+    await updateProduct(formData, id);
     setLoading(false);
   };
 
@@ -129,7 +131,7 @@ export default function UpdateProduct() {
       <Container maxWidth="md">
         <Paper elevation={3} sx={{ p: 3 }}>
           <Typography variant="h4" align="center" gutterBottom>
-            Создание продукта
+            Редактирование продукта
           </Typography>
           <Box component="form" onSubmit={handleSubmit}>
             <Grid container spacing={3}>
@@ -323,7 +325,11 @@ export default function UpdateProduct() {
                 color="primary"
                 disabled={loading}
               >
-                {loading ? <CircularProgress size={24} /> : "Создать продукт"}
+                {loading ? (
+                  <CircularProgress size={24} />
+                ) : (
+                  "Сохранить изменения"
+                )}
               </Button>
             </Box>
           </Box>

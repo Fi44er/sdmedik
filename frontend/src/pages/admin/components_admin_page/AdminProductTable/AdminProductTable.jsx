@@ -2,55 +2,70 @@ import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField,
   Paper,
-  Typography,
   Table,
   TableContainer,
   TableHead,
   TableBody,
   TableRow,
   TableCell,
+  Pagination,
 } from "@mui/material";
 import useProductStore from "../../../../store/productStore";
 
 const AdminProductTable = () => {
   const { fetchProducts, products, deleteProduct } = useProductStore();
   const [filteredProducts, setFilteredProducts] = useState([]);
-  const [categoryFilter, setCategoryFilter] = useState("");
-  const [priceFilter, setPriceFilter] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 20;
 
   useEffect(() => {
     fetchProducts();
   }, []);
 
   useEffect(() => {
-    console.log(products.data); // Логирование данных
     if (Array.isArray(products.data)) {
       setFilteredProducts(products.data);
     }
   }, [products]);
 
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredProducts.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
+
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
+  };
+
+  const handleDeleteProduct = async (id) => {
+    await deleteProduct(id);
+    fetchProducts();
+  };
+
   return (
     <Box sx={{ padding: 2 }}>
       <Paper sx={{ width: "100%" }}>
-        <TableContainer>
+        {/* Таблица для больших экранов */}
+        <TableContainer
+          sx={{ overflowX: "auto", display: { xs: "none", sm: "block" } }}
+        >
           <Table>
             <TableHead>
               <TableRow>
                 <TableCell>Фото</TableCell>
                 <TableCell>Название</TableCell>
                 <TableCell>Цена</TableCell>
-                <TableCell>Категория</TableCell>
+                <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>
+                  Категория
+                </TableCell>
                 <TableCell>Управление</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredProducts.map((product) => (
+              {currentItems.map((product) => (
                 <TableRow key={product.id}>
                   <TableCell>
                     <Box sx={{ display: "flex", gap: 1 }}>
@@ -66,15 +81,17 @@ const AdminProductTable = () => {
                   </TableCell>
                   <TableCell>{product.name}</TableCell>
                   <TableCell>{product.price}</TableCell>
-                  <TableCell>
-                    {product.categories.map((category) => category.name).join(", ")}
+                  <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>
+                    {product.categories
+                      .map((category) => category.name)
+                      .join(", ")}
                   </TableCell>
                   <TableCell>
-                    <Box>
+                    <Box sx={{ display: "flex", gap: 1 }}>
                       <Button
                         variant="contained"
                         color="error"
-                        onClick={() => deleteProduct(product.id)}
+                        onClick={() => handleDeleteProduct(product.id)}
                       >
                         удалить
                       </Button>
@@ -83,7 +100,7 @@ const AdminProductTable = () => {
                         color="info"
                         onClick={(e) => {
                           e.preventDefault();
-                          window.location.href = "/";
+                          window.location.href = `/update_product/${product.id}`;
                         }}
                       >
                         редактировать
@@ -95,6 +112,64 @@ const AdminProductTable = () => {
             </TableBody>
           </Table>
         </TableContainer>
+
+        {/* Карточки для мобильных устройств */}
+        <Box sx={{ display: { xs: "block", sm: "none" } }}>
+          {currentItems.map((product) => (
+            <Paper key={product.id} sx={{ mb: 2, p: 2 }}>
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                <Box sx={{ display: "flex", gap: 1 }}>
+                  {product.images.map((image) => (
+                    <img
+                      key={image.id}
+                      src={`http://127.0.0.1:8080/api/v1/image/${image.name}`}
+                      alt="product"
+                      style={{ width: 50, height: 50, borderRadius: "4px" }}
+                    />
+                  ))}
+                </Box>
+                <Box>Название: {product.name}</Box>
+                <Box>Цена: {product.price}</Box>
+                <Box>
+                  Категория:{" "}
+                  {product.categories
+                    .map((category) => category.name)
+                    .join(", ")}
+                </Box>
+                <Box sx={{ display: "flex", gap: 1 }}>
+                  <Button
+                    variant="contained"
+                    color="error"
+                    onClick={() => handleDeleteProduct(product.id)}
+                  >
+                    удалить
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="info"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      window.location.href = `/update_product/${product.id}`;
+                    }}
+                  >
+                    редактировать
+                  </Button>
+                </Box>
+              </Box>
+            </Paper>
+          ))}
+        </Box>
+
+        {/* Пагинация */}
+        <Box sx={{ display: "flex", justifyContent: "center", mt: 2, mb: 2 }}>
+          <Pagination
+            count={Math.ceil(filteredProducts.length / itemsPerPage)}
+            page={currentPage}
+            onChange={handlePageChange}
+            color="primary"
+            sx={{ mt: 2, mb: 2 }}
+          />
+        </Box>
       </Paper>
     </Box>
   );
