@@ -21,6 +21,7 @@ type serviceProvider struct {
 	characteristicValueProvider provider.CharacteristicValueProvider
 	imageProvider               provider.ImageProvider
 	searchProvider              provider.SearchProvider
+	indexProvider               provider.IndexProvider
 
 	logger    *logger.Logger
 	db        *gorm.DB
@@ -55,6 +56,7 @@ func (s *serviceProvider) initDeps() error {
 		s.initCategoryProvider,
 		s.initProductProvider,
 		s.initAuthProvider,
+		s.initIndexProvider,
 		s.initSearchProvider,
 	}
 
@@ -123,8 +125,13 @@ func (s *serviceProvider) initCategoryProvider() error {
 	return nil
 }
 
+func (s *serviceProvider) initIndexProvider() error {
+	s.indexProvider = *provider.NewIndexProvider(s.logger, s.validator, s.productProvider.ProductService(), s.categoryProvider.CategoryService())
+	return nil
+}
+
 func (s *serviceProvider) initSearchProvider() error {
-	s.searchProvider = *provider.NewSearchProvider(s.logger, s.validator, s.productProvider.ProductService(), s.categoryProvider.CategoryService())
+	s.searchProvider = *provider.NewSearchProvider(s.logger, s.validator, s.indexProvider.IndexService())
 	return nil
 }
 

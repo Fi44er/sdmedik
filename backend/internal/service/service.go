@@ -6,6 +6,7 @@ import (
 	"github.com/Fi44er/sdmedik/backend/internal/dto"
 	"github.com/Fi44er/sdmedik/backend/internal/model"
 	"github.com/Fi44er/sdmedik/backend/internal/response"
+	"github.com/blevesearch/bleve/v2"
 	"gorm.io/gorm"
 )
 
@@ -67,5 +68,11 @@ type IBasketService interface{}
 
 type ISearchService interface {
 	Search(ctx context.Context, query string) (*[]response.SearchRes, error)
-	// AddProductToIndex(index bleve.Index, product *model.Product) error
+}
+
+type IIndexService interface {
+	Get() bleve.Index
+	// Add(index bleve.Index, product *model.Product) error
+	// Update(index bleve.Index, product *model.Product) error
+	// Delete(index bleve.Index, product *model.Product) error
 }
