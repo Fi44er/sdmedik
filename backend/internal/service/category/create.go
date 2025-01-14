@@ -20,8 +20,6 @@ func (s *service) Create(ctx context.Context, data *dto.CreateCategory, image *d
 		return err
 	}
 
-	s.logger.Infof("existProduct: %v", existProduct)
-
 	if existProduct != nil {
 		return errors.New(409, "Category already exist")
 	}

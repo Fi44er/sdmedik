@@ -11,7 +11,7 @@ import (
 	"github.com/blevesearch/bleve/v2"
 	"github.com/blevesearch/bleve/v2/analysis/analyzer/custom"
 	"github.com/blevesearch/bleve/v2/analysis/token/lowercase"
-	"github.com/blevesearch/bleve/v2/analysis/tokenizer/regexp"
+	"github.com/blevesearch/bleve/v2/analysis/tokenizer/whitespace"
 	"github.com/blevesearch/bleve/v2/mapping"
 )
 
@@ -28,13 +28,15 @@ func (s *service) CreateOrLoad() (bleve.Index, error) {
 func (s *service) createIndex() (bleve.Index, error) {
 	indexMapping := bleve.NewIndexMapping()
 
-	err := indexMapping.AddCustomTokenizer("regexp", map[string]interface{}{
-		"type":   regexp.Name,
-		"regexp": `\s+`, // Регулярное выражение для токенизации
+	var err error
+
+	err = indexMapping.AddCustomTokenizer("whitespace", map[string]interface{}{
+		"type": whitespace.Name,
 	})
 	if err != nil {
-		return nil, fmt.Errorf("ошибка при регистрации токенизатора regexp: %v", err)
+		return nil, fmt.Errorf("ошибка при регистрации токенизатора whitespace: %v", err)
 	}
+
 	err = indexMapping.AddCustomTokenFilter("lowercase", map[string]interface{}{
 		"type": lowercase.Name,
 	})
@@ -43,8 +45,9 @@ func (s *service) createIndex() (bleve.Index, error) {
 	}
 	// Добавляем кастомный анализатор
 	err = indexMapping.AddCustomAnalyzer("prefix_analyzer", map[string]interface{}{
-		"type":      custom.Name,
-		"tokenizer": "regexp", // Используем стандартный токенизатор
+		"char_filters": []interface{}{},
+		"tokenizer":    `whitespace`,
+		"type":         custom.Name,
 		"token_filters": []string{
 			"lowercase", // Приводим текст к нижнему регистру
 		},
