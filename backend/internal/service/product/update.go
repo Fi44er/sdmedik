@@ -9,6 +9,7 @@ import (
 	"github.com/Fi44er/sdmedik/backend/internal/model"
 	"github.com/Fi44er/sdmedik/backend/pkg/constants"
 	custom_errors "github.com/Fi44er/sdmedik/backend/pkg/errors"
+	events "github.com/Fi44er/sdmedik/backend/pkg/evenbus"
 	"github.com/Fi44er/sdmedik/backend/pkg/utils"
 )
 
@@ -118,6 +119,11 @@ func (s *service) Update(ctx context.Context, data *dto.UpdateProduct, images *d
 	if err := s.transactionManagerRepo.Commit(tx); err != nil {
 		return err
 	}
+
+	s.evenBus.Publish(events.Event{
+		Type: events.EventDataCreatedOrUpdated,
+		Data: modelProduct,
+	})
 
 	return nil
 }

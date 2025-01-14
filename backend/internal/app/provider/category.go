@@ -6,6 +6,7 @@ import (
 	categoryRepository "github.com/Fi44er/sdmedik/backend/internal/repository/category"
 	"github.com/Fi44er/sdmedik/backend/internal/service"
 	categoryService "github.com/Fi44er/sdmedik/backend/internal/service/category"
+	events "github.com/Fi44er/sdmedik/backend/pkg/evenbus"
 	"github.com/Fi44er/sdmedik/backend/pkg/logger"
 	"github.com/go-playground/validator/v10"
 	"gorm.io/gorm"
@@ -19,6 +20,7 @@ type CategoryProvider struct {
 	logger    *logger.Logger
 	db        *gorm.DB
 	validator *validator.Validate
+	eventBus  *events.EventBus
 
 	characteristicService  service.ICharacteristicService
 	transactionManagerRepo repository.ITransactionManager
@@ -32,6 +34,7 @@ func NewCategoryProvider(
 	characteristicService service.ICharacteristicService,
 	transactionManagerRepo repository.ITransactionManager,
 	imageService service.IImageService,
+	eventBus *events.EventBus,
 ) *CategoryProvider {
 	return &CategoryProvider{
 		logger:                 logger,
@@ -40,6 +43,7 @@ func NewCategoryProvider(
 		characteristicService:  characteristicService,
 		transactionManagerRepo: transactionManagerRepo,
 		imageService:           imageService,
+		eventBus:               eventBus,
 	}
 }
 
@@ -59,6 +63,7 @@ func (p *CategoryProvider) CategoryService() service.ICategoryService {
 			p.characteristicService,
 			p.transactionManagerRepo,
 			p.imageService,
+			p.eventBus,
 		)
 	}
 

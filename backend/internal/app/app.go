@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/Fi44er/sdmedik/backend/internal/config"
+	events "github.com/Fi44er/sdmedik/backend/pkg/evenbus"
 	"github.com/Fi44er/sdmedik/backend/pkg/logger"
 	"github.com/Fi44er/sdmedik/backend/pkg/middleware"
 	"github.com/go-playground/validator/v10"
@@ -80,7 +81,8 @@ func (a *App) initConfig() error {
 
 func (a *App) initServiceProvider() error {
 	var err error
-	a.serviceProvider, err = newServiceProvider(a.logger, a.db, a.validator, a.config, a.cache)
+	eventBus := events.NewEventBus()
+	a.serviceProvider, err = newServiceProvider(a.logger, a.db, a.validator, a.config, a.cache, eventBus)
 	if err != nil {
 		return err
 	}

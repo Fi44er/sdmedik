@@ -3,6 +3,7 @@ package app
 import (
 	"github.com/Fi44er/sdmedik/backend/internal/app/provider"
 	"github.com/Fi44er/sdmedik/backend/internal/config"
+	events "github.com/Fi44er/sdmedik/backend/pkg/evenbus"
 	"github.com/Fi44er/sdmedik/backend/pkg/logger"
 	"github.com/go-playground/validator/v10"
 	"github.com/redis/go-redis/v9"
@@ -28,15 +29,18 @@ type serviceProvider struct {
 	validator *validator.Validate
 	config    *config.Config
 	cache     *redis.Client
+
+	eventBus *events.EventBus
 }
 
-func newServiceProvider(logger *logger.Logger, db *gorm.DB, validator *validator.Validate, config *config.Config, cache *redis.Client) (*serviceProvider, error) {
+func newServiceProvider(logger *logger.Logger, db *gorm.DB, validator *validator.Validate, config *config.Config, cache *redis.Client, eventBus *events.EventBus) (*serviceProvider, error) {
 	a := &serviceProvider{
 		logger:    logger,
 		db:        db,
 		validator: validator,
 		config:    config,
 		cache:     cache,
+		eventBus:  eventBus,
 	}
 
 	if err := a.initDeps(); err != nil {
@@ -95,6 +99,7 @@ func (s *serviceProvider) initProductProvider() error {
 		s.logger,
 		s.db,
 		s.validator,
+		s.eventBus,
 		s.categoryProvider.CategoryService(),
 		s.characteristicValueProvider.CharacteristicValueService(),
 		s.transactionManagerProvider.TransactionManager(),
@@ -121,12 +126,19 @@ func (s *serviceProvider) initCategoryProvider() error {
 		s.characteristicProvider.CharacteristicService(),
 		s.transactionManagerProvider.TransactionManager(),
 		s.imageProvider.ImageService(),
+		s.eventBus,
 	)
 	return nil
 }
 
 func (s *serviceProvider) initIndexProvider() error {
-	s.indexProvider = *provider.NewIndexProvider(s.logger, s.validator, s.productProvider.ProductService(), s.categoryProvider.CategoryService())
+	s.indexProvider = *provider.NewIndexProvider(
+		s.logger,
+		s.validator,
+		s.productProvider.ProductService(),
+		s.categoryProvider.CategoryService(),
+		s.eventBus,
+	)
 	return nil
 }
 

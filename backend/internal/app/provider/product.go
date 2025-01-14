@@ -6,6 +6,7 @@ import (
 	productRepository "github.com/Fi44er/sdmedik/backend/internal/repository/product"
 	"github.com/Fi44er/sdmedik/backend/internal/service"
 	productService "github.com/Fi44er/sdmedik/backend/internal/service/product"
+	events "github.com/Fi44er/sdmedik/backend/pkg/evenbus"
 	"github.com/Fi44er/sdmedik/backend/pkg/logger"
 	"github.com/go-playground/validator/v10"
 	"gorm.io/gorm"
@@ -19,6 +20,7 @@ type ProductProvider struct {
 	logger    *logger.Logger
 	db        *gorm.DB
 	validator *validator.Validate
+	eventBus  *events.EventBus
 
 	categoryService            service.ICategoryService
 	characteristicValueService service.ICharacteristicValueService
@@ -31,6 +33,7 @@ func NewProductProvider(
 	logger *logger.Logger,
 	db *gorm.DB,
 	validator *validator.Validate,
+	eventBus *events.EventBus,
 
 	categoryService service.ICategoryService,
 	characteristicValueService service.ICharacteristicValueService,
@@ -47,6 +50,7 @@ func NewProductProvider(
 		transactionManagerRepo:     transactionManagerRepo,
 		imageService:               imageService,
 		characteristicService:      characteristicService,
+		eventBus:                   eventBus,
 	}
 }
 
@@ -68,6 +72,7 @@ func (p *ProductProvider) ProductService() service.IProductService {
 			p.transactionManagerRepo,
 			p.imageService,
 			p.characteristicService,
+			p.eventBus,
 		)
 	}
 
