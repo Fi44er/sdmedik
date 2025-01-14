@@ -3,6 +3,7 @@ package product
 import (
 	"github.com/Fi44er/sdmedik/backend/internal/repository"
 	def "github.com/Fi44er/sdmedik/backend/internal/service"
+	events "github.com/Fi44er/sdmedik/backend/pkg/evenbus"
 	"github.com/Fi44er/sdmedik/backend/pkg/logger"
 	"github.com/go-playground/validator/v10"
 )
@@ -13,6 +14,7 @@ type service struct {
 	logger    *logger.Logger
 	repo      repository.IProductRepository
 	validator *validator.Validate
+	evenBus   *events.EventBus
 
 	categoryService            def.ICategoryService
 	characteristicValueService def.ICharacteristicValueService
@@ -30,6 +32,7 @@ func NewService(
 	transactionManagerRepo repository.ITransactionManager,
 	imageService def.IImageService,
 	characteristicService def.ICharacteristicService,
+	evenBus *events.EventBus,
 ) *service {
 	return &service{
 		repo:                       repo,
@@ -40,5 +43,6 @@ func NewService(
 		transactionManagerRepo:     transactionManagerRepo,
 		imageService:               imageService,
 		characteristicService:      characteristicService,
+		evenBus:                    evenBus,
 	}
 }

@@ -5,14 +5,13 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"strconv"
 
 	"github.com/Fi44er/sdmedik/backend/internal/dto"
 	"github.com/Fi44er/sdmedik/backend/pkg/constants"
 	"github.com/blevesearch/bleve/v2"
 	"github.com/blevesearch/bleve/v2/analysis/analyzer/custom"
 	"github.com/blevesearch/bleve/v2/analysis/token/lowercase"
-	"github.com/blevesearch/bleve/v2/analysis/token/ngram"
+	"github.com/blevesearch/bleve/v2/analysis/tokenizer/regexp"
 	"github.com/blevesearch/bleve/v2/mapping"
 )
 
@@ -28,41 +27,43 @@ func (s *service) CreateOrLoad() (bleve.Index, error) {
 
 func (s *service) createIndex() (bleve.Index, error) {
 	indexMapping := bleve.NewIndexMapping()
-	err := indexMapping.AddCustomTokenFilter("ngram3", map[string]interface{}{
-		"type": ngram.Name,
-		"min":  2,
-		"max":  3,
+
+	err := indexMapping.AddCustomTokenizer("regexp", map[string]interface{}{
+		"type":   regexp.Name,
+		"regexp": `\s+`, // Регулярное выражение для токенизации
 	})
 	if err != nil {
-		return nil, fmt.Errorf("ошибка при регистрации токенизатора: %v", err)
+		return nil, fmt.Errorf("ошибка при регистрации токенизатора regexp: %v", err)
 	}
-
 	err = indexMapping.AddCustomTokenFilter("lowercase", map[string]interface{}{
 		"type": lowercase.Name,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("ошибка при регистрации lowercase фильтра: %v", err)
 	}
-
-	err = indexMapping.AddCustomAnalyzer("custom", map[string]interface{}{
+	// Добавляем кастомный анализатор
+	err = indexMapping.AddCustomAnalyzer("prefix_analyzer", map[string]interface{}{
 		"type":      custom.Name,
-		"tokenizer": "unicode", // Используем стандартный токенизатор
+		"tokenizer": "regexp", // Используем стандартный токенизатор
 		"token_filters": []string{
 			"lowercase", // Приводим текст к нижнему регистру
-			"ngram3",    // Применяем n-gram фильтр
 		},
 	})
 	if err != nil {
 		return nil, fmt.Errorf("ошибка при добавлении кастомного анализатора: %v", err)
 	}
-	indexMapping.DefaultAnalyzer = "custom"
+	indexMapping.DefaultAnalyzer = "prefix_analyzer"
 
+	// Создаем маппинг для продукта
 	productMapping := bleve.NewDocumentMapping()
-	productMapping.AddFieldMappingsAt("Name", mapping.NewTextFieldMapping())
+	nameFieldMapping := mapping.NewTextFieldMapping()
+	nameFieldMapping.Analyzer = "prefix_analyzer" // Используем кастомный анализатор для поля "Name"
+	productMapping.AddFieldMappingsAt("Name", nameFieldMapping)
 	productMapping.AddFieldMappingsAt("Type", mapping.NewTextFieldMapping())
 
 	indexMapping.AddDocumentMapping("product", productMapping)
 
+	// Создаем индекс
 	index, err := bleve.New(indexDir, indexMapping)
 	if err != nil {
 		return nil, fmt.Errorf("ошибка при создании индекса: %v", err)
@@ -71,7 +72,7 @@ func (s *service) createIndex() (bleve.Index, error) {
 	return index, nil
 }
 
-func (s *service) addSampleProducts(ctx context.Context, index bleve.Index) error {
+func (s *service) addSampleProducts(ctx context.Context) error {
 	// Генерируем товары
 	products, err := s.productService.Get(ctx, dto.ProductSearchCriteria{Minimal: true})
 	if err != nil {
@@ -86,35 +87,14 @@ func (s *service) addSampleProducts(ctx context.Context, index bleve.Index) erro
 	}
 
 	for _, product := range *products {
-		doc, err := index.Document(product.ID)
-		if err != nil {
-			return fmt.Errorf("ошибка при проверке документа с ID %s: %v", product.ID, err)
-		}
-
-		if doc == nil {
-			if err := index.Index(product.ID, map[string]interface{}{
-				"Name": product.Name,
-				"Type": "product",
-			}); err != nil {
-				return fmt.Errorf("ошибка при индексации товара с ID %s: %v", product.ID, err)
-			}
+		if err := s.AddOrUpdate(product, "product"); err != nil {
+			s.logger.Errorf("ошибка при индексации товара с ID %s: %v", product.ID, err)
 		}
 	}
 
 	for _, category := range *categories {
-		idStr := strconv.Itoa(int(category.ID))
-		doc, err := index.Document(string(category.ID))
-		if err != nil {
-			return fmt.Errorf("ошибка при проверке документа с ID %v: %v", category.ID, err)
-		}
-
-		if doc == nil {
-			if err := index.Index(idStr, map[string]interface{}{
-				"Name": category.Name,
-				"Type": "category", // Указываем тип "category"
-			}); err != nil {
-				return fmt.Errorf("ошибка при индексации категории с ID %v: %v", category.ID, err)
-			}
+		if err := s.AddOrUpdate(category, "product"); err != nil {
+			s.logger.Errorf("ошибка при индексации товара с ID %v: %v", category.ID, err)
 		}
 	}
 

@@ -7,6 +7,7 @@ import (
 	"github.com/Fi44er/sdmedik/backend/internal/dto"
 	"github.com/Fi44er/sdmedik/backend/pkg/constants"
 	custom_errors "github.com/Fi44er/sdmedik/backend/pkg/errors"
+	events "github.com/Fi44er/sdmedik/backend/pkg/evenbus"
 )
 
 func (s *service) Delete(ctx context.Context, id string) error {
@@ -52,6 +53,15 @@ func (s *service) Delete(ctx context.Context, id string) error {
 	if err := s.transactionManagerRepo.Commit(tx); err != nil {
 		return err
 	}
+
+	s.evenBus.Publish(events.Event{
+		Type: events.EventDataCreatedOrUpdated,
+		Data: struct {
+			ID string
+		}{
+			ID: id,
+		},
+	})
 
 	return nil
 }

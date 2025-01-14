@@ -7,6 +7,7 @@ import (
 	"github.com/Fi44er/sdmedik/backend/internal/model"
 
 	"github.com/Fi44er/sdmedik/backend/pkg/errors"
+	events "github.com/Fi44er/sdmedik/backend/pkg/evenbus"
 	"github.com/Fi44er/sdmedik/backend/pkg/utils"
 )
 
@@ -95,6 +96,11 @@ func (s *service) Create(ctx context.Context, product *dto.CreateProduct, images
 	if err := s.transactionManagerRepo.Commit(tx); err != nil {
 		return err
 	}
+
+	s.evenBus.Publish(events.Event{
+		Type: events.EventDataCreatedOrUpdated,
+		Data: modelProduct,
+	})
 
 	return nil
 }

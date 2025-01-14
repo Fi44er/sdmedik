@@ -72,7 +72,6 @@ type ISearchService interface {
 
 type IIndexService interface {
 	Get() bleve.Index
-	// Add(index bleve.Index, product *model.Product) error
-	// Update(index bleve.Index, product *model.Product) error
-	// Delete(index bleve.Index, product *model.Product) error
+	AddOrUpdate(data interface{}, docType string) error
+	// Delete(id string) error
 }
