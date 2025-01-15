@@ -64,7 +64,12 @@ type IImageService interface {
 	DeleteByIDs(ctx context.Context, ids []string, names []string, tx *gorm.DB) error
 }
 
-type IBasketService interface{}
+type IBasketService interface {
+	// Create() error
+	// AddToBasket() error
+	// DeleteFromBasket() error
+	// GetByID(ctx context.Context, id string) (*model.Basket, error)
+}
 
 type ISearchService interface {
 	Search(ctx context.Context, query string) (*[]response.SearchRes, error)
@@ -72,6 +77,4 @@ type ISearchService interface {
 
 type IIndexService interface {
 	Get() bleve.Index
-	AddOrUpdate(data interface{}, docType string) error
-	// Delete(id string) error
 }
