@@ -111,50 +111,51 @@ export default function Footer() {
             </Box>
             <Box sx={{ width: "250px" }}>
               <Typography variant="h6">
-                г. Оренбург, ул. Шевченко д. 20 «В» Магазин - Склад
+                г. Орск, проспект Мира. 15 «Д», ТД Яшма, магазин «Памперсы»
               </Typography>
               <Typography variant="h6" color="text.secondary">
-                + 7 3532 93-52-41
+                +7 905 896-23-23
               </Typography>
             </Box>
             <Box sx={{ width: "250px" }}>
               <Typography variant="h6">
-                г. Оренбург, ул. Шевченко д. 20 «В» Магазин - Склад
+                г. Уфа, ул. Степана Кувыкина, 41, Магазин-Склад
               </Typography>
               <Typography variant="h6" color="text.secondary">
-                + 7 3532 93-52-41
+                +7 961 366-82-46
               </Typography>
             </Box>
             <Box sx={{ width: "250px" }}>
               <Typography variant="h6">
-                г. Оренбург, ул. Шевченко д. 20 «В» Магазин - Склад
+                г. Екатеринбург, пр-т. Ленина 79 «Б», Центр обучения и
+                обеспечения техническими средствами реабилитации
               </Typography>
               <Typography variant="h6" color="text.secondary">
-                + 7 3532 93-52-41
+                +7 903 086-34-11
               </Typography>
             </Box>
             <Box sx={{ width: "250px" }}>
               <Typography variant="h6">
-                г. Оренбург, ул. Шевченко д. 20 «В» Магазин - Склад
+                респ. Чечня, г. Гудермес, ул. Нагорная, 2
               </Typography>
               <Typography variant="h6" color="text.secondary">
-                + 7 3532 93-52-41
+                +7 928 002-34-19
               </Typography>
             </Box>
             <Box sx={{ width: "250px" }}>
               <Typography variant="h6">
-                г. Оренбург, ул. Шевченко д. 20 «В» Магазин - Склад
+                респ. Чечня, г. Грозный, ул. Маты Кишиева, 142
               </Typography>
               <Typography variant="h6" color="text.secondary">
-                + 7 3532 93-52-41
+                +7 928 002-34-19
               </Typography>
             </Box>
             <Box sx={{ width: "250px" }}>
               <Typography variant="h6">
-                г. Оренбург, ул. Шевченко д. 20 «В» Магазин - Склад
+                г. Нижний Новгород, ул Дежнëва, 2
               </Typography>
               <Typography variant="h6" color="text.secondary">
-                + 7 3532 93-52-41
+                +7 960 181-03-50
               </Typography>
             </Box>
           </Box>

@@ -20,24 +20,35 @@ export default function CatalogDynamicPage() {
   const { fetchProducts, products } = useProductStore();
   const [currentPage, setCurrentPage] = useState(1);
   const [filters, setFilters] = useState(null); // Состояние для хранения фильтров
+  const [currentProducts, setCurrentProducts] = useState([]); // Переменная для хранения текущих продуктов
   const ProductsPerPage = 20;
 
   const category_id = id;
 
   useEffect(() => {
     fetchProducts(category_id, filters); // Передаем фильтры в fetchProducts
-  }, [category_id, fetchProducts, filters]); // Добавляем filters в зависимости // Добавляем filters в зависимости
+  }, [category_id, fetchProducts, filters]); // Добавляем filters в зависимости
+
+  useEffect(() => {
+    if (products?.data) {
+      let normalizedProducts = [];
+      if (!Array.isArray(products.data)) {
+        normalizedProducts = [products.data]; // Приводим объект к массиву
+      } else {
+        normalizedProducts = products.data;
+      }
+      setCurrentProducts(normalizedProducts);
+    }
+  }, [products]);
 
   const indexOfLastItem = currentPage * ProductsPerPage;
   const indexOfFirstItem = indexOfLastItem - ProductsPerPage;
-  const currentProducts =
-    Array.isArray(products.data) && products.data.length > 0
-      ? products.data.slice(indexOfFirstItem, indexOfLastItem)
-      : [];
 
   const handleChangePage = (event, value) => {
     setCurrentPage(value);
   };
+
+  const paginatedProducts = currentProducts.slice(indexOfFirstItem, indexOfLastItem);
 
   return (
     <Box sx={{ mt: 1, mb: 5 }}>
@@ -49,8 +60,8 @@ export default function CatalogDynamicPage() {
         spacing={{ xs: 2, md: 3 }}
         columns={{ xs: 4, sm: 4, md: 4 }}
       >
-        {currentProducts.length > 0 ? (
-          currentProducts.map((e) => (
+        {paginatedProducts.length > 0 ? (
+          paginatedProducts.map((e) => (
             <Grid item key={e.id} xs={1} sm={1} md={1}>
               <Card
                 sx={{
@@ -107,7 +118,7 @@ export default function CatalogDynamicPage() {
                     </Typography>
                   </Box>
 
-                  <Box
+                  < Box
                     sx={{
                       display: "flex",
                       justifyContent: "space-between",
@@ -143,9 +154,9 @@ export default function CatalogDynamicPage() {
           <Typography>Нет данных для отображения</Typography>
         )}
       </Grid>
-      {products && Array.isArray(products.data) && (
+      {currentProducts.length > 0 && (
         <Pagination
-          count={Math.ceil(products.data.length / ProductsPerPage)}
+          count={Math.ceil(currentProducts.length / ProductsPerPage)}
           page={currentPage}
           onChange={handleChangePage}
           sx={{

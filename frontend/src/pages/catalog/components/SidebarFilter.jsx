@@ -43,15 +43,15 @@ const CustomTextField = styled(TextField)({
   },
 });
 
-const SidebarFilter = () => {
+const SidebarFilter = ({ setFilters }) => {
   const theme = useTheme();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(0);
   const [filtersApplied, setFiltersApplied] = useState(false);
-  const { fetchFilter, filters, selectedFilters, setSelectedFilters } =
-    useFilterStore();
+  const { fetchFilter, filters } = useFilterStore();
   const { fetchProducts, products } = useProductStore();
+  const [selectedValues, setSelectedValues] = useState([]);
   const { id } = useParams();
   const category_id = id;
 
@@ -60,83 +60,82 @@ const SidebarFilter = () => {
     console.log(filters);
   }, [category_id]);
 
+  useEffect(() => {
+    if (drawerOpen && filters && filters.data && filters.data.characteristics) {
+      const initialCharacteristics = filters.data.characteristics.map(
+        (filter) => ({
+          characteristic_id: filter.id,
+          values: [],
+        })
+      );
+      setSelectedValues(initialCharacteristics);
+    }
+  }, [drawerOpen, filters]);
+
   const toggleDrawer = () => {
     setDrawerOpen(!drawerOpen);
   };
 
-  const handleCheckboxChange = (characteristicId, value) => {
-    const updatedCharacteristics = filters.data.characteristics.map(
-      (filter) => {
-        if (filter.id === characteristicId) {
-          return {
-            ...filter,
-            values: filter.values.map((val) =>
-              val.value === value ? { ...val, checked: !val.checked } : val
-            ),
-          };
-        }
-        return filter;
-      }
+  const handleChangeCheckbox = (event, characteristicId, value) => {
+    const updatedSelectedValues = [...selectedValues];
+    const index = updatedSelectedValues.findIndex(
+      (item) => item.characteristic_id === characteristicId
     );
 
-    setSelectedFilters({
-      ...filters,
-      data: {
-        ...filters.data,
-        characteristics: updatedCharacteristics,
-      },
-    });
-
-    // Принудительное обновление состояния компонента
-    setFiltersApplied(true);
+    if (index !== -1) {
+      const currentCharacteristic = updatedSelectedValues[index];
+      if (event.target.checked) {
+        currentCharacteristic.values.push(value);
+      } else {
+        currentCharacteristic.values = currentCharacteristic.values.filter(
+          (v) => v !== value
+        );
+      }
+      setSelectedValues(updatedSelectedValues);
+    }
   };
 
-  const handleApplyFilters = () => {
-    if (!Array.isArray(filters?.data?.characteristics)) {
-      console.error("Характеристики не загружены или не являются массивом");
-      return;
-    }
-
-    const serializableFilters = {
+  const handleApplyFilters = async () => {
+    // Сбор данных фильтрации
+    const filterData = {
       price: {
         min: minPrice,
         max: maxPrice,
       },
-      characteristics: filters.data.characteristics
-        .filter((filter) => filter.values.some((value) => value.checked))
-        .map((filter) => ({
-          characteristic_id: filter.id,
-          values: filter.values
-            .filter((value) => value.checked)
-            .map((value) => value.value),
-        })),
+      characteristics: selectedValues.filter((characteristic) =>
+        characteristic.values.length > 0 ? true : false
+      ),
     };
 
-    console.log("Данные, отправляемые на сервер:", serializableFilters);
-    if (selectedFilters) {
-      setSelectedFilters(serializableFilters);
-    }
-    fetchProducts(category_id, serializableFilters);
-    toggleDrawer();
-    setFiltersApplied(true);
+    // Оборачивание каждого значения в объект
+    const cleanedFilterData = {
+      ...filterData,
+      characteristics: filterData.characteristics.map((char) => ({
+        characteristic_id: char.characteristic_id,
+        values: char.values.map((val) => String(val)), // Каждое значение становится объектом
+      })),
+    };
+
+    // Преобразование данных в JSON
+    const jsonData = JSON.stringify(cleanedFilterData);
+
+    // Создание FormData для отправки
+    const formData = new FormData();
+    formData.append("filters", jsonData);
+
+    console.log("Результат фильтрации:", jsonData);
+
+    fetchProducts(category_id, jsonData);
   };
 
   const handleResetFilters = () => {
+    // Сбрасываем все состояния фильтров
+    setSelectedValues([]);
     setMinPrice(0);
     setMaxPrice(0);
-    setFiltersApplied(false);
-    // Сбросить состояние характеристик
-    const resetCharacteristics = filters.data.characteristics.map((filter) => ({
-      ...filter,
-      values: filter.values.map((value) => ({ ...value, checked: false })),
-    }));
-    setSelectedFilters({
-      ...filters,
-      data: {
-        ...filters.data,
-        characteristics: resetCharacteristics,
-      },
-    });
+
+    // Отправляем GET-запрос без фильтров
+    fetchProducts(category_id, null); // или пустой объект, если требуется
   };
 
   return (
@@ -204,82 +203,76 @@ const SidebarFilter = () => {
                 sx={{ width: "48%", mt: 2, color: "#00B3A4" }}
               />
             </Box>
-          </Box>
-
-          {Array.isArray(filters?.data?.characteristics) &&
-          filters.data.characteristics.length > 0 ? (
-            filters.data.characteristics.map((filter, index) => (
-              <FormControl fullWidth sx={{ mt: 2 }} key={index}>
-                <Accordion>
+            {filters &&
+              filters.data &&
+              filters.data.characteristics.map((char) => (
+                <Accordion sx={{ mt: 2, mb: 2 }} key={char.id} defaultExpanded>
                   <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                    {filter.name}
+                    <Typography>{char.name}</Typography>
                   </AccordionSummary>
-                  <AccordionDetails
-                    sx={{
-                      maxHeight: 200,
-                      overflow: "auto",
-                    }}
-                  >
-                    {filter.values.map((value) => (
+                  <AccordionDetails>
+                    {char.values.map((value) => (
                       <FormControlLabel
-                        key={value.value}
                         control={
                           <Checkbox
                             sx={{
                               color: "#00B3A4",
                               "&.Mui-checked": { color: "#00B3A4" },
                             }}
-                            checked={value.checked || false}
-                            onChange={() =>
-                              handleCheckboxChange(filter.id, value.value)
+                            checked={selectedValues.some(
+                              (c) =>
+                                c.characteristic_id === char.id &&
+                                c.values.includes(value)
+                            )}
+                            onChange={(e) =>
+                              handleChangeCheckbox(e, char.id, value)
                             }
                           />
                         }
-                        label={
-                          typeof value === "boolean"
-                            ? value
-                              ? "Да"
-                              : "Нет"
-                            : typeof value === "number"
-                            ? `${value} см`
-                            : value
-                        }
+                        label={value}
                       />
                     ))}
                   </AccordionDetails>
                 </Accordion>
-              </FormControl>
-            ))
-          ) : (
-            <Typography>Данных нет</Typography>
-          )}
-          <Box sx={{ display: "flex", justifyContent: "space-between", mt: 3 }}>
+              ))}
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "flex-end",
+              alignItems: "center",
+              mt: 2,
+              gridGap: 30,
+            }}
+          >
             <Button
-              variant="outlined"
               sx={{
-                border: "2px solid #2CC0B3",
-                color: "#2CC0B3",
+                background: "#00B3A4",
+                color: "white",
                 height: "50px",
-                width: "48%",
+                width: { xs: "30%", md: "150px" },
               }}
-              onClick={handleApplyFilters}
+              onClick={() => {
+                handleApplyFilters();
+                toggleDrawer();
+              }}
             >
-              Показать
+              Применить фильтры
             </Button>
-            {filtersApplied && (
-              <Button
-                variant="contained"
-                sx={{
-                  background: `#c0c0c0`,
-                  height: "50px",
-                  color: "black",
-                  width: "48%",
-                }}
-                onClick={handleResetFilters}
-              >
-                Сбросить все
-              </Button>
-            )}
+            <Button
+              sx={{
+                background: "#E74C3C",
+                color: "white",
+                height: "50px",
+                width: { xs: "30%", md: "150px" },
+              }}
+              onClick={() => {
+                handleResetFilters();
+                toggleDrawer();
+              }}
+            >
+              Сбросить фильтры
+            </Button>
           </Box>
         </Box>
       </Drawer>

@@ -122,7 +122,7 @@ export default function UpdateProduct() {
       formData.append("files", file);
     });
 
-    await updateProduct(formData, id);
+    await updateProduct(id, formData);
     setLoading(false);
   };
 
@@ -144,7 +144,6 @@ export default function UpdateProduct() {
                     setProduct({ ...product, name: e.target.value })
                   }
                   fullWidth
-                  required
                   margin="normal"
                 />
               </Grid>
@@ -156,7 +155,6 @@ export default function UpdateProduct() {
                     setProduct({ ...product, article: e.target.value })
                   }
                   fullWidth
-                  required
                   margin="normal"
                 />
               </Grid>
@@ -172,7 +170,6 @@ export default function UpdateProduct() {
                     });
                   }}
                   fullWidth
-                  required
                   margin="normal"
                   InputProps={{
                     startAdornment: (

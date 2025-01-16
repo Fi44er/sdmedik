@@ -56,7 +56,7 @@ const useProductStore = create((set, get) => ({
     } catch (error) {
       // Обработка ошибки
       console.error("Ошибка при обновлении продукта:", error);
-      if (error.response.status === 401) {
+      if (error.response?.status === 401) {
         // Если статус 401, обновляем токены и повторяем запрос
         await get().refreshToken();
         await get().updateProduct(id, formData); // Повторяем запрос
@@ -80,15 +80,24 @@ const useProductStore = create((set, get) => ({
   },
 
   products: [],
-  fetchProducts: async (
-    category_id,
-    serializableFilters
-  ) => {
+  fetchProducts: async (category_id, jsonData) => {
     try {
       const response = await axios.get(`http://localhost:8080/api/v1/product`, {
         params: {
           category_id: category_id,
-          filters: serializableFilters,
+          filters: jsonData,
+        },
+      });
+      set({ products: response.data });
+    } catch (error) {
+      console.error("Error fetching product:", error);
+    }
+  },
+  fetchFiltersProducts: async (jsonData) => {
+    try {
+      const response = await axios.get(`http://localhost:8080/api/v1/product`, {
+        params: {
+          filters: jsonData,
         },
       });
       set({ products: response.data });
