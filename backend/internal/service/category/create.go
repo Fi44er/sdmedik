@@ -85,8 +85,9 @@ func (s *service) Create(ctx context.Context, data *dto.CreateCategory, image *d
 	}
 
 	s.evenBus.Publish(events.Event{
-		Type: events.EventDataCreatedOrUpdated,
-		Data: modelCategory,
+		Type:     events.EventDataCreatedOrUpdated,
+		Data:     modelCategory,
+		DataType: "category",
 	})
 	return nil
 }

@@ -65,7 +65,7 @@ type IImageService interface {
 }
 
 type IBasketService interface {
-	// Create() error
+	Create(ctx context.Context, userID string) error
 	// AddToBasket() error
 	// DeleteFromBasket() error
 	// GetByID(ctx context.Context, id string) (*model.Basket, error)

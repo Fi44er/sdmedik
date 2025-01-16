@@ -62,7 +62,7 @@ type IImageRepository interface {
 }
 
 type IBasketRepository interface {
-	Create(ctx context.Context, data *model.Basket) error
+	Create(ctx context.Context, data *model.Basket, tx *gorm.DB) error
 	GetByUserID(ctx context.Context, userID string) (*model.Basket, error)
 }
 

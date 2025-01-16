@@ -11,8 +11,9 @@ const (
 
 // Event представляет собой событие
 type Event struct {
-	Type EventType
-	Data interface{}
+	Type     EventType
+	Data     interface{}
+	DataType string
 }
 
 // EventBus управляет подписками и рассылкой событий

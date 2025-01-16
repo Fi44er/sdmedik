@@ -5,6 +5,8 @@ import (
 	"reflect"
 	"strconv"
 
+	// "strconv"
+
 	"github.com/Fi44er/sdmedik/backend/internal/dto"
 	"github.com/Fi44er/sdmedik/backend/internal/model"
 	def "github.com/Fi44er/sdmedik/backend/internal/repository"
@@ -138,6 +140,11 @@ func (r *repository) Get(ctx context.Context, criteria dto.ProductSearchCriteria
 		}
 	}
 
+	// if len(criteria.Filters.Characteristics) > 0 {
+	// 	for _, filter := range criteria.Filters.Characteristics {
+	// 		request = request.Where("EXISTS (SELECT 1 FROM characteristic_values WHERE product_id = products.id AND characteristic_id = ? AND value IN (?))", filter.CharacteristicID, filter.Values)
+	// 	}
+	// }
 	if criteria.Offset != 0 {
 		request = request.Offset(criteria.Offset)
 		delete(conditions, "offset")
