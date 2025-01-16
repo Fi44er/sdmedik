@@ -58,7 +58,8 @@ func NewService(
 
 func (s *service) handleDataCreatedOrUpdated(event events.Event) {
 	data := event.Data
-	if err := s.AddOrUpdate(data, "category"); err != nil {
+	dataType := event.DataType
+	if err := s.AddOrUpdate(data, dataType); err != nil {
 		s.logger.Errorf("Ошибка при индексации категории: %v", err)
 	}
 }

@@ -98,8 +98,9 @@ func (s *service) Create(ctx context.Context, product *dto.CreateProduct, images
 	}
 
 	s.evenBus.Publish(events.Event{
-		Type: events.EventDataCreatedOrUpdated,
-		Data: modelProduct,
+		Type:     events.EventDataCreatedOrUpdated,
+		Data:     modelProduct,
+		DataType: "product",
 	})
 
 	return nil
