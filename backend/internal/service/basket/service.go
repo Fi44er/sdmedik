@@ -16,6 +16,7 @@ type service struct {
 
 	userService    def.IUserService
 	productService def.IProductService
+	basketItemRepo repository.IBasketItemRepository
 }
 
 func NewService(
@@ -24,6 +25,7 @@ func NewService(
 	repo repository.IBasketRepository,
 	userService def.IUserService,
 	productService def.IProductService,
+	basketItemRepo repository.IBasketItemRepository,
 ) *service {
 	return &service{
 		logger:         logger,
@@ -31,5 +33,6 @@ func NewService(
 		repo:           repo,
 		userService:    userService,
 		productService: productService,
+		basketItemRepo: basketItemRepo,
 	}
 }

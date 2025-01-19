@@ -9,7 +9,7 @@ import (
 	"gorm.io/gorm"
 )
 
-var _ def.IProductRepository = (*repository)(nil)
+var _ def.IBasketRepository = (*repository)(nil)
 
 type repository struct {
 	db     *gorm.DB
@@ -23,13 +23,9 @@ func NewRepository(logger *logger.Logger, db *gorm.DB) *repository {
 	}
 }
 
-func (r *repository) Create(ctx context.Context, data *model.Basket, tx *gorm.DB) error {
+func (r *repository) Create(ctx context.Context, data *model.Basket) error {
 	r.logger.Info("Creating basket...")
-	db := tx
-	if db == nil {
-		db = r.db
-	}
-	if err := db.WithContext(ctx).Create(data).Error; err != nil {
+	if err := r.db.WithContext(ctx).Create(data).Error; err != nil {
 		r.logger.Errorf("Failed to create basket: %v", err)
 		return err
 	}

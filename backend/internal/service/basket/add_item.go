@@ -8,19 +8,17 @@ import (
 	"github.com/Fi44er/sdmedik/backend/pkg/utils"
 )
 
-func (s *service) Create(ctx context.Context, dto *dto.CreateBasket) error {
+func (s *service) AddItem(ctx context.Context, dto *dto.AddBasketItem) error {
 	if err := s.validator.Struct(dto); err != nil {
 		return err
 	}
 
-	basketModel := new(model.Basket)
-	if err := utils.DtoToModel(dto, basketModel); err != nil {
+	basketItemModel := new(model.BasketItem)
+	if err := utils.DtoToModel(dto, basketItemModel); err != nil {
 		return err
 	}
-
-	if err := s.repo.Create(ctx, basketModel); err != nil {
+	if err := s.basketItemRepo.Create(ctx, basketItemModel); err != nil {
 		return err
 	}
-
 	return nil
 }

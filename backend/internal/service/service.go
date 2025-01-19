@@ -14,7 +14,7 @@ type IUserService interface {
 	Create(ctx context.Context, user *model.User) error
 	GetByID(ctx context.Context, id string) (*model.User, error)
 	GetByEmail(ctx context.Context, email string) (*model.User, error)
-	GetAll(ctx context.Context, offset int, limit int) (*[]model.User, error)
+	GetAll(ctx context.Context, offset int, limit int) (*response.UsersResponse, error)
 	Update(ctx context.Context, data *dto.UpdateUser, id string) error
 	Delete(ctx context.Context, id string) error
 }
@@ -65,10 +65,9 @@ type IImageService interface {
 }
 
 type IBasketService interface {
-	Create(ctx context.Context, userID string) error
-	// AddToBasket() error
-	// DeleteFromBasket() error
-	// GetByID(ctx context.Context, id string) (*model.Basket, error)
+	Create(ctx context.Context, dto *dto.CreateBasket) error
+	AddItem(ctx context.Context, dto *dto.AddBasketItem) error
+	DeleteItem(ctx context.Context, itemID string) error
 }
 
 type ISearchService interface {
