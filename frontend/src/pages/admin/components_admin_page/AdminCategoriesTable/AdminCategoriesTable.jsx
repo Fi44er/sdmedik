@@ -8,24 +8,35 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Typography,
 } from "@mui/material";
 import React, { useEffect } from "react";
 import useCategoryStore from "../../../../store/categoryStore";
 
 export default function AdminCategoriesTable() {
-  const { fetchCategory, category } = useCategoryStore();
+  const { fetchCategory, category, deleteCategory } = useCategoryStore();
 
   useEffect(() => {
     fetchCategory();
+    console.log(category);
   }, []);
+
+  const handleDeleteProduct = async (id) => {
+    await deleteCategory(id);
+    fetchCategory();
+  };
 
   return (
     <Box>
+      <Typography sx={{ fontSize: "30px", mb: 2, mt: 2 }}>
+        Таблица с категориями
+      </Typography>
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
             <TableRow>
-              <TableCell align="center">Название Категори</TableCell>
+              <TableCell align="center">Фото</TableCell>
+              <TableCell align="left">Название Категори</TableCell>
               <TableCell align="center">Действия</TableCell>
             </TableRow>
           </TableHead>
@@ -33,9 +44,25 @@ export default function AdminCategoriesTable() {
             {Array.isArray(category.data) &&
               category.data.map((item) => (
                 <TableRow key={item.id}>
-                  <TableCell align="center">{item.name}</TableCell>
                   <TableCell align="center">
-                    <Button>Удалить</Button>
+                    <Box sx={{ display: "flex", gap: 1 }}>
+                      <img
+                        key={item.id}
+                        src={`http://127.0.0.1:8080/api/v1/image/${item.images[0].name}`}
+                        alt="product"
+                        style={{ width: 50, height: 50, borderRadius: "4px" }}
+                      />
+                    </Box>
+                  </TableCell>
+                  <TableCell align="left">{item.name}</TableCell>
+                  <TableCell align="center">
+                    <Button
+                      variant="contained"
+                      color="error"
+                      onClick={() => handleDeleteProduct(item.id)}
+                    >
+                      Удалить
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}

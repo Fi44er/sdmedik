@@ -10,6 +10,7 @@ import {
   TableRow,
   TableCell,
   Pagination,
+  Typography,
 } from "@mui/material";
 import useProductStore from "../../../../store/productStore";
 
@@ -47,10 +48,17 @@ const AdminProductTable = () => {
 
   return (
     <Box sx={{ padding: 2 }}>
+      <Typography sx={{ fontSize: "30px", mb: 2, mt: 2 }}>
+        Таблица с Продуктами
+      </Typography>
       <Paper sx={{ width: "100%" }}>
         {/* Таблица для больших экранов */}
         <TableContainer
-          sx={{ overflowX: "auto", display: { xs: "none", sm: "block" } }}
+          sx={{
+            overflowX: "auto",
+            display: { xs: "none", sm: "block" },
+            height: "600px",
+          }}
         >
           <Table>
             <TableHead>

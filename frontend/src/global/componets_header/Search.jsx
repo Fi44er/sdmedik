@@ -1,13 +1,56 @@
+import React, { useEffect, useRef, useState } from "react";
 import { InputBase, Button, Box, MenuItem, Typography } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import { useState } from "react";
+import { debounce } from "lodash";
+import useSearchStore from "../../store/serchStore";
 
-export default function Search({
-  searchQuery,
-  searchSuggestions,
-  handleSearchInput,
-  handleSuggestionClick,
-}) {
+const DEBOUNCE_DELAY = 250; // Задержка перед выполнением запроса
+
+export default function Search() {
+  const {
+    searchQuery,
+    searchSuggestions,
+    setSearchQuery,
+    setSearchSuggestions,
+    searchProducts,
+  } = useSearchStore();
+
+  const inputRef = useRef(null);
+
+  // Обрабатываем ввод в поле поиска
+  const handleSearchInput = (query) => {
+    setSearchQuery(query === null || query === undefined ? "" : query); // Устанавливаем пустую строку, если query равен null или undefined
+    if ((query || "").trim().length) {
+      // Используем дебаунс для оптимизации запросов
+      debouncedSearchProducts(query);
+    }
+  };
+
+  // Дебаунсированная функция для выполнения поиска товаров
+  const debouncedSearchProducts = useRef(
+    debounce(async (query) => {
+      try {
+        const suggestions = await searchProducts(query); // Выполняем поиск товаров
+        setSearchSuggestions(suggestions); // Обновляем подсказки
+      } catch (error) {
+        console.error("Ошибка при получении подсказок:", error);
+      }
+    }, DEBOUNCE_DELAY)
+  ).current;
+
+  // Обработчик клика по подсказке
+  const handleSuggestionClick = (suggestion) => {
+    window.location.href = `/product/${suggestion.id}`;
+  };
+
+  // Отменяем предыдущие запросы при размонтаже компонента
+  useEffect(
+    () => () => {
+      debouncedSearchProducts.cancel();
+    },
+    []
+  );
+
   return (
     <Box
       sx={{
@@ -20,6 +63,7 @@ export default function Search({
     >
       {/* Поле поиска */}
       <InputBase
+        ref={inputRef}
         type="text"
         placeholder="Поиск по товарам"
         value={searchQuery}
@@ -69,36 +113,36 @@ export default function Search({
           maxHeight: "300px",
           overflowY: "auto",
           transition: "opacity 0.3s ease, transform 0.3s ease",
-          opacity: searchSuggestions.length > 0 ? 1 : 0,
-          transform:
-            searchSuggestions.length > 0
-              ? "translateY(0)"
-              : "translateY(-10px)",
-          pointerEvents: searchSuggestions.length > 0 ? "auto" : "none",
+          // opacity: searchSuggestions.length,
+          // transform: searchSuggestions.length
+          //   ? "translateY(0)"
+          //   : "translateY(-10px)",
+          // pointerEvents: searchSuggestions.length ? "auto" : "none",
         }}
       >
-        {searchSuggestions.map((suggestion, index) => (
-          <MenuItem
-            key={index}
-            onClick={() => handleSuggestionClick(suggestion)}
-            sx={{
-              padding: "10px 20px",
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-              "&:hover": { backgroundColor: "#f5f5f5" },
-            }}
-          >
-            <Box>
-              <Typography
-                variant="body1"
-                sx={{ fontWeight: 500, color: "black" }}
-              >
-                {suggestion.name}
-              </Typography>
-            </Box>
-          </MenuItem>
-        ))}
+        {searchSuggestions &&
+          searchSuggestions.map((suggestion, index) => (
+            <MenuItem
+              key={index}
+              onClick={() => handleSuggestionClick(suggestion)}
+              sx={{
+                padding: "10px 20px",
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+                "&:hover": { backgroundColor: "#f5f5f5" },
+              }}
+            >
+              <Box>
+                <Typography
+                  variant="body1"
+                  sx={{ fontWeight: 500, color: "black" }}
+                >
+                  {suggestion.name}
+                </Typography>
+              </Box>
+            </MenuItem>
+          ))}
       </Box>
     </Box>
   );

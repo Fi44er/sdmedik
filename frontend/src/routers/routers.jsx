@@ -20,6 +20,7 @@ import Contacts from "../pages/contacts/Contacts";
 import CreateCategory from "../pages/admin/create_category/CreateCategory";
 import AdminDashboard from "../pages/admin/AdminLayout";
 import UpdateProduct from "../pages/admin/update_product/UpdateProduct";
+import AdminCategoriesTable from "../pages/admin/components_admin_page/AdminCategoriesTable/AdminCategoriesTable";
 
 const UsersRoute = ({ children }) => {
   const isLoggedIn = Cookies.get("logged_in") === "true";
@@ -95,7 +96,7 @@ export const router = createBrowserRouter([
     ),
   },
   {
-    path: "/Admin",
+    path: `/Admin/*`,
     element: <AdminDashboard />,
   },
   {

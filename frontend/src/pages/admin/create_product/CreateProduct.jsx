@@ -18,7 +18,7 @@ import useCategoryStore from "../../../store/categoryStore";
 import useProductStore from "../../../store/productStore";
 import { Delete as DeleteIcon } from "@mui/icons-material";
 
-export default function UpdateProduct() {
+export default function CreateProduct() {
   const { fetchCategory, category } = useCategoryStore();
   const { createProduct } = useProductStore();
 

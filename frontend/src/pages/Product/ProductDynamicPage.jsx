@@ -24,13 +24,6 @@ export default function ProductDetailPage() {
   const { fetchProductById, products } = useProductStore();
   const { id } = useParams();
 
-  const productDetails = {
-    reviews: [
-      { text: "Отличная коляска, очень удобная!", author: "Ирина", rating: 5 },
-      { text: "Качество на высоте, рекомендую!", author: "Сергей", rating: 4 },
-    ],
-  };
-
   useEffect(() => {
     fetchProductById(id);
     console.log(products);
@@ -198,30 +191,6 @@ export default function ProductDetailPage() {
         <Typography>{products.data?.description}</Typography>
       </Box>
       {/* Отзывы */}
-      <Box sx={{ marginTop: 4 }}>
-        <Typography variant="h6">Отзывы:</Typography>
-        {productDetails.reviews.map((review, index) => (
-          <Paper
-            key={index}
-            elevation={2}
-            sx={{
-              padding: 2,
-              marginTop: 1,
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <Box>
-              <Typography>{review.text}</Typography>
-              <Typography variant="caption">
-                - {review.author}, {review.rating} звезды
-              </Typography>
-            </Box>
-            <Rating name="half-rating" defaultValue={5} precision={1} />
-          </Paper>
-        ))}
-      </Box>
     </Container>
   );
 }

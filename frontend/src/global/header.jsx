@@ -59,40 +59,12 @@ export default function Header() {
     useAuthStore();
 
   // Используем хранилище Zustand для поиска
-  const {
-    searchQuery,
-    searchSuggestions,
-    setSearchQuery,
-    setSearchSuggestions,
-    searchProducts,
-  } = useSearchStore();
 
   useEffect(() => {
     checkAuthStatus();
     const intervalId = setInterval(checkAuthStatus, 300000);
     return () => clearInterval(intervalId);
   }, [setIsAuthenticated]);
-
-  useEffect(() => {
-    console.log("Подсказки:", searchSuggestions);
-  }, [searchSuggestions]);
-
-  // Обработка ввода в поле поиска
-  const handleSearchInput = async (query) => {
-    setSearchQuery(query); // Обновляем состояние поискового запроса
-    if (query.length > 2) {
-      const suggestions = await searchProducts(query); // Выполняем поиск товаров
-      console.log("Результаты поиска:", suggestions); // Выводим результаты в консоль
-      setSearchSuggestions(suggestions); // Обновляем подсказки
-    } else {
-      setSearchSuggestions([]); // Очищаем подсказки, если запрос слишком короткий
-    }
-  };
-
-  // Обработка клика по подсказке
-  const handleSuggestionClick = (suggestion) => {
-    window.location.href = `/product/${suggestion.id}`; // Use the navigate function here
-  };
 
   const openLk = Boolean(menuLk);
 
@@ -173,12 +145,7 @@ export default function Header() {
               </Box>
             </Box>
 
-            <Search
-              searchQuery={searchQuery}
-              searchSuggestions={searchSuggestions}
-              handleSearchInput={handleSearchInput}
-              handleSuggestionClick={handleSuggestionClick}
-            />
+            <Search />
 
             <Box sx={{ display: "flex", alignItems: "center", gridGap: 20 }}>
               <IconButton
@@ -357,12 +324,7 @@ export default function Header() {
             width: "100%",
           }}
         >
-          <Search
-            searchQuery={searchQuery}
-            searchSuggestions={searchSuggestions}
-            handleSearchInput={handleSearchInput}
-            handleSuggestionClick={handleSuggestionClick}
-          />
+          <Search />
         </Box>
       </Toolbar>
       <Drawer anchor="left" open={drawerOpen} onClose={toggleDrawer(false)}>

@@ -71,6 +71,15 @@ const useCategoryStore = create((set, get) => ({
       }
     }
   },
+  deleteCategory: async (id) => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:8080/api/v1/category/${id}`
+      );
+    } catch (error) {
+      console.error("Error deleting category:", error);
+    }
+  },
 }));
 
 export default useCategoryStore;

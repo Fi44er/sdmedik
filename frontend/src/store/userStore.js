@@ -35,6 +35,15 @@ const useUserStore = create((set, get) => ({
       }
     }
   },
+  users: [],
+  fetchUsers: async () => {
+    try {
+      const response = await axios.get(`http://localhost:8080/api/v1/user`);
+      set({ users: response.data });
+    } catch (error) {
+      console.error("Error fetching product:", error);
+    }
+  },
   refreshToken: async () => {
     if (get().logoutCalled) {
       return;
