@@ -13,6 +13,7 @@ type User struct {
 	PhoneNumber string `gorm:"type:varchar(255);not null" json:"phone_number"`
 	RoleID      int    `gorm:"not null" json:"role_id"`
 	Role        Role   `gorm:"foreignKey:RoleID" json:"role"`
+	Basket      Basket `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE" json:"basket"`
 }
 
 func (u *User) BeforeCreate(tx *gorm.DB) error {

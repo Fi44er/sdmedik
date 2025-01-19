@@ -51,9 +51,9 @@ func (r *repository) Update(ctx context.Context, data *model.BasketItem) error {
 	return nil
 }
 
-func (r *repository) Delete(ctx context.Context, id string) error {
+func (r *repository) Delete(ctx context.Context, id string, basketID string) error {
 	r.logger.Info("Deleting basket item...")
-	result := r.db.WithContext(ctx).Delete(&model.BasketItem{}, id)
+	result := r.db.WithContext(ctx).Where("id = ? AND basket_id = ?", id, basketID).Delete(&model.BasketItem{})
 	if err := result.Error; err != nil {
 		r.logger.Errorf("Failed to delete basket item: %v", err)
 		return err
@@ -65,5 +65,33 @@ func (r *repository) Delete(ctx context.Context, id string) error {
 	}
 
 	r.logger.Infof("Basket item deleted successfully")
+	return nil
+}
+
+func (r *repository) GetByProductBasketID(ctx context.Context, productID string, basketID string) (*model.BasketItem, error) {
+	r.logger.Info("Fetching basket item by product and basket ID...")
+	basketItem := new(model.BasketItem)
+	if err := r.db.WithContext(ctx).Where("product_id = ? AND basket_id = ?", productID, basketID).Find(basketItem).Error; err != nil {
+		r.logger.Errorf("Failed to fetch basket item by product and basket ID: %v", err)
+		return nil, err
+	}
+	r.logger.Info("Basket item fetched by product and basket ID successfully")
+	return basketItem, nil
+}
+
+func (r *repository) UpdateItemQuantity(ctx context.Context, data *model.BasketItem) error {
+	r.logger.Info("Updating basket item quantity...")
+	result := r.db.WithContext(ctx).Model(data).Where("product_id = ? AND basket_id = ?", data.ProductID, data.BasketID).Updates(data)
+	if err := result.Error; err != nil {
+		r.logger.Errorf("Failed to update basket item quantity: %v", err)
+		return err
+	}
+
+	if result.RowsAffected == 0 {
+		r.logger.Warnf("Basket item with ID %s not found", data.ID)
+		return constants.ErrBasketItemNotFound
+	}
+
+	r.logger.Infof("Basket item quantity updated successfully")
 	return nil
 }

@@ -18,14 +18,24 @@ type service struct {
 	validator *validator.Validate
 	cache     *redis.Client
 	config    *config.Config
+
+	basketService def.IBasketService
 }
 
-func NewService(logger *logger.Logger, repo repository.IUserRepository, validator *validator.Validate, config *config.Config, cache *redis.Client) *service {
+func NewService(
+	logger *logger.Logger,
+	repo repository.IUserRepository,
+	validator *validator.Validate,
+	config *config.Config,
+	cache *redis.Client,
+	basketService def.IBasketService,
+) *service {
 	return &service{
-		logger:    logger,
-		repo:      repo,
-		validator: validator,
-		config:    config,
-		cache:     cache,
+		logger:        logger,
+		repo:          repo,
+		validator:     validator,
+		config:        config,
+		cache:         cache,
+		basketService: basketService,
 	}
 }

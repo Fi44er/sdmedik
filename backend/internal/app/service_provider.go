@@ -23,6 +23,7 @@ type serviceProvider struct {
 	imageProvider               provider.ImageProvider
 	searchProvider              provider.SearchProvider
 	indexProvider               provider.IndexProvider
+	basketProvider              provider.BasketProvider
 
 	logger    *logger.Logger
 	db        *gorm.DB
@@ -53,12 +54,14 @@ func newServiceProvider(logger *logger.Logger, db *gorm.DB, validator *validator
 func (s *serviceProvider) initDeps() error {
 	inits := []func() error{
 		s.initTransactionManagerProvider,
-		s.initUserProvider,
 		s.initCharacteristicValueProvider,
 		s.initCharacteristicProvider,
 		s.initImageProvider,
+
 		s.initCategoryProvider,
 		s.initProductProvider,
+		s.initBasketProvider,
+		s.initUserProvider,
 		s.initAuthProvider,
 		s.initIndexProvider,
 		s.initSearchProvider,
@@ -80,7 +83,7 @@ func (s *serviceProvider) initTransactionManagerProvider() error {
 }
 
 func (s *serviceProvider) initUserProvider() error {
-	s.userProvider = *provider.NewUserProvider(s.logger, s.validator, s.db, s.config, s.cache)
+	s.userProvider = *provider.NewUserProvider(s.logger, s.validator, s.db, s.config, s.cache, s.basketProvider.BasketService())
 	return nil
 }
 
@@ -144,6 +147,11 @@ func (s *serviceProvider) initIndexProvider() error {
 
 func (s *serviceProvider) initSearchProvider() error {
 	s.searchProvider = *provider.NewSearchProvider(s.logger, s.validator, s.indexProvider.IndexService())
+	return nil
+}
+
+func (s *serviceProvider) initBasketProvider() error {
+	s.basketProvider = *provider.NewBasketProvider(s.logger, s.db, s.validator, s.productProvider.ProductService())
 	return nil
 }
 

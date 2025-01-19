@@ -36,7 +36,7 @@ func (r *repository) Create(ctx context.Context, data *model.Basket) error {
 func (r *repository) GetByUserID(ctx context.Context, userID string) (*model.Basket, error) {
 	r.logger.Info("Fetching basket by userID...")
 	basket := new(model.Basket)
-	if err := r.db.WithContext(ctx).Find(basket, "user_id = ?", userID).Error; err != nil {
+	if err := r.db.WithContext(ctx).Preload("Items").Where("user_id = ?", userID).Find(basket, "user_id = ?", userID).Error; err != nil {
 		r.logger.Errorf("Failed to fetch basket by userID: %v", err)
 		return nil, err
 	}

@@ -14,7 +14,6 @@ type service struct {
 	validator *validator.Validate
 	repo      repository.IBasketRepository
 
-	userService    def.IUserService
 	productService def.IProductService
 	basketItemRepo repository.IBasketItemRepository
 }
@@ -23,7 +22,6 @@ func NewService(
 	logger *logger.Logger,
 	validator *validator.Validate,
 	repo repository.IBasketRepository,
-	userService def.IUserService,
 	productService def.IProductService,
 	basketItemRepo repository.IBasketItemRepository,
 ) *service {
@@ -31,7 +29,6 @@ func NewService(
 		logger:         logger,
 		validator:      validator,
 		repo:           repo,
-		userService:    userService,
 		productService: productService,
 		basketItemRepo: basketItemRepo,
 	}

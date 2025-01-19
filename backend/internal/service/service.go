@@ -66,8 +66,9 @@ type IImageService interface {
 
 type IBasketService interface {
 	Create(ctx context.Context, dto *dto.CreateBasket) error
-	AddItem(ctx context.Context, dto *dto.AddBasketItem) error
-	DeleteItem(ctx context.Context, itemID string) error
+	AddItem(ctx context.Context, dto *dto.AddBasketItem, userID string) error
+	DeleteItem(ctx context.Context, itemID string, userID string) error
+	GetByUserID(ctx context.Context, userID string) (*model.Basket, error)
 }
 
 type ISearchService interface {

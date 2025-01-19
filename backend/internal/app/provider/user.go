@@ -23,6 +23,8 @@ type UserProvider struct {
 	validator *validator.Validate
 	config    *config.Config
 	cache     *redis.Client
+
+	basketService service.IBasketService
 }
 
 func NewUserProvider(
@@ -31,13 +33,15 @@ func NewUserProvider(
 	db *gorm.DB,
 	config *config.Config,
 	cache *redis.Client,
+	basketService service.IBasketService,
 ) *UserProvider {
 	return &UserProvider{
-		logger:    logger,
-		validator: validator,
-		db:        db,
-		config:    config,
-		cache:     cache,
+		logger:        logger,
+		validator:     validator,
+		db:            db,
+		config:        config,
+		cache:         cache,
+		basketService: basketService,
 	}
 }
 
@@ -50,7 +54,7 @@ func (p *UserProvider) UserRepository() repository.IUserRepository {
 
 func (p *UserProvider) UserService() service.IUserService {
 	if p.userService == nil {
-		p.userService = userService.NewService(p.logger, p.UserRepository(), p.validator, p.config, p.cache)
+		p.userService = userService.NewService(p.logger, p.UserRepository(), p.validator, p.config, p.cache, p.basketService)
 	}
 
 	return p.userService
