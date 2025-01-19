@@ -21,3 +21,8 @@ func FilterUserResponse(user *model.User) UserResponse {
 		Role:        user.Role.Name,
 	}
 }
+
+type UsersResponse struct {
+	Users []UserResponse `json:"users"`
+	Count int            `json:"count"`
+}
