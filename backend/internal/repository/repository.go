@@ -69,5 +69,7 @@ type IBasketRepository interface {
 type IBasketItemRepository interface {
 	Create(ctx context.Context, data *model.BasketItem) error
 	Update(ctx context.Context, data *model.BasketItem) error
-	Delete(ctx context.Context, itemID string) error
+	Delete(ctx context.Context, itemID string, basketID string) error
+	GetByProductBasketID(ctx context.Context, productID string, basketID string) (*model.BasketItem, error)
+	UpdateItemQuantity(ctx context.Context, dto *model.BasketItem) error
 }

@@ -1,5 +1,22 @@
 basePath: /api/v1/
 definitions:
+  dto.AddBasketItem:
+    properties:
+      product_id:
+        type: string
+      quantity:
+        type: integer
+    required:
+    - product_id
+    - quantity
+    type: object
+  dto.CreateBasket:
+    properties:
+      user_id:
+        type: string
+    required:
+    - user_id
+    type: object
   dto.Login:
     properties:
       email:
@@ -201,6 +218,85 @@ paths:
       summary: Verify the provided code
       tags:
       - auth
+  /basket:
+    get:
+      consumes:
+      - application/json
+      description: Get basket
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Get basket
+      tags:
+      - basket
+    post:
+      consumes:
+      - application/json
+      description: Add item to basket
+      parameters:
+      - description: Basket item data
+        in: body
+        name: basket
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AddBasketItem'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Add item to basket
+      tags:
+      - basket
+  /basket/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete item from basket
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Delete item from basket
+      tags:
+      - basket
+  /basket/create:
+    post:
+      consumes:
+      - application/json
+      description: Create a new basket
+      parameters:
+      - description: Basket data
+        in: body
+        name: basket
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateBasket'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Create a new basket
+      tags:
+      - basket
   /category:
     get:
       consumes:

@@ -126,6 +126,12 @@ func (a *App) initRouter() error {
 	search := v1.Group("/search")
 	search.Get("/", a.serviceProvider.searchProvider.SearchImpl().Search)
 
+	basket := v1.Group("/basket")
+	basket.Post("/create", a.serviceProvider.basketProvider.BasketImpl().Create)
+	basket.Post("/", middleware.DeserializeUser(a.cache, a.db, a.config), a.serviceProvider.basketProvider.BasketImpl().AddItem)
+	basket.Delete("/:id", middleware.DeserializeUser(a.cache, a.db, a.config), a.serviceProvider.basketProvider.BasketImpl().DeleteItem)
+	basket.Get("/", middleware.DeserializeUser(a.cache, a.db, a.config), a.serviceProvider.basketProvider.BasketImpl().Get)
+
 	return nil
 }
 
