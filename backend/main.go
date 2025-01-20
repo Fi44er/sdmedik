@@ -22,7 +22,6 @@ type CartItem struct {
 	TruCode     string  `json:"tru_code"`
 	Tax         string  `json:"tax"`
 	Sum         float64 `json:"sum"`
-	ID          int     `json:"id"`
 }
 
 type Order struct {
@@ -33,8 +32,8 @@ type Order struct {
 	Expiry      string     `json:"expiry"`
 	OrderID     string     `json:"orderid"`
 	PayAmount   float64    `json:"pay_amount"`
-	// ServiceName string     `json:"service_name"`
-	Token string `json:"token"`
+	ServiceName string     `json:"service_name"`
+	Token       string     `json:"token"`
 }
 
 func main() {
@@ -56,7 +55,7 @@ func main() {
 			{
 				ItemType:    "goods",
 				PaymentType: "full",
-				SKU:         "07-01-03.0001",
+				SKU:         "",
 				Name:        "Кресло коляска для инвалидов Ortonica Trend 35",
 				Price:       28910.3,
 				Quantity:    1,
@@ -64,17 +63,16 @@ func main() {
 				TruCode:     "266014120.170000111",
 				Tax:         "none",
 				Sum:         28910.3,
-				ID:          0,
 			},
 		},
-		ClientEmail: "test@mail.ru",
-		ClientPhone: "+7 888 888 88 88",
-		ClientID:    "test",
-		Expiry:      "2025-01-26 23:59",
-		OrderID:     "123123",
+		ClientEmail: "q@mail.ru",
+		ClientPhone: "+7",
+		ClientID:    "q",
+		Expiry:      "2025-02-28 03:00",
+		OrderID:     "",
 		PayAmount:   28910.3,
-		// ServiceName: ";PKC|[{\"item_type\":\"goods\",\"payment_type\":\"full\",\"sku\":\"07-01-03.0001\",\"name\":\"Кресло коляска для инвалидов Ortonica Trend 35\",\"price\":28910.3,\"quantity\":1,\"item_code\":\"\",\"tru_code\":\"266014120.170000111\",\"tax\":\"none\",\"sum\":28910.3,\"id\":0}]|",
-		Token: "", // Токен будет добавлен позже
+		ServiceName: `;PKC|[{"item_type":"goods","payment_type":"full","sku":"","name":"Кресло коляска для инвалидов Ortonica Trend 35","price":28910.3,"quantity":1,"item_code":"","tru_code":"266014120.170000111","tax":"none","sum":28910.3}]|`,
+		Token:       "",
 	}
 
 	// Готовим первый запрос на получение токена безопасности
@@ -133,7 +131,7 @@ func main() {
 	formData.Set("expiry", order.Expiry)
 	formData.Set("orderid", order.OrderID)
 	formData.Set("pay_amount", fmt.Sprintf("%.2f", order.PayAmount))
-	// formData.Set("service_name", order.ServiceName)
+	formData.Set("service_name", order.ServiceName)
 	formData.Set("token", order.Token)
 
 	log.Println("Отправляемые данные:", formData.Encode())

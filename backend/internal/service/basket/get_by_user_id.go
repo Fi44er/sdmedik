@@ -2,12 +2,14 @@ package basket
 
 import (
 	"context"
+	"math"
 
-	"github.com/Fi44er/sdmedik/backend/internal/model"
+	"github.com/Fi44er/sdmedik/backend/internal/response"
 	"github.com/Fi44er/sdmedik/backend/pkg/constants"
 )
 
-func (s *service) GetByUserID(ctx context.Context, userID string) (*model.Basket, error) {
+func (s *service) GetByUserID(ctx context.Context, userID string) (*response.BasketResponse, error) {
+	basketRes := new(response.BasketResponse)
 	basket, err := s.repo.GetByUserID(ctx, userID)
 	if err != nil {
 		return nil, err
@@ -17,5 +19,36 @@ func (s *service) GetByUserID(ctx context.Context, userID string) (*model.Basket
 		return nil, constants.ErrBasketNotFound
 	}
 
-	return basket, nil
+	var productsIDs []string
+	for _, item := range basket.Items {
+		productsIDs = append(productsIDs, item.ProductID)
+	}
+
+	products, err := s.productService.GetByIDs(ctx, productsIDs)
+	if err != nil {
+		return nil, err
+	}
+
+	totalPrice := 0.0
+	totalQuantity := 0
+
+	for index, item := range basket.Items {
+		totalPrice += item.TotalPrice
+		totalQuantity += item.Quantity
+		basketRes.Items = append(basketRes.Items, response.BasketItemRes{
+			ID:         item.ID,
+			ProductID:  item.ProductID,
+			Name:       (*products)[index].Name,
+			Image:      (*products)[index].Images[0].Name,
+			Quantity:   item.Quantity,
+			TotalPrice: item.TotalPrice,
+			Price:      (*products)[index].Price,
+		})
+	}
+
+	basketRes.ID = basket.ID
+	basketRes.Quantity = totalQuantity
+	basketRes.TotalPrice = math.Round(totalPrice*100) / 100
+
+	return basketRes, nil
 }

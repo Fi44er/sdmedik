@@ -7,6 +7,7 @@ import (
 	"github.com/Fi44er/sdmedik/backend/pkg/logger"
 	"github.com/go-playground/validator/v10"
 	"github.com/redis/go-redis/v9"
+	"github.com/robfig/cron"
 	"gorm.io/gorm"
 )
 
@@ -24,23 +25,35 @@ type serviceProvider struct {
 	searchProvider              provider.SearchProvider
 	indexProvider               provider.IndexProvider
 	basketProvider              provider.BasketProvider
+	webScraperProvider          provider.WebscraperProvider
+	certificateProvider         provider.CertificateProvider
 
 	logger    *logger.Logger
 	db        *gorm.DB
 	validator *validator.Validate
 	config    *config.Config
 	cache     *redis.Client
+	cron      *cron.Cron
 
 	eventBus *events.EventBus
 }
 
-func newServiceProvider(logger *logger.Logger, db *gorm.DB, validator *validator.Validate, config *config.Config, cache *redis.Client, eventBus *events.EventBus) (*serviceProvider, error) {
+func newServiceProvider(
+	logger *logger.Logger,
+	db *gorm.DB,
+	validator *validator.Validate,
+	config *config.Config,
+	cache *redis.Client,
+	cron *cron.Cron,
+	eventBus *events.EventBus,
+) (*serviceProvider, error) {
 	a := &serviceProvider{
 		logger:    logger,
 		db:        db,
 		validator: validator,
 		config:    config,
 		cache:     cache,
+		cron:      cron,
 		eventBus:  eventBus,
 	}
 
@@ -59,6 +72,8 @@ func (s *serviceProvider) initDeps() error {
 		s.initImageProvider,
 
 		s.initCategoryProvider,
+		s.initCertificateProvider,
+		s.initWebScraperProvider,
 		s.initProductProvider,
 		s.initBasketProvider,
 		s.initUserProvider,
@@ -108,6 +123,7 @@ func (s *serviceProvider) initProductProvider() error {
 		s.transactionManagerProvider.TransactionManager(),
 		s.imageProvider.ImageService(),
 		s.characteristicProvider.CharacteristicService(),
+		s.certificateProvider.CertificateService(),
 	)
 	return nil
 }
@@ -152,6 +168,17 @@ func (s *serviceProvider) initSearchProvider() error {
 
 func (s *serviceProvider) initBasketProvider() error {
 	s.basketProvider = *provider.NewBasketProvider(s.logger, s.db, s.validator, s.productProvider.ProductService())
+	return nil
+}
+
+func (s *serviceProvider) initWebScraperProvider() error {
+	s.webScraperProvider = *provider.NewWebscraperProvider(s.logger, s.validator, s.cron, s.certificateProvider.CertificateService())
+	s.webScraperProvider.WebScraperService()
+	return nil
+}
+
+func (s *serviceProvider) initCertificateProvider() error {
+	s.certificateProvider = *provider.NewCertificateProvider(s.logger, s.db)
 	return nil
 }
 

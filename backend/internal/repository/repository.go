@@ -30,6 +30,7 @@ type IProductRepository interface {
 	Update(ctx context.Context, data *model.Product) error
 
 	Get(ctx context.Context, criteria dto.ProductSearchCriteria) (*[]model.Product, error)
+	GetByIDs(ctx context.Context, ids []string) (*[]model.Product, error)
 }
 
 type IUserRepository interface {
@@ -73,4 +74,10 @@ type IBasketItemRepository interface {
 	Delete(ctx context.Context, itemID string, basketID string) error
 	GetByProductBasketID(ctx context.Context, productID string, basketID string) (*model.BasketItem, error)
 	UpdateItemQuantity(ctx context.Context, dto *model.BasketItem) error
+}
+
+type ICertificateRepository interface {
+	CreateMany(ctx context.Context, data *[]model.Certificate) error
+	UpdateMany(ctx context.Context, data *[]model.Certificate) error
+	GetMany(ctx context.Context, data *[]dto.GetManyCert) (*[]model.Certificate, error)
 }

@@ -21,6 +21,7 @@ type service struct {
 	transactionManagerRepo     repository.ITransactionManager
 	imageService               def.IImageService
 	characteristicService      def.ICharacteristicService
+	certificateService         def.ICertificateService
 }
 
 func NewService(
@@ -33,6 +34,7 @@ func NewService(
 	imageService def.IImageService,
 	characteristicService def.ICharacteristicService,
 	evenBus *events.EventBus,
+	certificateService def.ICertificateService,
 ) *service {
 	return &service{
 		repo:                       repo,
@@ -44,5 +46,6 @@ func NewService(
 		imageService:               imageService,
 		characteristicService:      characteristicService,
 		evenBus:                    evenBus,
+		certificateService:         certificateService,
 	}
 }

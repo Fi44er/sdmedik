@@ -424,6 +424,10 @@ paths:
         in: query
         name: limit
         type: integer
+      - description: Region ISO
+        in: query
+        name: iso
+        type: string
       - description: Minimal
         in: query
         name: minimal
