@@ -6,10 +6,11 @@ import (
 )
 
 type BasketItem struct {
-	ID        string `gorm:"primaryKey;type:varchar(36)" json:"id"`
-	Quantity  int    `gorm:"not null" json:"quantity"`
-	ProductID string `gorm:"type:varchar(36);not null" json:"product_id"`
-	BasketID  string `gorm:"type:varchar(36);not null" json:"basket_id"`
+	ID         string  `gorm:"primaryKey;type:varchar(36)" json:"id"`
+	Quantity   int     `gorm:"not null" json:"quantity"`
+	TotalPrice float64 `gorm:"not null" json:"total_price"`
+	ProductID  string  `gorm:"type:varchar(36);not null" json:"product_id"`
+	BasketID   string  `gorm:"type:varchar(36);not null" json:"basket_id"`
 }
 
 func (b *BasketItem) BeforeCreate(tx *gorm.DB) error {

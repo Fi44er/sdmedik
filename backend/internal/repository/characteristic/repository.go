@@ -100,3 +100,14 @@ func (r *repository) Delete(ctx context.Context, id int) error {
 	r.logger.Infof("Characteristic deleted by ID: %v successfully", id)
 	return nil
 }
+
+func (r *repository) GetByIDs(ctx context.Context, ids []int) (*[]model.Characteristic, error) {
+	r.logger.Info("Fetching characteristics by ids...")
+	characteristics := new([]model.Characteristic)
+	if err := r.db.WithContext(ctx).Find(characteristics, ids).Error; err != nil {
+		r.logger.Errorf("Failed to fetch characteristics by ids: %v", err)
+		return nil, err
+	}
+	r.logger.Info("Characteristics fetched by ids successfully")
+	return characteristics, nil
+}
