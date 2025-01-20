@@ -79,3 +79,5 @@ type ISearchService interface {
 type IIndexService interface {
 	Get() bleve.Index
 }
+
+type IWEbscraperService interface{}
