@@ -1,14 +1,16 @@
-package main
+package order
 
 import (
+	"context"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"log"
+	"io"
 	"net/http"
 	"net/url"
 	"strings"
+
+	"github.com/Fi44er/sdmedik/backend/internal/dto"
 )
 
 type CartItem struct {
@@ -36,7 +38,11 @@ type Order struct {
 	Token       string     `json:"token"`
 }
 
-func main() {
+func (s *service) Create(ctx context.Context, data *dto.CreateOrder) (string, error) {
+	if err := s.validator.Struct(data); err != nil {
+		return "", err
+	}
+
 	// Логин и пароль от личного кабинета PayKeeper
 	user := "admin"
 	password := "1$Fgtkmcby2019#"
@@ -63,7 +69,6 @@ func main() {
 	jsonData, err := json.Marshal(cart)
 	if err != nil {
 		fmt.Println("Ошибка при сериализации в JSON:", err)
-		return
 	}
 
 	// Формируем строку serviceName
@@ -81,16 +86,13 @@ func main() {
 		Token:       "",
 	}
 
-	log.Println(serviceName == order.ServiceName)
-	log.Println(serviceName)
-
 	// Готовим первый запрос на получение токена безопасности
 	tokenURI := "/info/settings/token/"
 
 	// Создаем HTTP-запрос для получения токена
 	req, err := http.NewRequest("GET", serverPaykeeper+tokenURI, nil)
 	if err != nil {
-		log.Fatalf("Ошибка при создании запроса для получения токена: %v", err)
+		s.logger.Fatalf("Ошибка при создании запроса для получения токена: %v", err)
 	}
 
 	// Устанавливаем заголовки
@@ -101,26 +103,26 @@ func main() {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Fatalf("Ошибка при выполнении запроса для получения токена: %v", err)
+		s.logger.Fatalf("Ошибка при выполнении запроса для получения токена: %v", err)
 	}
 	defer resp.Body.Close()
 
 	// Читаем ответ
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatalf("Ошибка при чтении ответа для получения токена: %v", err)
+		s.logger.Fatalf("Ошибка при чтении ответа для получения токена: %v", err)
 	}
 
 	// Парсим JSON-ответ
 	var tokenResponse map[string]string
 	if err := json.Unmarshal(body, &tokenResponse); err != nil {
-		log.Fatalf("Ошибка при парсинге JSON для получения токена: %v", err)
+		s.logger.Fatalf("Ошибка при парсинге JSON для получения токена: %v", err)
 	}
 
 	// В ответе должно быть заполнено поле token, иначе - ошибка
 	token, ok := tokenResponse["token"]
 	if !ok {
-		log.Fatalf("Поле 'token' отсутствует в ответе")
+		s.logger.Fatalf("Поле 'token' отсутствует в ответе")
 	}
 
 	// Готовим запрос 3.4 JSON API на получение счёта
@@ -143,7 +145,7 @@ func main() {
 
 	req, err = http.NewRequest("POST", serverPaykeeper+invoiceURI, strings.NewReader(formData.Encode()))
 	if err != nil {
-		log.Fatalf("Ошибка при создании запроса для создания счёта: %v", err)
+		s.logger.Fatalf("Ошибка при создании запроса для создания счёта: %v", err)
 	}
 
 	// Устанавливаем заголовки
@@ -153,25 +155,25 @@ func main() {
 	// Выполняем запрос
 	resp, err = client.Do(req)
 	if err != nil {
-		log.Fatalf("Ошибка при выполнении запроса для создания счёта: %v", err)
+		s.logger.Fatalf("Ошибка при выполнении запроса для создания счёта: %v", err)
 	}
 	defer resp.Body.Close()
 
 	// Читаем ответ
-	body, err = ioutil.ReadAll(resp.Body)
+	body, err = io.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatalf("Ошибка при чтении ответа для создания счёта: %v", err)
+		s.logger.Fatalf("Ошибка при чтении ответа для создания счёта: %v", err)
 	}
 
 	// Парсим JSON-ответ
 	var invoiceResponse map[string]string
 	if err := json.Unmarshal(body, &invoiceResponse); err != nil {
-		log.Fatalf("Ошибка при парсинге JSON для создания счёта: %v", err)
+		s.logger.Fatalf("Ошибка при парсинге JSON для создания счёта: %v", err)
 	}
 
 	invoiceID, ok := invoiceResponse["invoice_id"]
 	if !ok {
-		log.Fatalf("Поле 'invoice_id' отсутствует в ответе")
+		s.logger.Fatalf("Поле 'invoice_id' отсутствует в ответе")
 	}
 
 	// В этой переменной прямая ссылка на оплату с заданными параметрами
@@ -179,4 +181,6 @@ func main() {
 
 	// Теперь её можно использовать как угодно, например, выводим ссылку на оплату
 	fmt.Println("Ссылка на оплату:", link)
+
+	return "", nil
 }
