@@ -71,7 +71,10 @@ func (r *repository) Delete(ctx context.Context, id string, basketID string) err
 func (r *repository) GetByProductBasketID(ctx context.Context, productID string, basketID string) (*model.BasketItem, error) {
 	r.logger.Info("Fetching basket item by product and basket ID...")
 	basketItem := new(model.BasketItem)
-	if err := r.db.WithContext(ctx).Where("product_id = ? AND basket_id = ?", productID, basketID).Find(basketItem).Error; err != nil {
+	if err := r.db.WithContext(ctx).Where("product_id = ? AND basket_id = ?", productID, basketID).First(basketItem).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
 		r.logger.Errorf("Failed to fetch basket item by product and basket ID: %v", err)
 		return nil, err
 	}

@@ -17,3 +17,17 @@ type MinMaxPrice struct {
 	Min float64 `json:"min"`
 	Max float64 `json:"max"`
 }
+
+//
+// type ProductResponse struct {
+// 	ID                   string                `json:"id"`
+// 	Article              string                `json:"article"`
+// 	Name                 string                `json:"name"`
+// 	Description          string                `json:"description"`
+// 	Price                float64               `json:"price"`
+// 	Categories           []Category            `json:"categories"`
+// 	Certificates         []Certificate         `json:"certificates"`
+// 	Images               []Image               `json:"images"`
+// 	CharacteristicValues []CharacteristicValue `json:"characteristic_values"`
+// 	BasketItems          []BasketItem          `json:"basket_items"`
+// }

@@ -35,8 +35,11 @@ func (s *service) AddItem(ctx context.Context, data *dto.AddBasketItem, userID s
 	if err != nil {
 		return err
 	}
+
+	s.logger.Infof("Basket item: %v", basketItem)
 	if basketItem != nil {
 		basketItem.Quantity = basketItem.Quantity + data.Quantity
+		basketItem.TotalPrice = (*product)[0].Price * float64(basketItem.Quantity)
 		if err := s.basketItemRepo.UpdateItemQuantity(ctx, basketItem); err != nil {
 			return err
 		}
@@ -49,6 +52,7 @@ func (s *service) AddItem(ctx context.Context, data *dto.AddBasketItem, userID s
 		return err
 	}
 
+	basketItemModel.TotalPrice = (*product)[0].Price * float64(data.Quantity)
 	basketItemModel.BasketID = basket.ID
 
 	if err := s.basketItemRepo.Create(ctx, basketItemModel); err != nil {
