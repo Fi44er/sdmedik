@@ -140,11 +140,6 @@ func (r *repository) Get(ctx context.Context, criteria dto.ProductSearchCriteria
 		}
 	}
 
-	// if len(criteria.Filters.Characteristics) > 0 {
-	// 	for _, filter := range criteria.Filters.Characteristics {
-	// 		request = request.Where("EXISTS (SELECT 1 FROM characteristic_values WHERE product_id = products.id AND characteristic_id = ? AND value IN (?))", filter.CharacteristicID, filter.Values)
-	// 	}
-	// }
 	if criteria.Offset != 0 {
 		request = request.Offset(criteria.Offset)
 		delete(conditions, "offset")
@@ -167,5 +162,14 @@ func (r *repository) Get(ctx context.Context, criteria dto.ProductSearchCriteria
 	}
 
 	r.logger.Info("Product fetched successfully")
+	return products, nil
+}
+
+func (r *repository) GetByIDs(ctx context.Context, ids []string) (*[]model.Product, error) {
+	products := new([]model.Product)
+	if err := r.db.WithContext(ctx).Preload("Images").Where("id IN (?)", ids).Find(products).Error; err != nil {
+		r.logger.Errorf("Failed to fetch products by IDs: %v", err)
+		return nil, err
+	}
 	return products, nil
 }

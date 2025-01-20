@@ -18,16 +18,30 @@ type MinMaxPrice struct {
 	Max float64 `json:"max"`
 }
 
-//
-// type ProductResponse struct {
-// 	ID                   string                `json:"id"`
-// 	Article              string                `json:"article"`
-// 	Name                 string                `json:"name"`
-// 	Description          string                `json:"description"`
-// 	Price                float64               `json:"price"`
-// 	Categories           []Category            `json:"categories"`
-// 	Certificates         []Certificate         `json:"certificates"`
-// 	Images               []Image               `json:"images"`
-// 	CharacteristicValues []CharacteristicValue `json:"characteristic_values"`
-// 	BasketItems          []BasketItem          `json:"basket_items"`
-// }
+type ProductResponse struct {
+	ID               string                     `json:"id"`
+	Article          string                     `json:"article"`
+	Name             string                     `json:"name"`
+	Description      string                     `json:"description"`
+	Price            float64                    `json:"price"`
+	CertificatePrice float64                    `json:"certificate_price"`
+	Categories       []ProductCategoryRes       `json:"categories"`
+	Images           []ProductImageRes          `json:"images"`
+	Characteristic   []ProductCharacteristicRes `json:"characteristic"`
+}
+
+type ProductCategoryRes struct {
+	ID   int    `json:"id"`
+	Name string `json:"name"`
+}
+
+type ProductImageRes struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
+type ProductCharacteristicRes struct {
+	ID    int    `json:"id"`
+	Value string `json:"value"`
+	Name  string `json:"name"`
+}

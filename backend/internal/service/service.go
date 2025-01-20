@@ -32,8 +32,9 @@ type IProductService interface {
 	Create(ctx context.Context, product *dto.CreateProduct, images *dto.Images) error
 	Update(ctx context.Context, product *dto.UpdateProduct, images *dto.Images, id string) error
 	Delete(ctx context.Context, id string) error
-	Get(ctx context.Context, criteria dto.ProductSearchCriteria) (*[]model.Product, error)
+	Get(ctx context.Context, criteria dto.ProductSearchCriteria) (*[]response.ProductResponse, error)
 	GetFilter(ctx context.Context, categoryID int) (*response.ProductFilter, error)
+	GetByIDs(ctx context.Context, ids []string) (*[]model.Product, error)
 }
 
 type ICategoryService interface {
@@ -69,7 +70,7 @@ type IBasketService interface {
 	Create(ctx context.Context, dto *dto.CreateBasket) error
 	AddItem(ctx context.Context, dto *dto.AddBasketItem, userID string) error
 	DeleteItem(ctx context.Context, itemID string, userID string) error
-	GetByUserID(ctx context.Context, userID string) (*model.Basket, error)
+	GetByUserID(ctx context.Context, userID string) (*response.BasketResponse, error)
 }
 
 type ISearchService interface {
@@ -80,4 +81,12 @@ type IIndexService interface {
 	Get() bleve.Index
 }
 
-type IWEbscraperService interface{}
+type IWebScraperService interface {
+	Scraper() error
+}
+
+type ICertificateService interface {
+	CreateMany(ctx context.Context, data *[]model.Certificate) error
+	UpdateMany(ctx context.Context, data *[]model.Certificate) error
+	GetMany(ctx context.Context, data *[]dto.GetManyCert) (*[]model.Certificate, error)
+}

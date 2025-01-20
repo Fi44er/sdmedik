@@ -491,6 +491,12 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "string",
+                        "description": "Region ISO",
+                        "name": "iso",
+                        "in": "query"
+                    },
+                    {
                         "type": "boolean",
                         "description": "Minimal",
                         "name": "minimal",

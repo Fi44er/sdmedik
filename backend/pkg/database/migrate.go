@@ -68,8 +68,11 @@ func createRegions(db *gorm.DB) error {
 
 	var newRegions []model.Region
 	for _, region := range constants.Regions {
-		if _, exists := existingRegionMap[region]; !exists {
-			newRegions = append(newRegions, model.Region{Name: region})
+		if _, exists := existingRegionMap[region.Name]; !exists {
+			newRegions = append(newRegions, model.Region{
+				Name:    region.Name,
+				Iso3166: region.Iso3166,
+			})
 		}
 	}
 

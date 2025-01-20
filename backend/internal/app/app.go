@@ -12,6 +12,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/swagger" // swagger handler
 	"github.com/redis/go-redis/v9"
+	"github.com/robfig/cron"
 	"gorm.io/gorm"
 )
 
@@ -25,6 +26,7 @@ type App struct {
 	validator *validator.Validate
 	config    *config.Config
 	cache     *redis.Client
+	cron      *cron.Cron
 }
 
 func NewApp(logger *logger.Logger, db *gorm.DB, vavalidator *validator.Validate, config *config.Config, cache *redis.Client) (*App, error) {
@@ -35,6 +37,7 @@ func NewApp(logger *logger.Logger, db *gorm.DB, vavalidator *validator.Validate,
 		validator: vavalidator,
 		config:    config,
 		cache:     cache,
+		cron:      cron.New(),
 	}
 
 	return a, nil
@@ -50,6 +53,8 @@ func (a *App) Run() error {
 		return err
 	}
 
+	a.cron.Start()
+	defer a.cron.Stop()
 	return a.runHttpServer()
 }
 
@@ -82,7 +87,7 @@ func (a *App) initConfig() error {
 func (a *App) initServiceProvider() error {
 	var err error
 	eventBus := events.NewEventBus()
-	a.serviceProvider, err = newServiceProvider(a.logger, a.db, a.validator, a.config, a.cache, eventBus)
+	a.serviceProvider, err = newServiceProvider(a.logger, a.db, a.validator, a.config, a.cache, a.cron, eventBus)
 	if err != nil {
 		return err
 	}
