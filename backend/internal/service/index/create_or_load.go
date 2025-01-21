@@ -7,6 +7,8 @@ import (
 	"os"
 
 	"github.com/Fi44er/sdmedik/backend/internal/dto"
+	"github.com/Fi44er/sdmedik/backend/internal/model"
+	"github.com/Fi44er/sdmedik/backend/internal/response"
 	"github.com/Fi44er/sdmedik/backend/pkg/constants"
 	"github.com/blevesearch/bleve/v2"
 	"github.com/blevesearch/bleve/v2/analysis/analyzer/custom"
@@ -82,11 +84,19 @@ func (s *service) addSampleProducts(ctx context.Context) error {
 		return err
 	}
 
+	if products == nil {
+		products = &[]response.ProductResponse{}
+	}
+
 	categories, err := s.categoryService.GetAll(ctx)
 	if err != nil {
 		if !errors.Is(err, constants.ErrCategoryNotFound) {
 			return err
 		}
+	}
+
+	if categories == nil {
+		categories = &[]model.Category{}
 	}
 
 	for _, product := range *products {
