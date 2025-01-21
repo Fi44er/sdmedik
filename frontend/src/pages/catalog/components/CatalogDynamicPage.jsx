@@ -14,13 +14,16 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import useProductStore from "../../../store/productStore";
 import SidebarFilter from "./SidebarFilter";
+import useBascketStore from "../../../store/bascketStore";
 
 export default function CatalogDynamicPage() {
   const { id } = useParams();
   const { fetchProducts, products } = useProductStore();
+  const { addProductThisBascket } = useBascketStore();
   const [currentPage, setCurrentPage] = useState(1);
   const [filters, setFilters] = useState(null); // Состояние для хранения фильтров
   const [currentProducts, setCurrentProducts] = useState([]); // Переменная для хранения текущих продуктов
+  const [quantity, setQuantity] = useState(0);
   const ProductsPerPage = 20;
 
   const category_id = id;
@@ -48,7 +51,18 @@ export default function CatalogDynamicPage() {
     setCurrentPage(value);
   };
 
-  const paginatedProducts = currentProducts.slice(indexOfFirstItem, indexOfLastItem);
+  const paginatedProducts = currentProducts.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
+
+  const hendleAddProductThithBascket = async (id) => {
+    setQuantity(quantity + 1);
+    const product_id = id;
+    console.log(id, quantity);
+
+    await addProductThisBascket(product_id, quantity);
+  };
 
   return (
     <Box sx={{ mt: 1, mb: 5 }}>
@@ -69,9 +83,9 @@ export default function CatalogDynamicPage() {
                   background: "#F5FCFF",
                   cursor: "pointer",
                 }}
-                onClick={() => {
-                  window.location.href = `/product/${e.id}`;
-                }}
+                // onClick={() => {
+                //   window.location.href = `/product/${e.id}`;
+                // }}
               >
                 <Box
                   sx={{
@@ -118,7 +132,7 @@ export default function CatalogDynamicPage() {
                     </Typography>
                   </Box>
 
-                  < Box
+                  <Box
                     sx={{
                       display: "flex",
                       justifyContent: "space-between",
@@ -138,7 +152,11 @@ export default function CatalogDynamicPage() {
                     >
                       В 1 клик
                     </Button>
-                    <IconButton>
+                    <IconButton
+                      onClick={() => {
+                        hendleAddProductThithBascket(e.id);
+                      }}
+                    >
                       <img
                         style={{ width: "50px", height: "50px" }}
                         src="/public/basket_cards.png"

@@ -26,8 +26,8 @@ const AdminUserTable = () => {
   }, []);
 
   useEffect(() => {
-    if (Array.isArray(users.data)) {
-      setFilteredUsers(users.data);
+    if (Array.isArray(users.data.users)) {
+      setFilteredUsers(users.data.users);
     }
   }, [users]);
 
@@ -48,6 +48,9 @@ const AdminUserTable = () => {
     <Box sx={{ padding: 2 }}>
       <Typography sx={{ fontSize: "30px", mb: 2, mt: 2 }}>
         Таблица с пользователями
+      </Typography>
+      <Typography sx={{ fontSize: "30px", mb: 2, mt: 2 }}>
+        Всего пользователей {users.data.count}
       </Typography>
       <Paper sx={{ width: "100%" }}>
         {/* Таблица для больших экранов */}

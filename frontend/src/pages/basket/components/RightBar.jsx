@@ -34,25 +34,6 @@ export default function RightBar() {
               mt:4
             }}
           >
-            <Typography variant="h6">Применить сертификат</Typography>
-            <InputBase
-              sx={{
-                border: "2px solid #87EBC8",
-                borderRadius: "30px",
-                width: "100%",
-                height: "50px",
-                pl: "30px",
-                pr: "30px",
-              }}
-            />
-            <Button
-              variant="contained"
-              sx={{
-                background: "#00B3A4",
-              }}
-            >
-              Применить
-            </Button>
           </Box>
           <Box
             sx={{

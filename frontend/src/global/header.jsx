@@ -265,7 +265,7 @@ export default function Header() {
                 <IconButton
                   onClick={(e) => {
                     e.preventDefault();
-                    window.location.href = "/basket/:id";
+                    window.location.href = "/basket";
                   }}
                 >
                   <img src="/public/basket_header.png" alt="" />

@@ -51,7 +51,7 @@ export const router = createBrowserRouter([
     element: <ProductDynamicPage />, // Исправлено имя компонента
   },
   {
-    path: "/basket/:id", // динамический маршрут
+    path: "/basket", // динамический маршрут
     element: <BasketLayout />, // Исправлено имя компонента
   },
   {
