@@ -31,13 +31,13 @@ func NewService(
 		certificateService: certificateService,
 	}
 
-	err := svc.cron.AddFunc("0 */5 * * * *", func() {
-		svc.logger.Info("Задача выполняется каждые 5 минут")
-		svc.Scraper()
-	})
-	if err != nil {
-		svc.logger.Fatalf("Ошибка при добавлении задачи в cron: %v", err)
-	}
+	// err := svc.cron.AddFunc("0 */3 * * * *", func() {
+	// 	svc.logger.Info("Задача выполняется каждые 5 минут")
+	// 	svc.Scraper()
+	// })
+	// if err != nil {
+	// 	svc.logger.Fatalf("Ошибка при добавлении задачи в cron: %v", err)
+	// }
 
 	return svc
 }

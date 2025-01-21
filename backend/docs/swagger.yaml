@@ -702,4 +702,19 @@ paths:
       summary: Get my user
       tags:
       - user
+  /webscraper:
+    get:
+      consumes:
+      - application/json
+      description: Scraper
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Scraper
+      tags:
+      - webscraper
 swagger: "2.0"

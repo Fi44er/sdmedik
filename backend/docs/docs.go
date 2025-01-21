@@ -833,6 +833,29 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/webscraper": {
+            "get": {
+                "description": "Scraper",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "webscraper"
+                ],
+                "summary": "Scraper",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {

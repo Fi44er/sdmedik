@@ -5,11 +5,12 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/Fi44er/sdmedik/backend/pkg/webscraper/structs"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/gofiber/fiber/v2/log"
 )
 
-func ParseProductsArticles(url string) []string {
+func ParseProductsArticles(url string) []structs.ParseProductsArticlesType {
 	doc := Request(url)
 	if doc == nil {
 		log.Error("Failed to fetch the initial document")
@@ -21,7 +22,7 @@ func ParseProductsArticles(url string) []string {
 		paginationUrls = []string{url}
 	}
 
-	results := make(chan string)
+	results := make(chan structs.ParseProductsArticlesType)
 	var wg sync.WaitGroup
 
 	for _, paginationUrl := range paginationUrls {
@@ -37,7 +38,7 @@ func ParseProductsArticles(url string) []string {
 		close(results)
 	}()
 
-	var productsArticles []string
+	var productsArticles []structs.ParseProductsArticlesType
 	for article := range results {
 		productsArticles = append(productsArticles, article)
 	}
@@ -45,17 +46,24 @@ func ParseProductsArticles(url string) []string {
 	return productsArticles
 }
 
-func parseProductsArticlesFromPage(url string, results chan<- string) {
+func parseProductsArticlesFromPage(url string, results chan<- structs.ParseProductsArticlesType) {
 	doc := Request(url)
 	if doc == nil {
 		log.Errorf("Failed to fetch document from URL: %s", url)
 		return
 	}
 
-	doc.Find("div.product-item__article").Each(func(i int, s *goquery.Selection) {
-		text := strings.TrimSpace(s.Text())
-		if text != "" {
-			results <- text
+	doc.Find("a.product-item-info").Each(func(i int, s *goquery.Selection) {
+		// Извлекаем артикул и название для каждого продукта
+		article := strings.TrimSpace(s.Find("div.product-item__article").Text())
+		name := strings.TrimSpace(s.Find("div.product-item__title").Text())
+
+		// Если данные найдены, отправляем их в канал
+		if article != "" && name != "" {
+			results <- structs.ParseProductsArticlesType{
+				Article: article,
+				Name:    name,
+			}
 		}
 	})
 }

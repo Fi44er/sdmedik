@@ -1,6 +1,7 @@
 package provider
 
 import (
+	"github.com/Fi44er/sdmedik/backend/internal/api/webscraper"
 	"github.com/Fi44er/sdmedik/backend/internal/service"
 	webscraperService "github.com/Fi44er/sdmedik/backend/internal/service/webscraper"
 	"github.com/Fi44er/sdmedik/backend/pkg/logger"
@@ -10,6 +11,7 @@ import (
 
 type WebscraperProvider struct {
 	webScraperService service.IWebScraperService
+	webScraperImpl    *webscraper.Implementation
 
 	logger    *logger.Logger
 	validator *validator.Validate
@@ -37,4 +39,11 @@ func (p *WebscraperProvider) WebScraperService() service.IWebScraperService {
 		p.webScraperService = webscraperService.NewService(p.logger, p.validator, p.cron, p.certificateService)
 	}
 	return p.webScraperService
+}
+
+func (p *WebscraperProvider) WebScraperImpl() *webscraper.Implementation {
+	if p.webScraperImpl == nil {
+		p.webScraperImpl = webscraper.NewImplementation(p.WebScraperService())
+	}
+	return p.webScraperImpl
 }
