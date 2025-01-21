@@ -17,6 +17,15 @@ definitions:
     required:
     - user_id
     type: object
+  dto.CreateOrder:
+    properties:
+      email:
+        type: string
+      fio:
+        type: string
+      phone_number:
+        type: string
+    type: object
   dto.Login:
     properties:
       email:
@@ -394,6 +403,28 @@ paths:
       summary: Get a category by ID
       tags:
       - category
+  /order:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new order
+      parameters:
+      - description: Order details
+        in: body
+        name: order
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateOrder'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Create order
+      tags:
+      - order
   /product:
     get:
       consumes:

@@ -9,6 +9,7 @@ type BasketResponse struct {
 
 type BasketItemRes struct {
 	ID         string  `json:"id"`
+	Article    string  `json:"article"`
 	ProductID  string  `json:"product_id"`
 	Name       string  `json:"name"`
 	Image      string  `json:"image"`

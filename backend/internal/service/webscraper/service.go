@@ -16,6 +16,7 @@ type service struct {
 	cron      *cron.Cron
 
 	certificateService def.ICertificateService
+	productService     def.IProductService
 }
 
 func NewService(
@@ -23,12 +24,14 @@ func NewService(
 	validator *validator.Validate,
 	cron *cron.Cron,
 	certificateService def.ICertificateService,
+	productService def.IProductService,
 ) *service {
 	svc := &service{
 		logger:             logger,
 		validator:          validator,
 		cron:               cron,
 		certificateService: certificateService,
+		productService:     productService,
 	}
 
 	// err := svc.cron.AddFunc("0 */3 * * * *", func() {

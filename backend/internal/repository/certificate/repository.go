@@ -58,7 +58,9 @@ func (r *repository) UpdateMany(ctx context.Context, data *[]model.Certificate) 
 func (r *repository) GetMany(ctx context.Context, data *[]dto.GetManyCert) (*[]model.Certificate, error) {
 	r.logger.Info("Fetching certificates...")
 	certificates := new([]model.Certificate)
-
+	if len(*data) == 0 {
+		return certificates, nil
+	}
 	// Создаём запрос к базе данных
 	query := r.db.WithContext(ctx)
 

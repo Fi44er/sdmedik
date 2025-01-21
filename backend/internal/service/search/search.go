@@ -17,9 +17,13 @@ func (s *service) Search(ctx context.Context, query string) (*[]response.SearchR
 	// Создаем BooleanQuery
 	booleanQuery := bleve.NewBooleanQuery()
 	for _, word := range words {
-		prefixQuery := bleve.NewPrefixQuery(word)
-		prefixQuery.SetField("Name")      // Ищем по полю "Name"
-		booleanQuery.AddMust(prefixQuery) // Все префиксы должны совпадать
+		// prefixQuery := bleve.NewPrefixQuery(word)
+		// prefixQuery.SetField("Name")      // Ищем по полю "Name"
+		// booleanQuery.AddMust(prefixQuery) // Все префиксы должны совпадать
+
+		fuzzyQuery := bleve.NewFuzzyQuery(word)
+		fuzzyQuery.SetField("Name")
+		booleanQuery.AddShould(fuzzyQuery)
 	}
 
 	searchRequest := bleve.NewSearchRequest(booleanQuery)

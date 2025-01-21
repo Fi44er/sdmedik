@@ -13,7 +13,7 @@ type Order struct {
 	CartID          *string     `gorm:"type:string;" json:"cart_id"`
 	PaymentMethodID int         `gorm:"not null" json:"payment_method_id"`
 	TotalAmount     float64     `gorm:"not null" json:"total_amount"`
-	Status          string      `gorm:"not null" json:"status"`
+	Status          string      `gorm:"not null" json:"status"` // pending or completed
 	Items           []OrderItem `gorm:"foreignKey:OrderID" json:"items"`
 	CreatedAt       time.Time   `gorm:"autoCreateTime" json:"created_at"`
 }

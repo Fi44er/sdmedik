@@ -53,8 +53,8 @@ func (a *App) Run() error {
 		return err
 	}
 
-	a.cron.Start()
-	defer a.cron.Stop()
+	// a.cron.Start()
+	// defer a.cron.Stop()
 	return a.runHttpServer()
 }
 
@@ -139,6 +139,9 @@ func (a *App) initRouter() error {
 
 	webscraper := v1.Group("/webscraper")
 	webscraper.Get("/", a.serviceProvider.webScraperProvider.WebScraperImpl().Scraper)
+
+	order := v1.Group("/order")
+	order.Post("/", middleware.DeserializeUser(a.cache, a.db, a.config), a.serviceProvider.orderProvider.OrderImpl().Create)
 
 	return nil
 }

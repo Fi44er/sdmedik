@@ -27,6 +27,7 @@ type serviceProvider struct {
 	basketProvider              provider.BasketProvider
 	webScraperProvider          provider.WebscraperProvider
 	certificateProvider         provider.CertificateProvider
+	orderProvider               provider.OrderProvider
 
 	logger    *logger.Logger
 	db        *gorm.DB
@@ -73,13 +74,14 @@ func (s *serviceProvider) initDeps() error {
 
 		s.initCategoryProvider,
 		s.initCertificateProvider,
-		s.initWebScraperProvider,
 		s.initProductProvider,
+		s.initWebScraperProvider,
 		s.initBasketProvider,
 		s.initUserProvider,
 		s.initAuthProvider,
 		s.initIndexProvider,
 		s.initSearchProvider,
+		s.initOrderProvider,
 	}
 
 	for _, init := range inits {
@@ -172,13 +174,18 @@ func (s *serviceProvider) initBasketProvider() error {
 }
 
 func (s *serviceProvider) initWebScraperProvider() error {
-	s.webScraperProvider = *provider.NewWebscraperProvider(s.logger, s.validator, s.cron, s.certificateProvider.CertificateService())
+	s.webScraperProvider = *provider.NewWebscraperProvider(s.logger, s.validator, s.cron, s.certificateProvider.CertificateService(), s.productProvider.ProductService())
 	s.webScraperProvider.WebScraperService()
 	return nil
 }
 
 func (s *serviceProvider) initCertificateProvider() error {
 	s.certificateProvider = *provider.NewCertificateProvider(s.logger, s.db)
+	return nil
+}
+
+func (s *serviceProvider) initOrderProvider() error {
+	s.orderProvider = *provider.NewOrderProvider(s.logger, s.validator, s.config, s.basketProvider.BasketService(), s.certificateProvider.CertificateService())
 	return nil
 }
 

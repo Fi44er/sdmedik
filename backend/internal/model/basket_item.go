@@ -7,6 +7,7 @@ import (
 
 type BasketItem struct {
 	ID         string  `gorm:"primaryKey;type:varchar(36)" json:"id"`
+	Article    string  `gorm:"type:varchar(255);not null" json:"article"`
 	Quantity   int     `gorm:"not null" json:"quantity"`
 	TotalPrice float64 `gorm:"not null" json:"total_price"`
 	ProductID  string  `gorm:"type:varchar(36);not null" json:"product_id"`
