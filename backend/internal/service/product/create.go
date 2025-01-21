@@ -6,6 +6,7 @@ import (
 	"github.com/Fi44er/sdmedik/backend/internal/dto"
 	"github.com/Fi44er/sdmedik/backend/internal/model"
 
+	"github.com/Fi44er/sdmedik/backend/pkg/constants"
 	"github.com/Fi44er/sdmedik/backend/pkg/errors"
 	events "github.com/Fi44er/sdmedik/backend/pkg/evenbus"
 	"github.com/Fi44er/sdmedik/backend/pkg/utils"
@@ -21,14 +22,16 @@ func (s *service) Create(ctx context.Context, product *dto.CreateProduct, images
 		return err
 	}
 
-	if len(*existArticle) > 0 && (*existArticle)[0].ID != "" {
-		return errors.New(409, "Product with this article already exists")
+	if len(*existArticle) > 0 {
+		return constants.ErrProductWithArticleConflict
 	}
 
 	categories, err := s.categoryService.GetByIDs(ctx, product.CategoryIDs)
 	if err != nil {
 		return err
 	}
+
+	s.logger.Infof("categories: %v", product.CategoryIDs)
 
 	err = utils.ValidateCharacteristicValue(*categories, product.CharacteristicValues)
 	if err != nil {
@@ -83,14 +86,16 @@ func (s *service) Create(ctx context.Context, product *dto.CreateProduct, images
 		}
 	}
 
-	imageDto := dto.CreateImages{
-		ProductID: modelProduct.ID,
-		Images:    *images,
-	}
+	if images != nil && len(images.Files) > 0 {
+		imageDto := dto.CreateImages{
+			ProductID: modelProduct.ID,
+			Images:    *images,
+		}
 
-	if err := s.imageService.CreateMany(ctx, &imageDto, tx); err != nil {
-		s.transactionManagerRepo.Rollback(tx)
-		return err
+		if err := s.imageService.CreateMany(ctx, &imageDto, tx); err != nil {
+			s.transactionManagerRepo.Rollback(tx)
+			return err
+		}
 	}
 
 	if err := s.transactionManagerRepo.Commit(tx); err != nil {

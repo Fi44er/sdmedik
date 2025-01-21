@@ -15,6 +15,10 @@ type Config struct {
 	VerifyCodeExpiredIn time.Duration `mapstructure:"VERIFY_CODE_EXPIRED_IN"`
 	ImageDir            string        `mapstructure:"IMAGE_DIR"`
 
+	PayKeeperUser   string `mapstructure:"PAY_KEEPER_USER"`
+	PayKeeperPass   string `mapstructure:"PAY_KEEPER_PASS"`
+	PayKeeperServer string `mapstructure:"PAY_KEEPER_SERVER"`
+
 	MailHost     string `mapstructure:"MAIL_HOST"`
 	MailUser     string `mapstructure:"MAIL_USER"`
 	MailPassword string `mapstructure:"MAIL_PASSWORD"`

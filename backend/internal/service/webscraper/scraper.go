@@ -3,17 +3,19 @@ package webscraper
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 
 	"github.com/Fi44er/sdmedik/backend/internal/dto"
 	"github.com/Fi44er/sdmedik/backend/internal/model" // Предположим, что Certificate находится в этом пакете
 	"github.com/Fi44er/sdmedik/backend/internal/service/webscraper/structs"
+	"github.com/Fi44er/sdmedik/backend/pkg/constants"
 	"github.com/Fi44er/sdmedik/backend/pkg/utils"
 	"github.com/Fi44er/sdmedik/backend/pkg/webscraper"
 )
 
 func (s *service) Scraper() error {
-	s.logger.Errorf("CertService: %v", s.certificateService)
+	s.logger.Errorf("productService: %v", s.productService)
 	ctx := context.Background()
 	items := webscraper.Scraper()
 
@@ -92,6 +94,19 @@ func (s *service) Scraper() error {
 					TRUName:         item.CategoryName,
 					TRU:             tru,
 				})
+			}
+		}
+
+		for _, product := range item.Product {
+			productDto := dto.CreateProduct{
+				Article: product.Article,
+				Name:    product.Name,
+			}
+			err := s.productService.Create(ctx, &productDto, nil)
+			if err != nil {
+				if !errors.Is(err, constants.ErrProductWithArticleConflict) {
+					return err
+				}
 			}
 		}
 	}

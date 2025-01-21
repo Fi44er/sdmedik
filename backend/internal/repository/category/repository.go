@@ -103,6 +103,9 @@ func (r *repository) Delete(ctx context.Context, id int, tx *gorm.DB) error {
 func (r *repository) GetByIDs(ctx context.Context, ids []int) (*[]model.Category, error) {
 	r.logger.Info("Fetching categories by ids...")
 	categories := new([]model.Category)
+	if len(ids) == 0 {
+		return categories, nil
+	}
 	if err := r.db.WithContext(ctx).Preload("Characteristics").Find(categories, ids).Error; err != nil {
 		r.logger.Errorf("Failed to fetch categories by ids: %v", err)
 		return nil, err

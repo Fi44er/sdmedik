@@ -45,6 +45,8 @@ func (s *service) Get(ctx context.Context, criteria dto.ProductSearchCriteria) (
 		return nil, err
 	}
 
+	s.logger.Infof("certificates: %v", *certificates)
+
 	certificateMap := make(map[string]float64)
 	for _, certificate := range *certificates {
 		certificateMap[certificate.CategoryArticle] = certificate.Price

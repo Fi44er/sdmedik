@@ -5,12 +5,11 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"io"
-	"net/http"
-	"net/url"
 	"strings"
+	"time"
 
 	"github.com/Fi44er/sdmedik/backend/internal/dto"
+	"github.com/Fi44er/sdmedik/backend/pkg/utils"
 )
 
 type CartItem struct {
@@ -38,91 +37,105 @@ type Order struct {
 	Token       string     `json:"token"`
 }
 
-func (s *service) Create(ctx context.Context, data *dto.CreateOrder) (string, error) {
+func (s *service) Create(ctx context.Context, data *dto.CreateOrder, userID string) (string, error) {
 	if err := s.validator.Struct(data); err != nil {
 		return "", err
 	}
 
-	// Логин и пароль от личного кабинета PayKeeper
-	user := "admin"
-	password := "1$Fgtkmcby2019#"
+	user := s.config.PayKeeperUser
+	password := s.config.PayKeeperPass
+	serverPaykeeper := s.config.PayKeeperServer
 
 	auth := base64.StdEncoding.EncodeToString([]byte(user + ":" + password))
 
-	serverPaykeeper := "https://sdmedik.server.paykeeper.ru"
+	basket, err := s.basketService.GetByUserID(ctx, userID)
+	if err != nil {
+		return "", err
+	}
 
-	cart := []CartItem{
-		{
+	articles := make([]dto.GetManyCert, len(basket.Items))
+	for _, item := range basket.Items {
+		categoryArticle := strings.Split(item.Article, ".")[0]
+		articles = append(articles, dto.GetManyCert{CategoryArticle: categoryArticle})
+	}
+
+	certs, err := s.certService.GetMany(ctx, &articles)
+	if err != nil {
+		return "", err
+	}
+
+	certMap := make(map[string]string)
+
+	for _, cert := range *certs {
+		certMap[cert.CategoryArticle] = cert.TRU
+	}
+
+	carts := make([]CartItem, len(basket.Items))
+	for _, item := range basket.Items {
+		categoryArticle := strings.Split(item.Article, ".")[0]
+
+		cartItem := CartItem{
 			ItemType:    "goods",
 			PaymentType: "full",
 			SKU:         "",
-			Name:        "Кресло коляска для инвалидов Ortonica Trend 35",
-			Price:       28910.3,
-			Quantity:    1,
+			Name:        item.Name,
+			Price:       item.Price,
+			Quantity:    item.Quantity,
 			ItemCode:    "",
-			TruCode:     "266014120.170000111",
+			TruCode:     certMap[categoryArticle],
 			Tax:         "none",
-			Sum:         28910.3,
-		},
+			Sum:         basket.TotalPrice,
+		}
+		carts = append(carts, cartItem)
 	}
 
-	jsonData, err := json.Marshal(cart)
+	jsonData, err := json.Marshal(carts)
 	if err != nil {
-		fmt.Println("Ошибка при сериализации в JSON:", err)
+		s.logger.Errorf("Ошибка при парсинге JSON для создания заказа: %v", err)
+		return "", err
 	}
 
-	// Формируем строку serviceName
+	expireDate := time.Now().AddDate(0, 0, 1) // Текущая дата + 1 день
+	expire := expireDate.Format("2006-01-02")
 	serviceName := fmt.Sprintf(";PKC|%s|", jsonData)
-	// Параметры платежа
 	order := Order{
-		CartJSON:    cart,
-		ClientEmail: "q@mail.ru",
-		ClientPhone: "+7",
-		ClientID:    "q",
-		Expiry:      "2025-02-28 03:00",
+		CartJSON:    carts,
+		ClientEmail: data.Email,
+		ClientPhone: data.PhoneNumber,
+		ClientID:    data.FIO,
+		Expiry:      expire,
 		OrderID:     "",
-		PayAmount:   28910.3,
+		PayAmount:   basket.TotalPrice,
 		ServiceName: serviceName,
 		Token:       "",
 	}
 
-	// Готовим первый запрос на получение токена безопасности
 	tokenURI := "/info/settings/token/"
 
-	// Создаем HTTP-запрос для получения токена
-	req, err := http.NewRequest("GET", serverPaykeeper+tokenURI, nil)
+	options := utils.RequestOptions{
+		Method: "GET",
+		URL:    serverPaykeeper + tokenURI,
+		Headers: map[string]string{
+			"Content-Type":  "application/x-www-form-urlencoded",
+			"Authorization": "Basic " + auth,
+		},
+	}
+	tokenBody, err := utils.MakeRequest(options)
 	if err != nil {
-		s.logger.Fatalf("Ошибка при создании запроса для получения токена: %v", err)
+		return "", err
 	}
 
-	// Устанавливаем заголовки
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	req.Header.Set("Authorization", "Basic "+auth)
-
-	// Выполняем запрос
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		s.logger.Fatalf("Ошибка при выполнении запроса для получения токена: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Читаем ответ
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		s.logger.Fatalf("Ошибка при чтении ответа для получения токена: %v", err)
-	}
-
-	// Парсим JSON-ответ
 	var tokenResponse map[string]string
-	if err := json.Unmarshal(body, &tokenResponse); err != nil {
-		s.logger.Fatalf("Ошибка при парсинге JSON для получения токена: %v", err)
+	if err := json.Unmarshal(tokenBody, &tokenResponse); err != nil {
+		s.logger.Errorf("Ошибка при парсинге JSON для получения токена: %v", err)
+		return "", err
 	}
 
 	// В ответе должно быть заполнено поле token, иначе - ошибка
 	token, ok := tokenResponse["token"]
 	if !ok {
-		s.logger.Fatalf("Поле 'token' отсутствует в ответе")
+		s.logger.Errorf("Поле 'token' отсутствует в ответе")
+		return "", fmt.Errorf("Поле 'token' отсутствует в ответе")
 	}
 
 	// Готовим запрос 3.4 JSON API на получение счёта
@@ -131,56 +144,44 @@ func (s *service) Create(ctx context.Context, data *dto.CreateOrder) (string, er
 	// Добавляем токен в структуру заказа
 	order.Token = token
 
-	// Преобразуем структуру заказа в URL-encoded форму
-	formData := url.Values{}
-	formData.Set("cart_json", fmt.Sprintf("%v", order.CartJSON))
-	formData.Set("client_email", order.ClientEmail)
-	formData.Set("client_phone", order.ClientPhone)
-	formData.Set("clientid", order.ClientID)
-	formData.Set("expiry", order.Expiry)
-	formData.Set("orderid", order.OrderID)
-	formData.Set("pay_amount", fmt.Sprintf("%.2f", order.PayAmount))
-	formData.Set("service_name", order.ServiceName)
-	formData.Set("token", order.Token)
-
-	req, err = http.NewRequest("POST", serverPaykeeper+invoiceURI, strings.NewReader(formData.Encode()))
-	if err != nil {
-		s.logger.Fatalf("Ошибка при создании запроса для создания счёта: %v", err)
+	options = utils.RequestOptions{
+		Method: "POST",
+		URL:    serverPaykeeper + invoiceURI,
+		Headers: map[string]string{
+			"Content-Type":  "application/x-www-form-urlencoded",
+			"Authorization": "Basic " + auth,
+		},
+		FormData: map[string]string{
+			"cart_json":    fmt.Sprintf("%v", order.CartJSON),
+			"client_email": order.ClientEmail,
+			"client_phone": order.ClientPhone,
+			"clientid":     order.ClientID,
+			"expiry":       order.Expiry,
+			"orderid":      order.OrderID,
+			"pay_amount":   fmt.Sprintf("%.2f", order.PayAmount),
+			"service_name": order.ServiceName,
+			"token":        order.Token,
+		},
 	}
 
-	// Устанавливаем заголовки
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	req.Header.Set("Authorization", "Basic "+auth)
-
-	// Выполняем запрос
-	resp, err = client.Do(req)
+	invoiceBody, err := utils.MakeRequest(options)
 	if err != nil {
-		s.logger.Fatalf("Ошибка при выполнении запроса для создания счёта: %v", err)
+		return "", err
 	}
-	defer resp.Body.Close()
-
-	// Читаем ответ
-	body, err = io.ReadAll(resp.Body)
-	if err != nil {
-		s.logger.Fatalf("Ошибка при чтении ответа для создания счёта: %v", err)
-	}
-
 	// Парсим JSON-ответ
 	var invoiceResponse map[string]string
-	if err := json.Unmarshal(body, &invoiceResponse); err != nil {
-		s.logger.Fatalf("Ошибка при парсинге JSON для создания счёта: %v", err)
+	if err := json.Unmarshal(invoiceBody, &invoiceResponse); err != nil {
+		s.logger.Errorf("Ошибка при парсинге JSON для создания счёта: %v", err)
+		return "", err
 	}
 
 	invoiceID, ok := invoiceResponse["invoice_id"]
 	if !ok {
-		s.logger.Fatalf("Поле 'invoice_id' отсутствует в ответе")
+		s.logger.Errorf("Поле 'invoice_id' отсутствует в ответе")
+		return "", fmt.Errorf("Поле 'invoice_id' отсутствует в ответе")
 	}
 
-	// В этой переменной прямая ссылка на оплату с заданными параметрами
 	link := fmt.Sprintf("%s/bill/%s/", serverPaykeeper, invoiceID)
 
-	// Теперь её можно использовать как угодно, например, выводим ссылку на оплату
-	fmt.Println("Ссылка на оплату:", link)
-
-	return "", nil
+	return link, nil
 }

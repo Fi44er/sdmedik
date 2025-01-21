@@ -10,6 +10,7 @@ import (
 	"github.com/Fi44er/sdmedik/backend/internal/model"
 	"github.com/Fi44er/sdmedik/backend/internal/response"
 	"github.com/Fi44er/sdmedik/backend/pkg/constants"
+	"github.com/Fi44er/sdmedik/backend/pkg/utils"
 	"github.com/blevesearch/bleve/v2"
 	"github.com/blevesearch/bleve/v2/analysis/analyzer/custom"
 	"github.com/blevesearch/bleve/v2/analysis/token/lowercase"
@@ -99,17 +100,52 @@ func (s *service) addSampleProducts(ctx context.Context) error {
 		categories = &[]model.Category{}
 	}
 
+	// Создаем пакет для индексации
+	batch := s.index.NewBatch()
+
+	// Добавляем товары в пакет
 	for _, product := range *products {
-		if err := s.AddOrUpdate(product, "product"); err != nil {
-			s.logger.Errorf("ошибка при индексации товара с ID %s: %v", product.ID, err)
+		if err := s.addToBatch(batch, product, "product"); err != nil {
+			s.logger.Errorf("ошибка при добавлении товара с ID %s в пакет: %v", product.ID, err)
 		}
 	}
 
+	// Добавляем категории в пакет
 	for _, category := range *categories {
-		if err := s.AddOrUpdate(category, "product"); err != nil {
-			s.logger.Errorf("ошибка при индексации товара с ID %v: %v", category.ID, err)
+		if err := s.addToBatch(batch, category, "product"); err != nil {
+			s.logger.Errorf("ошибка при добавлении категории с ID %v в пакет: %v", category.ID, err)
 		}
 	}
 
+	// Выполняем пакетную индексацию
+	if err := s.index.Batch(batch); err != nil {
+		return fmt.Errorf("ошибка при выполнении пакетной индексации: %v", err)
+	}
+
+	return nil
+}
+
+func (s *service) addToBatch(batch *bleve.Batch, data interface{}, docType string) error {
+	name, err := utils.FindFieldInObject(data, "Name")
+	if err != nil {
+		return err
+	}
+
+	id, err := utils.FindFieldInObject(data, "ID")
+	if err != nil {
+		return err
+	}
+
+	strId, err := utils.StringifyID(id)
+	if err != nil {
+		return err
+	}
+
+	doc := map[string]interface{}{
+		"Name": name,
+		"Type": docType,
+	}
+
+	batch.Index(strId, doc)
 	return nil
 }

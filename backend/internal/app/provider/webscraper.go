@@ -18,6 +18,7 @@ type WebscraperProvider struct {
 	cron      *cron.Cron
 
 	certificateService service.ICertificateService
+	productService     service.IProductService
 }
 
 func NewWebscraperProvider(
@@ -25,18 +26,20 @@ func NewWebscraperProvider(
 	validator *validator.Validate,
 	cron *cron.Cron,
 	certificateService service.ICertificateService,
+	productService service.IProductService,
 ) *WebscraperProvider {
 	return &WebscraperProvider{
 		logger:             logger,
 		validator:          validator,
 		cron:               cron,
 		certificateService: certificateService,
+		productService:     productService,
 	}
 }
 
 func (p *WebscraperProvider) WebScraperService() service.IWebScraperService {
 	if p.webScraperService == nil {
-		p.webScraperService = webscraperService.NewService(p.logger, p.validator, p.cron, p.certificateService)
+		p.webScraperService = webscraperService.NewService(p.logger, p.validator, p.cron, p.certificateService, p.productService)
 	}
 	return p.webScraperService
 }

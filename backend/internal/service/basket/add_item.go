@@ -54,6 +54,7 @@ func (s *service) AddItem(ctx context.Context, data *dto.AddBasketItem, userID s
 
 	basketItemModel.TotalPrice = (*product)[0].Price * float64(data.Quantity)
 	basketItemModel.BasketID = basket.ID
+	basketItemModel.Article = (*product)[0].Article
 
 	if err := s.basketItemRepo.Create(ctx, basketItemModel); err != nil {
 		return err
