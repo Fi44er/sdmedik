@@ -2,10 +2,13 @@ package webscraper
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 
 	"github.com/Fi44er/sdmedik/backend/internal/dto"
 	"github.com/Fi44er/sdmedik/backend/internal/model" // Предположим, что Certificate находится в этом пакете
+	"github.com/Fi44er/sdmedik/backend/internal/service/webscraper/structs"
+	"github.com/Fi44er/sdmedik/backend/pkg/utils"
 	"github.com/Fi44er/sdmedik/backend/pkg/webscraper"
 )
 
@@ -25,6 +28,8 @@ func (s *service) Scraper() error {
 		}
 	}
 
+	s.logger.Logger.Infof("getManyCert: %v", getManyCert)
+
 	// Получаем существующие сертификаты из базы данных
 	certs, err := s.certificateService.GetMany(ctx, &getManyCert)
 	if err != nil {
@@ -43,6 +48,28 @@ func (s *service) Scraper() error {
 	updateCert := make([]model.Certificate, 0)
 
 	for _, item := range items {
+		options := utils.RequestOptions{
+			Method: "GET",
+			URL:    "https://esnsi.gosuslugi.ru/rest/ext/v1/classifiers/10616/data",
+			Query: map[string]string{
+				"query": item.CategoryName,
+			},
+		}
+		esnsiRes, err := utils.MakeRequest(options)
+		if err != nil {
+			return err
+		}
+
+		var apiRes structs.ApiResponse
+		if err := json.Unmarshal(esnsiRes, &apiRes); err != nil {
+			fmt.Println("Ошибка при парсинге JSON:", err)
+		}
+
+		var tru string
+		if len(apiRes.Body) > 0 {
+			tru = apiRes.Body[0].Elements[3].Value
+		}
+
 		for _, region := range item.Items {
 			key := fmt.Sprintf("%s-%s", item.CategoryArticle, region.Region)
 
@@ -53,6 +80,8 @@ func (s *service) Scraper() error {
 					CategoryArticle: item.CategoryArticle,
 					RegionIso:       region.Region,
 					Price:           region.Price,
+					TRUName:         item.CategoryName,
+					TRU:             tru,
 				})
 			} else {
 				// Если записи нет, добавляем в createCert
@@ -60,6 +89,8 @@ func (s *service) Scraper() error {
 					CategoryArticle: item.CategoryArticle,
 					RegionIso:       region.Region,
 					Price:           region.Price,
+					TRUName:         item.CategoryName,
+					TRU:             tru,
 				})
 			}
 		}

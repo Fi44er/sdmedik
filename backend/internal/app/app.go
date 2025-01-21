@@ -137,6 +137,9 @@ func (a *App) initRouter() error {
 	basket.Delete("/:id", middleware.DeserializeUser(a.cache, a.db, a.config), a.serviceProvider.basketProvider.BasketImpl().DeleteItem)
 	basket.Get("/", middleware.DeserializeUser(a.cache, a.db, a.config), a.serviceProvider.basketProvider.BasketImpl().Get)
 
+	webscraper := v1.Group("/webscraper")
+	webscraper.Get("/", a.serviceProvider.webScraperProvider.WebScraperImpl().Scraper)
+
 	return nil
 }
 

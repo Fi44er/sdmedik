@@ -14,5 +14,10 @@ type Items struct {
 	CategoryArticle string
 	CategoryName    string
 	Items           []Item
-	Articles        []string
+	Articles        []ParseProductsArticlesType
+}
+
+type ParseProductsArticlesType struct {
+	Article string
+	Name    string
 }
