@@ -650,6 +650,27 @@ paths:
       summary: Get a product
       tags:
       - product
+  /product/top/{limit}:
+    get:
+      consumes:
+      - application/json
+      description: Gets top products
+      parameters:
+      - description: Limit
+        in: path
+        name: limit
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseData'
+      summary: Get top products
+      tags:
+      - product
   /search:
     get:
       consumes:

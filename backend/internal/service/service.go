@@ -35,6 +35,7 @@ type IProductService interface {
 	Get(ctx context.Context, criteria dto.ProductSearchCriteria) (*[]response.ProductResponse, error)
 	GetFilter(ctx context.Context, categoryID int) (*response.ProductFilter, error)
 	GetByIDs(ctx context.Context, ids []string) (*[]model.Product, error)
+	GetTopProducts(ctx context.Context, limit int) ([]response.ProductPopularity, error)
 }
 
 type ICategoryService interface {

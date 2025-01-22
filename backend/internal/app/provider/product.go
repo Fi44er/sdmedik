@@ -9,6 +9,7 @@ import (
 	events "github.com/Fi44er/sdmedik/backend/pkg/evenbus"
 	"github.com/Fi44er/sdmedik/backend/pkg/logger"
 	"github.com/go-playground/validator/v10"
+	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
 )
 
@@ -21,6 +22,7 @@ type ProductProvider struct {
 	db        *gorm.DB
 	validator *validator.Validate
 	eventBus  *events.EventBus
+	cache     *redis.Client
 
 	categoryService            service.ICategoryService
 	characteristicValueService service.ICharacteristicValueService
@@ -35,6 +37,7 @@ func NewProductProvider(
 	db *gorm.DB,
 	validator *validator.Validate,
 	eventBus *events.EventBus,
+	cache *redis.Client,
 
 	categoryService service.ICategoryService,
 	characteristicValueService service.ICharacteristicValueService,
@@ -54,12 +57,13 @@ func NewProductProvider(
 		characteristicService:      characteristicService,
 		eventBus:                   eventBus,
 		certificateService:         certificateService,
+		cache:                      cache,
 	}
 }
 
 func (p *ProductProvider) ProductRepository() repository.IProductRepository {
 	if p.productRepository == nil {
-		p.productRepository = productRepository.NewRepository(p.logger, p.db)
+		p.productRepository = productRepository.NewRepository(p.logger, p.db, p.cache)
 	}
 	return p.productRepository
 }
