@@ -2,16 +2,21 @@ package product
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"reflect"
 	"strconv"
+	"time"
 
 	// "strconv"
 
 	"github.com/Fi44er/sdmedik/backend/internal/dto"
 	"github.com/Fi44er/sdmedik/backend/internal/model"
 	def "github.com/Fi44er/sdmedik/backend/internal/repository"
+	"github.com/Fi44er/sdmedik/backend/internal/response"
 	"github.com/Fi44er/sdmedik/backend/pkg/constants"
 	"github.com/Fi44er/sdmedik/backend/pkg/logger"
+	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
 )
 
@@ -20,15 +25,18 @@ var _ def.IProductRepository = (*repository)(nil)
 type repository struct {
 	db     *gorm.DB
 	logger *logger.Logger
+	cache  *redis.Client
 }
 
 func NewRepository(
 	logger *logger.Logger,
 	db *gorm.DB,
+	redis *redis.Client,
 ) *repository {
 	return &repository{
 		db:     db,
 		logger: logger,
+		cache:  redis,
 	}
 }
 
@@ -172,4 +180,43 @@ func (r *repository) GetByIDs(ctx context.Context, ids []string) (*[]model.Produ
 		return nil, err
 	}
 	return products, nil
+}
+
+func (r *repository) GetTopProducts(ctx context.Context, limit int) ([]response.ProductPopularity, error) {
+	cacheKey := "top_products"
+	var topProducts []response.ProductPopularity
+
+	// Попробуйте получить данные из кэша
+	topProduct, err := r.cache.Get(ctx, cacheKey).Result()
+	if err == nil {
+		if err := json.Unmarshal([]byte(topProduct), &topProducts); err != nil {
+			return nil, err
+		}
+		return topProducts, nil
+	}
+
+	// Если данных в кэше нет, выполните запрос к базе данных
+	err = r.db.WithContext(ctx).
+		Model(&model.OrderItem{}).
+		Select("product_id, COUNT(*) as order_count").
+		Group("product_id").
+		Order("order_count DESC").
+		Limit(limit).
+		Find(&topProducts).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	jsonData, err := json.Marshal(topProducts)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal top products: %w", err)
+	}
+
+	// Сохраните JSON-строку в кэше
+	if err := r.cache.Set(ctx, cacheKey, jsonData, time.Hour).Err(); err != nil {
+		r.logger.Errorf("Failed to cache top products: %v", err)
+	}
+
+	return topProducts, nil
 }

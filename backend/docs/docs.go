@@ -662,6 +662,38 @@ const docTemplate = `{
                 }
             }
         },
+        "/product/top/{limit}": {
+            "get": {
+                "description": "Gets top products",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "product"
+                ],
+                "summary": "Get top products",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Limit",
+                        "name": "limit",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseData"
+                        }
+                    }
+                }
+            }
+        },
         "/product/{id}": {
             "put": {
                 "description": "Updates a product with metadata (JSON) and multiple files\nExample JSON:\n` + "`" + `` + "`" + `` + "`" + `\n{\n\"name\": \"test update\",\n\"price\": 123.12,\n\"description\": \"test update\",\n\"category_ids\": [\n2\n],\n\"characteristic_values\": [\n{\n\"characteristic_id\": 2,\n\"value\": \"string\"\n},\n{\n\"characteristic_id\": 3,\n\"value\": \"12\"\n}\n],\n\"del_images\": [\n{\n\"id\": \"8832ed62-0a19-40e2-81b3-4c971884e962\",\n\"name\": \"cb44cbb3-aaf9-47a4-867c-f81dbc0485ab.jpg\"\n}\n]\n}\n` + "`" + `` + "`" + `` + "`" + `",

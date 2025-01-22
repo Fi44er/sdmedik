@@ -45,3 +45,8 @@ type ProductCharacteristicRes struct {
 	Value string `json:"value"`
 	Name  string `json:"name"`
 }
+
+type ProductPopularity struct {
+	ProductID  string `gorm:"column:product_id"`
+	OrderCount int    `gorm:"column:order_count"`
+}

@@ -5,6 +5,7 @@ import (
 
 	"github.com/Fi44er/sdmedik/backend/internal/dto"
 	"github.com/Fi44er/sdmedik/backend/internal/model"
+	"github.com/Fi44er/sdmedik/backend/internal/response"
 	"gorm.io/gorm"
 )
 
@@ -31,6 +32,7 @@ type IProductRepository interface {
 
 	Get(ctx context.Context, criteria dto.ProductSearchCriteria) (*[]model.Product, error)
 	GetByIDs(ctx context.Context, ids []string) (*[]model.Product, error)
+	GetTopProducts(ctx context.Context, limit int) ([]response.ProductPopularity, error)
 }
 
 type IUserRepository interface {

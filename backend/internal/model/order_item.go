@@ -8,6 +8,7 @@ import (
 type OrderItem struct {
 	ID         string  `gorm:"primaryKey;type:string;" json:"id"`
 	OrderID    string  `gorm:"type:string;not null" json:"order_id"`
+	ProductID  string  `gorm:"type:string;not null" json:"product_id"`
 	Name       string  `gorm:"type:string;not null" json:"name"`
 	Price      float64 `gorm:"not null" json:"price"`
 	Quantity   int     `gorm:"not null" json:"quantity"`

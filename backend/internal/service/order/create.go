@@ -200,6 +200,7 @@ func (s *service) Create(ctx context.Context, data *dto.CreateOrder, userID stri
 			Price:      item.Price,
 			Quantity:   item.Quantity,
 			TotalPrice: item.TotalPrice,
+			ProductID:  item.ProductID,
 		}
 		orderItems = append(orderItems, orderItem)
 	}

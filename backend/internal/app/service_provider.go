@@ -120,6 +120,7 @@ func (s *serviceProvider) initProductProvider() error {
 		s.db,
 		s.validator,
 		s.eventBus,
+		s.cache,
 		s.categoryProvider.CategoryService(),
 		s.characteristicValueProvider.CharacteristicValueService(),
 		s.transactionManagerProvider.TransactionManager(),
