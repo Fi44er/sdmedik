@@ -38,6 +38,7 @@ export default function Basket() {
   const handleDeleteProductBasket = async (id) => {
     await deleteProductThithBasket(id);
     setCurrentProducts(currentProducts.filter((product) => product.id !== id));
+    fetchUserBasket();
   };
 
   const handleClick = async (product_id, action) => {

@@ -12,6 +12,8 @@ const useOrderStore = create((set, get) => ({
   setFio: (fio) => set({ fio }),
   setPhone_number: (phone_number) => set({ phone_number }),
   order: {},
+  orders: {},
+  userOrders: [],
 
   payOrder: async () => {
     const { email, fio, phone_number } = useOrderStore.getState();
@@ -39,6 +41,48 @@ const useOrderStore = create((set, get) => ({
         "Ошибка оплаты: " + (error.response?.data?.message || error.message)
       );
       console.error("Error Registrations:", error);
+    }
+  },
+  fetchOrders: async () => {
+    try {
+      const response = await axios.get(`http://localhost:8080/api/v1/order`, {
+        withCredentials: true,
+      });
+
+      set({ orders: response.data });
+
+      if (response.status === 401) {
+        // {{ edit_1 }}
+        // Если статус 401, обновляем токены и повторяем запрос
+        await get().refreshToken();
+        await get().fetchUserBasket();
+      } else {
+        throw new Error("No data in response");
+      }
+    } catch (error) {
+      console.error("Error fetching basket:", error);
+    }
+  },
+  fetchUserOrders: async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8080/api/v1/order/my`,
+        {
+          withCredentials: true,
+        }
+      );
+
+      set({ userOrders: response.data });
+
+      if (response.status === 401) {
+        // {{ edit_1 }}
+        // Если статус 401, обновляем токены и повторяем запрос
+        await get().refreshToken();
+      } else {
+        throw new Error("No data in response");
+      }
+    } catch (error) {
+      console.error("Error fetching basket:", error);
     }
   },
 }));

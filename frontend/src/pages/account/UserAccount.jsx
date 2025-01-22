@@ -1,42 +1,22 @@
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Typography,
   CircularProgress,
   Container,
   Card,
-  CardMedia,
   CardContent,
   CardHeader,
   Button,
   Grid,
-  AppBar,
-  Toolbar,
-  IconButton,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
 import useUserStore from "../../store/userStore";
-import { useNavigate } from "react-router-dom";
-import MenuIcon from "@mui/icons-material/Menu";
-
-const Product = [
-  {
-    id: 1,
-    title: `Инвалидная коляска Trend 40`,
-    country: `Бельгия`,
-    price: `25,000.00 ₽`,
-    image: `/public/wheelchair.png`,
-  },
-  {
-    id: 2,
-    title: `Инвалидная коляска Trend 40`,
-    country: `Бельгия`,
-    price: `25,000.00 ₽`,
-    image: `/public/wheelchair.png`,
-  },
-];
+import useOrderStore from "../../store/orderStore";
 
 export default function UserAccount() {
   const { getUserInfo, user, Logout } = useUserStore();
+  const { fetchUserOrders, userOrders } = useOrderStore();
+  const [currentProducts, setCurrentProducts] = useState([]); // Initialize with an empty array
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -47,6 +27,21 @@ export default function UserAccount() {
 
     fetchData();
   }, [getUserInfo]);
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      await fetchUserOrders();
+    };
+    fetchOrders();
+  }, [fetchUserOrders]);
+
+  useEffect(() => {
+    if (userOrders.data?.length > 0) {
+      // Извлекаем все items из всех заказов
+      const allItems = userOrders.data.flatMap((order) => order.items);
+      setCurrentProducts(allItems);
+    }
+  }, [userOrders]);
 
   if (loading) {
     return (
@@ -109,7 +104,7 @@ export default function UserAccount() {
               </Button>
             </Box>
           ) : (
-            <Typography>No user data available</Typography>
+            <Typography>Нет данных о пользователе</Typography>
           )}
         </Box>
         <Box sx={{ mt: 3 }}>
@@ -117,7 +112,7 @@ export default function UserAccount() {
             Мои заказы
           </Typography>
           <Grid container spacing={2}>
-            {Product.map((e) => (
+            {currentProducts.map((e) => (
               <Grid item key={e.id} xs={12} sm={6} md={4}>
                 <Card
                   sx={{
@@ -130,30 +125,10 @@ export default function UserAccount() {
                     },
                   }}
                 >
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
-                  >
-                    <CardMedia
-                      component="img"
-                      image={e.image}
-                      alt={e.title}
-                      sx={{ 
-                        width: "250px",
-                        height: "250px",
-                        objectFit: "cover",
-                        borderTopLeftRadius: 2,
-                        borderTopRightRadius: 2,
-                      }}
-                    />
-                  </Box>
                   <CardContent>
                     <CardHeader title={e.title} sx={{ p: 0 }} />
                     <Typography variant="body2" color="text.secondary">
-                      {e.country}
+                      {e.name}
                     </Typography>
                     <Typography variant="h6" sx={{ color: "black" }}>
                       {e.price}
@@ -162,15 +137,15 @@ export default function UserAccount() {
                       <Typography variant="h6" sx={{ fontWeight: "bold" }}>
                         Статус заказа
                       </Typography>
-                      <Typography variant="body2">В процессе</Typography>
-                    </Box>
-                    <Box sx={{ mt: 1 }}>
-                      <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                        Адрес
-                      </Typography>
                       <Typography variant="body2">
-                        Улица, Город, Страна
+                        {userOrders.data.status}
                       </Typography>
+                    </Box>
+                    <Box sx={{ mt: 2 }}>
+                      <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                        Количество
+                      </Typography>
+                      <Typography variant="body2">{e.quantity}</Typography>
                     </Box>
                   </CardContent>
                 </Card>
