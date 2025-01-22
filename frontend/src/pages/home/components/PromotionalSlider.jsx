@@ -1,23 +1,39 @@
 import { Box, Button, CardMedia, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 export default function PromotionalSlider() {
   const [slides, setSlides] = useState([]);
 
   useEffect(() => {
-    // Функция для получения данных с сервера
-    const fetchSlides = async () => {
-      try {
-        const response = await fetch("/api/slides"); // Замените на ваш API
-        const data = await response.json();
-        setSlides(data);
-      } catch (error) {
-        console.error("Ошибка при загрузке слайдов:", error);
-      }
-    };
+    // Замените на статические данные для тестирования
+    const testSlides = [
+      {
+        title: "Слайд 1",
+        description: "Описание для слайда 1",
+        link: "https://example.com/slide1",
+        image: "/public/wheelchair.png",
+        altText: "Слайд 1",
+      },
+      {
+        title: "Слайд 2",
+        description: "Описание для слайда 2",
+        link: "https://example.com/slide2",
+        image: "https://via.placeholder.com/600x400?text=Slide+2",
+        altText: "Слайд 2",
+      },
+      {
+        title: "Слайд 3",
+        description: "Описание для слайда 3",
+        link: "https://example.com/slide3",
+        image: "https://via.placeholder.com/600x400?text=Slide+3",
+        altText: "Слайд 3",
+      },
+    ];
 
-    fetchSlides();
+    setSlides(testSlides);
   }, []);
 
   const settings = {
@@ -28,7 +44,7 @@ export default function PromotionalSlider() {
   };
 
   return (
-    <Box>
+    <Box sx={{ mb: 2 }}>
       <Slider {...settings}>
         {slides.map((slide, index) => (
           <Box
@@ -62,10 +78,10 @@ export default function PromotionalSlider() {
                   color="white"
                   sx={{ fontSize: { xs: "40px", lg: "60px" } }}
                 >
-                  {slide.title} {/* Динамическое заголовок */}
+                  {slide.title}
                 </Typography>
                 <Typography variant="h6" color="white" component="p">
-                  {slide.description} {/* Динамическое описание */}
+                  {slide.description}
                 </Typography>
                 <Button
                   sx={{
@@ -79,7 +95,7 @@ export default function PromotionalSlider() {
                   }}
                   onClick={(e) => {
                     e.preventDefault();
-                    window.location.href = slide.link; // Динамическая ссылка
+                    window.location.href = slide.link;
                   }}
                 >
                   Подробнее
@@ -88,10 +104,10 @@ export default function PromotionalSlider() {
               <Box sx={{ width: { xs: "100%", lg: "50%" } }}>
                 <CardMedia
                   component="img"
-                  image={slide.image} // Динамическое изображение
-                  alt={slide.altText} // Динамический alt текст
+                  image={slide.image}
+                  alt={slide.altText}
                   sx={{
-                    width: "100%",
+                    width: "400px",
                     height: { xs: "300px", sm: "300px", md: "400px" },
                     objectFit: "cover",
                   }}
