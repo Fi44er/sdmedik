@@ -203,6 +203,10 @@ func (s *service) Create(ctx context.Context, data *dto.CreateOrder, userID stri
 			ProductID:  item.ProductID,
 		}
 		orderItems = append(orderItems, orderItem)
+
+		if err := s.basketService.DeleteItem(ctx, item.ID, userID); err != nil {
+			return "", err
+		}
 	}
 
 	if err := s.repo.AddItems(ctx, &orderItems); err != nil {
