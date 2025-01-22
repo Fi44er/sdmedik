@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/Fi44er/sdmedik/backend/internal/dto"
+	"github.com/Fi44er/sdmedik/backend/internal/model"
 	"github.com/Fi44er/sdmedik/backend/pkg/utils"
 )
 
@@ -70,10 +71,9 @@ func (s *service) Create(ctx context.Context, data *dto.CreateOrder, userID stri
 		certMap[cert.CategoryArticle] = cert.TRU
 	}
 
-	carts := make([]CartItem, len(basket.Items))
+	carts := []CartItem{}
 	for _, item := range basket.Items {
 		categoryArticle := strings.Split(item.Article, ".")[0]
-
 		cartItem := CartItem{
 			ItemType:    "goods",
 			PaymentType: "full",
@@ -84,7 +84,7 @@ func (s *service) Create(ctx context.Context, data *dto.CreateOrder, userID stri
 			ItemCode:    "",
 			TruCode:     certMap[categoryArticle],
 			Tax:         "none",
-			Sum:         basket.TotalPrice,
+			Sum:         item.TotalPrice,
 		}
 		carts = append(carts, cartItem)
 	}
@@ -95,7 +95,7 @@ func (s *service) Create(ctx context.Context, data *dto.CreateOrder, userID stri
 		return "", err
 	}
 
-	expireDate := time.Now().AddDate(0, 0, 1) // Текущая дата + 1 день
+	expireDate := time.Now().AddDate(0, 0, 3) // Текущая дата + 1 день
 	expire := expireDate.Format("2006-01-02")
 	serviceName := fmt.Sprintf(";PKC|%s|", jsonData)
 	order := Order{
@@ -131,17 +131,14 @@ func (s *service) Create(ctx context.Context, data *dto.CreateOrder, userID stri
 		return "", err
 	}
 
-	// В ответе должно быть заполнено поле token, иначе - ошибка
 	token, ok := tokenResponse["token"]
 	if !ok {
 		s.logger.Errorf("Поле 'token' отсутствует в ответе")
 		return "", fmt.Errorf("Поле 'token' отсутствует в ответе")
 	}
 
-	// Готовим запрос 3.4 JSON API на получение счёта
 	invoiceURI := "/change/invoice/preview/"
 
-	// Добавляем токен в структуру заказа
 	order.Token = token
 
 	options = utils.RequestOptions{
@@ -168,7 +165,7 @@ func (s *service) Create(ctx context.Context, data *dto.CreateOrder, userID stri
 	if err != nil {
 		return "", err
 	}
-	// Парсим JSON-ответ
+
 	var invoiceResponse map[string]string
 	if err := json.Unmarshal(invoiceBody, &invoiceResponse); err != nil {
 		s.logger.Errorf("Ошибка при парсинге JSON для создания счёта: %v", err)
@@ -182,6 +179,34 @@ func (s *service) Create(ctx context.Context, data *dto.CreateOrder, userID stri
 	}
 
 	link := fmt.Sprintf("%s/bill/%s/", serverPaykeeper, invoiceID)
+
+	orderModel := model.Order{
+		TotalPrice: basket.TotalPrice,
+		Email:      data.Email,
+		Phone:      data.PhoneNumber,
+		FIO:        data.FIO,
+		UserID:     userID,
+		Status:     "pending",
+	}
+	if err := s.repo.Create(ctx, &orderModel); err != nil {
+		return "", err
+	}
+
+	orderItems := []model.OrderItem{}
+	for _, item := range basket.Items {
+		orderItem := model.OrderItem{
+			OrderID:    orderModel.ID,
+			Name:       item.Name,
+			Price:      item.Price,
+			Quantity:   item.Quantity,
+			TotalPrice: item.TotalPrice,
+		}
+		orderItems = append(orderItems, orderItem)
+	}
+
+	if err := s.repo.AddItems(ctx, &orderItems); err != nil {
+		return "", err
+	}
 
 	return link, nil
 }

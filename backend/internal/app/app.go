@@ -142,6 +142,7 @@ func (a *App) initRouter() error {
 
 	order := v1.Group("/order")
 	order.Post("/", middleware.DeserializeUser(a.cache, a.db, a.config), a.serviceProvider.orderProvider.OrderImpl().Create)
+	order.Get("/", a.serviceProvider.orderProvider.OrderImpl().GetAll)
 
 	return nil
 }

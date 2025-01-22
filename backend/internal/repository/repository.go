@@ -81,3 +81,9 @@ type ICertificateRepository interface {
 	UpdateMany(ctx context.Context, data *[]model.Certificate) error
 	GetMany(ctx context.Context, data *[]dto.GetManyCert) (*[]model.Certificate, error)
 }
+
+type IOrderRepository interface {
+	Create(ctx context.Context, data *model.Order) error
+	AddItems(ctx context.Context, items *[]model.OrderItem) error
+	GetAll(ctx context.Context, offset int, limit int) (*[]model.Order, error)
+}
