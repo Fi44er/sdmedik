@@ -11,7 +11,7 @@ import (
 const indexDir = "product_index" // Директория для хранения индекса
 
 func (s *service) Search(ctx context.Context, query string) (*[]response.SearchRes, error) {
-	words := strings.Fields(query) // Разбиваем запрос на слова
+	words := strings.Fields(strings.ToLower(query)) // Разбиваем запрос на слова
 	var resp []response.SearchRes
 
 	// Создаем BooleanQuery
