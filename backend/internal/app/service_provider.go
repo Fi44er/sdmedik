@@ -185,7 +185,7 @@ func (s *serviceProvider) initCertificateProvider() error {
 }
 
 func (s *serviceProvider) initOrderProvider() error {
-	s.orderProvider = *provider.NewOrderProvider(s.logger, s.validator, s.config, s.basketProvider.BasketService(), s.certificateProvider.CertificateService())
+	s.orderProvider = *provider.NewOrderProvider(s.logger, s.validator, s.db, s.config, s.basketProvider.BasketService(), s.certificateProvider.CertificateService())
 	return nil
 }
 

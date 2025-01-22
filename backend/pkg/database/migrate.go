@@ -24,6 +24,7 @@ func Migrate(db *gorm.DB) error {
 		&model.PaymentMethod{},
 	}
 
+	db.Exec("CREATE TYPE status AS ENUM ('pending', 'processing', 'completed', 'cancelled')")
 	if err := db.AutoMigrate(models...); err != nil {
 		return err
 	}
