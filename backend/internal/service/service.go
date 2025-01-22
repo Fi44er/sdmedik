@@ -94,7 +94,8 @@ type ICertificateService interface {
 
 type IOrderService interface {
 	Create(ctx context.Context, data *dto.CreateOrder, userID string) (string, error)
-	// ChangeStatus(ctx context.Context, order *model.Order) error
+	ChangeStatus(ctx context.Context, data *dto.ChangeOrderStatus) error
 	// Delete(ctx context.Context, id string) error
 	GetAll(ctx context.Context, offset int, limit int) (*[]model.Order, error)
+	GetMyOrders(ctx context.Context, userID string) (*[]model.Order, error)
 }

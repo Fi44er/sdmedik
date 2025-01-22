@@ -509,6 +509,63 @@ const docTemplate = `{
                 }
             }
         },
+        "/order/my": {
+            "get": {
+                "description": "Get my orders",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "order"
+                ],
+                "summary": "Get my orders",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseData"
+                        }
+                    }
+                }
+            }
+        },
+        "/order/status": {
+            "put": {
+                "description": "Update order status",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "order"
+                ],
+                "summary": "Update order status",
+                "parameters": [
+                    {
+                        "description": "Order status data",
+                        "name": "order",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.ChangeOrderStatus"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/product": {
             "get": {
                 "description": "Gets a product",
@@ -972,6 +1029,17 @@ const docTemplate = `{
                 },
                 "quantity": {
                     "type": "integer"
+                }
+            }
+        },
+        "dto.ChangeOrderStatus": {
+            "type": "object",
+            "properties": {
+                "order_id": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
                 }
             }
         },

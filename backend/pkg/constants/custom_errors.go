@@ -15,3 +15,5 @@ var ErrBasketNotFound = errors.New(404, "Basket not found")
 var ErrBasketItemNotFound = errors.New(404, "Basket item not found")
 
 var ErrCertificateNotFound = errors.New(404, "Certificate not found")
+
+var ErrOrderNotFound = errors.New(404, "Order not found")

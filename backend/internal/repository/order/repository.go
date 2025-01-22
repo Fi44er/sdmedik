@@ -5,6 +5,7 @@ import (
 
 	"github.com/Fi44er/sdmedik/backend/internal/model"
 	def "github.com/Fi44er/sdmedik/backend/internal/repository"
+	"github.com/Fi44er/sdmedik/backend/pkg/constants"
 	"github.com/Fi44er/sdmedik/backend/pkg/logger"
 	"gorm.io/gorm"
 )
@@ -68,4 +69,33 @@ func (r *repository) GetAll(ctx context.Context, offset int, limit int) (*[]mode
 	}
 	r.logger.Info("Orders fetched successfully")
 	return orders, nil
+}
+
+func (r *repository) GetMyOrders(ctx context.Context, userID string) (*[]model.Order, error) {
+	r.logger.Info("Fetching orders...")
+	orders := new([]model.Order)
+	if err := r.db.WithContext(ctx).Preload("Items").Where("user_id = ?", userID).Find(&orders).Error; err != nil {
+		r.logger.Errorf("Failed to fetch orders: %v", err)
+		return nil, err
+	}
+	r.logger.Info("Orders fetched successfully")
+	return orders, nil
+}
+
+func (r *repository) Update(ctx context.Context, data *model.Order) error {
+	r.logger.Info("Updating order...")
+
+	result := r.db.WithContext(ctx).Model(data).Updates(data)
+	if err := result.Error; err != nil {
+		r.logger.Errorf("Failed to update order: %v", err)
+		return err
+	}
+
+	if result.RowsAffected == 0 {
+		r.logger.Warnf("Order with ID %s not found", data.ID)
+		return constants.ErrOrderNotFound
+	}
+
+	r.logger.Info("Order updated successfully")
+	return nil
 }

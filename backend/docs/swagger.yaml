@@ -10,6 +10,13 @@ definitions:
     - product_id
     - quantity
     type: object
+  dto.ChangeOrderStatus:
+    properties:
+      order_id:
+        type: string
+      status:
+        type: string
+    type: object
   dto.CreateBasket:
     properties:
       user_id:
@@ -446,6 +453,43 @@ paths:
           schema:
             $ref: '#/definitions/response.Response'
       summary: Create order
+      tags:
+      - order
+  /order/my:
+    get:
+      consumes:
+      - application/json
+      description: Get my orders
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseData'
+      summary: Get my orders
+      tags:
+      - order
+  /order/status:
+    put:
+      consumes:
+      - application/json
+      description: Update order status
+      parameters:
+      - description: Order status data
+        in: body
+        name: order
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ChangeOrderStatus'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Update order status
       tags:
       - order
   /product:

@@ -88,4 +88,6 @@ type IOrderRepository interface {
 	Create(ctx context.Context, data *model.Order) error
 	AddItems(ctx context.Context, items *[]model.OrderItem) error
 	GetAll(ctx context.Context, offset int, limit int) (*[]model.Order, error)
+	GetMyOrders(ctx context.Context, userID string) (*[]model.Order, error)
+	Update(ctx context.Context, data *model.Order) error
 }
