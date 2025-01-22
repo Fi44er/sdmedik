@@ -47,6 +47,6 @@ type ProductCharacteristicRes struct {
 }
 
 type ProductPopularity struct {
-	ProductID  string `gorm:"column:product_id"`
-	OrderCount int    `gorm:"column:order_count"`
+	ProductID  string `gorm:"column:product_id" json:"product_id"`
+	OrderCount int    `gorm:"column:order_count" json:"order_count"`
 }
