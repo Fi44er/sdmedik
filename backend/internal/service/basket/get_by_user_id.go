@@ -39,12 +39,12 @@ func (s *service) GetByUserID(ctx context.Context, userID string) (*response.Bas
 	totalPrice := 0.0
 	totalQuantity := 0
 
-	for index, item := range basket.Items {
+	for _, item := range basket.Items {
 		totalPrice += item.TotalPrice
 		totalQuantity += item.Quantity
 		var imageUrl string
 		if len(productMap[item.ProductID].Images) > 0 {
-			imageUrl = (*products)[index].Images[0].Name
+			imageUrl = productMap[item.ProductID].Images[0].Name
 		}
 		basketRes.Items = append(basketRes.Items, response.BasketItemRes{
 			ID:         item.ID,
