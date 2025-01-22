@@ -2,21 +2,21 @@ package basket
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/Fi44er/sdmedik/backend/internal/dto"
 	"github.com/Fi44er/sdmedik/backend/internal/model"
 	"github.com/Fi44er/sdmedik/backend/pkg/constants"
-	"github.com/Fi44er/sdmedik/backend/pkg/utils"
 )
 
 func (s *service) AddItem(ctx context.Context, data *dto.AddBasketItem, userID string) error {
 	if err := s.validator.Struct(data); err != nil {
-		return err
+		return fmt.Errorf("validation failed: %w", err)
 	}
 
 	basket, err := s.repo.GetByUserID(ctx, userID)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to get basket by user ID: %w", err)
 	}
 	if basket == nil {
 		return constants.ErrBasketNotFound
@@ -24,40 +24,41 @@ func (s *service) AddItem(ctx context.Context, data *dto.AddBasketItem, userID s
 
 	product, err := s.productService.Get(ctx, dto.ProductSearchCriteria{ID: data.ProductID, Minimal: true})
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to get product: %w", err)
 	}
 
-	if len(*product) == 0 || product == nil {
+	if product == nil || len(*product) == 0 {
 		return constants.ErrProductNotFound
 	}
 
 	basketItem, err := s.basketItemRepo.GetByProductBasketID(ctx, data.ProductID, basket.ID)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to get basket item: %w", err)
 	}
 
-	s.logger.Infof("Basket item: %v", basketItem)
 	if basketItem != nil {
-		basketItem.Quantity = basketItem.Quantity + data.Quantity
+		s.logger.Infof("basketItem.Quantity: %v", basketItem.Quantity)
+
+		basketItem.Quantity += data.Quantity
+		s.logger.Infof("basketItem.Quantity: %v", basketItem.Quantity)
 		basketItem.TotalPrice = (*product)[0].Price * float64(basketItem.Quantity)
 		if err := s.basketItemRepo.UpdateItemQuantity(ctx, basketItem); err != nil {
-			return err
+			return fmt.Errorf("failed to update basket item quantity: %w", err)
+		}
+		return nil
+	} else {
+		basketItemModel := &model.BasketItem{
+			Article:    (*product)[0].Article,
+			Quantity:   data.Quantity,
+			TotalPrice: (*product)[0].Price * float64(data.Quantity),
+			ProductID:  data.ProductID,
+			BasketID:   basket.ID,
 		}
 
-		return nil
+		if err := s.basketItemRepo.Create(ctx, basketItemModel); err != nil {
+			return fmt.Errorf("failed to create basket item: %w", err)
+		}
 	}
 
-	basketItemModel := new(model.BasketItem)
-	if err := utils.DtoToModel(data, basketItemModel); err != nil {
-		return err
-	}
-
-	basketItemModel.TotalPrice = (*product)[0].Price * float64(data.Quantity)
-	basketItemModel.BasketID = basket.ID
-	basketItemModel.Article = (*product)[0].Article
-
-	if err := s.basketItemRepo.Create(ctx, basketItemModel); err != nil {
-		return err
-	}
 	return nil
 }

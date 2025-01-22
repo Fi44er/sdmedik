@@ -4,6 +4,7 @@ import (
 	"context"
 	"math"
 
+	"github.com/Fi44er/sdmedik/backend/internal/model"
 	"github.com/Fi44er/sdmedik/backend/internal/response"
 	"github.com/Fi44er/sdmedik/backend/pkg/constants"
 )
@@ -29,6 +30,12 @@ func (s *service) GetByUserID(ctx context.Context, userID string) (*response.Bas
 		return nil, err
 	}
 
+	productMap := make(map[string]model.Product)
+
+	for _, product := range *products {
+		productMap[product.ID] = product
+	}
+
 	totalPrice := 0.0
 	totalQuantity := 0
 
@@ -36,18 +43,18 @@ func (s *service) GetByUserID(ctx context.Context, userID string) (*response.Bas
 		totalPrice += item.TotalPrice
 		totalQuantity += item.Quantity
 		var imageUrl string
-		if len((*products)[index].Images) > 0 {
+		if len(productMap[item.ProductID].Images) > 0 {
 			imageUrl = (*products)[index].Images[0].Name
 		}
 		basketRes.Items = append(basketRes.Items, response.BasketItemRes{
 			ID:         item.ID,
 			Article:    item.Article,
 			ProductID:  item.ProductID,
-			Name:       (*products)[index].Name,
+			Name:       productMap[item.ProductID].Name,
 			Image:      imageUrl,
 			Quantity:   item.Quantity,
 			TotalPrice: item.TotalPrice,
-			Price:      (*products)[index].Price,
+			Price:      productMap[item.ProductID].Price,
 		})
 	}
 
