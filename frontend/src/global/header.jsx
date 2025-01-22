@@ -349,25 +349,21 @@ export default function Header() {
                 </ListItem>
               );
             })}
-            <Button
-              id="basic-button"
-              variant="contained"
-              onClick={(e) => {
-                e.preventDefault();
-                window.location.href = "/catalog";
-              }}
-              sx={{
-                width: "70%",
-                height: "40px",
-                background: `linear-gradient(95.61deg, #A5DED1 4.71%, #00B3A4 97.25%)`,
-                borderRadius: "20px",
-                fontSize: "15px",
-                ml: 2,
-                mt: 2,
-              }}
-            >
-              Каталог
-            </Button>
+            <Box sx={{ mt: 2 }}>
+              <Link
+                underline="hover"
+                color="black"
+                sx={{
+                  fontSize: "18px",
+                  ml: 4,
+                  mt: 4,
+                  textDicoration: "none",
+                  color: "#26BDB8",
+                }}
+              >
+                Каталог
+              </Link>
+            </Box>
 
             <Box
               sx={{
@@ -409,7 +405,7 @@ export default function Header() {
                   <IconButton
                     onClick={(e) => {
                       e.preventDefault();
-                      window.location.href = "/basket/:id";
+                      window.location.href = "/basket";
                     }}
                   >
                     <img

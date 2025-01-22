@@ -12,6 +12,15 @@ import {
   Pagination,
   Typography,
 } from "@mui/material";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+} from "recharts";
 import useUserStore from "../../../../store/userStore";
 
 const AdminUserTable = () => {
@@ -19,15 +28,21 @@ const AdminUserTable = () => {
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
+  const [userGrowthData, setUserGrowthData] = useState([]);
 
   useEffect(() => {
     fetchUsers();
-    console.log(users);
   }, []);
 
   useEffect(() => {
-    if (Array.isArray(users.data.users)) {
+    if (users && users.data && Array.isArray(users.data.users)) {
       setFilteredUsers(users.data.users);
+      // Обновляем данные для диаграммы
+      const growthData = users.data.users.map((user, index) => ({
+        name: `Пользователей  ${index + 1}`,
+        count: index + 1,
+      }));
+      setUserGrowthData(growthData);
     }
   }, [users]);
 
@@ -39,21 +54,43 @@ const AdminUserTable = () => {
     setCurrentPage(value);
   };
 
-  //   const handleDeleteProduct = async (id) => {
-  //     await deleteProduct(id);
-  //     fetchProducts();
-  //   };
-
   return (
     <Box sx={{ padding: 2 }}>
       <Typography sx={{ fontSize: "30px", mb: 2, mt: 2 }}>
         Таблица с пользователями
       </Typography>
-      <Typography sx={{ fontSize: "30px", mb: 2, mt: 2 }}>
-        Всего пользователей {users.data.count}
-      </Typography>
+      <Paper sx={{ p: 2, mb: 2, width: "max-content" }}>
+        <Typography sx={{ fontSize: "20px", mb: 2, mt: 2, color: "green" }}>
+          Всего пользователей : ({users?.data?.count || 0}){" "}
+        </Typography>
+      </Paper>
+
+      {/* Диаграмма роста пользователей */}
+      <Paper sx={{ p: 2, mb: 2 }}>
+        <Typography sx={{ fontSize: "20px", mb: 2 }}>
+          Рост пользователей
+        </Typography>
+        <LineChart
+          width={500}
+          height={300}
+          data={userGrowthData}
+          margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+        >
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="name" />
+          <YAxis />
+          <Tooltip />
+          <Legend />
+          <Line
+            type="monotone"
+            dataKey="count"
+            stroke="#8884d8"
+            activeDot={{ r: 8 }}
+          />
+        </LineChart>
+      </Paper>
+
       <Paper sx={{ width: "100%" }}>
-        {/* Таблица для больших экранов */}
         <TableContainer
           sx={{ overflowX: "auto", display: { xs: "none", sm: "block" } }}
         >

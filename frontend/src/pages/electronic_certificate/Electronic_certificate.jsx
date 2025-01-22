@@ -7,15 +7,15 @@ import {
   List,
   ListItem,
   Typography,
+  Divider,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { Helmet } from "react-helmet";
-
 import React from "react";
 
-export default function Electronic_certificate() {
+export default function ElectronicCertificate() {
   return (
-    <Box sx={{ mb: 5 }}>
+    <Box sx={{ mb: 5, backgroundColor: "#F9F9F9", padding: "20px" }}>
       <Helmet>
         <title>
           Электронные сертификаты - Получите государственную поддержку
@@ -33,21 +33,34 @@ export default function Electronic_certificate() {
           href="https://example.com/electronic-certificate"
         />
       </Helmet>
-      <Container>
+      <Container maxWidth="md">
         <header>
-          <Box sx={{ display: "flex", justifyContent: "center" }}>
-            <Typography component="h1" variant="h2">
+          <Box sx={{ display: "flex", justifyContent: "center", mb: 4 }}>
+            <Typography
+              component="h1"
+              variant="h2"
+              sx={{
+                fontWeight: "bold",
+                color: "#333",
+                fontSize: { xs: "50px", lg: "62px" },
+              }}
+            >
               Электронные сертификаты
             </Typography>
           </Box>
-          <Box sx={{ width: "100%" }}>
-            <img style={{ width: "100%" }} src="/Line 1.png" alt="line" />
-          </Box>
+          <Divider
+            sx={{
+              my: 2,
+              borderColor: "#00B3A4",
+              width: "50%",
+              margin: "0 auto",
+            }}
+          />
         </header>
         <Box component="section">
           <Box>
-            <Typography variant="h5">
-              Электронный сертификат (ЭС) - это новый платёжный инструмент, при
+            <Typography variant="h5" sx={{ lineHeight: 1.6, color: "#555" }}>
+              Электронный сертификат (ЭС) - это новый платёжный инструмент, при
               помощи которого можно получать государственную поддержку на
               приобретение необходимых технических средств реабилитации (ТСР).
               Электронный сертификат является записью в реестре государственной
@@ -57,16 +70,19 @@ export default function Electronic_certificate() {
               мгновенно оплатить выбранное изделие, если оно соответствует
               предписаниям медико-социальной экспертизы. Перечень технических
               средств реабилитации, которые можно приобрести с помощью
-              электронного сертификата, утверждается Министерством труда России.
+              электронного сертификата, утверждается Министерством труда России.
             </Typography>
-            <Typography variant="h5">
+            <Typography
+              variant="h5"
+              sx={{ lineHeight: 1.6, color: "#555", mt: 2 }}
+            >
               До появления электронного сертификата россияне с инвалидностью
-              могли получить средства реабилитации в отделении Фонда социального
+              могли получить средства реабилитации в отделении Фонда социального
               страхования, либо приобрести нужное изделие самостоятельно и затем
               подать документы на компенсацию затраченных средств. Наличие
-              электронного сертификата является дополнительным. Он лишь
+              электронного сертификата является дополнительным. Он лишь
               дополняет уже существующие возможности получения ТСР и оформляется
-              человеком по желанию
+              человеком по желанию.
             </Typography>
           </Box>
           <Box
@@ -78,36 +94,21 @@ export default function Electronic_certificate() {
               mb: 3,
             }}
           >
-            <Accordion
-              sx={{
-                background: "#90E0D4",
-                color: "#fff",
-              }}
-            >
+            <Accordion sx={{ background: "#90E0D4", color: "#fff" }}>
               <AccordionSummary
                 expandIcon={
-                  <ExpandMoreIcon
-                    fontSize="medium"
-                    sx={{
-                      color: "#fff",
-                    }}
-                  />
+                  <ExpandMoreIcon fontSize="medium" sx={{ color: "#fff" }} />
                 }
                 sx={{ fontSize: "25px" }}
               >
                 Как можно оформить электронный сертификат?
               </AccordionSummary>
-              <AccordionDetails
-                sx={{
-                  maxHeight: 400,
-                  overflow: "auto",
-                }}
-              >
+              <AccordionDetails sx={{ maxHeight: 400, overflow: "auto" }}>
                 <List>
                   <ListItem>
                     <Typography variant="h6">
                       Вы можете подать заявление на оформление ЭС в сети
-                      интернет через портал Госуслуг (www.gosuslugi.ru) или же
+                      интернет через портал Госуслуг (www.gosuslugi.ru) или же
                       очно – в вашем территориальном органе ФСС РФ, через МФЦ,
                       либо по почте. Для оформления ЭС через Госуслуги вам
                       понадобится написать заявление и предоставить реквизиты
@@ -120,31 +121,16 @@ export default function Electronic_certificate() {
                 </List>
               </AccordionDetails>
             </Accordion>
-            <Accordion
-              sx={{
-                background: "#90E0D4",
-                color: "#fff",
-              }}
-            >
+            <Accordion sx={{ background: "#90E0D4", color: "#fff" }}>
               <AccordionSummary
                 expandIcon={
-                  <ExpandMoreIcon
-                    fontSize="medium"
-                    sx={{
-                      color: "#fff",
-                    }}
-                  />
+                  <ExpandMoreIcon fontSize="medium" sx={{ color: "#fff" }} />
                 }
                 sx={{ fontSize: "25px" }}
               >
                 Как быстро я получу электронный сертификат?
               </AccordionSummary>
-              <AccordionDetails
-                sx={{
-                  maxHeight: 400,
-                  overflow: "auto",
-                }}
-              >
+              <AccordionDetails sx={{ maxHeight: 400, overflow: "auto" }}>
                 <List>
                   <ListItem>
                     <Typography variant="h6">
@@ -155,31 +141,16 @@ export default function Electronic_certificate() {
                 </List>
               </AccordionDetails>
             </Accordion>
-            <Accordion
-              sx={{
-                background: "#90E0D4",
-                color: "#fff",
-              }}
-            >
+            <Accordion sx={{ background: "#90E0D4", color: "#fff" }}>
               <AccordionSummary
                 expandIcon={
-                  <ExpandMoreIcon
-                    fontSize="medium"
-                    sx={{
-                      color: "#fff",
-                    }}
-                  />
+                  <ExpandMoreIcon fontSize="medium" sx={{ color: "#fff" }} />
                 }
                 sx={{ fontSize: "25px" }}
               >
                 В чём плюсы электронного сертификата?
               </AccordionSummary>
-              <AccordionDetails
-                sx={{
-                  maxHeight: 400,
-                  overflow: "auto",
-                }}
-              >
+              <AccordionDetails sx={{ maxHeight: 400, overflow: "auto" }}>
                 <List>
                   <ListItem>
                     <Typography variant="h6">
@@ -193,31 +164,16 @@ export default function Electronic_certificate() {
                 </List>
               </AccordionDetails>
             </Accordion>
-            <Accordion
-              sx={{
-                background: "#90E0D4",
-                color: "#fff",
-              }}
-            >
+            <Accordion sx={{ background: "#90E0D4", color: "#fff" }}>
               <AccordionSummary
                 expandIcon={
-                  <ExpandMoreIcon
-                    fontSize="medium"
-                    sx={{
-                      color: "#fff",
-                    }}
-                  />
+                  <ExpandMoreIcon fontSize="medium" sx={{ color: "#fff" }} />
                 }
                 sx={{ fontSize: "25px" }}
               >
                 Какую информацию содержит электронный сертификат?
               </AccordionSummary>
-              <AccordionDetails
-                sx={{
-                  maxHeight: 400,
-                  overflow: "auto",
-                }}
-              >
+              <AccordionDetails sx={{ maxHeight: 400, overflow: "auto" }}>
                 <List>
                   <ListItem>
                     <Typography variant="h6">
@@ -234,12 +190,7 @@ export default function Electronic_certificate() {
           </Box>
           <Box>
             <List>
-              <Typography
-                sx={{
-                  fontSize: "24px",
-                  fontWeight: "bold",
-                }}
-              >
+              <Typography sx={{ fontSize: "24px", fontWeight: "bold" }}>
                 Как определяется номинал моего электронного сертификата?
               </Typography>
               <List>
@@ -258,12 +209,7 @@ export default function Electronic_certificate() {
               </List>
             </List>
             <List>
-              <Typography
-                sx={{
-                  fontSize: "24px",
-                  fontWeight: "bold",
-                }}
-              >
+              <Typography sx={{ fontSize: "24px", fontWeight: "bold" }}>
                 Что можно купить с помощью электронного сертификата?
               </Typography>
               <List>
@@ -274,7 +220,7 @@ export default function Electronic_certificate() {
                   приводом, с электроприводом и аккумуляторные батареи к ним; —
                   Ортопедическую обувь; — Противопролежневые матрацы и подушки;
                   — Приспособления для одевания, раздевания и захвата предметов;
-                  — Специальную одежду; — Специальные устройства для чтениях
+                  — Специальную одежду; — Специальные устройства для чтения
                   «говорящих книг», для оптической коррекции слабовидения; —
                   Медицинские термометры и тонометры с речевым выходом; —
                   Сигнализаторы звука световые и вибрационные; — Слуховые
@@ -286,36 +232,26 @@ export default function Electronic_certificate() {
               </List>
             </List>
             <List>
-              <Typography
-                sx={{
-                  fontSize: "24px",
-                  fontWeight: "bold",
-                }}
-              >
+              <Typography sx={{ fontSize: "24px", fontWeight: "bold" }}>
                 Каков механизм оплаты товара по электронному сертификату?
               </Typography>
               <List>
                 <ListItem sx={{ fontSize: "22px" }}>
                   Деньги резервируются, но не перечисляются на вашу банковскую
-                  карту «МИР» напрямую. При оплате картой того изделия, которое
+                  карту «МИР ». При оплате картой того изделия, которое
                   предусмотрено в вашей индивидуальной программе реабилитации
                   (абилитации), средства поступят напрямую продавцу.
                 </ListItem>
               </List>
             </List>
             <List>
-              <Typography
-                sx={{
-                  fontSize: "24px",
-                  fontWeight: "bold",
-                }}
-              >
+              <Typography sx={{ fontSize: "24px", fontWeight: "bold" }}>
                 Что делать, если мне понравилось ТСР, чья стоимость больше
                 номинала моего ЭС?
               </Typography>
               <List>
                 <ListItem sx={{ fontSize: "22px" }}>
-                  Если вам понравилось изделие по цене превышающее сумму,
+                  Если вам понравилось изделие по цене, превышающей сумму,
                   положенную вам по электронному сертификату, вы всё равно
                   сможете с его помощью оплатить покупку, доплатив из личных
                   средств по карте МИР разницу в цене. Единственное условие –
@@ -325,39 +261,29 @@ export default function Electronic_certificate() {
               </List>
             </List>
             <List>
-              <Typography
-                sx={{
-                  fontSize: "24px",
-                  fontWeight: "bold",
-                }}
-              >
+              <Typography sx={{ fontSize: "24px", fontWeight: "bold" }}>
                 Как выяснить, выгоден ли для меня электронный сертификат?
               </Typography>
               <List>
                 <ListItem sx={{ fontSize: "22px", width: "100%" }}>
                   Посмотреть сумму, привязанную к тому или иному ТСР, можно в
-                  электронном каталоге. https://ktsr.sfr.gov.ru/ru-RU/Здесь же
+                  электронном каталоге. https://ktsr.sfr.gov.ru/ru-RU/ Здесь же
                   можно посмотреть, каков номинал вашего электронного
                   сертификата. Как совершить покупку нужного ТСР при помощи
                   электронного сертификата? Найдите в «Каталоге технических
-                  средств реабилитации» на сайте ФСС
+                  средств реабилитации» на сайте ФСС.
                 </ListItem>
                 <ListItem sx={{ fontSize: "22px", width: "100%" }}>
-                  РФ(https://ktsr.sfr.gov.ru/ru-RU/)необходимый вам товар.
-                  Выберите изделие, в «Каталоге технических средств
-                  реабилитации»<br></br>(https://ktsr.sfr.gov.ru/ru-RU/)в
-                  разделе «карточка товара». Примите решение о необходимости
-                  совершения покупки по электронному сертификату.
+                  РФ(https://ktsr.sfr.gov.ru/ru-RU/) необходимый вам товар.
+                  Выберите изделие в «Каталоге технических средств реабилитации»
+                  (https://ktsr.sfr.gov.ru/ru-RU/) в разделе «карточка товара».
+                  Примите решение о необходимости совершения покупки по
+                  электронному сертификату.
                 </ListItem>
               </List>
             </List>
             <List>
-              <Typography
-                sx={{
-                  fontSize: "24px",
-                  fontWeight: "bold",
-                }}
-              >
+              <Typography sx={{ fontSize: "24px", fontWeight: "bold" }}>
                 Где посмотреть ближайшие ко мне точки, работающие с электронным
                 сертификатом?
               </Typography>
@@ -365,8 +291,8 @@ export default function Electronic_certificate() {
                 <ListItem sx={{ fontSize: "22px" }}>
                   Проверить в каталоге технических средств реабилитации Фонда
                   социального страхования на интерактивной карте подключение
-                  удобной для вас торговой точки можно на
-                  сайте: https://ktsr.sfr.gov.ru/ru-RU/
+                  удобной для вас торговой точки можно на сайте:
+                  https://ktsr.sfr.gov.ru/ru-RU/
                 </ListItem>
               </List>
             </List>

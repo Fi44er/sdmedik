@@ -6,9 +6,18 @@ import {
   Paper,
   Typography,
 } from "@mui/material";
-import React from "react";
+import React, { useEffect } from "react";
+import useBascketStore from "../../../store/bascketStore";
 
 export default function RightBar() {
+  const {
+    fetchUserBasket,
+    basket,
+    products,
+    fetchProductsByIds,
+    deleteProductThithBasket,
+  } = useBascketStore();
+
   return (
     <Box
       sx={{
@@ -30,23 +39,19 @@ export default function RightBar() {
             sx={{
               display: "flex",
               flexDirection: "column",
-              gridGap: 15,
-              mt:4
+              mt: "20px",
             }}
           >
-          </Box>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              mt: "60px",
-            }}
-          >
-            <Typography>
-              Итог:<br></br>5 товаров
-            </Typography>
-            <Typography>125000 ₽</Typography>
+            <Box>
+              <Typography>
+                Итого товаров в корзине : {basket.data && basket.data.quantity}
+              </Typography>
+            </Box>
+            <Box>
+              <Typography>
+                Общая сумма заказа : {basket.data && basket.data.total_price} ₽
+              </Typography>
+            </Box>
           </Box>
           <Box
             sx={{
@@ -56,9 +61,14 @@ export default function RightBar() {
               mt: 5,
             }}
           >
-            <Button variant="contained" sx={{
-              background: "#00B3A4",
-            }}>Перейти к оплате</Button>
+            <Button
+              variant="contained"
+              sx={{
+                background: "#00B3A4",
+              }}
+            >
+              Перейти к оплате
+            </Button>
           </Box>
         </Container>
       </Paper>

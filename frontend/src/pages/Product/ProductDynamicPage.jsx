@@ -17,11 +17,14 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/swiper-bundle.css"; // Импорт стилей Swiper
 import useProductStore from "../../store/productStore";
 import { useParams } from "react-router-dom";
+import useBascketStore from "../../store/bascketStore";
 
 export default function ProductDetailPage() {
   const [mainImageIndex, setMainImageIndex] = useState(0);
   const [images, setImages] = useState([]);
   const { fetchProductById, products } = useProductStore();
+  const { addProductThisBascket } = useBascketStore();
+   const [quantity, setQuantity] = useState(1);
   const { id } = useParams();
 
   useEffect(() => {
@@ -45,6 +48,14 @@ export default function ProductDetailPage() {
     setMainImageIndex(
       (prevIndex) => (prevIndex - 1 + images.length) % images.length
     );
+  };
+
+  const hendleAddProductThithBascket = async (id) => {
+    setQuantity(quantity);
+    const product_id = id;
+    console.log(id, quantity);
+
+    await addProductThisBascket(product_id, quantity);
   };
 
   return (
@@ -166,7 +177,11 @@ export default function ProductDetailPage() {
             >
               В 1 клик
             </Button>
-            <IconButton>
+            <IconButton
+              onClick={() => {
+                hendleAddProductThithBascket(products.data.id);
+              }}
+            >
               <img src="/basket_Cards.png" alt="Добавить в корзину" />
             </IconButton>
           </Box>
@@ -174,9 +189,11 @@ export default function ProductDetailPage() {
           <Box sx={{ marginTop: 2 }}>
             <Typography variant="h6">Характеристики:</Typography>
             <List>
-              {products.data?.characteristic_values?.map((feature, index) => (
+              {products.data?.characteristic?.map((feature, index) => (
                 <ListItem key={index}>
-                  <Typography>{feature.value}</Typography>
+                  <Typography>
+                    {feature.name} : {feature.value}
+                  </Typography>
                 </ListItem>
               ))}
             </List>

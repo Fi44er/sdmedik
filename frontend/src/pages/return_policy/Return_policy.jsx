@@ -7,15 +7,15 @@ import {
   List,
   ListItem,
   Typography,
+  Divider,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { Helmet } from "react-helmet";
-
 import React from "react";
 
-export default function Return_policy() {
+export default function ReturnPolicy() {
   return (
-    <Box>
+    <Box sx={{ backgroundColor: "#F9F9F9", padding: "20px" }}>
       <Helmet>
         <title>Политика возврата - СД-МЕД</title>
         <meta
@@ -31,19 +31,31 @@ export default function Return_policy() {
           href="https://www.yourwebsite.com/return-policy"
         />
       </Helmet>
-      <Container>
+      <Container maxWidth="md">
         <header>
-          <Box sx={{ display: "flex", justifyContent: "center" }}>
-            <Typography component="h1" variant="h2">
+          <Box sx={{ display: "flex", justifyContent: "center", mb: 4 }}>
+            <Typography
+              component="h1"
+              variant="h2"
+              sx={{ fontWeight: "bold", color: "#333" }}
+            >
               Политика возврата
             </Typography>
           </Box>
-          <Box sx={{ width: "100%" }}>
-            <img style={{ width: "100%" }} src="/Line 1.png" alt="line" />
-          </Box>
+          <Divider
+            sx={{
+              my: 2,
+              borderColor: "#00B3A4",
+              width: "50%",
+              margin: "0 auto",
+            }}
+          />
         </header>
-        <Box>
-          <Typography variant="h5">
+        <Box sx={{ mb: 4 }}>
+          <Typography
+            variant="body1"
+            sx={{ color: "#555", lineHeight: 1.6, fontSize: "20px" }}
+          >
             Если по каким-либо причинам Вы решили отказаться от приобретенного
             товара, то можете сделать это в соответствии с Законом РФ «О защите
             прав потребителей» от 07.02.1992 № 2300-1. Федеральный закон от
@@ -62,9 +74,22 @@ export default function Return_policy() {
             или комплектации, утвержденный постановлением Правительства РФ от
             19.01.1998г. № 55
           </Typography>
-          <img style={{ width: "100%" }} src="/return-policy.png" alt="" />
+          <Box sx={{ textAlign: "center", mt: 2 }}>
+            <img
+              style={{ width: "100%", borderRadius: "8px" }}
+              src="/return-policy.png"
+              alt="Политика возврата"
+            />
+          </Box>
         </Box>
-        <Box sx={{ display: "flex", flexDirection: "column", gridGap: "40px" }}>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            gridGap: "40px",
+            mb: 5,
+          }}
+        >
           <Typography
             sx={{
               fontSize: "28px",
@@ -72,59 +97,44 @@ export default function Return_policy() {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
+              color: "#00B3A4",
             }}
           >
             Изделия надлежащего качества
           </Typography>
           <Box>
-            <Typography variant="h5" component="p">
+            <Typography
+              variant="h5"
+              component="p"
+              sx={{ color: "#555", lineHeight: 1.6, fontSize: "25px" }}
+            >
               Для возврата товара надлежащего качества, необходимо уточнить, не
               входит ли он в перечень товаров, не подлежащих возврату и обмену.
               К такой категории часто относят товары медицинского назначения,
               технически сложные устройства (большая часть электротехнических
               изделий), расходные материалы, товары личной гигиены, средства по
               уходу и тд. Важно! Политика нашей торговой сети предусматривает
-              лояльный  и заботливый подход к нашим клиентам, рассмотрение в
+              лояльный и заботливый подход к нашим клиентам, рассмотрение в
               индивидуальном порядке. А значит вы всегда можете обратиться к
               менеджеру, для уточнения, консультации, в разумные сроки, после
               приобретения.
             </Typography>
           </Box>
           <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              gridGap: "40px",
-              mb: 5,
-            }}
+            sx={{ display: "flex", flexDirection: "column", gridGap: "40px" }}
           >
-            <Accordion
-              sx={{
-                background: "#90E0D4",
-                color: "#fff",
-              }}
-            >
+            <Accordion sx={{ background: "#90E0D4", color: "#fff" }}>
               <AccordionSummary
                 expandIcon={
-                  <ExpandMoreIcon
-                    fontSize="medium"
-                    sx={{
-                      color: "#fff",
-                    }}
-                  />
+                  <ExpandMoreIcon fontSize="medium" sx={{ color: "#fff" }} />
                 }
-                sx={{ fontSize: "25px" }}
+                sx={{ fontSize: "22px" }}
               >
                 Если товар входит в перечень товаров, подлежащих возврату и
                 обмену, или обоюдным решением установлено, что продавец готов
                 принять товар:
               </AccordionSummary>
-              <AccordionDetails
-                sx={{
-                  maxHeight: 400,
-                  overflow: "auto",
-                }}
-              >
+              <AccordionDetails sx={{ maxHeight: 400, overflow: "auto" }}>
                 <List>
                   <ListItem>
                     <Typography variant="h6">
@@ -136,15 +146,15 @@ export default function Return_policy() {
                   </ListItem>
                   <ListItem>
                     <Typography variant="h6">
-                      Возможен обмен товара, на аналогичный, другого
+                      Возможен обмен товара на аналогичный, другого
                       производителя, отличных характеристик, в том числе на
                       более дорогой, с доплатой покупателя.
                     </Typography>
                   </ListItem>
                   <ListItem>
                     <Typography variant="h6">
-                      Возврат товаров надлежащего качества совершается в течении
-                      14 дней, с момента покупки.
+                      Возврат товаров надлежащего качества совершается в течение
+                      14 дней с момента покупки.
                     </Typography>
                   </ListItem>
                   <ListItem>
@@ -169,50 +179,34 @@ export default function Return_policy() {
                     <Typography variant="h6">
                       В случае возврата товара надлежащего качества, все
                       расходы, связанные с транспортировкой товара до места
-                      приема товара продавцом (склад, торговая точка и тд.),
+                      приема товара продавцом (склад, торговая точка и т.д.),
                       возлагаются на покупателя. Или рассматриваются в
                       индивидуальном порядке, по решению продавца.
                     </Typography>
                   </ListItem>
                   <ListItem>
                     <Typography variant="h6">
-                      Гарантийному обслуживанию, обмену и возврату не
-                      подлежит:Продукция с повреждениями, вызванными нарушением
-                      правил транспортировки, хранения или
-                      эксплуатации;Продукция с следами ремонта;Продукция с
-                      поврежденной заводской маркировкой (модель, номер партии,
-                      серийный номер и т.д.) или гарантийной пломбой
-                      производителя.
+                      Гарантийному обслуживанию, обмену и возврату не подлежит:
+                      Продукция с повреждениями, вызванными нарушением правил
+                      транспортировки, хранения или эксплуатации; Продукция с
+                      следами ремонта; Продукция с поврежденной заводской
+                      маркировкой (модель, номер партии, серийный номер и т.д.)
+                      или гарантийной пломбой производителя.
                     </Typography>
                   </ListItem>
                 </List>
               </AccordionDetails>
             </Accordion>
-            <Accordion
-              sx={{
-                background: "#90E0D4",
-                color: "#fff",
-              }}
-            >
+            <Accordion sx={{ background: "#90E0D4", color: "#fff" }}>
               <AccordionSummary
                 expandIcon={
-                  <ExpandMoreIcon
-                    fontSize="medium"
-                    sx={{
-                      color: "#fff",
-                    }}
-                  />
+                  <ExpandMoreIcon fontSize="medium" sx={{ color: "#fff" }} />
                 }
-                sx={{ fontSize: "25px" }}
+                sx={{ fontSize: "22px" }}
               >
                 Возврат товара ненадлежащего качества
               </AccordionSummary>
-              <AccordionDetails
-                sx={{
-                  maxHeight: 400,
-                  overflow: "auto",
-                }}
-              >
+              <AccordionDetails sx={{ maxHeight: 400, overflow: "auto" }}>
                 <List>
                   <ListItem>
                     <Typography variant="h6">
@@ -285,7 +279,7 @@ export default function Return_policy() {
                     <Typography variant="h6">
                       Все вышеперечисленные требования по возврату товара
                       ненадлежащего качества могут быть предъявлены в следующие
-                      сроки.
+                      сроки:
                       <List>
                         <ListItem>
                           <Typography variant="h6">
@@ -296,7 +290,7 @@ export default function Return_policy() {
                         <ListItem>
                           <Typography variant="h6">
                             2: На товар не установлен гарантийный срок — в
-                            течение разумного срока, но не более 1 мес.
+                            течение разумного срока, но не более 1 месяца.
                           </Typography>
                         </ListItem>
                       </List>
@@ -330,7 +324,7 @@ export default function Return_policy() {
                       свободной форме с указанием: Ф.И.О., адреса заявителя;
                       наименования лекарственного препарата, даты и места его
                       приобретения; обнаруженных недостатков; требования к
-                      продавцу. Потребитель также должен возвратить продавцу
+                      продавцу. Потребитель также должен возвратить продавцу
                       товар ненадлежащего качества для проведения проверки
                       качества.
                     </Typography>
@@ -343,7 +337,7 @@ export default function Return_policy() {
                       наличии). Этот экземпляр претензии остается у потребителя
                       в подтверждение его обращения к продавцу. При отказе
                       продавца принять претензию или проставить на втором ее
-                      экземпляре отметку о приеме рекомендуем направить
+                      экземпляре отметку о приеме рекомендуется направить
                       претензию заказным письмом с уведомлением о вручении и
                       описью вложения на юридический адрес продавца.
                     </Typography>
@@ -351,16 +345,16 @@ export default function Return_policy() {
                   <ListItem>
                     <Typography variant="h6">
                       При возврате покупки курьером или почтой сначала пришлите
-                      продавцу заявление на возврат товара. В заявлении укажите,
-                      каким способом вы хотите получить обратно деньги,
-                      и спросите, на какой адрес отправлять покупку. Заявление
-                      отправьте заказным письмом на юридический адрес продавца,
-                      а для ускорения продублируйте письмо по электронной почте.
+                      продавцу заявление на возврат товара. В заявлении укажите,
+                      каким способом вы хотите получить обратно деньги, и
+                      спросите, на какой адрес отправлять покупку. Заявление
+                      отправьте заказным письмом на юридический адрес продавца,
+                      а для ускорения продублируйте письмо по электронной почте.
                     </Typography>
                   </ListItem>
                   <ListItem>
                     <Typography variant="h6">
-                      После того как продавец подтвердит адрес и возможность
+                      После того как продавец подтвердит адрес и возможность
                       возврата, можно отправлять сам товар.
                     </Typography>
                   </ListItem>

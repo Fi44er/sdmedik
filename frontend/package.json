@@ -30,6 +30,7 @@
     "react-slick": "^0.30.2",
     "react-toastify": "^11.0.2",
     "react-yandex-maps": "^4.6.0",
+    "recharts": "^2.15.0",
     "slick-carousel": "^1.8.1",
     "styled-components": "^6.1.13",
     "swiper": "^11.1.15",

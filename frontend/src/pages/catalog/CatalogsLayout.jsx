@@ -5,7 +5,7 @@ import CatalogDynamicPage from "./components/CatalogDynamicPage";
 
 export default function CatalogsLayout() {
   return (
-    <Container>
+    <Container sx={{widh:"1540px"}}>
       <CatalogDynamicPage />
     </Container>
   );

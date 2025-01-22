@@ -1,4 +1,4 @@
-import React from "react"; // Импортируйте React
+import React, { useEffect, useState } from "react"; // Импортируйте React
 import { createBrowserRouter } from "react-router-dom"; // Убедитесь, что импортируете правильно
 import HomePage from "../pages/home/HomePage";
 import СategoriesPage from "../pages/categories/СategoriesPage";
@@ -21,6 +21,11 @@ import CreateCategory from "../pages/admin/create_category/CreateCategory";
 import AdminDashboard from "../pages/admin/AdminLayout";
 import UpdateProduct from "../pages/admin/update_product/UpdateProduct";
 import AdminCategoriesTable from "../pages/admin/components_admin_page/AdminCategoriesTable/AdminCategoriesTable";
+import axios from "axios";
+import useUserStore from "../store/userStore";
+import MainContent from "../pages/admin/components_admin_page/MainContent/MainContent";
+import AdminUserTable from "../pages/admin/components_admin_page/AdminUserTable/AdminUserTable";
+import AdminProductTable from "../pages/admin/components_admin_page/AdminProductTable/AdminProductTable";
 
 const UsersRoute = ({ children }) => {
   const isLoggedIn = Cookies.get("logged_in") === "true";
@@ -32,6 +37,35 @@ const UsersRoute = ({ children }) => {
 };
 
 export default UsersRoute;
+
+export const AdminRoute = ({ children }) => {
+  const { getUserInfo, user } = useUserStore();
+  const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      await getUserInfo();
+      setLoading(false);
+    };
+    fetchUserInfo();
+  }, [getUserInfo]);
+
+  useEffect(() => {
+    if (user?.data) {
+      setIsAdmin(user.data.role_id === 1);
+    }
+  }, [user]);
+
+  if (loading) {
+    return <div>Loading...</div>; // Можно добавить индикатор загрузки
+  }
+
+  if (!isAdmin) {
+    return <Navigate to="/" replace />;
+  }
+  return children;
+};
 
 export const router = createBrowserRouter([
   {
@@ -97,18 +131,16 @@ export const router = createBrowserRouter([
   },
   {
     path: `/Admin/*`,
-    element: <AdminDashboard />,
+    element: (
+      <AdminRoute>
+        <AdminDashboard />
+      </AdminRoute>
+    ),
   },
-  {
-    path: "/create_product",
-    element: <CreateProduct />,
-  },
-  {
-    path: "/update_product/:id",
-    element: <UpdateProduct />,
-  },
-  {
-    path: "/create_category",
-    element: <CreateCategory />,
-  },
+  // { path: "/", element: <MainContent /> },
+  // { path: "/create_product", element: <CreateProduct /> },
+  // { path: "/create_category", element: <CreateCategory /> },
+  // { path: "/table_category", element: <AdminCategoriesTable /> },
+  // { path: "/table_user", element: <AdminUserTable /> },
+  // { path: "/table_product", element: <AdminProductTable /> },
 ]);

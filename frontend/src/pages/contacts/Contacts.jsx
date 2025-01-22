@@ -51,7 +51,11 @@ export default function Contacts() {
       </Helmet>
       <Container>
         <Box sx={{ display: "flex", justifyContent: "center" }}>
-          <Typography component="h1" variant="h2">
+          <Typography
+            component="h1"
+            variant="h2"
+            sx={{ fontWeight: "bold", color: "#333" }}
+          >   
             Контакты
           </Typography>
         </Box>

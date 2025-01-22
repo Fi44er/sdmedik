@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const useBascketStore = create((set, get) => ({
   product: {
@@ -21,17 +22,31 @@ const useBascketStore = create((set, get) => ({
         }
       );
       // Обработка успешного ответа
-      console.log("Продукт создан:", response.data);
+      toast.success("Продукт добавлен в корзину");
+      console.log("Продукт добавлен в корзину:", response.data);
     } catch (error) {
       // Обработка ошибки
-      console.error("Ошибка при создании продукта:", error);
+      toast.error("Ошибка при создании продукта:", error);
+    }
+  },
+  editCountProductBascket: async (product_id, quantity) => {
+    try {
+      const response = await axios.post(
+        "http://localhost:8080/api/v1/basket",
+        { product_id, quantity },
+        {
+          withCredentials: true,
+        }
+      );
+      console.log("Продукт добавлен в корзину:", response.data);
+    } catch (error) {
+      // Обработка ошибки
       if (error.response.status === 401) {
         // Если статус 401, обновляем токены и повторяем запрос
-        // await get().refreshToken();
-        // await get().addProductThisBascket(product_id,
-        //     quantity,); // Повторяем запрос
+        await get().refreshToken();
+        await get().addProductThisBascket(product_id, quantity); // Повторяем запрос
       } else {
-        alert(
+        toast.error(
           "Ошибка при сохранении продукта: " +
             (error.response?.data?.message || error.message)
         );
@@ -44,9 +59,13 @@ const useBascketStore = create((set, get) => ({
         withCredentials: true,
       });
 
-      if (response && response.data) {
-        set({ basket: response.data });
-        get().fetchProductsByIds(response.data.items);
+      set({ basket: response.data });
+
+      if (response.status === 401) {  
+        // {{ edit_1 }}
+        // Если статус 401, обновляем токены и повторяем запрос
+        await get().refreshToken();
+        await get().fetchUserBasket();
       } else {
         throw new Error("No data in response");
       }
@@ -55,39 +74,47 @@ const useBascketStore = create((set, get) => ({
     }
   },
 
-  fetchProductsByIds: async (items) => {
-    if (Array.isArray(items) && items.length > 0) {
-      let products = [];
-      for (let item of items) {
-        try {
-          const response = await axios.get(
-            "http://localhost:8080/api/v1/product",
-            {
-              params: { id: item.toString() },
-            }
-          );
+  //   fetchProductsByIds: async (items) => {
+  //     if (Array.isArray(items) && items.length > 0) {
+  //       let products = [];
+  //       for (let item of items) {
+  //         try {
+  //           const response = await axios.get(
+  //             "http://localhost:8080/api/v1/product",
+  //             {
+  //               params: { id: item.toString() },
+  //             }
+  //           );
 
-          products.push(response.data);
-        } catch (error) {
-          console.error(`Error fetching product with ID ${item}:`, error);
-        }
-      }
-      set({ products });
-    } else {
-      console.warn("Items is not an array or is empty.");
-    }
-  },
+  //           products.push(response.data);
+  //         } catch (error) {
+  //           console.error(`Error fetching product with ID ${item}:`, error);
+  //         }
+  //       }
+  //       set({ products });
+  //     } else {
+  //       console.warn("Items is not an array or is empty.");
+  //     }
+  //   },
   deleteProductThithBasket: async (id) => {
     try {
       const response = await axios.delete(
         `http://localhost:8080/api/v1/basket/${id}`,
-        {},
         {
           withCredentials: true,
         }
       );
+      toast.success("Продукт удален из корзины");
+      if (error.response.status === 401) {
+        // Если статус 401, обновляем токены и повторяем запрос
+        await get().refreshToken();
+        await get().deleteProductThithBasket(id); // Повторяем запрос
+      } else {
+        throw new Error("No data in response");
+      }
     } catch (error) {
-      console.error("Error deleting basket:", error);
+      console.error("Ошибка при удалении продукта:");
+      // console.error("Error deleting basket:", error);
     }
   },
 

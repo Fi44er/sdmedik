@@ -1,6 +1,5 @@
 import {
   Box,
-  Button,
   Card,
   CardContent,
   CardHeader,
@@ -9,7 +8,7 @@ import {
   Typography,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import useBascketStore from "../../../store/bascketStore";
 
@@ -17,125 +16,133 @@ export default function Basket() {
   const {
     fetchUserBasket,
     basket,
-    products,
-    fetchProductsByIds,
     deleteProductThithBasket,
+    editCountProductBascket,
   } = useBascketStore();
 
-  const fetchUserBasketCards = () => {
-    if (
-      basket.data &&
-      Array.isArray(basket.data.items) &&
-      basket.data.items.length > 0
-    ) {
-      const items = basket.data.items.map((item) => item.product_id);
-      console.log(items);
-
-      fetchProductsByIds(items);
-    } else {
-      console.log("Data not available yet.");
-    }
-  };
+  const [currentProducts, setCurrentProducts] = useState([]);
 
   useEffect(() => {
     fetchUserBasket();
   }, []);
 
   useEffect(() => {
-    if (
-      basket.data &&
-      Array.isArray(basket.data.items) &&
-      basket.data.items.length > 0
-    ) {
-      fetchUserBasketCards();
-      console.log(products);
+    if (basket.data?.items) {
+      let normalizedProducts = Array.isArray(basket.data.items)
+        ? basket.data.items
+        : [basket.data.items];
+      setCurrentProducts(normalizedProducts);
     }
   }, [basket]);
 
-  const hendleDeleteProductBascasket = () => {
-        
-    deleteProductThithBasket(id);
+  const handleDeleteProductBasket = async (id) => {
+    await deleteProductThithBasket(id);
+    setCurrentProducts(currentProducts.filter((product) => product.id !== id));
+  };
+
+  const handleClick = async (product_id, action) => {
+    try {
+      // Изменяем количество товара
+      await editCountProductBascket(product_id, action === "plus" ? 1 : -1);
+
+      // Обновляем локальное состояние
+      setCurrentProducts((prevProducts) =>
+        prevProducts.map((product) =>
+          product.product_id === product_id
+            ? {
+                ...product,
+                quantity:
+                  action === "plus"
+                    ? product.quantity + 1
+                    : Math.max(product.quantity - 1, 1), // Убедитесь, что количество не меньше 1
+              }
+            : product
+        )
+      );
+    } catch (error) {
+      console.error("Ошибка при изменении количества товара:", error);
+    }
   };
 
   return (
-    <Box
-      sx={{
-        width: { xs: "100%", md: "64.5%" },
-        mb: 4,
-      }}
-    >
-      <Typography variant="h4">Корзина</Typography>
+    <Box sx={{ width: { xs: "100%", md: "64.5%" }, mb: 4 }}>
+      <Typography variant="h4" sx={{ mb: 2 }}>
+        Корзина
+      </Typography>
       <Grid
         container
-        spacing={{ xs: 2, md: 5 }}
+        spacing={2}
         columns={{ xs: 4, sm: 4, md: 4 }}
-        sx={{ mt: 4 }}
+        sx={{ mt: 2 }}
       >
-        {products.length > 0 &&
-          products.map((product) => (
-            <Grid item key={product.id} xs={1} sm={1} md={1}>
+        {currentProducts.length > 0 &&
+          currentProducts.map((product) => (
+            <Grid item key={product.product_id} xs={12} sm={6} md={4}>
               <Card
                 sx={{
-                  width: { xs: "100%", lg: "100%" },
-                  backgroundColor: "#F5FCFF",
                   display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  padding: { xs: 0, md: 3 },
-                  borderRadius: 4,
+                  flexDirection: "row",
+                  padding: 2,
+                  borderRadius: 2,
+                  boxShadow: 3,
+                  width: "600px",
                 }}
               >
-                {/* Изображение продукта */}
-                <Box
+                <CardMedia
+                  component="img"
+                  image={`http://127.0.0.1:8080/api/v1/image/${product.image}`}
+                  alt={product.title}
                   sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    marginRight: 2,
+                    width: 120,
+                    height: 120,
+                    objectFit: "contain",
+                    borderRadius: 1,
                   }}
-                >
+                />
+                <Box sx={{ flexGrow: 1, paddingLeft: 2 }}>
                   <CardHeader
-                    title={product.data.name}
-                    subheader={product.data.brand}
+                    title={product.name}
+                    subheader={product.brand}
+                    sx={{ paddingBottom: 0 }}
                   />
-                  <CardMedia
-                    component="img"
-                    image={`http://127.0.0.1:8080/api/v1/image/${product.data.images[0].name}`}
-                    alt={product.data.title}
-                    sx={{ width: "150px", height: "auto" }}
-                  />
-                </Box>
-
-                {/* Описание продукта */}
-                <CardContent
-                  sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "space-between",
-                    textAlign: "left",
-                    width: "50%",
-                  }}
-                >
-                  <Box sx={{ mt: 2 }}>
+                  <CardContent sx={{ paddingTop: 0 }}>
                     <Typography variant="h6">
-                      Цена: {product.data.price} ₽
+                      Цена: {product.price} ₽
                     </Typography>
                     <Typography variant="subtitle1">
-                      Артикул: {product.data.article}
+                      Количество: {product.quantity}
                     </Typography>
-                  </Box>
-                </CardContent>
-
-                {/* Кнопка удаления */}
-                <IconButton
-                  aria-label="удалить товар"
-                  color="error"
-                  size="large"
-                  onClick={() =>
-                    hendleDeleteProductBascasket(product.data.product_id)
-                  }
-                >
-                  <DeleteOutlineIcon fontSize="inherit" />
-                </IconButton>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        marginTop: 1,
+                      }}
+                    >
+                      <IconButton
+                        onClick={() => handleClick(product.product_id, "minus")}
+                        disabled={product.quantity <= 1}
+                      >
+                        -
+                      </IconButton>
+                      <Typography variant="body1" sx={{ mx: 1 }}>
+                        {product.quantity}
+                      </Typography>
+                      <IconButton
+                        onClick={() => handleClick(product.product_id, "plus")}
+                      >
+                        +
+                      </IconButton>
+                      <IconButton
+                        onClick={() => handleDeleteProductBasket(product.id)}
+                        color="error"
+                        sx={{ ml: 2 }}
+                      >
+                        <DeleteOutlineIcon />
+                      </IconButton>
+                    </Box>
+                  </CardContent>
+                </Box>
               </Card>
             </Grid>
           ))}

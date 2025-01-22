@@ -2,6 +2,7 @@ import { Box, Container, Grid, Paper, Typography } from "@mui/material";
 import AdminProductTable from "../AdminProductTable/AdminProductTable";
 import AdminCategoriesTable from "../AdminCategoriesTable/AdminCategoriesTable";
 import AdminUserTable from "../AdminUserTable/AdminUserTable";
+import AdminUsersDiagramm from "../AdminUsersDiagramm/AdminUsersDiagramm";
 
 const MainContent = () => {
   return (
@@ -14,7 +15,7 @@ const MainContent = () => {
         <AdminProductTable />
       </Box>
       <Box sx={{ mt: 5 }}>
-        <AdminUserTable />
+        <AdminUsersDiagramm />
       </Box>
     </Box>
   );
