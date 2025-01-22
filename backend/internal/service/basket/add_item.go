@@ -40,6 +40,12 @@ func (s *service) AddItem(ctx context.Context, data *dto.AddBasketItem, userID s
 		s.logger.Infof("basketItem.Quantity: %v", basketItem.Quantity)
 
 		basketItem.Quantity += data.Quantity
+		if basketItem.Quantity <= 0 {
+			if err := s.DeleteItem(ctx, basketItem.ID, userID); err != nil {
+				return err
+			}
+			return nil
+		}
 		s.logger.Infof("basketItem.Quantity: %v", basketItem.Quantity)
 		basketItem.TotalPrice = (*product)[0].Price * float64(basketItem.Quantity)
 		if err := s.basketItemRepo.UpdateItemQuantity(ctx, basketItem); err != nil {
