@@ -11,10 +11,10 @@ import {
 } from "@mui/material";
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import useAuthStore from "../../store/authStore";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import CloseIcon from "@mui/icons-material/Close";
+import useOrderStore from "../../store/orderStore";
 
 const scaleVariants = {
   hidden: {
@@ -32,7 +32,7 @@ const scaleVariants = {
   },
 };
 
-export default function Register() {
+export default function Paymants() {
   const {
     email,
     setEmail,
@@ -40,16 +40,9 @@ export default function Register() {
     setFio,
     phone_number,
     setPhone_number,
-    password,
-    setPassword,
-    registerFunc,
-    showConfirmation,
-    setShowConfirmation,
-    code,
-    setCode,
 
-    verifyFunc,
-  } = useAuthStore();
+    payOrder,
+  } = useOrderStore();
   const {
     register,
     handleSubmit,
@@ -57,18 +50,11 @@ export default function Register() {
   } = useForm();
 
   const [error, setError] = useState(null);
-  const navigate = useNavigate();
+  //   const navigate = useNavigate();
 
-  const handleRegister = async () => {
-    await registerFunc();
-  };
-
-  const handleConfirmationClose = () => {
-    setShowConfirmation(false);
-  };
-
-  const handleVerify = async () => {
-    await verifyFunc(navigate);
+  const handlePay = async () => {
+    await payOrder();
+    // window.location.href = response.data.data.id;
   };
 
   return (
@@ -95,9 +81,9 @@ export default function Register() {
               </Typography>
             </Box>
             <Box sx={{ display: "flex", flexDirection: "column", gridGap: 30 }}>
-              <Typography variant="h4">Регистрация</Typography>
+              <Typography variant="h4">Укажите контактные данные</Typography>
               <form
-                onSubmit={handleSubmit(handleRegister)}
+                onSubmit={handleSubmit(handlePay)}
                 style={{
                   display: "flex",
                   flexDirection: "column",
@@ -188,135 +174,18 @@ export default function Register() {
                     },
                   }}
                 />
-                <TextField
-                  variant="outlined"
-                  label="Пароль"
-                  type="password"
-                  {...register("password", {
-                    required: "Это поле обязательно для заполнения",
-                    minLength: {
-                      value: 6,
-                      message: "Пороль не может быть кароче 6 символов",
-                    },
-                  })}
-                  error={!!errors.password}
-                  helperText={errors.password ? errors.password.message : ""}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  sx={{
-                    "& .MuiOutlinedInput-root": {
-                      "&.Mui-focused fieldset": {
-                        borderColor: "#2CC0B3",
-                      },
-                    },
-                    "& .MuiInputLabel-root": {
-                      "&.Mui-focused": {
-                        color: "#2CC0B3",
-                      },
-                    },
-                  }}
-                />
                 <Button
                   type="submit"
                   variant="contained"
                   sx={{ background: "#2CC0B3" }}
                 >
-                  Зарегистрироваться
+                  Перейти к оплате
                 </Button>
               </form>
-            </Box>
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                gridGap: 10,
-                mt: 3,
-                mb: 3,
-                flexDirection: { xs: "column", md: "unset" },
-              }}
-            >
-              <Typography>У вас есть аккаунт?</Typography>
-              <Link href="/auth" sx={{ color: "#2CC0B3" }}>
-                Войти
-              </Link>
             </Box>
           </Container>
         </Paper>
       </motion.div>
-
-      <Modal
-        open={showConfirmation}
-        onClose={handleConfirmationClose}
-        aria-labelledby="confirmation-modal-title"
-        aria-describedby="confirmation-modal-description"
-        sx={{
-          width: { xs: "350px", md: "500px" },
-          position: "absolute",
-          top: 400,
-          left: { xs: 13, md: "37%" },
-        }}
-        disableRestoreFocus // добавьте эту строку
-        disableAutoFocus // добавьте эту строку
-        hideBackdrop={true} // добавьте эту строку
-      >
-        <Box sx={{ p: 4, bgcolor: "white", borderRadius: 2, boxShadow: 3 }}>
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gridGap: 15,
-              mb: 2,
-              justifyContent: "space-between", // добавьте эту строку
-            }}
-          >
-            <Box sx={{ display: "flex", alignItems: "center", gridGap: 15 }}>
-              <img src="/previwLogo.svg" alt="" />
-              <Typography variant="h6" sx={{ color: "#2CC0B3" }}>
-                Sdmedik
-              </Typography>
-            </Box>
-            <Button
-              variant="contained"
-              sx={{ mt: 2, background: "#2CC0B3" }}
-              onClick={handleConfirmationClose}
-            >
-              <CloseIcon />
-            </Button>
-          </Box>
-          <Typography id="confirmation-modal-title" variant="h6">
-            Подтверждение почты
-          </Typography>
-          <TextField
-            variant="outlined"
-            label="Введите код подтверждения"
-            placeholder="Код"
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
-            sx={{
-              mt: 2,
-              width: "100%",
-              "& .MuiOutlinedInput-root": {
-                "&.Mui-focused fieldset": {
-                  borderColor: "#2CC0B3",
-                },
-              },
-              "& .MuiInputLabel-root": {
-                "&.Mui-focused": {
-                  color: "#2CC0B3",
-                },
-              },
-            }}
-          />
-          <Button
-            variant="contained"
-            sx={{ mt: 2, background: "#2CC0B3" }}
-            onClick={handleVerify}
-          >
-            Подтвердить
-          </Button>
-        </Box>
-      </Modal>
     </Box>
   );
 }

@@ -48,11 +48,10 @@ export default function PromotionalSlider() {
       <Slider {...settings}>
         {slides.map((slide, index) => (
           <Box
-            key={index}
+            component="section"
             sx={{
               display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
+              justifyContent: "space-between",
               background: `linear-gradient(280.17deg, #00B3A4 -56.17%, #66D1C6 100%)`,
               borderRadius: "10px",
               padding: { xs: "20px", lg: "70px" },
@@ -61,8 +60,14 @@ export default function PromotionalSlider() {
             <Box
               sx={{
                 display: "flex",
-                flexDirection: { xs: "column", lg: "unset" },
-                gridGap: { xs: "40px", lg: 0 },
+                flexDirection: {
+                  xs: "column",
+                  sm: "unset",
+                  md: "unset",
+                  lg: "unset",
+                },
+                justifyContent: { xs: "unset", md: "space-between" },
+                gridGap: { xs: "40px", md: 60, lg: 0 },
               }}
             >
               <Box
@@ -78,10 +83,11 @@ export default function PromotionalSlider() {
                   color="white"
                   sx={{ fontSize: { xs: "40px", lg: "60px" } }}
                 >
-                  {slide.title}
+                  Оплата электронным сертификатом
                 </Typography>
                 <Typography variant="h6" color="white" component="p">
-                  {slide.description}
+                  Теперь оплачивать покупки на нашем сайте вы можете и
+                  электронным сертификатом
                 </Typography>
                 <Button
                   sx={{
@@ -95,20 +101,25 @@ export default function PromotionalSlider() {
                   }}
                   onClick={(e) => {
                     e.preventDefault();
-                    window.location.href = slide.link;
+                    window.location.href = "/certificate";
                   }}
                 >
                   Подробнее
                 </Button>
               </Box>
-              <Box sx={{ width: { xs: "100%", lg: "50%" } }}>
+              <Box sx={{ width: { xs: "100%", md: "100%", lg: "50%" } }}>
                 <CardMedia
                   component="img"
-                  image={slide.image}
-                  alt={slide.altText}
+                  image="/public/Group 31.png"
+                  alt="Изображение, иллюстрирующее оплату электронным сертификатом"
                   sx={{
-                    width: "400px",
-                    height: { xs: "300px", sm: "300px", md: "400px" },
+                    width: { xs: "100%", sm: "50%", md: "80%", lg: "100%" },
+                    height: {
+                      xs: "300px",
+                      sm: "300px",
+                      md: "350px",
+                      lg: "400px",
+                    },
                     objectFit: "cover",
                   }}
                 />

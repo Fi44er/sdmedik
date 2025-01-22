@@ -94,9 +94,9 @@ export default function CatalogDynamicPage() {
                   display: "flex",
                   flexDirection: "column",
                 }}
-                onClick={() => {
-                  window.location.href = `/product/${e.id}`;
-                }}
+                // onClick={() => {
+                //   window.location.href = `/product/${e.id}`;
+                // }}
               >
                 <Box
                   sx={{
@@ -190,9 +190,8 @@ export default function CatalogDynamicPage() {
                     Подробнее
                   </Button>
                   <IconButton
-                    onClick={(event) => {
+                    onClick={() => {
                       hendleAddProductThithBascket(e.id);
-                      console.log(event);
                     }}
                   >
                     <img

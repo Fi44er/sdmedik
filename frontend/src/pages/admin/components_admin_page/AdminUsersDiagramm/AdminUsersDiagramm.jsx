@@ -58,6 +58,9 @@ export default function AdminUsersDiagramm() {
             />
           </LineChart>
         </ResponsiveContainer>
+        <Typography sx={{ fontSize: "20px", mb: 2, mt: 2, color: "green" }}>
+          Всего пользователей : ({users?.data?.count || 0}){" "}
+        </Typography>
       </Paper>
     </Box>
   );

@@ -26,6 +26,7 @@ import useUserStore from "../store/userStore";
 import MainContent from "../pages/admin/components_admin_page/MainContent/MainContent";
 import AdminUserTable from "../pages/admin/components_admin_page/AdminUserTable/AdminUserTable";
 import AdminProductTable from "../pages/admin/components_admin_page/AdminProductTable/AdminProductTable";
+import Paymants from "../pages/paymants/Paymants";
 
 const UsersRoute = ({ children }) => {
   const isLoggedIn = Cookies.get("logged_in") === "true";
@@ -122,6 +123,10 @@ export const router = createBrowserRouter([
     element: <Register />,
   },
   {
+    path: "/paymants",
+    element: <Paymants />,
+  },
+  {
     path: "/profile",
     element: (
       <UsersRoute>
@@ -137,10 +142,4 @@ export const router = createBrowserRouter([
       </AdminRoute>
     ),
   },
-  // { path: "/", element: <MainContent /> },
-  // { path: "/create_product", element: <CreateProduct /> },
-  // { path: "/create_category", element: <CreateCategory /> },
-  // { path: "/table_category", element: <AdminCategoriesTable /> },
-  // { path: "/table_user", element: <AdminUserTable /> },
-  // { path: "/table_product", element: <AdminProductTable /> },
 ]);

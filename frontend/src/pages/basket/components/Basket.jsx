@@ -59,6 +59,7 @@ export default function Basket() {
             : product
         )
       );
+      await fetchUserBasket();
     } catch (error) {
       console.error("Ошибка при изменении количества товара:", error);
     }
@@ -81,11 +82,11 @@ export default function Basket() {
               <Card
                 sx={{
                   display: "flex",
-                  flexDirection: "row",
+                  flexDirection: { xs: "column", md: "row" },
                   padding: 2,
                   borderRadius: 2,
                   boxShadow: 3,
-                  width: "600px",
+                  width: { xs: "100%", md: 600 },
                 }}
               >
                 <CardMedia

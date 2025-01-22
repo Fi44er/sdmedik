@@ -1,22 +1,9 @@
-import {
-  Box,
-  Button,
-  Container,
-  InputBase,
-  Paper,
-  Typography,
-} from "@mui/material";
-import React, { useEffect } from "react";
+import { Box, Button, Container, Paper, Typography } from "@mui/material";
+import React from "react";
 import useBascketStore from "../../../store/bascketStore";
 
 export default function RightBar() {
-  const {
-    fetchUserBasket,
-    basket,
-    products,
-    fetchProductsByIds,
-    deleteProductThithBasket,
-  } = useBascketStore();
+  const { basket } = useBascketStore();
 
   return (
     <Box
@@ -25,33 +12,21 @@ export default function RightBar() {
         width: { xs: "100%", md: "29.5%" },
       }}
     >
-      <Paper sx={{}}>
-        <Container
-          sx={{
-            pt: 5,
-            pb: 5,
-          }}
-        >
-          <Typography variant="h5" sx={{ textAlign: "center" }}>
+      <Paper sx={{ padding: 3, borderRadius: 2, boxShadow: 3 }}>
+        <Container>
+          <Typography
+            variant="h5"
+            sx={{ textAlign: "center", fontWeight: "bold" }}
+          >
             Оформление заказа
           </Typography>
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              mt: "20px",
-            }}
-          >
-            <Box>
-              <Typography>
-                Итого товаров в корзине : {basket.data && basket.data.quantity}
-              </Typography>
-            </Box>
-            <Box>
-              <Typography>
-                Общая сумма заказа : {basket.data && basket.data.total_price} ₽
-              </Typography>
-            </Box>
+          <Box sx={{ mt: 2 }}>
+            <Typography>
+              Итого товаров в корзине: {basket.data && basket.data.quantity}
+            </Typography>
+            <Typography variant="h6" sx={{ color: "#00B3A4", mt: 1 }}>
+              Общая сумма заказа: {basket.data && basket.data.total_price} ₽
+            </Typography>
           </Box>
           <Box
             sx={{
@@ -65,9 +40,16 @@ export default function RightBar() {
               variant="contained"
               sx={{
                 background: "#00B3A4",
+                "&:hover": {
+                  background: "#009B8A",
+                },
+              }}
+              onClick={(e) => {
+                e.preventDefault();
+                window.location.href = "/paymants";
               }}
             >
-              Перейти к оплате
+              Продолжить
             </Button>
           </Box>
         </Container>

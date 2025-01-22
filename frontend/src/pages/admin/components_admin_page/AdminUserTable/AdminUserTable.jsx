@@ -20,6 +20,7 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
+  ResponsiveContainer,
 } from "recharts";
 import useUserStore from "../../../../store/userStore";
 
@@ -59,35 +60,33 @@ const AdminUserTable = () => {
       <Typography sx={{ fontSize: "30px", mb: 2, mt: 2 }}>
         Таблица с пользователями
       </Typography>
-      <Paper sx={{ p: 2, mb: 2, width: "max-content" }}>
+      {/* Диаграмма роста пользователей */}
+      <Paper sx={{ p: 2, mb: 2 }}>
+        <Typography sx={{ fontSize: "20px", mb: 2, fontWeight: "bold" }}>
+          Рост пользователей
+        </Typography>
+        <ResponsiveContainer width="100%" height={300}>
+          <LineChart
+            data={userGrowthData}
+            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" stroke="#ccc" />
+            <XAxis dataKey="name" />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <Line
+              type="monotone"
+              dataKey="count"
+              stroke="#4CAF50" // Зелёный цвет
+              strokeWidth={2}
+              activeDot={{ r: 8 }}
+            />
+          </LineChart>
+        </ResponsiveContainer>
         <Typography sx={{ fontSize: "20px", mb: 2, mt: 2, color: "green" }}>
           Всего пользователей : ({users?.data?.count || 0}){" "}
         </Typography>
-      </Paper>
-
-      {/* Диаграмма роста пользователей */}
-      <Paper sx={{ p: 2, mb: 2 }}>
-        <Typography sx={{ fontSize: "20px", mb: 2 }}>
-          Рост пользователей
-        </Typography>
-        <LineChart
-          width={500}
-          height={300}
-          data={userGrowthData}
-          margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
-          <YAxis />
-          <Tooltip />
-          <Legend />
-          <Line
-            type="monotone"
-            dataKey="count"
-            stroke="#8884d8"
-            activeDot={{ r: 8 }}
-          />
-        </LineChart>
       </Paper>
 
       <Paper sx={{ width: "100%" }}>
