@@ -28,7 +28,8 @@ type ICategoryRepository interface {
 type IProductRepository interface {
 	Create(ctx context.Context, data *model.Product, tx *gorm.DB) error
 	Delete(ctx context.Context, id string, tx *gorm.DB) error
-	Update(ctx context.Context, data *model.Product) error
+	Update(ctx context.Context, data *model.Product, tx *gorm.DB) error
+	DeleteCategoryAssociation(ctx context.Context, productID string, tx *gorm.DB) error
 
 	Get(ctx context.Context, criteria dto.ProductSearchCriteria) (*[]model.Product, error)
 	GetByIDs(ctx context.Context, ids []string) (*[]model.Product, error)

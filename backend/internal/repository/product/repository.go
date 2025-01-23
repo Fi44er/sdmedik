@@ -37,6 +37,28 @@ func NewRepository(
 	}
 }
 
+func (r *repository) DeleteCategoryAssociation(ctx context.Context, productID string, tx *gorm.DB) error {
+	r.logger.Infof("Deleting category association for product with ID: %s...", productID)
+	db := tx
+	if db == nil {
+		db = r.db
+	}
+
+	modelProduct := new(model.Product)
+	if err := db.Preload("Categories").First(modelProduct, "id = ?", productID).Error; err != nil {
+		r.logger.Errorf("Failed to fetch product: %v", err)
+		return err
+	}
+
+	// Удаляем все текущие категории продукта
+	if err := db.Model(modelProduct).Association("Categories").Clear(); err != nil {
+		r.logger.Errorf("Failed to clear categories association: %v", err)
+		return err
+	}
+
+	return nil
+}
+
 func (r *repository) Create(ctx context.Context, data *model.Product, tx *gorm.DB) error {
 	r.logger.Info("Creating product...")
 
@@ -54,21 +76,18 @@ func (r *repository) Create(ctx context.Context, data *model.Product, tx *gorm.D
 	return nil
 }
 
-func (r *repository) Update(ctx context.Context, data *model.Product) error {
+func (r *repository) Update(ctx context.Context, data *model.Product, tx *gorm.DB) error {
 	r.logger.Info("Updating product...")
 
-	r.logger.Infof("product: %+v", data)
-	// panic(1)
-	result := r.db.WithContext(ctx).Model(data).Updates(data)
+	db := tx
+	if db == nil {
+		db = r.db
+	}
+	result := db.WithContext(ctx).Model(data).Updates(data)
 	if err := result.Error; err != nil {
 		r.logger.Errorf("Failed to update product: %v", err)
 		return err
 	}
-
-	// if result.RowsAffected == 0 {
-	// 	r.logger.Warnf("Product with ID %s not found", data.ID)
-	// 	return constants.ErrProductNotFound
-	// }
 
 	r.logger.Info("Product updated successfully")
 	return nil
