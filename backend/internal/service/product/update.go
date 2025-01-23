@@ -59,10 +59,6 @@ func (s *service) Update(ctx context.Context, data *dto.UpdateProduct, images *d
 			continue
 		}
 
-		if fieldName == "Categories" {
-			continue
-		}
-
 		if !field.IsZero() {
 			modelField := modelValue.FieldByName(fieldName)
 			if modelField.IsValid() && modelField.CanSet() {
@@ -71,7 +67,12 @@ func (s *service) Update(ctx context.Context, data *dto.UpdateProduct, images *d
 		}
 	}
 
-	if err := s.repo.Update(ctx, modelProduct); err != nil {
+	if err := s.repo.DeleteCategoryAssociation(ctx, id, tx); err != nil {
+		s.transactionManagerRepo.Rollback(tx)
+		return err
+	}
+
+	if err := s.repo.Update(ctx, modelProduct, tx); err != nil {
 		if errors.Is(err, constants.ErrProductNotFound) {
 			s.transactionManagerRepo.Rollback(tx)
 			return custom_errors.New(404, "Product not found")

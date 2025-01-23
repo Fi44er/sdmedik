@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"log"
 	"strconv"
 
 	"github.com/Fi44er/sdmedik/backend/internal/dto"
@@ -18,6 +19,7 @@ func ValidateCharacteristicValue(categories []model.Category, values []dto.Chara
 
 	for _, value := range values {
 		characteristicType, _ := characteristicsMap[value.CharacteristicID]
+		log.Printf("%+v", categories)
 		switch characteristicType {
 		case "string":
 			continue
