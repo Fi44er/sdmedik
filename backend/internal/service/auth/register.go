@@ -44,8 +44,6 @@ func (s *service) Register(ctx context.Context, dto *dto.Register) error {
 		return err
 	}
 
-	s.SendCode(ctx, dto.Email)
-
 	hashEmail, err := utils.HashString(dto.Email)
 	if err != nil {
 		s.logger.Errorf("Error during generating hash: %s", err.Error())
@@ -62,6 +60,8 @@ func (s *service) Register(ctx context.Context, dto *dto.Register) error {
 		s.logger.Errorf("Error during caching temp user data: %s", err.Error())
 		return err
 	}
+
+	s.SendCode(ctx, dto.Email)
 
 	return nil
 }
