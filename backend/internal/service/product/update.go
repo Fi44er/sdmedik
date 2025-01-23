@@ -47,6 +47,7 @@ func (s *service) Update(ctx context.Context, data *dto.UpdateProduct, images *d
 	}()
 
 	modelProduct.ID = id
+	modelProduct.Categories = *categories
 
 	dataValue := reflect.ValueOf(data).Elem()
 	modelValue := reflect.ValueOf(modelProduct).Elem()
@@ -55,6 +56,10 @@ func (s *service) Update(ctx context.Context, data *dto.UpdateProduct, images *d
 		fieldName := dataValue.Type().Field(i).Name
 
 		if fieldName == "CharacteristicValues" {
+			continue
+		}
+
+		if fieldName == "Categories" {
 			continue
 		}
 

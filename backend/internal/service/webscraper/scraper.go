@@ -103,6 +103,7 @@ func (s *service) Scraper() error {
 				Name:    product.Name,
 			}
 			err := s.productService.Create(ctx, &productDto, nil)
+			s.logger.Logger.Infof("productDto: %v", productDto)
 			if err != nil {
 				if !errors.Is(err, constants.ErrProductWithArticleConflict) {
 					return err

@@ -60,16 +60,18 @@ func (r *repository) Create(ctx context.Context, data *model.Product, tx *gorm.D
 func (r *repository) Update(ctx context.Context, data *model.Product) error {
 	r.logger.Info("Updating product...")
 
+	r.logger.Infof("product: %+v", data)
+	// panic(1)
 	result := r.db.WithContext(ctx).Model(data).Updates(data)
 	if err := result.Error; err != nil {
 		r.logger.Errorf("Failed to update product: %v", err)
 		return err
 	}
 
-	if result.RowsAffected == 0 {
-		r.logger.Warnf("Product with ID %s not found", data.ID)
-		return constants.ErrProductNotFound
-	}
+	// if result.RowsAffected == 0 {
+	// 	r.logger.Warnf("Product with ID %s not found", data.ID)
+	// 	return constants.ErrProductNotFound
+	// }
 
 	r.logger.Info("Product updated successfully")
 	return nil
