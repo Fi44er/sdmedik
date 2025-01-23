@@ -50,3 +50,12 @@ type ProductPopularity struct {
 	ProductID  string `gorm:"column:product_id" json:"product_id"`
 	OrderCount int    `gorm:"column:order_count" json:"order_count"`
 }
+
+type TopProductRes struct {
+	ID         string  `json:"id"`
+	Price      float64 `json:"price"`
+	OrderCount int     `json:"order_count"`
+	Article    string  `json:"article"`
+	Image      string  `json:"image"`
+	Name       string  `json:"name"`
+}
