@@ -2,11 +2,8 @@ package product
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
 	"reflect"
 	"strconv"
-	"time"
 
 	// "strconv"
 
@@ -185,20 +182,9 @@ func (r *repository) GetByIDs(ctx context.Context, ids []string) (*[]model.Produ
 }
 
 func (r *repository) GetTopProducts(ctx context.Context, limit int) ([]response.ProductPopularity, error) {
-	cacheKey := "top_products"
 	var topProducts []response.ProductPopularity
 
-	// Попробуйте получить данные из кэша
-	topProduct, err := r.cache.Get(ctx, cacheKey).Result()
-	if err == nil {
-		if err := json.Unmarshal([]byte(topProduct), &topProducts); err != nil {
-			return nil, err
-		}
-		return topProducts, nil
-	}
-
-	// Если данных в кэше нет, выполните запрос к базе данных
-	err = r.db.WithContext(ctx).
+	err := r.db.WithContext(ctx).
 		Model(&model.OrderItem{}).
 		Select("product_id, COUNT(*) as order_count").
 		Group("product_id").
@@ -208,16 +194,6 @@ func (r *repository) GetTopProducts(ctx context.Context, limit int) ([]response.
 
 	if err != nil {
 		return nil, err
-	}
-
-	jsonData, err := json.Marshal(topProducts)
-	if err != nil {
-		return nil, fmt.Errorf("failed to marshal top products: %w", err)
-	}
-
-	// Сохраните JSON-строку в кэше
-	if err := r.cache.Set(ctx, cacheKey, jsonData, time.Hour).Err(); err != nil {
-		r.logger.Errorf("Failed to cache top products: %v", err)
 	}
 
 	return topProducts, nil
