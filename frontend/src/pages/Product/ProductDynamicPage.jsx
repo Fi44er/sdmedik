@@ -10,6 +10,8 @@ import {
   List,
   ListItem,
   CardMedia,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import { ArrowBack, ArrowForward } from "@mui/icons-material";
 import React, { useEffect, useState } from "react";
@@ -18,13 +20,15 @@ import "swiper/swiper-bundle.css"; // Импорт стилей Swiper
 import useProductStore from "../../store/productStore";
 import { useParams } from "react-router-dom";
 import useBascketStore from "../../store/bascketStore";
+import Regions from "../../constants/regionsData/regions";
 
 export default function ProductDetailPage() {
   const [mainImageIndex, setMainImageIndex] = useState(0);
   const [images, setImages] = useState([]);
   const { fetchProductById, products } = useProductStore();
   const { addProductThisBascket } = useBascketStore();
-   const [quantity, setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState(1);
+  const [newRegion, setNewRegion] = useState("Выберите регион");
   const { id } = useParams();
 
   useEffect(() => {
@@ -58,13 +62,35 @@ export default function ProductDetailPage() {
     await addProductThisBascket(product_id, quantity);
   };
 
+  const hendleChangeRegion = (event) => {
+    setNewRegion(event.target.value);
+  };
+
+  const handleGetCertificate = async () => {
+    const iso = newRegion;
+    fetchProductById(id, iso);
+  };
+
+  const renderFeatureValue = (value) => {
+    // Преобразуем строковые значения в булевы
+    if (value === "true") {
+      return "Есть";
+    } else if (value === "false") {
+      return "Нету";
+    } else if (value === null || value === undefined || value === "") {
+      return "Нет данных"; // Обработка случая, когда значение отсутствует
+    }
+    return value; // Возвращаем значение, если оно не булевое
+  };
+
   return (
     <Container sx={{ mt: 5, mb: 5 }}>
-      <Box
+      <Paper
         sx={{
           display: "flex",
           justifyContent: "space-between",
           flexDirection: { xs: "column", sm: "column", md: "unset" },
+          p: 2,
         }}
       >
         {/* Основная картинка с слайдером */}
@@ -95,6 +121,7 @@ export default function ProductDetailPage() {
                     style={{
                       width: { xs: 300, sm: 350, md: 400 },
                       height: { xs: 300, sm: 350, md: 400 },
+                      borderRadius:10,
                       objectFit: "cover",
                     }}
                   />
@@ -133,14 +160,14 @@ export default function ProductDetailPage() {
                     margin: 1,
                   }}
                 >
-                  <img
-                    src={`http://127.0.0.1:8080/api/v1/image/${image.name}`}
+                  <CardMedia
+                    image={`http://127.0.0.1:8080/api/v1/image/${image.name}`}
                     alt={`Thumbnail ${index + 1}`}
-                    style={{
-                      width: 100,
-                      height: 100,
+                    sx={{
+                      width: { xs: "50px", lg: "100px" },
+                      height: { xs: "50px", lg: "100px" },
                       objectFit: "cover",
-                      borderRadius: "10px",
+                      borderRadius: "5px",
                     }}
                   />
                 </Button>
@@ -152,13 +179,52 @@ export default function ProductDetailPage() {
         <Box sx={{ width: { xs: "100%", sm: "100%", md: "50%" } }}>
           {products.data ? (
             <Box>
-              <Typography variant="h5">
-                Название товара : {products.data.name}
+              <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+                {products.data.name}
               </Typography>
-              <Typography variant="subtitle1">
+              <Typography variant="subtitle1" sx={{ color: "gray" }}>
                 Артикул: {products.data.article}
               </Typography>
-              <Typography variant="h5">{products.data.price} р </Typography>
+              <Box
+                sx={{
+                  display: "flex",
+                  gridGap: 20,
+                  mt: 2,
+                  mb: 2,
+                  flexDirection: { xs: "column" },
+                }}
+              >
+                <Select
+                  value={newRegion}
+                  onChange={hendleChangeRegion}
+                  sx={{ minWidth: 200 }}
+                >
+                  <MenuItem value="Выберите регион">
+                    <em>Выберите регион</em>
+                  </MenuItem>
+                  {Regions.map((region) => (
+                    <MenuItem key={region.value} value={region.value}>
+                      {region.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+                <Button
+                  variant="outlined"
+                  onClick={() => {
+                    handleGetCertificate();
+                  }}
+                  sx={{ border: `2px solid #00B3A4`, color: "#00B3A4" }}
+                >
+                  Узнать стоимость сертификатом
+                </Button>
+              </Box>
+
+              <Typography variant="h5" sx={{ color: "#00B3A4" }}>
+                Цена: {products.data.price} р
+              </Typography>
+              <Typography variant="h5" sx={{ color: "#00B3A4" }}>
+                Стоимость сертификатом: {products.data.certificate_price} р
+              </Typography>
               {/* Other components */}
             </Box>
           ) : (
@@ -192,7 +258,7 @@ export default function ProductDetailPage() {
               {products.data?.characteristic?.map((feature, index) => (
                 <ListItem key={index}>
                   <Typography>
-                    {feature.name} : {feature.value}
+                    {feature.name} : {renderFeatureValue(feature.value)}
                   </Typography>
                 </ListItem>
               ))}
@@ -200,14 +266,13 @@ export default function ProductDetailPage() {
           </Box>
           <Divider sx={{ marginY: 2 }} />
         </Box>
-      </Box>
-      {/*Описание*/}
-
-      <Box sx={{ marginTop: 2 }}>
-        <Typography variant="h6">Описание:</Typography>
+      </Paper>
+      <Paper sx={{ marginTop: 4, p: 2 }}>
+        <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+          Описание товара:
+        </Typography>
         <Typography>{products.data?.description}</Typography>
-      </Box>
-      {/* Отзывы */}
+      </Paper>
     </Container>
   );
 }

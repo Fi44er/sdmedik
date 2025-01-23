@@ -40,15 +40,14 @@ Date.prototype.getWeek = function () {
 };
 
 const AdminOrdersTable = () => {
-  const { fetchOrders, orders } = useOrderStore();
+  const { fetchOrders, orders, changeStatus } = useOrderStore();
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
   const [statusFilter, setStatusFilter] = useState("");
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [timeFrame, setTimeFrame] = useState("month"); // Новое состояние для промежутка времени
-  const [StatusChange, setStatusChange] = useState();
-
+  const [newStatuses, setNewStatuses] = useState({});
   useEffect(() => {
     fetchOrders();
   }, []);
@@ -90,7 +89,14 @@ const AdminOrdersTable = () => {
     setSelectedOrder(null);
   };
 
-  const handleStatusChange = () => {}
+  const handleStatusChange = async (order_id) => {
+    const status = newStatuses[order_id]; // Получаем статус для конкретного заказа
+    if (status) {
+      await changeStatus(order_id, status); // Передаем id и новый статус
+      setNewStatuses((prev) => ({ ...prev, [order_id]: "" })); // Сбрасываем состояние для этого заказа
+    }
+    fetchOrders();
+  };
 
   // Подсчет количества заказов и прибыли по месяцам
   const orderStatsByMonth = filteredOrders.reduce((acc, order) => {
@@ -171,7 +177,7 @@ const AdminOrdersTable = () => {
   return (
     <Box sx={{ padding: 2 }}>
       <Typography sx={{ fontSize: "30px", mb: 2, mt: 2 }}>
-        Таблица заказов
+        Таблица заказов и аналитикаческих данных
       </Typography>
 
       <FormControl variant="outlined" sx={{ mb: 2, minWidth: 120 }}>
@@ -185,6 +191,7 @@ const AdminOrdersTable = () => {
             <em>Все</em>
           </MenuItem>
           <MenuItem value="pending">В ожидании</MenuItem>
+          <MenuItem value="processing">Рассмотрен</MenuItem>
           <MenuItem value="completed">Завершен</MenuItem>
           <MenuItem value="canceled">Отменен</MenuItem>
         </Select>
@@ -210,7 +217,7 @@ const AdminOrdersTable = () => {
           Количество заказов по статусам и росту ({timeFrame})
         </Typography>
         <ResponsiveContainer width="100%" height={300}>
-          <LineChart
+          <BarChart
             data={orderData}
             margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
           >
@@ -227,14 +234,15 @@ const AdminOrdersTable = () => {
             <YAxis />
             <Tooltip />
             <Legend />
-            <Line
+            <Bar
               type="monotone"
               dataKey="count"
-              stroke="#4CAF50" // Зелёный цвет
+              fill="#4CAF50" // Зелёный цвет для количества заказов
               strokeWidth={2}
+              barSize={20}
               activeDot={{ r: 8 }}
             />
-          </LineChart>
+          </BarChart>
         </ResponsiveContainer>
       </Box>
 
@@ -244,7 +252,7 @@ const AdminOrdersTable = () => {
           Прибыль по статусам и росту ({timeFrame})
         </Typography>
         <ResponsiveContainer width="100%" height={300}>
-          <LineChart
+          <BarChart
             data={orderData}
             margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
           >
@@ -261,14 +269,15 @@ const AdminOrdersTable = () => {
             <YAxis />
             <Tooltip />
             <Legend />
-            <Line
+            <Bar
               type="monotone"
               dataKey="total"
-              stroke="#82ca9d" // Светло-зелёный цвет
+              fill="#82ca9d" // Светло-зелёный цвет
               strokeWidth={2}
+              barSize={20}
               activeDot={{ r: 8 }}
             />
-          </LineChart>
+          </BarChart>
         </ResponsiveContainer>
       </Box>
 
@@ -370,20 +379,26 @@ const AdminOrdersTable = () => {
                         Корзина
                       </Button>
                     </TableCell>
-                    <TableCell>
+                    <TableCell sx={{ display: "flex", gridGap: 5 }}>
                       <Select
-                        value={order.status}
-                        onChange={setStatusChange}
-                        label={order.status}
+                        value={newStatuses[order.id] || order.status} // Используем статус из newStatuses или текущий статус
+                        onChange={(e) =>
+                          setNewStatuses((prev) => ({
+                            ...prev,
+                            [order.id]: e.target.value, // Обновляем статус для конкретного заказа
+                          }))
+                        }
+                        label="Статус"
                       >
-                        <MenuItem value="В обработке">В обработке</MenuItem>
+                        <MenuItem value={order.status}>{order.status}</MenuItem>
+                        <MenuItem value="pending">В ожидании</MenuItem>
+                        <MenuItem value="processing">Рассмотрен</MenuItem>
                         <MenuItem value="completed">Завершен</MenuItem>
-                        <MenuItem value="В обработке">В обработке</MenuItem>
-                        <MenuItem value="Выполнен">Выполнен</MenuItem>
+                        <MenuItem value="canceled">Отменен</MenuItem>
                       </Select>
                       <Button
                         variant="contained"
-                        onClick={() => handleStatusChange()}
+                        onClick={() => handleStatusChange(order.id)} // Передаем id заказа
                       >
                         Сохранить
                       </Button>

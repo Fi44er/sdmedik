@@ -52,17 +52,17 @@ export default function TopList() {
       >
         <img style={{ width: "100%" }} src="/public/Line 1.png" alt="Линия" />
         <Box sx={{ mt: 3 }}>
-          <header>
-            <Typography
-              variant="h5"
-              color="Black"
-              sx={{
-                mb: 4,
-              }}
-            >
-              Лучшие товары
-            </Typography>
-          </header>
+          {/* <header> */}
+          <Typography
+            variant="h5"
+            color="Black"
+            sx={{
+              mb: 4,
+            }}
+          >
+            Лучшие товары
+          </Typography>
+          {/* </header> */}
           <Grid
             container
             spacing={{ xs: 2, md: 4, lg: 2 }}

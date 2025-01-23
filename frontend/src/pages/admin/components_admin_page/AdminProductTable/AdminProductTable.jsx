@@ -108,7 +108,7 @@ const AdminProductTable = () => {
                         color="info"
                         onClick={(e) => {
                           e.preventDefault();
-                          window.location.href = `/update_product/${product.id}`;
+                          window.location.href = `/admin/update_product/${product.id}`;
                         }}
                       >
                         редактировать
@@ -157,7 +157,7 @@ const AdminProductTable = () => {
                     color="info"
                     onClick={(e) => {
                       e.preventDefault();
-                      window.location.href = `/update_product/${product.id}`;
+                      window.location.href = `/admin/update_product/${product.id}`;
                     }}
                   >
                     редактировать

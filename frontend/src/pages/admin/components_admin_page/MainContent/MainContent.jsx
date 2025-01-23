@@ -12,9 +12,8 @@ const MainContent = () => {
         <AdminOrdersTable />
       </Box>
 
-      <Box sx={{ mt: 5 }}>
-        <AdminProductTable />
-      </Box>
+      {/* <Box sx={{ mt: 5 }}>
+      </Box> */}
       <Box sx={{ mt: 5 }}>
         <AdminUsersDiagramm />
       </Box>

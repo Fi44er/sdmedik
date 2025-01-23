@@ -83,7 +83,7 @@ export default function CatalogDynamicPage() {
                 sx={{
                   width: { xs: "100%", lg: "261px" },
                   height: "520px",
-                  background: "#FFFFFF",
+                  background: "#F5FCFF",
                   boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
                   borderRadius: "8px",
                   transition: "transform 0.2s, box-shadow 0.2s",

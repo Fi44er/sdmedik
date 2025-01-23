@@ -220,9 +220,9 @@ export default function Register() {
                   type="submit"
                   variant="contained"
                   sx={{ background: "#2CC0B3" }}
-                  onClick={(e) => {
-                    handleRegister();
-                  }}
+                  // onClick={(e) => {
+                  //   handleRegister();
+                  // }}
                 >
                   Зарегистрироваться
                 </Button>

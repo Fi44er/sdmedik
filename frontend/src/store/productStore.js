@@ -105,10 +105,10 @@ const useProductStore = create((set, get) => ({
       console.error("Error fetching product:", error);
     }
   },
-  fetchProductById: async (id, name) => {
+  fetchProductById: async (id, iso) => {
     try {
       const response = await axios.get(`http://localhost:8080/api/v1/product`, {
-        params: { id: id },
+        params: { id: id, iso: iso },
       });
       set({ products: response.data });
     } catch (error) {

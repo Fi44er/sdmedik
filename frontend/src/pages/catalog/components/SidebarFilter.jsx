@@ -229,7 +229,13 @@ const SidebarFilter = ({ setFilters }) => {
                             }
                           />
                         }
-                        label={value}
+                        label={
+                          typeof value === "boolean" ? (
+                            <>{value ? "Есть" : "Нету"}</>
+                          ) : (
+                            value
+                          )
+                        }
                       />
                     ))}
                   </AccordionDetails>

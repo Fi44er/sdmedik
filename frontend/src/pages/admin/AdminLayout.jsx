@@ -9,6 +9,7 @@ import AdminCategoriesTable from "./components_admin_page/AdminCategoriesTable/A
 import AdminProductTable from "./components_admin_page/AdminProductTable/AdminProductTable";
 import AdminUserTable from "./components_admin_page/AdminUserTable/AdminUserTable";
 import MainContent from "./components_admin_page/MainContent/MainContent";
+import UpdateProduct from "./update_product/UpdateProduct";
 import { useEffect, useState } from "react";
 function ProtectedRoute({ element }) {
   const { getUserInfo, user } = useUserStore();
@@ -66,6 +67,10 @@ export default function AdminDashboard() {
           <Route
             path="/table_user"
             element={<ProtectedRoute element={<AdminUserTable />} />}
+          />
+          <Route
+            path="/update_product/:id"
+            element={<ProtectedRoute element={<UpdateProduct />} />}
           />
         </Routes>
       </Container>

@@ -43,6 +43,26 @@ const useOrderStore = create((set, get) => ({
       console.error("Error Registrations:", error);
     }
   },
+  changeStatus: async (order_id, status) => {
+    try {
+      const response = await axios.put(
+        `http://localhost:8080/api/v1/order/status`,
+        {
+          order_id,
+          status,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+      console.log("Response:", response);
+    } catch (error) {
+      toast.error(
+        "Ошибка оплаты: " + (error.response?.data?.message || error.message)
+      );
+      console.error("Error Registrations:", error);
+    }
+  },
   fetchOrders: async () => {
     try {
       const response = await axios.get(`http://localhost:8080/api/v1/order`, {

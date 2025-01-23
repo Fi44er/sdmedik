@@ -16,6 +16,7 @@ import {
   Select,
   Menu,
   Container,
+  Paper,
 } from "@mui/material";
 import { withStyles } from "@mui/styles";
 import React, { useEffect, useState } from "react";
@@ -32,19 +33,6 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   gridGap: "25px",
   flexDirection: "column",
   position: "relative",
-  [theme.breakpoints.down("lg")]: {
-    display: "none",
-  },
-}));
-
-const Nav = styled("Box")(({ theme }) => ({
-  width: "max-content",
-  background: "#FAFAFA",
-  borderRadius: "15px",
-  display: "flex",
-  alignItems: "center",
-  padding: "20px 40px",
-  boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
   [theme.breakpoints.down("lg")]: {
     display: "none",
   },
@@ -206,21 +194,33 @@ export default function Header() {
                 Каталог
               </Button>
             </Box>
-            <Nav>
-              {navItems.map((item) => {
-                return (
-                  <Link
-                    underline="hover"
-                    sx={{ ml: 2, mr: 2 }}
-                    color="black"
-                    href={item.href}
-                    key={item.text}
-                  >
-                    {item.text}
-                  </Link>
-                );
-              })}
-            </Nav>
+            <Box>
+              <Paper
+                sx={{
+                  width: "max-content",
+                  background: "#FAFAFA",
+                  borderRadius: "15px",
+                  display: { xs: "none", sm: "none", md: "", lg: "flex" },
+                  alignItems: "center",
+                  padding: "20px 40px",
+                  BoxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+                }}
+              >
+                {navItems.map((item) => {
+                  return (
+                    <Link
+                      underline="hover"
+                      sx={{ ml: 2, mr: 2 }}
+                      color="black"
+                      href={item.href}
+                      key={item.text}
+                    >
+                      {item.text}
+                    </Link>
+                  );
+                })}
+              </Paper>
+            </Box>
             <Box>
               <IconButton
                 id="lk-button"
@@ -360,6 +360,7 @@ export default function Header() {
                   textDicoration: "none",
                   color: "#26BDB8",
                 }}
+                href="/catalog"
               >
                 Каталог
               </Link>
