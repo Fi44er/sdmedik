@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import axios from "axios";
 import { useState } from "react";
+import { url } from "../constants/constants";
 
 const axiosInstance = axios.create({
   timeout: 5000, // таймаут в миллисекундах (5 секунд)
@@ -17,9 +18,7 @@ const useUserStore = create((set, get) => ({
       if (get().logoutCalled) {
         return;
       }
-      const response = await axiosInstance.get(
-        "http://localhost:8080/api/v1/user/me"
-      );
+      const response = await axiosInstance.get(`${url}/user/me`);
       set({ user: response.data, isLoggedOut: false });
     } catch (error) {
       if (error.response.status === 401 && !get().isLoggedOut) {
@@ -38,7 +37,7 @@ const useUserStore = create((set, get) => ({
   users: [],
   fetchUsers: async () => {
     try {
-      const response = await axios.get(`http://localhost:8080/api/v1/user`);
+      const response = await axios.get(`${url}/user`);
       set({ users: response.data });
     } catch (error) {
       console.error("Error fetching product:", error);
@@ -49,9 +48,7 @@ const useUserStore = create((set, get) => ({
       return;
     }
     try {
-      const response = await axiosInstance.post(
-        "http://localhost:8080/api/v1/auth/refresh"
-      );
+      const response = await axiosInstance.post(`${url}/auth/refresh`);
       // После обновления токена повторно вызываем функцию getUserInfo
       await get().getUserInfo();
     } catch (error) {
@@ -65,9 +62,7 @@ const useUserStore = create((set, get) => ({
   Logout: async () => {
     try {
       set({ isLoggingOut: true, logoutCalled: true });
-      const response = await axiosInstance.post(
-        `http://localhost:8080/api/v1/auth/logout`
-      );
+      const response = await axiosInstance.post(`${url}/auth/logout`);
       set({ isLoggedOut: true, isLoggingOut: false });
     } catch (error) {
       if (error.code === "ECONNABORTED") {

@@ -1,12 +1,13 @@
 import { create } from "zustand";
 import axios from "axios";
+import { url } from "../constants/constants";
 
 const useCategoryStore = create((set, get) => ({
   category: [],
   categoryId: {},
   fetchCategory: async () => {
     try {
-      const response = await axios.get(`http://localhost:8080/api/v1/category`);
+      const response = await axios.get(`${url}/category`);
       set({ category: response.data });
     } catch (error) {
       console.error("Error fetching category:", error);
@@ -14,9 +15,7 @@ const useCategoryStore = create((set, get) => ({
   },
   fetchCategoryId: async (id) => {
     try {
-      const response = await axios.get(
-        `http://localhost:8080/api/v1/category/${id}`
-      );
+      const response = await axios.get(`${url}/category/${id}`);
       set({ categoryId: response.data });
     } catch (error) {
       console.error("Error fetching category:", error);
@@ -26,7 +25,7 @@ const useCategoryStore = create((set, get) => ({
   refreshToken: async () => {
     try {
       const response = await axios.post(
-        "http://localhost:8080/api/v1/auth/refresh",
+        `${url}/auth/refresh`,
         {},
         {
           withCredentials: true,
@@ -39,16 +38,12 @@ const useCategoryStore = create((set, get) => ({
 
   createCategory: async (formData) => {
     try {
-      const response = await axios.post(
-        "http://localhost:8080/api/v1/category",
-        formData,
-        {
-          withCredentials: true,
-          headers: {
-            "Content-Type": "multipart/form-data", // Убедитесь, что заголовок установлен правильно
-          },
-        }
-      );
+      const response = await axios.post(`${url}/category`, formData, {
+        withCredentials: true,
+        headers: {
+          "Content-Type": "multipart/form-data", // Убедитесь, что заголовок установлен правильно
+        },
+      });
       console.log("Response:", response.data);
       // Обработка успешного ответа
       if (response.data.status === "success") {
@@ -73,9 +68,7 @@ const useCategoryStore = create((set, get) => ({
   },
   deleteCategory: async (id) => {
     try {
-      const response = await axios.delete(
-        `http://localhost:8080/api/v1/category/${id}`
-      );
+      const response = await axios.delete(`${url}/category/${id}`);
     } catch (error) {
       console.error("Error deleting category:", error);
     }

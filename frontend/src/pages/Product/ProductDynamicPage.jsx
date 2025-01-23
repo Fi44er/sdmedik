@@ -21,6 +21,7 @@ import useProductStore from "../../store/productStore";
 import { useParams } from "react-router-dom";
 import useBascketStore from "../../store/bascketStore";
 import Regions from "../../constants/regionsData/regions";
+import { urlPictures } from "../../constants/constants";
 
 export default function ProductDetailPage() {
   const [mainImageIndex, setMainImageIndex] = useState(0);
@@ -38,7 +39,7 @@ export default function ProductDetailPage() {
   useEffect(() => {
     if (products.data && products.data.images) {
       const fetchedImages = products.data.images.map(
-        (image) => `http://127.0.0.1:8080/api/v1/image/${image.name}`
+        (image) => `${urlPictures}/${image.name}`
       );
       setImages(fetchedImages); // Сохраните изображения в состоянии
     }
@@ -121,7 +122,7 @@ export default function ProductDetailPage() {
                     style={{
                       width: { xs: 300, sm: 350, md: 400 },
                       height: { xs: 300, sm: 350, md: 400 },
-                      borderRadius:10,
+                      borderRadius: 10,
                       objectFit: "cover",
                     }}
                   />
@@ -161,7 +162,7 @@ export default function ProductDetailPage() {
                   }}
                 >
                   <CardMedia
-                    image={`http://127.0.0.1:8080/api/v1/image/${image.name}`}
+                    image={`${urlPictures}/${image.name}`}
                     alt={`Thumbnail ${index + 1}`}
                     sx={{
                       width: { xs: "50px", lg: "100px" },

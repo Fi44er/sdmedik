@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import axios from "axios";
+import { url } from "../constants/constants";
 
 const useFilterStore = create((set, get) => ({
   // Existing state for storing fetched filters
@@ -11,9 +12,7 @@ const useFilterStore = create((set, get) => ({
   // Method to fetch filters based on category_id
   fetchFilter: async (category_id) => {
     try {
-      const response = await axios.get(
-        `http://localhost:8080/api/v1/product/filter/${category_id}`
-      );
+      const response = await axios.get(`${url}/product/filter/${category_id}`);
       set({ filters: response.data });
     } catch (error) {
       console.error("Error fetching filters:", error);

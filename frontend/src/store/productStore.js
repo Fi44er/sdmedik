@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import axios from "axios";
+import { url } from "../constants/constants";
 
 const useProductStore = create((set, get) => ({
   product: {
@@ -11,16 +12,12 @@ const useProductStore = create((set, get) => ({
   },
   createProduct: async (formData) => {
     try {
-      const response = await axios.post(
-        "http://localhost:8080/api/v1/product",
-        formData,
-        {
-          withCredentials: true,
-          headers: {
-            "Content-Type": "multipart/form-data", // Убедитесь, что заголовок установлен правильно
-          },
-        }
-      );
+      const response = await axios.post(`${url}/product`, formData, {
+        withCredentials: true,
+        headers: {
+          "Content-Type": "multipart/form-data", // Убедитесь, что заголовок установлен правильно
+        },
+      });
       // Обработка успешного ответа
       console.log("Продукт создан:", response.data);
     } catch (error) {
@@ -41,16 +38,12 @@ const useProductStore = create((set, get) => ({
 
   updateProduct: async (id, formData) => {
     try {
-      const response = await axios.put(
-        `http://localhost:8080/api/v1/product/${id}`,
-        formData,
-        {
-          withCredentials: true,
-          headers: {
-            "Content-Type": "multipart/form-data", // Убедитесь, что заголовок установлен правильно
-          },
-        }
-      );
+      const response = await axios.put(`${url}/product/${id}`, formData, {
+        withCredentials: true,
+        headers: {
+          "Content-Type": "multipart/form-data", // Убедитесь, что заголовок установлен правильно
+        },
+      });
       // Обработка успешного ответа
       console.log("Продукт обновлен:", response.data);
     } catch (error) {
@@ -71,9 +64,7 @@ const useProductStore = create((set, get) => ({
 
   deleteProduct: async (id) => {
     try {
-      const response = await axios.delete(
-        `http://localhost:8080/api/v1/product/${id}`
-      );
+      const response = await axios.delete(`${url}/product/${id}`);
     } catch (error) {
       console.error("Error deleting product:", error);
     }
@@ -82,7 +73,7 @@ const useProductStore = create((set, get) => ({
   products: [],
   fetchProducts: async (category_id, jsonData) => {
     try {
-      const response = await axios.get(`http://localhost:8080/api/v1/product`, {
+      const response = await axios.get(`${url}/product`, {
         params: {
           category_id: category_id,
           filters: jsonData,
@@ -95,7 +86,7 @@ const useProductStore = create((set, get) => ({
   },
   fetchFiltersProducts: async (jsonData) => {
     try {
-      const response = await axios.get(`http://localhost:8080/api/v1/product`, {
+      const response = await axios.get(`${url}/product`, {
         params: {
           filters: jsonData,
         },
@@ -107,9 +98,18 @@ const useProductStore = create((set, get) => ({
   },
   fetchProductById: async (id, iso) => {
     try {
-      const response = await axios.get(`http://localhost:8080/api/v1/product`, {
+      const response = await axios.get(`${url}/product`, {
         params: { id: id, iso: iso },
       });
+      set({ products: response.data });
+    } catch (error) {
+      console.error("Error fetching product:", error);
+    }
+  },
+
+  fetchTopList: async (category_id, jsonData) => {
+    try {
+      const response = await axios.get(`${url}/product/top/${4}`);
       set({ products: response.data });
     } catch (error) {
       console.error("Error fetching product:", error);
@@ -119,7 +119,7 @@ const useProductStore = create((set, get) => ({
   refreshToken: async () => {
     try {
       const response = await axios.post(
-        "http://localhost:8080/api/v1/auth/refresh",
+        `${url}/auth/refresh`,
         {},
         {
           withCredentials: true,

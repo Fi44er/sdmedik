@@ -16,6 +16,7 @@ import useProductStore from "../../../store/productStore";
 import SidebarFilter from "./SidebarFilter";
 import useBascketStore from "../../../store/bascketStore";
 import { height } from "@mui/system";
+import { urlPictures } from "../../../constants/constants";
 
 export default function CatalogDynamicPage() {
   const { id } = useParams();
@@ -109,7 +110,7 @@ export default function CatalogDynamicPage() {
                 >
                   <CardMedia
                     component="img"
-                    image={`http://127.0.0.1:8080/api/v1/image/${e.images[0].name}`}
+                    image={`${urlPictures}/${e.images[0].name}`}
                     alt={e.name}
                     sx={{
                       width: "100%",

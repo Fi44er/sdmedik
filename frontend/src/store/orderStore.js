@@ -3,6 +3,7 @@ import axios from "axios";
 import { useState } from "react";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
+import { url } from "../constants/constants";
 
 const useOrderStore = create((set, get) => ({
   email: "",
@@ -46,7 +47,7 @@ const useOrderStore = create((set, get) => ({
   changeStatus: async (order_id, status) => {
     try {
       const response = await axios.put(
-        `http://localhost:8080/api/v1/order/status`,
+        `${url}/order/status`,
         {
           order_id,
           status,
@@ -65,7 +66,7 @@ const useOrderStore = create((set, get) => ({
   },
   fetchOrders: async () => {
     try {
-      const response = await axios.get(`http://localhost:8080/api/v1/order`, {
+      const response = await axios.get(`${url}/order`, {
         withCredentials: true,
       });
 
@@ -86,7 +87,7 @@ const useOrderStore = create((set, get) => ({
   fetchUserOrders: async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/v1/order/my`,
+        `${url}/order/my`,
         {
           withCredentials: true,
         }

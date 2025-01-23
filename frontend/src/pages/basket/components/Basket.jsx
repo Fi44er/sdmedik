@@ -11,6 +11,7 @@ import Grid from "@mui/material/Grid2";
 import React, { useEffect, useState } from "react";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import useBascketStore from "../../../store/bascketStore";
+import { urlPictures } from "../../../constants/constants";
 
 export default function Basket() {
   const {
@@ -92,7 +93,7 @@ export default function Basket() {
               >
                 <CardMedia
                   component="img"
-                  image={`http://127.0.0.1:8080/api/v1/image/${product.image}`}
+                  image={`${urlPictures}/${product.image}`}
                   alt={product.title}
                   sx={{
                     width: 120,

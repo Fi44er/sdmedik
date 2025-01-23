@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import axios from "axios";
+import { url } from "../constants/constants";
 
 const useSearchStore = create((set, get) => ({
   searchQuery: "",
@@ -9,7 +10,7 @@ const useSearchStore = create((set, get) => ({
     set({ searchSuggestions: suggestions }),
   searchProducts: async (query) => {
     try {
-      const response = await axios.get("http://localhost:8080/api/v1/search", {
+      const response = await axios.get(`${url}/search`, {
         params: { query },
       });
       return response.data.data; // Предполагаем, что данные возвращаются в формате { data: [...] }

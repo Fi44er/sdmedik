@@ -12,6 +12,7 @@ import Grid from "@mui/material/Grid2";
 
 import React, { useEffect } from "react";
 import useCategoryStore from "../../store/categoryStore";
+import { urlPictures } from "../../constants/constants";
 
 export default function СategoriesPage() {
   const { fetchCategory, category } = useCategoryStore();
@@ -58,7 +59,7 @@ export default function СategoriesPage() {
                   >
                     <CardMedia
                       component="img"
-                      image={`http://127.0.0.1:8080/api/v1/image/${item.images[0].name}`}
+                      image={`${urlPictures}/${item.images[0].name}`}
                       alt={"wheelchair"}
                       sx={{
                         width: { xs: "270px", md: "180px", lg: "200px" },

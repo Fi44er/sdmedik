@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import React, { useEffect } from "react";
 import useCategoryStore from "../../../../store/categoryStore";
+import { urlPictures } from "../../../../constants/constants";
 
 export default function AdminCategoriesTable() {
   const { fetchCategory, category, deleteCategory } = useCategoryStore();
@@ -48,7 +49,7 @@ export default function AdminCategoriesTable() {
                     <Box sx={{ display: "flex", gap: 1 }}>
                       <img
                         key={item.id}
-                        src={`http://127.0.0.1:8080/api/v1/image/${item.images[0].name}`}
+                        src={`${urlPictures}/${item.images[0].name}`}
                         alt="product"
                         style={{ width: 50, height: 50, borderRadius: "4px" }}
                       />

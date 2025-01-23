@@ -13,6 +13,7 @@ import {
   Typography,
 } from "@mui/material";
 import useProductStore from "../../../../store/productStore";
+import { urlPictures } from "../../../../constants/constants";
 
 const AdminProductTable = () => {
   const { fetchProducts, products, deleteProduct } = useProductStore();
@@ -80,7 +81,7 @@ const AdminProductTable = () => {
                       {product.images.map((image) => (
                         <img
                           key={image.id}
-                          src={`http://127.0.0.1:8080/api/v1/image/${image.name}`}
+                          src={`${urlPictures}/${image.name}`}
                           alt="product"
                           style={{ width: 50, height: 50, borderRadius: "4px" }}
                         />

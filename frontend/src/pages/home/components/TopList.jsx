@@ -12,8 +12,13 @@ import Grid from "@mui/material/Grid2";
 import { motion } from "framer-motion";
 import React, { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
-
+import useProductStore from "../../../store/productStore";
+import useBascketStore from "../../../store/bascketStore";
+import { urlPictures } from "../../../constants/constants";
 export default function TopList() {
+  const { fetchTopList, products } = useProductStore();
+  const [quantity, setQuantity] = useState(1);
+  const { addProductThisBascket } = useBascketStore();
   const [isVisible, setIsVisible] = useState(false);
 
   const handleScroll = () => {
@@ -34,6 +39,18 @@ export default function TopList() {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+
+  useEffect(() => {
+    fetchTopList();
+    console.log(products);
+  }, []);
+  const hendleAddProductThithBascket = async (id) => {
+    setQuantity(quantity);
+    const product_id = id;
+    console.log(id, quantity);
+
+    await addProductThisBascket(product_id, quantity);
+  };
 
   return (
     <Box component="article" id="top-list">
@@ -68,94 +85,103 @@ export default function TopList() {
             spacing={{ xs: 2, md: 4, lg: 2 }}
             columns={{ xs: 4, sm: 4, md: 4 }}
           >
-            {Array.from({ length: 4 }).map((_, index) => (
-              <Grid item xs={1} sm={1} md={1} key={index}>
-                <Card
-                  sx={{
-                    width: { xs: "100%", sm: "100%", md: "100%", lg: "276px" },
-                    background: "#F5FCFF",
-                  }}
-                >
-                  <Box
+            {products.data &&
+              products?.data.map((item, index) => (
+                <Grid item="true" xs={1} sm={1} md={1} key={index}>
+                  <Card
                     sx={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
+                      width: {
+                        xs: "100%",
+                        sm: "100%",
+                        md: "100%",
+                        lg: "276px",
+                      },
+                      background: "#F5FCFF",
                     }}
                   >
-                    <CardMedia
-                      component="img"
-                      image={"/public/wheelchair.png"}
-                      alt={"Кресло-коляска"}
-                      sx={{
-                        width: "200px",
-                        height: { xs: "200px", sm: "200px", md: "200px" },
-                        objectFit: "cover",
-                      }}
-                    />
-                  </Box>
-
-                  <CardContent>
-                    <CardHeader
-                      title={
-                        "Кресло-коляска облегчённая механическая MEYRA Eurochair 2.750"
-                      }
-                    />
                     <Box
                       sx={{
                         display: "flex",
-                        justifyContent: "space-between",
+                        justifyContent: "center",
                         alignItems: "center",
                       }}
                     >
-                      <Typography variant="h6" sx={{ color: "#39C8B8" }}>
-                        124456 руб.
-                      </Typography>
+                      <CardMedia
+                        component="img"
+                        image={`${urlPictures}/${item.image}`}
+                        alt={"Кресло-коляска"}
+                        sx={{
+                          width: "200px",
+                          height: { xs: "200px", sm: "200px", md: "200px" },
+                          objectFit: "cover",
+                        }}
+                      />
+                    </Box>
+
+                    <CardContent>
+                      <CardHeader title={item.name} />
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}
+                      >
+                        <Typography variant="h6" sx={{ color: "#39C8B8" }}>
+                          {item.price} руб.
+                        </Typography>
+                      </Box>
                       <Typography
-                        variant="body2"
+                        variant="body"
                         sx={{
                           color: "text.secondary",
-                          textDecoration: "line-through",
+                          // textDecoration: "line-through",
                         }}
                       >
-                        124456 руб.
+                        Всего куплено {item.order_count} шт.
                       </Typography>
-                    </Box>
 
-                    <Box
-                      sx={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        mt: "20px",
-                      }}
-                    >
-                      <Button
+                      <Box
                         sx={{
-                          width: "157px",
-                          height: "50px",
-                          background: `linear-gradient(95.61deg, #A5DED1 4.71%, #00B3A4 97.25%)`,
-                          borderRadius: "10px",
-                          color: "#fff",
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          mt: "20px",
                         }}
-                        variant=" contained"
                       >
-                        Подробнее
-                      </Button>
-                      <IconButton>
-                        <img
-                          style={{ width: "50px", height: "50px" }}
-                          src="/public/basket_cards.png"
-                          alt="Корзина"
-                        />
-                      </IconButton>
-                    </Box>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
+                        <Button
+                          sx={{
+                            width: "157px",
+                            height: "50px",
+                            background: `linear-gradient(95.61deg, #A5DED1 4.71%, #00B3A4 97.25%)`,
+                            borderRadius: "10px",
+                            color: "#fff",
+                          }}
+                          variant=" contained"
+                          onClick={() => {
+                            window.location.href = `/product/${item.id}`;
+                          }}
+                        >
+                          Подробнее
+                        </Button>
+                        <IconButton
+                          onClick={() => {
+                            hendleAddProductThithBascket(item.id);
+                          }}
+                        >
+                          <img
+                            style={{ width: "50px", height: "50px" }}
+                            src="/public/basket_cards.png"
+                            alt="Корзина"
+                          />
+                        </IconButton>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              ))}
           </Grid>
-          <Box sx={{ mt: 4, mb: 4, display: "flex", justifyContent: "right" }}>
+          {/* <Box sx={{ mt: 4, mb: 4, display: "flex", justifyContent: "right" }}>
             <Button
               sx={{
                 width: "260px",
@@ -168,7 +194,7 @@ export default function TopList() {
             >
               Посмотреть все
             </Button>
-          </Box>
+          </Box> */}
         </Box>
       </motion.div>
     </Box>

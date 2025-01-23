@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { url } from "../constants/constants";
 
 const useBascketStore = create((set, get) => ({
   product: {
@@ -32,7 +33,7 @@ const useBascketStore = create((set, get) => ({
   editCountProductBascket: async (product_id, quantity) => {
     try {
       const response = await axios.post(
-        "http://localhost:8080/api/v1/basket",
+        `${url}/basket`,
         { product_id, quantity },
         {
           withCredentials: true,
@@ -55,13 +56,13 @@ const useBascketStore = create((set, get) => ({
   },
   fetchUserBasket: async () => {
     try {
-      const response = await axios.get(`http://localhost:8080/api/v1/basket`, {
+      const response = await axios.get(`${url}/basket`, {
         withCredentials: true,
       });
 
       set({ basket: response.data });
 
-      if (response.status === 401) {  
+      if (response.status === 401) {
         // {{ edit_1 }}
         // Если статус 401, обновляем токены и повторяем запрос
         await get().refreshToken();
@@ -98,12 +99,9 @@ const useBascketStore = create((set, get) => ({
   //   },
   deleteProductThithBasket: async (id) => {
     try {
-      const response = await axios.delete(
-        `http://localhost:8080/api/v1/basket/${id}`,
-        {
-          withCredentials: true,
-        }
-      );
+      const response = await axios.delete(`${url}/basket/${id}`, {
+        withCredentials: true,
+      });
       toast.success("Продукт удален из корзины");
       if (error.response.status === 401) {
         // Если статус 401, обновляем токены и повторяем запрос
@@ -121,7 +119,7 @@ const useBascketStore = create((set, get) => ({
   refreshToken: async () => {
     try {
       const response = await axios.post(
-        "http://localhost:8080/api/v1/auth/refresh",
+        `${url}/auth/refresh`,
         {},
         {
           withCredentials: true,

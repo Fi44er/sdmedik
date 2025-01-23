@@ -3,6 +3,7 @@ import axios from "axios";
 import { useState } from "react";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
+import { url } from "../constants/constants";
 
 const useAuthStore = create((set, get) => ({
   email: "",
@@ -31,7 +32,7 @@ const useAuthStore = create((set, get) => ({
 
     try {
       const response = await axios.post(
-        `http://localhost:8080/api/v1/auth/register`,
+        `${url}/auth/register`,
         {
           email,
           fio,
@@ -62,7 +63,7 @@ const useAuthStore = create((set, get) => ({
     const { email, password, showLogin } = useAuthStore.getState();
     try {
       const response = await axios.post(
-        `http://localhost:8080/api/v1/auth/login`,
+        `${url}/auth/login`,
         {
           email,
           password,
@@ -91,7 +92,7 @@ const useAuthStore = create((set, get) => ({
 
     try {
       const response = await axios.post(
-        `http://localhost:8080/api/v1/auth/verify-code`,
+        `${url}/auth/verify-code`,
         {
           email,
           code,
