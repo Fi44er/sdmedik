@@ -18,6 +18,6 @@ type BasketItemRes struct {
 	TotalPrice              float64 `json:"total_price"`
 	Price                   float64 `json:"price"`
 	PriceWithPromotion      float64 `json:"price_with_promotion"`
-	TotalPriceWithPromotion float64 `json:"total_price_with_prom"`
+	TotalPriceWithPromotion float64 `json:"total_price_with_promotion"`
 	IsFree                  bool    `json:"is_free"`
 }
