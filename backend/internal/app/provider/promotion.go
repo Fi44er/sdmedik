@@ -19,17 +19,21 @@ type PromotionProvider struct {
 	logger    *logger.Logger
 	db        *gorm.DB
 	validator *validator.Validate
+
+	productService service.IProductService
 }
 
 func NewPromotionProvider(
 	logger *logger.Logger,
 	db *gorm.DB,
 	validator *validator.Validate,
+	productService service.IProductService,
 ) *PromotionProvider {
 	return &PromotionProvider{
-		logger:    logger,
-		db:        db,
-		validator: validator,
+		logger:         logger,
+		db:             db,
+		validator:      validator,
+		productService: productService,
 	}
 }
 
@@ -42,7 +46,7 @@ func (p *PromotionProvider) PromotionRepository() repository.IPromotionRepositor
 
 func (p *PromotionProvider) PromotionService() service.IPromotionService {
 	if p.promotionService == nil {
-		p.promotionService = promotionService.NewService(p.PromotionRepository(), p.logger, p.validator)
+		p.promotionService = promotionService.NewService(p.PromotionRepository(), p.logger, p.validator, p.productService)
 	}
 	return p.promotionService
 }

@@ -14,8 +14,9 @@ type service struct {
 	validator *validator.Validate
 	repo      repository.IBasketRepository
 
-	productService def.IProductService
-	basketItemRepo repository.IBasketItemRepository
+	productService   def.IProductService
+	basketItemRepo   repository.IBasketItemRepository
+	promotionService def.IPromotionService
 }
 
 func NewService(
@@ -24,12 +25,14 @@ func NewService(
 	repo repository.IBasketRepository,
 	productService def.IProductService,
 	basketItemRepo repository.IBasketItemRepository,
+	promotionService def.IPromotionService,
 ) *service {
 	return &service{
-		logger:         logger,
-		validator:      validator,
-		repo:           repo,
-		productService: productService,
-		basketItemRepo: basketItemRepo,
+		logger:           logger,
+		validator:        validator,
+		repo:             repo,
+		productService:   productService,
+		basketItemRepo:   basketItemRepo,
+		promotionService: promotionService,
 	}
 }

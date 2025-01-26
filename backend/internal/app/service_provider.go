@@ -77,13 +77,13 @@ func (s *serviceProvider) initDeps() error {
 		s.initCertificateProvider,
 		s.initProductProvider,
 		s.initWebScraperProvider,
+		s.initPromotionProvider,
 		s.initBasketProvider,
 		s.initUserProvider,
 		s.initAuthProvider,
 		s.initIndexProvider,
 		s.initSearchProvider,
 		s.initOrderProvider,
-		s.initPromotionProvider,
 	}
 
 	for _, init := range inits {
@@ -172,7 +172,7 @@ func (s *serviceProvider) initSearchProvider() error {
 }
 
 func (s *serviceProvider) initBasketProvider() error {
-	s.basketProvider = *provider.NewBasketProvider(s.logger, s.db, s.validator, s.productProvider.ProductService())
+	s.basketProvider = *provider.NewBasketProvider(s.logger, s.db, s.validator, s.productProvider.ProductService(), s.promotionProvider.PromotionService())
 	return nil
 }
 
@@ -193,7 +193,7 @@ func (s *serviceProvider) initOrderProvider() error {
 }
 
 func (s *serviceProvider) initPromotionProvider() error {
-	s.promotionProvider = *provider.NewPromotionProvider(s.logger, s.db, s.validator)
+	s.promotionProvider = *provider.NewPromotionProvider(s.logger, s.db, s.validator, s.productProvider.ProductService())
 	return nil
 }
 

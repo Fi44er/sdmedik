@@ -68,10 +68,30 @@ func (r *repository) GetByID(ctx context.Context, id string) (*model.Promotion, 
 func (r *repository) GetAll(ctx context.Context) (*[]model.Promotion, error) {
 	r.logger.Info("Fetching promotions...")
 	promotions := new([]model.Promotion)
-	if err := r.db.WithContext(ctx).Find(promotions).Error; err != nil {
+	if err := r.db.WithContext(ctx).Preload("Reward").Preload("Condition").Find(promotions).Error; err != nil {
 		r.logger.Errorf("Failed to fetch promotions: %v", err)
 		return nil, err
 	}
 	r.logger.Info("Promotions fetched successfully")
 	return promotions, nil
+}
+
+func (r *repository) CreateRewards(ctx context.Context, reward *model.Reward) error {
+	r.logger.Info("Creating reward...")
+	if err := r.db.WithContext(ctx).Create(reward).Error; err != nil {
+		r.logger.Errorf("Failed to create reward: %v", err)
+		return err
+	}
+	r.logger.Info("Reward created successfully")
+	return nil
+}
+
+func (r *repository) CreateConditions(ctx context.Context, condition *model.Condition) error {
+	r.logger.Info("Creating condition...")
+	if err := r.db.WithContext(ctx).Create(condition).Error; err != nil {
+		r.logger.Errorf("Failed to create condition: %v", err)
+		return err
+	}
+	r.logger.Info("Condition created successfully")
+	return nil
 }
