@@ -92,3 +92,10 @@ type IOrderRepository interface {
 	GetMyOrders(ctx context.Context, userID string) (*[]model.Order, error)
 	Update(ctx context.Context, data *model.Order) error
 }
+
+type IPromotionRepository interface {
+	Create(ctx context.Context, data *model.Promotion) error
+	Delete(ctx context.Context, id string) error
+	GetByID(ctx context.Context, id string) (*model.Promotion, error)
+	GetAll(ctx context.Context) (*[]model.Promotion, error)
+}

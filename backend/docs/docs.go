@@ -830,6 +830,40 @@ const docTemplate = `{
                 }
             }
         },
+        "/promotion": {
+            "post": {
+                "description": "Creates a new promotion",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "promotion"
+                ],
+                "summary": "Create a new promotion",
+                "parameters": [
+                    {
+                        "description": "Promotion data",
+                        "name": "promotion",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreatePromotion"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/search": {
             "get": {
                 "description": "Search products",
@@ -1054,6 +1088,22 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.CreateCondition": {
+            "type": "object",
+            "required": [
+                "type",
+                "value"
+            ],
+            "properties": {
+                "type": {
+                    "description": "PromotionID string ` + "`" + `json:\"promotion_id\" validate:\"required\"` + "`" + `",
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.CreateOrder": {
             "type": "object",
             "properties": {
@@ -1065,6 +1115,64 @@ const docTemplate = `{
                 },
                 "phone_number": {
                     "type": "string"
+                }
+            }
+        },
+        "dto.CreatePromotion": {
+            "type": "object",
+            "required": [
+                "end_date",
+                "name",
+                "start_date",
+                "target_id",
+                "type"
+            ],
+            "properties": {
+                "conditions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.CreateCondition"
+                    }
+                },
+                "description": {
+                    "type": "string"
+                },
+                "end_date": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "rewards": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.CreateReward"
+                    }
+                },
+                "start_date": {
+                    "type": "string"
+                },
+                "target_id": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.CreateReward": {
+            "type": "object",
+            "required": [
+                "type",
+                "value"
+            ],
+            "properties": {
+                "type": {
+                    "description": "PromotionID string  ` + "`" + `json:\"promotion_id\" validate:\"required\"` + "`" + `",
+                    "type": "string"
+                },
+                "value": {
+                    "type": "number"
                 }
             }
         },
