@@ -149,6 +149,8 @@ func (a *App) initRouter() error {
 
 	promotion := v1.Group("/promotion")
 	promotion.Post("/", a.serviceProvider.promotionProvider.PromotionImpl().Create)
+	promotion.Get("/", a.serviceProvider.promotionProvider.PromotionImpl().GetAll)
+	promotion.Delete("/:id", a.serviceProvider.promotionProvider.PromotionImpl().Delete)
 
 	return nil
 }

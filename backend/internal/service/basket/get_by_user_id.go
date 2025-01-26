@@ -61,6 +61,10 @@ func (s *service) GetByUserID(ctx context.Context, userID string) (*response.Bas
 	basketRes.ID = basket.ID
 	basketRes.Quantity = totalQuantity
 	basketRes.TotalPrice = math.Round(totalPrice*100) / 100
+	promotionBasket, err := s.promotionService.CheckAndApplyPromotions(ctx, basketRes)
+	if err != nil {
+		return nil, err
+	}
 
-	return basketRes, nil
+	return promotionBasket, nil
 }

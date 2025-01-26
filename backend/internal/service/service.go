@@ -102,4 +102,7 @@ type IOrderService interface {
 
 type IPromotionService interface {
 	Create(ctx context.Context, data *dto.CreatePromotion) error
+	CheckAndApplyPromotions(ctx context.Context, basket *response.BasketResponse) (*response.BasketResponse, error)
+	Delete(ctx context.Context, id string) error
+	GetAll(ctx context.Context) (*[]model.Promotion, error)
 }

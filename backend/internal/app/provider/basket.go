@@ -22,7 +22,8 @@ type BasketProvider struct {
 	db        *gorm.DB
 	validator *validator.Validate
 
-	productService service.IProductService
+	productService   service.IProductService
+	promotionService service.IPromotionService
 }
 
 func NewBasketProvider(
@@ -30,12 +31,14 @@ func NewBasketProvider(
 	db *gorm.DB,
 	validator *validator.Validate,
 	productService service.IProductService,
+	promotionService service.IPromotionService,
 ) *BasketProvider {
 	return &BasketProvider{
-		logger:         logger,
-		db:             db,
-		validator:      validator,
-		productService: productService,
+		logger:           logger,
+		db:               db,
+		validator:        validator,
+		productService:   productService,
+		promotionService: promotionService,
 	}
 }
 
@@ -61,6 +64,7 @@ func (p *BasketProvider) BasketService() service.IBasketService {
 			p.BasketRepository(),
 			p.productService,
 			p.BasketItemRepository(),
+			p.promotionService,
 		)
 	}
 	return p.basketService

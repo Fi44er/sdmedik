@@ -16,15 +16,16 @@ const (
 )
 
 type Promotion struct {
-	ID          string        `json:"id" gorm:"primaryKey;type:string;"`
-	Name        string        `json:"name" gorm:"type:varchar(255);not null"`
-	Description string        `json:"description" gorm:"type:text"`
-	Type        PromotionType `json:"type" gorm:"type:varchar(50);not null"`
-	TargetID    string        `json:"target_id" gorm:"type:string;not null"` // ID категории, группы или товара
-	StartDate   time.Time     `json:"start_date" gorm:"type:timestamp;not null"`
-	EndDate     time.Time     `json:"end_date" gorm:"type:timestamp;not null"`
-	Conditions  []Condition   `json:"conditions" gorm:"foreignKey:PromotionID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
-	Rewards     []Reward      `json:"rewards" gorm:"foreignKey:PromotionID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	ID           string        `json:"id" gorm:"primaryKey;type:string;"`
+	Name         string        `json:"name" gorm:"type:varchar(255);not null"`
+	Description  string        `json:"description" gorm:"type:text"`
+	Type         PromotionType `json:"type" gorm:"type:varchar(50);not null"`
+	TargetID     string        `json:"target_id" gorm:"type:string;not null"` // ID категории, группы или товара
+	GetProductID string        `json:"get_product_id" gorm:"type:string;"`
+	StartDate    time.Time     `json:"start_date" gorm:"type:timestamp;not null"`
+	EndDate      time.Time     `json:"end_date" gorm:"type:timestamp;not null"`
+	Condition    Condition     `json:"condition" gorm:"foreignKey:PromotionID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Reward       Reward        `json:"reward" gorm:"foreignKey:PromotionID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
 func (p *Promotion) BeforeCreate(tx *gorm.DB) error {

@@ -831,6 +831,24 @@ const docTemplate = `{
             }
         },
         "/promotion": {
+            "get": {
+                "description": "Get all promotions",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "promotion"
+                ],
+                "summary": "Get all promotions",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            },
             "post": {
                 "description": "Creates a new promotion",
                 "consumes": [
@@ -852,6 +870,35 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.CreatePromotion"
                         }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/promotion/{id}": {
+            "delete": {
+                "description": "Delete a promotion",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "promotion"
+                ],
+                "summary": "Delete a promotion",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Promotion ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1096,8 +1143,7 @@ const docTemplate = `{
             ],
             "properties": {
                 "type": {
-                    "description": "PromotionID string ` + "`" + `json:\"promotion_id\" validate:\"required\"` + "`" + `",
-                    "type": "string"
+                    "$ref": "#/definitions/model.ConditionType"
                 },
                 "value": {
                     "type": "string"
@@ -1128,11 +1174,8 @@ const docTemplate = `{
                 "type"
             ],
             "properties": {
-                "conditions": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/dto.CreateCondition"
-                    }
+                "condition": {
+                    "$ref": "#/definitions/dto.CreateCondition"
                 },
                 "description": {
                     "type": "string"
@@ -1143,11 +1186,8 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
-                "rewards": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/dto.CreateReward"
-                    }
+                "reward": {
+                    "$ref": "#/definitions/dto.CreateReward"
                 },
                 "start_date": {
                     "type": "string"
@@ -1156,7 +1196,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "type": {
-                    "type": "string"
+                    "$ref": "#/definitions/model.PromotionType"
                 }
             }
         },
@@ -1168,8 +1208,7 @@ const docTemplate = `{
             ],
             "properties": {
                 "type": {
-                    "description": "PromotionID string  ` + "`" + `json:\"promotion_id\" validate:\"required\"` + "`" + `",
-                    "type": "string"
+                    "$ref": "#/definitions/model.RewardType"
                 },
                 "value": {
                     "type": "number"
@@ -1257,6 +1296,60 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        },
+        "model.ConditionType": {
+            "type": "string",
+            "enum": [
+                "min_quantity",
+                "buy_n",
+                "get_m"
+            ],
+            "x-enum-comments": {
+                "ConditionTypeBuyN": "Купи N товаров",
+                "ConditionTypeGetM": "Получи M товаров",
+                "ConditionTypeMinQuantity": "Минимальное количество товаров"
+            },
+            "x-enum-varnames": [
+                "ConditionTypeMinQuantity",
+                "ConditionTypeBuyN",
+                "ConditionTypeGetM"
+            ]
+        },
+        "model.PromotionType": {
+            "type": "string",
+            "enum": [
+                "product_discount",
+                "category_discount",
+                "buy_n_get_m"
+            ],
+            "x-enum-comments": {
+                "PromotionTypeBuyNGetM": "Купи N, получи M",
+                "PromotionTypeCategoryDiscount": "Скидка на категорию",
+                "PromotionTypeProductDiscount": "Скидка на товар"
+            },
+            "x-enum-varnames": [
+                "PromotionTypeProductDiscount",
+                "PromotionTypeCategoryDiscount",
+                "PromotionTypeBuyNGetM"
+            ]
+        },
+        "model.RewardType": {
+            "type": "string",
+            "enum": [
+                "percentage",
+                "fixed",
+                "product"
+            ],
+            "x-enum-comments": {
+                "RewardTypeFixed": "Фиксированная скидка",
+                "RewardTypePercentage": "Скидка в процентах",
+                "RewardTypeProduct": "Бесплатный товар"
+            },
+            "x-enum-varnames": [
+                "RewardTypePercentage",
+                "RewardTypeFixed",
+                "RewardTypeProduct"
+            ]
         },
         "response.Response": {
             "type": "object",

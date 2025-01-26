@@ -10,15 +10,17 @@ import (
 var _ def.IPromotionService = (*service)(nil)
 
 type service struct {
-	repo      repository.IPromotionRepository
-	logger    *logger.Logger
-	validator *validator.Validate
+	repo           repository.IPromotionRepository
+	logger         *logger.Logger
+	validator      *validator.Validate
+	productService def.IProductService
 }
 
-func NewService(repo repository.IPromotionRepository, logger *logger.Logger, validator *validator.Validate) *service {
+func NewService(repo repository.IPromotionRepository, logger *logger.Logger, validator *validator.Validate, productService def.IProductService) *service {
 	return &service{
-		repo:      repo,
-		logger:    logger,
-		validator: validator,
+		repo:           repo,
+		logger:         logger,
+		validator:      validator,
+		productService: productService,
 	}
 }

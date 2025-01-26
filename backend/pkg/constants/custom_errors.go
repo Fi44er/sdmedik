@@ -17,3 +17,6 @@ var ErrBasketItemNotFound = errors.New(404, "Basket item not found")
 var ErrCertificateNotFound = errors.New(404, "Certificate not found")
 
 var ErrOrderNotFound = errors.New(404, "Order not found")
+
+var ErrPromotionDateBad = errors.New(400, "Promotion date is bad")
+var ErrPromotionNotFound = errors.New(404, "Promotion not found")

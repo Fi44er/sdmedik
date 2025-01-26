@@ -98,4 +98,7 @@ type IPromotionRepository interface {
 	Delete(ctx context.Context, id string) error
 	GetByID(ctx context.Context, id string) (*model.Promotion, error)
 	GetAll(ctx context.Context) (*[]model.Promotion, error)
+
+	CreateConditions(ctx context.Context, condition *model.Condition) error
+	CreateRewards(ctx context.Context, reward *model.Reward) error
 }
