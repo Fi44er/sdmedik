@@ -99,3 +99,7 @@ type IOrderService interface {
 	GetAll(ctx context.Context, offset int, limit int) (*[]model.Order, error)
 	GetMyOrders(ctx context.Context, userID string) (*[]model.Order, error)
 }
+
+type IPromotionService interface {
+	Create(ctx context.Context, data *dto.CreatePromotion) error
+}

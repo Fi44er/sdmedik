@@ -28,6 +28,7 @@ type serviceProvider struct {
 	webScraperProvider          provider.WebscraperProvider
 	certificateProvider         provider.CertificateProvider
 	orderProvider               provider.OrderProvider
+	promotionProvider           provider.PromotionProvider
 
 	logger    *logger.Logger
 	db        *gorm.DB
@@ -82,6 +83,7 @@ func (s *serviceProvider) initDeps() error {
 		s.initIndexProvider,
 		s.initSearchProvider,
 		s.initOrderProvider,
+		s.initPromotionProvider,
 	}
 
 	for _, init := range inits {
@@ -187,6 +189,11 @@ func (s *serviceProvider) initCertificateProvider() error {
 
 func (s *serviceProvider) initOrderProvider() error {
 	s.orderProvider = *provider.NewOrderProvider(s.logger, s.validator, s.db, s.config, s.basketProvider.BasketService(), s.certificateProvider.CertificateService())
+	return nil
+}
+
+func (s *serviceProvider) initPromotionProvider() error {
+	s.promotionProvider = *provider.NewPromotionProvider(s.logger, s.db, s.validator)
 	return nil
 }
 

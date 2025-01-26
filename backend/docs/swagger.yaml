@@ -24,6 +24,17 @@ definitions:
     required:
     - user_id
     type: object
+  dto.CreateCondition:
+    properties:
+      type:
+        description: PromotionID string `json:"promotion_id" validate:"required"`
+        type: string
+      value:
+        type: string
+    required:
+    - type
+    - value
+    type: object
   dto.CreateOrder:
     properties:
       email:
@@ -32,6 +43,46 @@ definitions:
         type: string
       phone_number:
         type: string
+    type: object
+  dto.CreatePromotion:
+    properties:
+      conditions:
+        items:
+          $ref: '#/definitions/dto.CreateCondition'
+        type: array
+      description:
+        type: string
+      end_date:
+        type: string
+      name:
+        type: string
+      rewards:
+        items:
+          $ref: '#/definitions/dto.CreateReward'
+        type: array
+      start_date:
+        type: string
+      target_id:
+        type: string
+      type:
+        type: string
+    required:
+    - end_date
+    - name
+    - start_date
+    - target_id
+    - type
+    type: object
+  dto.CreateReward:
+    properties:
+      type:
+        description: PromotionID string  `json:"promotion_id" validate:"required"`
+        type: string
+      value:
+        type: number
+    required:
+    - type
+    - value
     type: object
   dto.Login:
     properties:
@@ -715,6 +766,28 @@ paths:
       summary: Get top products
       tags:
       - product
+  /promotion:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new promotion
+      parameters:
+      - description: Promotion data
+        in: body
+        name: promotion
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreatePromotion'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Create a new promotion
+      tags:
+      - promotion
   /search:
     get:
       consumes:

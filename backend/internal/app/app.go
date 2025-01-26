@@ -147,6 +147,9 @@ func (a *App) initRouter() error {
 	order.Get("/", a.serviceProvider.orderProvider.OrderImpl().GetAll)
 	order.Put("/status", a.serviceProvider.orderProvider.OrderImpl().UpdateStatus)
 
+	promotion := v1.Group("/promotion")
+	promotion.Post("/", a.serviceProvider.promotionProvider.PromotionImpl().Create)
+
 	return nil
 }
 
