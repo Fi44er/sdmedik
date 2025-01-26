@@ -27,7 +27,7 @@ func (s *service) CheckAndApplyPromotions(ctx context.Context, basket *response.
 
 	// Перебираем все акции
 	for _, promotion := range *promotions {
-		if promotion.EndDate.Before(time.Now()) {
+		if promotion.EndDate.Before(time.Now()) || promotion.StartDate.After(time.Now()) {
 			continue
 		}
 		// Проверяем условия акции
