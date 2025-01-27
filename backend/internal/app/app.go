@@ -142,6 +142,7 @@ func (a *App) initRouter() error {
 	webscraper.Get("/", a.serviceProvider.webScraperProvider.WebScraperImpl().Scraper)
 
 	order := v1.Group("/order")
+	order.Post("/:id", a.serviceProvider.orderProvider.OrderImpl().NotAuthCreate)
 	order.Post("/", middleware.DeserializeUser(a.cache, a.db, a.config), a.serviceProvider.orderProvider.OrderImpl().Create)
 	order.Get("/my", middleware.DeserializeUser(a.cache, a.db, a.config), a.serviceProvider.orderProvider.OrderImpl().GetMyOrders)
 	order.Get("/", a.serviceProvider.orderProvider.OrderImpl().GetAll)

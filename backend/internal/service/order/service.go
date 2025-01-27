@@ -16,8 +16,9 @@ type service struct {
 	config    *config.Config
 	repo      repository.IOrderRepository
 
-	basketService def.IBasketService
-	certService   def.ICertificateService
+	basketService  def.IBasketService
+	certService    def.ICertificateService
+	productService def.IProductService
 }
 
 func NewService(
@@ -27,13 +28,15 @@ func NewService(
 	repo repository.IOrderRepository,
 	basketService def.IBasketService,
 	certService def.ICertificateService,
+	productService def.IProductService,
 ) *service {
 	return &service{
-		logger:        logger,
-		validator:     validator,
-		config:        config,
-		repo:          repo,
-		basketService: basketService,
-		certService:   certService,
+		logger:         logger,
+		validator:      validator,
+		config:         config,
+		repo:           repo,
+		basketService:  basketService,
+		certService:    certService,
+		productService: productService,
 	}
 }
