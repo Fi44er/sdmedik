@@ -22,8 +22,9 @@ type OrderProvider struct {
 	config    *config.Config
 	db        *gorm.DB
 
-	basketService service.IBasketService
-	certService   service.ICertificateService
+	basketService  service.IBasketService
+	certService    service.ICertificateService
+	productService service.IProductService
 }
 
 func NewOrderProvider(
@@ -33,14 +34,16 @@ func NewOrderProvider(
 	config *config.Config,
 	basketService service.IBasketService,
 	certService service.ICertificateService,
+	productService service.IProductService,
 ) *OrderProvider {
 	return &OrderProvider{
-		logger:        logger,
-		validator:     validator,
-		db:            db,
-		config:        config,
-		basketService: basketService,
-		certService:   certService,
+		logger:         logger,
+		validator:      validator,
+		db:             db,
+		config:         config,
+		basketService:  basketService,
+		certService:    certService,
+		productService: productService,
 	}
 }
 
@@ -53,7 +56,7 @@ func (p *OrderProvider) OrderRepository() repository.IOrderRepository {
 
 func (p *OrderProvider) OrderService() service.IOrderService {
 	if p.orderService == nil {
-		p.orderService = orderService.NewService(p.logger, p.validator, p.config, p.OrderRepository(), p.basketService, p.certService)
+		p.orderService = orderService.NewService(p.logger, p.validator, p.config, p.OrderRepository(), p.basketService, p.certService, p.productService)
 	}
 	return p.orderService
 }
