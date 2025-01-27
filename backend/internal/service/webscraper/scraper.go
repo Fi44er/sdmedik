@@ -30,17 +30,20 @@ func (s *service) Scraper() error {
 		}
 	}
 
-	s.logger.Logger.Infof("getManyCert: %v", getManyCert)
-
+	chunks := s.chunkSlice(getManyCert, 1000)
 	// Получаем существующие сертификаты из базы данных
-	certs, err := s.certificateService.GetMany(ctx, &getManyCert)
-	if err != nil {
-		return err
+	var allCerts []model.Certificate
+	for _, chunk := range chunks {
+		certs, err := s.certificateService.GetMany(ctx, &chunk)
+		if err != nil {
+			return err
+		}
+		allCerts = append(allCerts, *certs...)
 	}
 
 	// Создаём мапу для быстрого поиска существующих сертификатов
 	certMap := make(map[string]string)
-	for _, cert := range *certs {
+	for _, cert := range allCerts {
 		key := fmt.Sprintf("%s-%s", cert.CategoryArticle, cert.RegionIso)
 		certMap[key] = cert.ID
 	}
@@ -129,4 +132,16 @@ func (s *service) Scraper() error {
 	}
 
 	return nil
+}
+
+func (s *service) chunkSlice(slice []dto.GetManyCert, chunkSize int) [][]dto.GetManyCert {
+	var chunks [][]dto.GetManyCert
+	for i := 0; i < len(slice); i += chunkSize {
+		end := i + chunkSize
+		if end > len(slice) {
+			end = len(slice)
+		}
+		chunks = append(chunks, slice[i:end])
+	}
+	return chunks
 }
