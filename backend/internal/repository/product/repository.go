@@ -138,7 +138,16 @@ func (r *repository) Get(ctx context.Context, criteria dto.ProductSearchCriteria
 		request = request.Preload("Categories").Preload("Images").Preload("CharacteristicValues")
 	}
 
+	var count int64
 	if criteria.CategoryID != 0 {
+		err := r.db.Model(&model.Product{}).
+			Joins("JOIN product_categories ON product_categories.product_id = products.id").
+			Where("product_categories.category_id = ?", criteria.CategoryID).
+			Count(&count).Error
+
+		if err != nil {
+			return nil, nil, err
+		}
 		request = request.Joins("JOIN product_categories ON product_categories.product_id = products.id").
 			Where("product_categories.category_id = ?", criteria.CategoryID)
 	}
@@ -182,11 +191,6 @@ func (r *repository) Get(ctx context.Context, criteria dto.ProductSearchCriteria
 			return products, nil, nil
 		}
 		r.logger.Errorf("Failed to fetch product: %v", err)
-		return nil, nil, err
-	}
-
-	var count int64
-	if err := r.db.WithContext(ctx).Model(&model.Product{}).Count(&count).Error; err != nil {
 		return nil, nil, err
 	}
 
