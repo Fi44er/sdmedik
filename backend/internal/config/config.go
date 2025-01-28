@@ -19,11 +19,12 @@ type Config struct {
 	PayKeeperPass   string `mapstructure:"PAY_KEEPER_PASS"`
 	PayKeeperServer string `mapstructure:"PAY_KEEPER_SERVER"`
 
-	MailHost     string `mapstructure:"MAIL_HOST"`
-	MailUser     string `mapstructure:"MAIL_USER"`
-	MailPassword string `mapstructure:"MAIL_PASSWORD"`
-	MailFrom     string `mapstructure:"MAIL_FROM"`
-	MailPort     string `mapstructure:"MAIL_PORT"`
+	MailTemplatePath string `mapstructure:"MAIL_TEMPLATE_PATH"`
+	MailHost         string `mapstructure:"MAIL_HOST"`
+	MailUser         string `mapstructure:"MAIL_USER"`
+	MailPassword     string `mapstructure:"MAIL_PASSWORD"`
+	MailFrom         string `mapstructure:"MAIL_FROM"`
+	MailPort         string `mapstructure:"MAIL_PORT"`
 
 	AccessTokenPrivateKey  string        `mapstructure:"ACCESS_TOKEN_PRIVATE_KEY"`
 	RefreshTokenPrivateKey string        `mapstructure:"REFRESH_TOKEN_PRIVATE_KEY"`
