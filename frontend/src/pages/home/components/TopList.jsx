@@ -67,7 +67,7 @@ export default function TopList() {
         animate={{ y: isVisible ? 0 : "100%", opacity: isVisible ? 1 : 0 }}
         transition={{ duration: 1 }}
       >
-        <img style={{ width: "100%" }} src="/public/Line 1.png" alt="Линия" />
+        <img style={{ width: "100%" }} src="/Line 1.png" alt="Линия" />
         <Box sx={{ mt: 3 }}>
           {/* <header> */}
           <Typography
