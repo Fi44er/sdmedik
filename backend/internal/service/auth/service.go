@@ -28,13 +28,14 @@ func NewService(
 	cache *redis.Client,
 	userService def.IUserService,
 ) (*service, error) {
+	templatePath := config.MailTemplatePath
 	m, err := mailer.NewMailer(
-		config.MailHost,                  // SMTP-хост
-		config.MailPort,                  // Порт
-		config.MailFrom,                  // Ваш email
-		config.MailPassword,              // Пароль от почты
-		"pkg/mailer/template/index.html", // Путь к шаблону
-		5,                                // Размер пула соединений
+		config.MailHost,           // SMTP-хост
+		config.MailPort,           // Порт
+		config.MailFrom,           // Ваш email
+		config.MailPassword,       // Пароль от почты
+		templatePath+"index.html", // Путь к шаблону
+		5,                         // Размер пула соединений
 	)
 
 	if err != nil {
