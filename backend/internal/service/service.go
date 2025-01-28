@@ -30,6 +30,7 @@ type IAuthService interface {
 
 type IProductService interface {
 	Create(ctx context.Context, product *dto.CreateProduct, images *dto.Images) error
+	CreateMany(ctx context.Context, products *[]dto.CreateProduct) error
 	Update(ctx context.Context, product *dto.UpdateProduct, images *dto.Images, id string) error
 	Delete(ctx context.Context, id string) error
 	Get(ctx context.Context, criteria dto.ProductSearchCriteria) (*[]response.ProductResponse, error)
