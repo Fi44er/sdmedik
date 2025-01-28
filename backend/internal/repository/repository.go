@@ -27,6 +27,8 @@ type ICategoryRepository interface {
 
 type IProductRepository interface {
 	Create(ctx context.Context, data *model.Product, tx *gorm.DB) error
+	CreateMany(ctx context.Context, data *[]model.Product) error
+
 	Delete(ctx context.Context, id string, tx *gorm.DB) error
 	Update(ctx context.Context, data *model.Product, tx *gorm.DB) error
 	DeleteCategoryAssociation(ctx context.Context, productID string, tx *gorm.DB) error
@@ -34,6 +36,8 @@ type IProductRepository interface {
 	Get(ctx context.Context, criteria dto.ProductSearchCriteria) (*[]model.Product, error)
 	GetByIDs(ctx context.Context, ids []string) (*[]model.Product, error)
 	GetTopProducts(ctx context.Context, limit int) ([]response.ProductPopularity, error)
+
+	GetByArticles(ctx context.Context, articles []string) (*[]model.Product, error)
 }
 
 type IUserRepository interface {

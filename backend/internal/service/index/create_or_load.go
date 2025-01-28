@@ -2,14 +2,11 @@ package index
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"os"
 
 	"github.com/Fi44er/sdmedik/backend/internal/dto"
-	"github.com/Fi44er/sdmedik/backend/internal/model"
 	"github.com/Fi44er/sdmedik/backend/internal/response"
-	"github.com/Fi44er/sdmedik/backend/pkg/constants"
 	"github.com/Fi44er/sdmedik/backend/pkg/utils"
 	"github.com/blevesearch/bleve/v2"
 	"github.com/blevesearch/bleve/v2/analysis/analyzer/custom"
@@ -89,16 +86,24 @@ func (s *service) addSampleProducts(ctx context.Context) error {
 		products = &[]response.ProductResponse{}
 	}
 
-	categories, err := s.categoryService.GetAll(ctx)
-	if err != nil {
-		if !errors.Is(err, constants.ErrCategoryNotFound) {
-			return err
+	newProducts := make([]response.ProductResponse, 0)
+	for _, product := range *products {
+		if len(product.Categories) > 0 {
+			newProducts = append(newProducts, product)
 		}
 	}
+	products = &newProducts
 
-	if categories == nil {
-		categories = &[]model.Category{}
-	}
+	// categories, err := s.categoryService.GetAll(ctx)
+	// if err != nil {
+	// 	if !errors.Is(err, constants.ErrCategoryNotFound) {
+	// 		return err
+	// 	}
+	// }
+	//
+	// if categories == nil {
+	// 	categories = &[]model.Category{}
+	// }
 
 	// Создаем пакет для индексации
 	batch := s.index.NewBatch()
@@ -111,11 +116,11 @@ func (s *service) addSampleProducts(ctx context.Context) error {
 	}
 
 	// Добавляем категории в пакет
-	for _, category := range *categories {
-		if err := s.addToBatch(batch, category, "product"); err != nil {
-			s.logger.Errorf("ошибка при добавлении категории с ID %v в пакет: %v", category.ID, err)
-		}
-	}
+	// for _, category := range *categories {
+	// 	if err := s.addToBatch(batch, category, "product"); err != nil {
+	// 		s.logger.Errorf("ошибка при добавлении категории с ID %v в пакет: %v", category.ID, err)
+	// 	}
+	// }
 
 	// Выполняем пакетную индексацию
 	if err := s.index.Batch(batch); err != nil {

@@ -5,8 +5,6 @@ import (
 	"reflect"
 	"strconv"
 
-	// "strconv"
-
 	"github.com/Fi44er/sdmedik/backend/internal/dto"
 	"github.com/Fi44er/sdmedik/backend/internal/model"
 	def "github.com/Fi44er/sdmedik/backend/internal/repository"
@@ -216,4 +214,25 @@ func (r *repository) GetTopProducts(ctx context.Context, limit int) ([]response.
 	}
 
 	return topProducts, nil
+}
+
+func (r *repository) CreateMany(ctx context.Context, data *[]model.Product) error {
+	r.logger.Info("Creating products...")
+
+	if err := r.db.WithContext(ctx).Create(data).Error; err != nil {
+		r.logger.Errorf("Failed to create products: %v", err)
+		return err
+	}
+
+	r.logger.Info("Products created successfully")
+	return nil
+}
+
+func (r *repository) GetByArticles(ctx context.Context, articles []string) (*[]model.Product, error) {
+	products := new([]model.Product)
+	if err := r.db.WithContext(ctx).Where("article IN (?)", articles).Find(products).Error; err != nil {
+		r.logger.Errorf("Failed to fetch products by articles: %v", err)
+		return nil, err
+	}
+	return products, nil
 }

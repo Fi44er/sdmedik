@@ -3,13 +3,11 @@ package webscraper
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 
 	"github.com/Fi44er/sdmedik/backend/internal/dto"
 	"github.com/Fi44er/sdmedik/backend/internal/model" // Предположим, что Certificate находится в этом пакете
 	"github.com/Fi44er/sdmedik/backend/internal/service/webscraper/structs"
-	"github.com/Fi44er/sdmedik/backend/pkg/constants"
 	"github.com/Fi44er/sdmedik/backend/pkg/utils"
 	"github.com/Fi44er/sdmedik/backend/pkg/webscraper"
 )
@@ -51,6 +49,7 @@ func (s *service) Scraper() error {
 	// Разделяем данные на создание и обновление
 	createCert := make([]model.Certificate, 0)
 	updateCert := make([]model.Certificate, 0)
+	createProducts := make([]dto.CreateProduct, 0)
 
 	for _, item := range items {
 		options := utils.RequestOptions{
@@ -105,13 +104,15 @@ func (s *service) Scraper() error {
 				Article: product.Article,
 				Name:    product.Name,
 			}
-			err := s.productService.Create(ctx, &productDto, nil)
-			s.logger.Logger.Infof("productDto: %v", productDto)
-			if err != nil {
-				if !errors.Is(err, constants.ErrProductWithArticleConflict) {
-					return err
-				}
-			}
+			createProducts = append(createProducts, productDto)
+		}
+	}
+
+	productChank := s.chunkSliceProduct(createProducts, 1000)
+	for _, chunk := range productChank {
+		err := s.productService.CreateMany(ctx, &chunk)
+		if err != nil {
+			return err
 		}
 	}
 
@@ -136,6 +137,18 @@ func (s *service) Scraper() error {
 
 func (s *service) chunkSlice(slice []dto.GetManyCert, chunkSize int) [][]dto.GetManyCert {
 	var chunks [][]dto.GetManyCert
+	for i := 0; i < len(slice); i += chunkSize {
+		end := i + chunkSize
+		if end > len(slice) {
+			end = len(slice)
+		}
+		chunks = append(chunks, slice[i:end])
+	}
+	return chunks
+}
+
+func (s *service) chunkSliceProduct(slice []dto.CreateProduct, chunkSize int) [][]dto.CreateProduct {
+	var chunks [][]dto.CreateProduct
 	for i := 0; i < len(slice); i += chunkSize {
 		end := i + chunkSize
 		if end > len(slice) {

@@ -26,17 +26,23 @@ func (s *service) CheckAndApplyPromotions(ctx context.Context, basket *response.
 	copy(updatedBasket.Items, basket.Items)
 
 	// Перебираем все акции
+
 	for _, promotion := range *promotions {
-		if promotion.EndDate.Before(time.Now()) || promotion.StartDate.After(time.Now()) {
+		currentTime := time.Now().UTC().Add(5 * time.Hour)
+		if promotion.EndDate.Before(currentTime) || promotion.StartDate.After(currentTime) {
+			s.logger.Infof("currentTime: %v, startDate: %v, endDate: %v", currentTime, promotion.StartDate, promotion.EndDate)
 			continue
 		}
+
 		// Проверяем условия акции
 		conditionsMet := true
+
 		switch promotion.Condition.Type {
 		case model.ConditionTypeMinQuantity:
 			// Проверка минимального количества товаров
 			minQuantity, _ := strconv.Atoi(promotion.Condition.Value)
 			totalQuantity := 0
+
 			for _, item := range updatedBasket.Items {
 				if item.ProductID == promotion.TargetID {
 					totalQuantity += item.Quantity
@@ -46,7 +52,6 @@ func (s *service) CheckAndApplyPromotions(ctx context.Context, basket *response.
 				conditionsMet = false
 				break
 			}
-
 		}
 
 		// Если условия выполнены, применяем вознаграждение

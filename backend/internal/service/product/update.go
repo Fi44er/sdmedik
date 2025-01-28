@@ -126,10 +126,17 @@ func (s *service) Update(ctx context.Context, data *dto.UpdateProduct, images *d
 		return err
 	}
 
-	s.evenBus.Publish(events.Event{
-		Type: events.EventDataCreatedOrUpdated,
-		Data: modelProduct,
-	})
+	if len(modelProduct.Categories) > 0 {
+		s.evenBus.Publish(events.Event{
+			Type: events.EventDataCreatedOrUpdated,
+			Data: modelProduct,
+		})
+	} else {
+		s.evenBus.Publish(events.Event{
+			Type: events.EventDataDeleted,
+			Data: modelProduct,
+		})
+	}
 
 	return nil
 }
