@@ -35,7 +35,35 @@ const useOrderStore = create((set, get) => ({
       //   set({ order: response.data });
       // Исправлено: проверка статуса ответа
       if (response.data.status === "success") {
-        window.location.href = response.data.data.id;
+        window.location.href = response.data.data.url;
+      }
+    } catch (error) {
+      toast.error(
+        "Ошибка оплаты: " + (error.response?.data?.message || error.message)
+      );
+      console.error("Error Registrations:", error);
+    }
+  },
+  payOrderById: async (id) => {
+    const { email, fio, phone_number } = useOrderStore.getState();
+
+    try {
+      const response = await axios.post(
+        `http://localhost:8080/api/v1/order/${id}`,
+        {
+          email,
+          fio,
+          phone_number,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+      console.log("Response:", response);
+      //   set({ order: response.data });
+      // Исправлено: проверка статуса ответа
+      if (response.data.status === "success") {
+        window.location.href = response.data.data.url;
       }
     } catch (error) {
       toast.error(
@@ -86,12 +114,9 @@ const useOrderStore = create((set, get) => ({
   },
   fetchUserOrders: async () => {
     try {
-      const response = await axios.get(
-        `${url}/order/my`,
-        {
-          withCredentials: true,
-        }
-      );
+      const response = await axios.get(`${url}/order/my`, {
+        withCredentials: true,
+      });
 
       set({ userOrders: response.data });
 

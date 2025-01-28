@@ -242,6 +242,9 @@ export default function ProductDetailPage() {
                 color: "#00B3A4",
               }}
               variant="outlined"
+              onClick={() => {
+                window.location.href = `/paymants/${products.data.id}`;
+              }}
             >
               В 1 клик
             </Button>

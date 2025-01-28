@@ -27,6 +27,7 @@ import MainContent from "../pages/admin/components_admin_page/MainContent/MainCo
 import AdminUserTable from "../pages/admin/components_admin_page/AdminUserTable/AdminUserTable";
 import AdminProductTable from "../pages/admin/components_admin_page/AdminProductTable/AdminProductTable";
 import Paymants from "../pages/paymants/Paymants";
+import PayOnclick from "../pages/pay_onclick/PayOnclick";
 
 const UsersRoute = ({ children }) => {
   const isLoggedIn = Cookies.get("logged_in") === "true";
@@ -125,6 +126,10 @@ export const router = createBrowserRouter([
   {
     path: "/paymants",
     element: <Paymants />,
+  },
+  {
+    path: "/paymants/:id",
+    element: <PayOnclick />,
   },
   {
     path: "/profile",

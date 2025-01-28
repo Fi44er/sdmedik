@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import axios from "axios";
 import { url } from "../constants/constants";
+import { toast } from "react-toastify";
 
 const useProductStore = create((set, get) => ({
   product: {
@@ -19,16 +20,16 @@ const useProductStore = create((set, get) => ({
         },
       });
       // Обработка успешного ответа
-      console.log("Продукт создан:", response.data);
+      toast.success("Продукт успешно создан");
     } catch (error) {
       // Обработка ошибки
-      console.error("Ошибка при создании продукта:", error);
+      console.error("Ошибка при создании продукта:", error);  
       if (error.response.status === 401) {
         // Если статус 401, обновляем токены и повторяем запрос
         await get().refreshToken();
         await get().createProduct(formData); // Повторяем запрос
       } else {
-        alert(
+        toast.error(
           "Ошибка при сохранении продукта: " +
             (error.response?.data?.message || error.message)
         );
@@ -46,6 +47,7 @@ const useProductStore = create((set, get) => ({
       });
       // Обработка успешного ответа
       console.log("Продукт обновлен:", response.data);
+      toast.success("Продукт успешно обновлен");
     } catch (error) {
       // Обработка ошибки
       console.error("Ошибка при обновлении продукта:", error);
@@ -54,7 +56,7 @@ const useProductStore = create((set, get) => ({
         await get().refreshToken();
         await get().updateProduct(id, formData); // Повторяем запрос
       } else {
-        alert(
+        toast.error(
           "Ошибка при обновлении продукта: " +
             (error.response?.data?.message || error.message)
         );
