@@ -19,9 +19,11 @@ const indexDir = "product_index" // Директория для хранения
 
 func (s *service) CreateOrLoad() (bleve.Index, error) {
 	if _, err := os.Stat(indexDir); os.IsNotExist(err) {
+		s.logger.Infof("Индекс не найден, создаем новый индекс в директории: %s", indexDir)
 		return s.createIndex()
 	}
 
+	s.logger.Infof("Открываем существующий индекс в директории: %s", indexDir)
 	return bleve.Open(indexDir)
 }
 
