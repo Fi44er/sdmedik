@@ -30,7 +30,7 @@ func (i *Implementation) Get(ctx *fiber.Ctx) error {
 
 	utils.BindQueryToStruct(params, &criteria)
 
-	product, err := i.productService.Get(ctx.Context(), criteria)
+	product, count, err := i.productService.Get(ctx.Context(), criteria)
 	if err != nil {
 		code, msg := errors.GetErroField(err)
 		return ctx.Status(code).JSON(msg)
@@ -39,5 +39,5 @@ func (i *Implementation) Get(ctx *fiber.Ctx) error {
 	if len(*product) == 1 {
 		return ctx.Status(200).JSON(fiber.Map{"status": "success", "data": (*product)[0]})
 	}
-	return ctx.Status(200).JSON(fiber.Map{"status": "success", "data": product})
+	return ctx.Status(200).JSON(fiber.Map{"status": "success", "data": product, "count": count})
 }
