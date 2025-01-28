@@ -216,15 +216,16 @@ export default function ProductDetailPage() {
                   }}
                   sx={{ border: `2px solid #00B3A4`, color: "#00B3A4" }}
                 >
-                  Узнать стоимость сертификатом
+                  Стоимость при оплате сертификатом
                 </Button>
               </Box>
 
               <Typography variant="h5" sx={{ color: "#00B3A4" }}>
-                Цена: {products.data.price} р
+                Цена: {products.data.price} руб
               </Typography>
               <Typography variant="h5" sx={{ color: "#00B3A4" }}>
-                Стоимость сертификатом: {products.data.certificate_price} р
+                Стоимость при оплате сертификатом:{" "}
+                {products.data.certificate_price} руб
               </Typography>
               {/* Other components */}
             </Box>

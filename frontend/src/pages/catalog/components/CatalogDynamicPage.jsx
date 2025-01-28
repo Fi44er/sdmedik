@@ -3,7 +3,6 @@ import {
   Button,
   Card,
   CardContent,
-  CardHeader,
   CardMedia,
   IconButton,
   Pagination,
@@ -15,7 +14,6 @@ import { useParams } from "react-router-dom";
 import useProductStore from "../../../store/productStore";
 import SidebarFilter from "./SidebarFilter";
 import useBascketStore from "../../../store/bascketStore";
-import { height } from "@mui/system";
 import { urlPictures } from "../../../constants/constants";
 
 export default function CatalogDynamicPage() {
@@ -25,14 +23,14 @@ export default function CatalogDynamicPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [filters, setFilters] = useState(null); // Состояние для хранения фильтров
   const [currentProducts, setCurrentProducts] = useState([]); // Переменная для хранения текущих продуктов
-  const [quantity, setQuantity] = useState(1);
-  const ProductsPerPage = 20;
+  const [ProductsPerPage] = useState(20); // Количество продуктов на странице
 
   const category_id = id;
 
   useEffect(() => {
-    fetchProducts(category_id, filters); // Передаем фильтры в fetchProducts
-  }, [category_id, fetchProducts, filters]); // Добавляем filters в зависимости
+    const offset = (currentPage - 1) * ProductsPerPage; // Рассчитываем offset
+    fetchProducts(category_id, filters, offset, ProductsPerPage); // Передаем offset и limit в fetchProducts
+  }, [category_id, fetchProducts, filters, currentPage]); // Добавляем currentPage в зависимости
 
   useEffect(() => {
     if (products?.data) {
@@ -46,24 +44,8 @@ export default function CatalogDynamicPage() {
     }
   }, [products]);
 
-  const indexOfLastItem = currentPage * ProductsPerPage;
-  const indexOfFirstItem = indexOfLastItem - ProductsPerPage;
-
   const handleChangePage = (event, value) => {
     setCurrentPage(value);
-  };
-
-  const paginatedProducts = currentProducts.slice(
-    indexOfFirstItem,
-    indexOfLastItem
-  );
-
-  const hendleAddProductThithBascket = async (id) => {
-    setQuantity(quantity);
-    const product_id = id;
-    console.log(id, quantity);
-
-    await addProductThisBascket(product_id, quantity);
   };
 
   return (
@@ -77,8 +59,8 @@ export default function CatalogDynamicPage() {
         columns={{ xs: 4, sm: 4, md: 4 }}
         sx={{ height: 800, overflowX: "auto", pt: 2, pb: 2 }}
       >
-        {paginatedProducts.length > 0 ? (
-          paginatedProducts.map((e) => (
+        {currentProducts.length > 0 ? (
+          currentProducts.map((e) => (
             <Grid item key={e.id} xs={6} sm={4} md={3}>
               <Card
                 sx={{
@@ -95,9 +77,6 @@ export default function CatalogDynamicPage() {
                   display: "flex",
                   flexDirection: "column",
                 }}
-                // onClick={() => {
-                //   window.location.href = `/product/${e.id}`;
-                // }}
               >
                 <Box
                   sx={{
@@ -127,7 +106,7 @@ export default function CatalogDynamicPage() {
                       fontWeight: "bold",
                       mb: 1,
                       width: "235px",
-                      overflow: "hidden", // Исправлено на overflow
+                      overflow: "hidden",
                       textOverflow: "ellipsis",
                       whiteSpace: "nowrap",
                     }}
@@ -192,7 +171,7 @@ export default function CatalogDynamicPage() {
                   </Button>
                   <IconButton
                     onClick={() => {
-                      hendleAddProductThithBascket(e.id);
+                      addProductThisBascket(e.id);
                     }}
                   >
                     <img
@@ -211,7 +190,7 @@ export default function CatalogDynamicPage() {
       </Grid>
       {currentProducts.length > 0 && (
         <Pagination
-          count={Math.ceil(currentProducts.length / ProductsPerPage)}
+          count={Math.ceil(products.total / ProductsPerPage)} // Обновите общее количество страниц
           page={currentPage}
           onChange={handleChangePage}
           sx={{

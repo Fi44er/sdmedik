@@ -1,133 +1,82 @@
-import { Box, Button, CardMedia, Typography } from "@mui/material";
-import React, { useEffect, useState } from "react";
-import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
+import { Box, Button, Typography } from "@mui/material";
+import React, { useEffect } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/swiper-bundle.css"; // Импортируйте стили Swiper
+import { Autoplay, Navigation } from "swiper/modules"; // Импортируйте необходимые модули
+import usePromotionStore from "../../../store/promotionStore";
 
 export default function PromotionalSlider() {
-  const [slides, setSlides] = useState([]);
+  const { fetchPromotion, promotions } = usePromotionStore();
 
   useEffect(() => {
-    // Замените на статические данные для тестирования
-    const testSlides = [
-      {
-        title: "Слайд 1",
-        description: "Описание для слайда 1",
-        link: "https://example.com/slide1",
-        image: "/public/wheelchair.png",
-        altText: "Слайд 1",
-      },
-      {
-        title: "Слайд 2",
-        description: "Описание для слайда 2",
-        link: "https://example.com/slide2",
-        image: "https://via.placeholder.com/600x400?text=Slide+2",
-        altText: "Слайд 2",
-      },
-      {
-        title: "Слайд 3",
-        description: "Описание для слайда 3",
-        link: "https://example.com/slide3",
-        image: "https://via.placeholder.com/600x400?text=Slide+3",
-        altText: "Слайд 3",
-      },
-    ];
-
-    setSlides(testSlides);
+    fetchPromotion();
   }, []);
 
-  const settings = {
-    infinite: true,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
+  // Функция для форматирования даты
+  const formatDate = (dateString) => {
+    const options = { year: "numeric", month: "long", day: "numeric" };
+    return new Date(dateString).toLocaleDateString("ru-RU", options);
   };
 
   return (
     <Box sx={{ mb: 2 }}>
-      <Slider {...settings}>
-        {slides.map((slide, index) => (
-          <Box
-            component="section"
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              background: `linear-gradient(280.17deg, #00B3A4 -56.17%, #66D1C6 100%)`,
-              borderRadius: "10px",
-              padding: { xs: "20px", lg: "70px" },
-            }}
-          >
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: {
-                  xs: "column",
-                  sm: "unset",
-                  md: "unset",
-                  lg: "unset",
-                },
-                justifyContent: { xs: "unset", md: "space-between" },
-                gridGap: { xs: "40px", md: 60, lg: 0 },
-              }}
-            >
+      <Swiper
+        modules={[Autoplay, Navigation]} // Подключите модули
+        spaceBetween={30}
+        slidesPerView={1}
+        autoplay={{ delay: 10000 }} // Автоматическая прокрутка
+      >
+        {promotions && promotions.data && promotions.data.length > 0 ? (
+          promotions.data.map((slide, index) => (
+            <SwiperSlide key={index}>
               <Box
+                component="section"
                 sx={{
-                  width: "50%",
                   display: "flex",
                   flexDirection: "column",
-                  gridGap: 20,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  background: `linear-gradient(280.17deg, rgba(0, 179, 164, 0.8), rgba(102, 209, 198, 0.8)), url(${slide.image})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                  borderRadius: "10px",
+                  padding: { xs: "20px", lg: "70px" },
+                  height: { xs: "300px", lg: "400px" },
+                  color: "white",
+                  position: "relative",
                 }}
               >
                 <Typography
                   variant="h2"
-                  color="white"
-                  sx={{ fontSize: { xs: "40px", lg: "60px" } }}
-                >
-                  Оплата электронным сертификатом
-                </Typography>
-                <Typography variant="h6" color="white" component="p">
-                  Теперь оплачивать покупки на нашем сайте вы можете и
-                  электронным сертификатом
-                </Typography>
-                <Button
                   sx={{
-                    display: "flex",
-                    justifyContent: "left",
-                    background: `linear-gradient(95.61deg, #A5DED1 4.71%, #00B3A4 97.25%)`,
-                    width: "max-content",
-                    padding: "13px 39px",
-                    color: "white",
-                    fontSize: "18px",
-                  }}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    window.location.href = "/certificate";
+                    fontSize: { xs: "24px", lg: "48px" },
+                    textAlign: "center",
+                    fontWeight: "bold",
+                    textShadow: "2px 2px 4px rgba(0, 0, 0, 0.7)",
                   }}
                 >
-                  Подробнее
-                </Button>
+                  {slide.name}
+                </Typography>
+                <Typography variant="h6" sx={{ textAlign: "center", mb: 2 }}>
+                  {slide.description}
+                </Typography>
+                <Typography variant="h6" sx={{ textAlign: "center", mb: 2 }}>
+                  Акция действует с {formatDate(slide.start_date)} до
+                  {formatDate(slide.end_date)}
+                </Typography>
+                <Typography variant="h6" sx={{ textAlign: "center", mb: 2 }}>
+                  До: 
+                  {formatDate(slide.end_date)}
+                </Typography>
               </Box>
-              <Box sx={{ width: { xs: "100%", md: "100%", lg: "50%" } }}>
-                <CardMedia
-                  component="img"
-                  image="/public/Group 31.png"
-                  alt="Изображение, иллюстрирующее оплату электронным сертификатом"
-                  sx={{
-                    width: { xs: "100%", sm: "50%", md: "80%", lg: "100%" },
-                    height: {
-                      xs: "300px",
-                      sm: "300px",
-                      md: "350px",
-                      lg: "400px",
-                    },
-                    objectFit: "cover",
-                  }}
-                />
-              </Box>
-            </Box>
-          </Box>
-        ))}
-      </Slider>
+            </SwiperSlide>
+          ))
+        ) : (
+          <Typography variant="h6" color="white" align="center">
+            Нет доступных акций
+          </Typography>
+        )}
+      </Swiper>
     </Box>
   );
 }

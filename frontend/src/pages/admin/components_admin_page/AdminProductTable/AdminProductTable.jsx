@@ -24,11 +24,12 @@ const AdminProductTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
   const [selectedCategory, setSelectedCategory] = useState(""); // Состояние для выбранной категории
-  const { fetchCategory, category, deleteCategory } = useCategoryStore();
+  const { fetchCategory, category } = useCategoryStore();
 
   useEffect(() => {
-    fetchProducts();
-  }, []);
+    const offset = (currentPage - 1) * itemsPerPage; // Рассчитываем offset
+    fetchProducts(selectedCategory, null, offset, itemsPerPage); // Передаем offset и limit в fetchProducts
+  }, [currentPage, selectedCategory]); // Добавляем currentPage и selectedCategory в зависимости
 
   useEffect(() => {
     if (Array.isArray(products.data)) {
@@ -36,29 +37,11 @@ const AdminProductTable = () => {
     }
   }, [products]);
 
-  // Функция для фильтрации по категории
   const handleCategoryChange = (event) => {
     const category = event.target.value;
     setSelectedCategory(category);
-
-    //   if (category) {
-    //     const filtered = products.data.filter((product) =>
-    //       product.categories.some((cat) => cat.name === category)
-    //     );
-    //     setFilteredProducts(filtered);
-    //   } else {
-    //     setFilteredProducts(products.data);
-    //   }
+    setCurrentPage(1); // Сброс страницы при изменении категории
   };
-
-  // Сортировка по дате создания (новые товары первыми)
-  const sortedProducts = filteredProducts.sort((a, b) => {
-    return new Date(b.created_at) - new Date(a.created_at);
-  });
-
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = sortedProducts.slice(indexOfFirstItem, indexOfLastItem);
 
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
@@ -66,17 +49,13 @@ const AdminProductTable = () => {
 
   const handleDeleteProduct = async (id) => {
     await deleteProduct(id);
-    fetchProducts();
-  };
-
-  const handleSelectFilterCategory = async () => {
-    const category_id = parseInt(selectedCategory);
-    await fetchProducts(category_id);
+    // После удаления, обновляем список товаров
+    const offset = (currentPage - 1) * itemsPerPage; // Рассчитываем новый offset
+    fetchProducts(selectedCategory, null, offset, itemsPerPage);
   };
 
   useEffect(() => {
     fetchCategory();
-    console.log(category);
   }, []);
 
   return (
@@ -96,31 +75,19 @@ const AdminProductTable = () => {
           <em>Все категории</em>
         </MenuItem>
         {category.data &&
-          category?.data.map((category) => {
-            return <MenuItem value={category.id}>{category.name}</MenuItem>;
-          })}
+          category.data.map((cat) => (
+            <MenuItem key={cat.id} value={cat.id}>
+              {cat.name}
+            </MenuItem>
+          ))}
       </Select>
 
-      <Button
-        onClick={() => {
-          handleSelectFilterCategory();
-        }}
-      >
-        Применить
-      </Button>
-
       <Paper sx={{ width: "100%" }}>
-        {/* Таблица для больших экранов */}
-        <TableContainer
-          sx={{
-            overflowX: "auto",
-            display: { xs: "none", sm: "block" },
-            height: "600px",
-          }}
-        >
+        <TableContainer sx={{ overflowX: "auto", height: "600px" }}>
           <Table>
             <TableHead>
               <TableRow>
+                <TableCell>Id товара</TableCell>
                 <TableCell>Фото</TableCell>
                 <TableCell>Название</TableCell>
                 <TableCell>Цена</TableCell>
@@ -131,8 +98,11 @@ const AdminProductTable = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {currentItems.map((product) => (
+              {filteredProducts.map((product) => (
                 <TableRow key={product.id}>
+                  <TableCell>
+                    <Box sx={{ display: "flex", gap: 1 }}>{product.id}</Box>
+                  </TableCell>
                   <TableCell>
                     <Box sx={{ display: "flex", gap: 1 }}>
                       {product.images.map((image) => (
@@ -179,57 +149,10 @@ const AdminProductTable = () => {
           </Table>
         </TableContainer>
 
-        {/* Карточки для мобильных устройств */}
-        <Box sx={{ display: { xs: "block", sm: "none" } }}>
-          {currentItems.map((product) => (
-            <Paper key={product.id} sx={{ mb: 2, p: 2 }}>
-              <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-                <Box sx={{ display: "flex", gap: 1 }}>
-                  {product.images.map((image) => (
-                    <img
-                      key={image.id}
-                      src={`${urlPictures}/${image.name}`}
-                      alt="product"
-                      style={{ width: 50, height: 50, borderRadius: "4px" }}
-                    />
-                  ))}
-                </Box>
-                <Box>Название: {product.name}</Box>
-                <Box>Цена: {product.price}</Box>
-                <Box>
-                  Категория:{" "}
-                  {product.categories
-                    .map((category) => category.name)
-                    .join(", ")}
-                </Box>
-                <Box sx={{ display: "flex", gap: 1 }}>
-                  <Button
-                    variant="contained"
-                    color="error"
-                    onClick={() => handleDeleteProduct(product.id)}
-                  >
-                    удалить
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="info"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      window.location.href = `/admin/update_product/${product.id}`;
-                    }}
-                  >
-                    редактировать
-                  </Button>
-                </Box>
-              </Box>
-            </Paper>
-          ))}
-        </Box>
-
         {/* Пагинация */}
         <Box sx={{ display: "flex", justifyContent: "center", mt: 2, mb: 2 }}>
           <Pagination
-            count={Math.ceil(filteredProducts.length / itemsPerPage)}
+            count={Math.ceil(products.total / itemsPerPage)} // Обновите общее количество страниц
             page={currentPage}
             onChange={handlePageChange}
             color="primary"

@@ -13,10 +13,12 @@ const NavBar = () => {
   const [menuCategories, setMenuCategories] = useState(null);
   const [menuUsers, setMenuUsers] = useState(null);
   const [menuProducts, setMenuProducts] = useState(null);
+  const [menuPromotion, setMenuPromotion] = useState(null);
 
   const openCategories = Boolean(menuCategories);
   const openProducts = Boolean(menuProducts);
   const openUsers = Boolean(menuUsers);
+  const openPromotion = Boolean(menuPromotion);
   const handleCloseCategoryMenu = () => {
     setMenuCategories(null);
   };
@@ -35,6 +37,12 @@ const NavBar = () => {
   const handleClickProductMenu = (event) => {
     setMenuProducts(event.currentTarget);
   };
+  const handleClickPromotionMenu = (event) => {
+    setMenuPromotion(event.currentTarget);
+  };
+  const handleClosePromotionMenu = () => {
+    setMenuPromotion(null);
+  };
 
   return (
     <AppBar position="static">
@@ -48,27 +56,27 @@ const NavBar = () => {
         <Button
           color="inherit"
           id="basic-button"
-          aria-controls={openCategories ? "category-menu" : undefined}
+          aria-controls={openPromotion ? "promotion-menu" : undefined}
           aria-haspopup="true"
-          aria-expanded={openCategories ? "true" : undefined}
-          onClick={handleClickCategoryMenu}
+          aria-expanded={openPromotion ? "true" : undefined}
+          onClick={handleClickPromotionMenu}
         >
-          Категории
+          Акции
         </Button>
         <Menu
-          id="category-menu"
-          anchorEl={menuCategories}
-          open={openCategories}
-          onClose={handleCloseCategoryMenu}
+          id="promotion-menu"
+          anchorEl={menuPromotion}
+          open={openPromotion}
+          onClose={handleClosePromotionMenu}
           MenuListProps={{
             "aria-labelledby": "basic-button",
           }}
         >
           <MenuItem>
-            <Link href="/admin/create_category">Создать категорию</Link>
+            <Link href="/admin/create_promotion">Создать Акцию</Link>
           </MenuItem>
-          <MenuItem onClick={handleCloseCategoryMenu}>
-            <Link href="/admin/table_category">Таблица с категориями</Link>
+          <MenuItem onClick={handleClosePromotionMenu}>
+            <Link href="/admin/table_promotion">Таблица с Акциями</Link>
           </MenuItem>
         </Menu>
         <Button

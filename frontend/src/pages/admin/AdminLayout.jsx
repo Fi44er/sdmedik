@@ -12,6 +12,7 @@ import MainContent from "./components_admin_page/MainContent/MainContent";
 import UpdateProduct from "./update_product/UpdateProduct";
 import { useEffect, useState } from "react";
 import CreatePromotion from "./create_promotion/CreatePromotion";
+import AdminPromotionTable from "./components_admin_page/AdminPromotionTable/AdminPromotionTable";
 function ProtectedRoute({ element }) {
   const { getUserInfo, user } = useUserStore();
   const [loading, setLoading] = useState(true);
@@ -60,6 +61,10 @@ export default function AdminDashboard() {
           <Route
             path="/create_promotion"
             element={<ProtectedRoute element={<CreatePromotion />} />}
+          />
+          <Route
+            path="/table_promotion"
+            element={<ProtectedRoute element={<AdminPromotionTable />} />}
           />
           <Route
             path="/table_category"

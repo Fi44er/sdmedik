@@ -26,6 +26,18 @@ export default function CreatePromotion() {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
+  const formatDateTime = (dateString) => {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Месяцы начинаются с 0
+    const day = String(date.getDate()).padStart(2, "0");
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    const seconds = String(date.getSeconds()).padStart(2, "0");
+
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -36,19 +48,43 @@ export default function CreatePromotion() {
         value: conditionValue,
       },
       description: description,
-      end_date: endDate,
+      end_date: formatDateTime(endDate), // Преобразование даты
       name: name,
       reward: {
         type: rewardType,
         value: parseFloat(rewardValue), // Приведение к числу
       },
-      start_date: startDate,
+      start_date: formatDateTime(startDate), // Преобразование даты
       target_id: targetId,
       type: type,
     };
 
     // Вызов функции createPromotion с объектом payload
     await createPromotion(payload);
+  };
+
+  const handleStartDateChange = (e) => {
+    const date = e.target.value;
+    const currentTime = new Date();
+    const formattedDateTime = `${date} ${String(
+      currentTime.getHours()
+    ).padStart(2, "0")}:${String(currentTime.getMinutes()).padStart(
+      2,
+      "0"
+    )}:${String(currentTime.getSeconds()).padStart(2, "0")}`;
+    setStartDate(formattedDateTime);
+  };
+
+  const handleEndDateChange = (e) => {
+    const date = e.target.value;
+    const currentTime = new Date();
+    const formattedDateTime = `${date} ${String(
+      currentTime.getHours()
+    ).padStart(2, "0")}:${String(currentTime.getMinutes()).padStart(
+      2,
+      "0"
+    )}:${String(currentTime.getSeconds()).padStart(2, "0")}`;
+    setEndDate(formattedDateTime);
   };
 
   return (
@@ -104,7 +140,6 @@ export default function CreatePromotion() {
             required
           >
             <MenuItem value="min_quantity">Минимальное количество</MenuItem>
-            <MenuItem value="buy_n">Купить энное количество товара</MenuItem>
           </Select>
         </FormControl>
         <TextField
@@ -124,7 +159,7 @@ export default function CreatePromotion() {
             required
           >
             <MenuItem value="percentage">Процент</MenuItem>
- <MenuItem value="fixed">Фиксированная сумма</MenuItem>
+            <MenuItem value="fixed">Фиксированная сумма</MenuItem>
           </Select>
         </FormControl>
         <TextField
@@ -140,8 +175,7 @@ export default function CreatePromotion() {
           fullWidth
           label="Дата начала"
           type="date"
-          value={startDate}
-          onChange={(e) => setStartDate(e.target.value)}
+          onChange={handleStartDateChange}
           required
           sx={{ mb: 2 }}
           InputLabelProps={{
@@ -152,8 +186,7 @@ export default function CreatePromotion() {
           fullWidth
           label="Дата окончания"
           type="date"
-          value={endDate}
-          onChange={(e) => setEndDate(e.target.value)}
+          onChange={handleEndDateChange}
           required
           sx={{ mb: 2 }}
           InputLabelProps={{
