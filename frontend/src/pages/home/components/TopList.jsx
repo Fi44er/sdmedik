@@ -138,7 +138,7 @@ export default function TopList() {
                           // textDecoration: "line-through",
                         }}
                       >
-                        Всего куплено {item.order_count} шт.
+                        Всего заказов {item.order_count} шт.
                       </Typography>
 
                       <Box

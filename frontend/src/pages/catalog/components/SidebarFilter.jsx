@@ -211,8 +211,9 @@ const SidebarFilter = ({ setFilters }) => {
                     <Typography>{char.name}</Typography>
                   </AccordionSummary>
                   <AccordionDetails>
-                    {char.values.map((value) => (
+                    {char.values.map((value, index) => (
                       <FormControlLabel
+                        key={`${char.id}-${value}`} // Unique key for each checkbox
                         control={
                           <Checkbox
                             sx={{

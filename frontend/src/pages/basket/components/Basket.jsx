@@ -80,7 +80,7 @@ export default function Basket() {
       >
         {currentProducts.length > 0 &&
           currentProducts.map((product) => (
-            <Grid item key={product.product_id} xs={12} sm={6} md={4}>
+            <Grid item={"true"} key={product.product_id} xs={12} sm={6} md={4}>
               <Card
                 sx={{
                   display: "flex",

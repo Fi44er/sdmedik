@@ -152,7 +152,7 @@ const AdminProductTable = () => {
         {/* Пагинация */}
         <Box sx={{ display: "flex", justifyContent: "center", mt: 2, mb: 2 }}>
           <Pagination
-            count={Math.ceil(products.total / itemsPerPage)} // Обновите общее количество страниц
+            count={Math.ceil((products.count || 0) / itemsPerPage)} // Use Math.ceil to ensure it's an integer
             page={currentPage}
             onChange={handlePageChange}
             color="primary"
