@@ -13,7 +13,7 @@ import (
 func (s *service) Delete(ctx context.Context, id string) error {
 	names := []string{}
 
-	product, err := s.repo.Get(ctx, dto.ProductSearchCriteria{ID: id})
+	product, _, err := s.repo.Get(ctx, dto.ProductSearchCriteria{ID: id})
 	if err != nil {
 		return err
 	}

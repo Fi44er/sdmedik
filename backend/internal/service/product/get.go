@@ -9,11 +9,11 @@ import (
 	"github.com/Fi44er/sdmedik/backend/internal/response"
 )
 
-func (s *service) Get(ctx context.Context, criteria dto.ProductSearchCriteria) (*[]response.ProductResponse, error) {
+func (s *service) Get(ctx context.Context, criteria dto.ProductSearchCriteria) (*[]response.ProductResponse, *int64, error) {
 	// Получаем продукты из репозитория
-	products, err := s.repo.Get(ctx, criteria)
+	products, count, err := s.repo.Get(ctx, criteria)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	// Создаем слайс для результата
@@ -37,12 +37,12 @@ func (s *service) Get(ctx context.Context, criteria dto.ProductSearchCriteria) (
 	// Получаем характеристики по их IDs
 	characteristics, err := s.characteristicService.GetByIDs(ctx, characteristicIDs)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	certificates, err := s.certificateService.GetMany(ctx, &certificateDto)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	s.logger.Infof("certificates: %v", *certificates)
@@ -110,5 +110,5 @@ func (s *service) Get(ctx context.Context, criteria dto.ProductSearchCriteria) (
 		})
 	}
 
-	return &productRes, nil
+	return &productRes, count, nil
 }

@@ -113,7 +113,7 @@ func (r *repository) Delete(ctx context.Context, id string, tx *gorm.DB) error {
 	return nil
 }
 
-func (r *repository) Get(ctx context.Context, criteria dto.ProductSearchCriteria) (*[]model.Product, error) {
+func (r *repository) Get(ctx context.Context, criteria dto.ProductSearchCriteria) (*[]model.Product, *int64, error) {
 	products := new([]model.Product)
 
 	conditions := make(map[string]interface{})
@@ -138,7 +138,16 @@ func (r *repository) Get(ctx context.Context, criteria dto.ProductSearchCriteria
 		request = request.Preload("Categories").Preload("Images").Preload("CharacteristicValues")
 	}
 
+	var count int64
 	if criteria.CategoryID != 0 {
+		err := r.db.Model(&model.Product{}).
+			Joins("JOIN product_categories ON product_categories.product_id = products.id").
+			Where("product_categories.category_id = ?", criteria.CategoryID).
+			Count(&count).Error
+
+		if err != nil {
+			return nil, nil, err
+		}
 		request = request.Joins("JOIN product_categories ON product_categories.product_id = products.id").
 			Where("product_categories.category_id = ?", criteria.CategoryID)
 	}
@@ -179,14 +188,14 @@ func (r *repository) Get(ctx context.Context, criteria dto.ProductSearchCriteria
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			r.logger.Warnf("Product not found with provided criteria")
-			return products, nil
+			return products, nil, nil
 		}
 		r.logger.Errorf("Failed to fetch product: %v", err)
-		return nil, err
+		return nil, nil, err
 	}
 
 	r.logger.Info("Product fetched successfully")
-	return products, nil
+	return products, &count, nil
 }
 
 func (r *repository) GetByIDs(ctx context.Context, ids []string) (*[]model.Product, error) {

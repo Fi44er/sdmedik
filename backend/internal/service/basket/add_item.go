@@ -22,7 +22,7 @@ func (s *service) AddItem(ctx context.Context, data *dto.AddBasketItem, userID s
 		return constants.ErrBasketNotFound
 	}
 
-	product, err := s.productService.Get(ctx, dto.ProductSearchCriteria{ID: data.ProductID, Minimal: true})
+	product, _, err := s.productService.Get(ctx, dto.ProductSearchCriteria{ID: data.ProductID, Minimal: true})
 	if err != nil {
 		return fmt.Errorf("failed to get product: %w", err)
 	}
