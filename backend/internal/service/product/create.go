@@ -17,7 +17,7 @@ func (s *service) Create(ctx context.Context, product *dto.CreateProduct, images
 		return errors.New(400, err.Error())
 	}
 
-	existArticle, err := s.repo.Get(ctx, dto.ProductSearchCriteria{Article: product.Article})
+	existArticle, _, err := s.repo.Get(ctx, dto.ProductSearchCriteria{Article: product.Article})
 	if err != nil {
 		return err
 	}
