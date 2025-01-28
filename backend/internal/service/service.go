@@ -33,7 +33,7 @@ type IProductService interface {
 	CreateMany(ctx context.Context, products *[]dto.CreateProduct) error
 	Update(ctx context.Context, product *dto.UpdateProduct, images *dto.Images, id string) error
 	Delete(ctx context.Context, id string) error
-	Get(ctx context.Context, criteria dto.ProductSearchCriteria) (*[]response.ProductResponse, error)
+	Get(ctx context.Context, criteria dto.ProductSearchCriteria) (*[]response.ProductResponse, *int64, error)
 	GetFilter(ctx context.Context, categoryID int) (*response.ProductFilter, error)
 	GetByIDs(ctx context.Context, ids []string) (*[]model.Product, error)
 	GetTopProducts(ctx context.Context, limit int) (*[]response.TopProductRes, error)

@@ -19,7 +19,7 @@ func (s *service) GetFilter(ctx context.Context, categoryID int) (*response.Prod
 		return nil, err
 	}
 
-	products, err := s.repo.Get(ctx, dto.ProductSearchCriteria{CategoryID: categoryID})
+	products, _, err := s.repo.Get(ctx, dto.ProductSearchCriteria{CategoryID: categoryID})
 	if err != nil {
 		s.logger.Errorf("Error getting products: %v", err)
 		return nil, err

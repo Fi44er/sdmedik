@@ -33,7 +33,7 @@ type IProductRepository interface {
 	Update(ctx context.Context, data *model.Product, tx *gorm.DB) error
 	DeleteCategoryAssociation(ctx context.Context, productID string, tx *gorm.DB) error
 
-	Get(ctx context.Context, criteria dto.ProductSearchCriteria) (*[]model.Product, error)
+	Get(ctx context.Context, criteria dto.ProductSearchCriteria) (*[]model.Product, *int64, error)
 	GetByIDs(ctx context.Context, ids []string) (*[]model.Product, error)
 	GetTopProducts(ctx context.Context, limit int) ([]response.ProductPopularity, error)
 

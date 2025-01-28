@@ -113,7 +113,7 @@ func (r *repository) Delete(ctx context.Context, id string, tx *gorm.DB) error {
 	return nil
 }
 
-func (r *repository) Get(ctx context.Context, criteria dto.ProductSearchCriteria) (*[]model.Product, error) {
+func (r *repository) Get(ctx context.Context, criteria dto.ProductSearchCriteria) (*[]model.Product, *int64, error) {
 	products := new([]model.Product)
 
 	conditions := make(map[string]interface{})
@@ -179,14 +179,19 @@ func (r *repository) Get(ctx context.Context, criteria dto.ProductSearchCriteria
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			r.logger.Warnf("Product not found with provided criteria")
-			return products, nil
+			return products, nil, nil
 		}
 		r.logger.Errorf("Failed to fetch product: %v", err)
-		return nil, err
+		return nil, nil, err
+	}
+
+	var count int64
+	if err := r.db.WithContext(ctx).Model(&model.Product{}).Count(&count).Error; err != nil {
+		return nil, nil, err
 	}
 
 	r.logger.Info("Product fetched successfully")
-	return products, nil
+	return products, &count, nil
 }
 
 func (r *repository) GetByIDs(ctx context.Context, ids []string) (*[]model.Product, error) {
