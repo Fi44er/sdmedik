@@ -127,7 +127,7 @@ export default function Header() {
               >
                 <img
                   style={{ width: "100%" }}
-                  src="/medi_logo 2.png"
+                  src="/medi_logo2.png"
                   alt="logo"
                 />
               </Box>

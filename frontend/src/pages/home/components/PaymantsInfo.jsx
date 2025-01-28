@@ -85,7 +85,7 @@ export default function PaymantsInfo() {
           <Box sx={{ width: { xs: "100%", md: "100%", lg: "50%" } }}>
             <CardMedia
               component="img"
-              image="/public/Group 31.png"
+              image="/public/Group31.png"
               alt="Изображение, иллюстрирующее оплату электронным сертификатом"
               sx={{
                 width: { xs: "100%", sm: "50%", md: "80%", lg: "100%" },
