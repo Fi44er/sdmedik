@@ -185,7 +185,7 @@ export default function CatalogDynamicPage() {
                   >
                     <img
                       style={{ width: "50px", height: "50px" }}
-                      src="/public/basket_cards.png"
+                      src="/basket_cards.png"
                       alt="Добавить в корзину"
                     />
                   </IconButton>

@@ -171,7 +171,7 @@ export default function TopList() {
                         >
                           <img
                             style={{ width: "50px", height: "50px" }}
-                            src="/public/basket_cards.png"
+                            src="/basket_cards.png"
                             alt="Корзина"
                           />
                         </IconButton>

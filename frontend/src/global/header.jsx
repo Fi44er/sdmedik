@@ -143,7 +143,7 @@ export default function Header() {
                 aria-expanded={open ? "true" : undefined}
                 onClick={handleClick}
               >
-                <img src="/public/Phone.png" alt="" />
+                <img src="/Phone.png" alt="" />
               </IconButton>
               <Menu
                 id="basic-menu"
@@ -229,7 +229,7 @@ export default function Header() {
                 aria-expanded={openLk ? "true" : undefined}
                 onClick={handleClickLk}
               >
-                <img src="/public/Profile.png" alt="" />
+                <img src="/Profile.png" alt="" />
               </IconButton>
               <Menu
                 id="lk-menu"
@@ -268,7 +268,7 @@ export default function Header() {
                     window.location.href = "/basket";
                   }}
                 >
-                  <img src="/public/basket_header.png" alt="" />
+                  <img src="/basket_header.png" alt="" />
                 </IconButton>
               )}
             </Box>
@@ -294,7 +294,7 @@ export default function Header() {
           <Link href="/">
             <img
               style={{ width: "60px" }}
-              src="/public/Logo_Header.png"
+              src="/Logo_Header.png"
               alt="Logo"
             />
           </Link>
@@ -411,7 +411,7 @@ export default function Header() {
                   >
                     <img
                       style={{ width: "50px" }}
-                      src="/public/basket_header.png"
+                      src="/basket_header.png"
                       alt=""
                     />
                   </IconButton>
