@@ -24,6 +24,7 @@ export default function CatalogDynamicPage() {
   const [filters, setFilters] = useState(null); // Состояние для хранения фильтров
   const [currentProducts, setCurrentProducts] = useState([]); // Переменная для хранения текущих продуктов
   const [ProductsPerPage] = useState(20); // Количество продуктов на странице
+  const [quantity, setQuantity] = useState(1);
 
   const category_id = id;
 
@@ -48,6 +49,14 @@ export default function CatalogDynamicPage() {
     setCurrentPage(value);
   };
 
+  const hendleAddProductThithBascket = async (id) => {
+    setQuantity(quantity);
+    const product_id = id;
+    console.log(id, quantity);
+
+    await addProductThisBascket(product_id, quantity);
+  };
+
   return (
     <Box sx={{ mt: 1, mb: 5 }}>
       <Box sx={{ mb: 5 }}>
@@ -61,7 +70,7 @@ export default function CatalogDynamicPage() {
       >
         {currentProducts.length > 0 ? (
           currentProducts.map((e) => (
-            <Grid item key={e.id} xs={6} sm={4} md={3}>
+            <Grid item={"true"} key={e.id} xs={6} sm={4} md={3}>
               <Card
                 sx={{
                   width: { xs: "100%", lg: "261px" },
@@ -171,7 +180,7 @@ export default function CatalogDynamicPage() {
                   </Button>
                   <IconButton
                     onClick={() => {
-                      addProductThisBascket(e.id);
+                      hendleAddProductThithBascket(e.id);
                     }}
                   >
                     <img
@@ -190,7 +199,7 @@ export default function CatalogDynamicPage() {
       </Grid>
       {currentProducts.length > 0 && (
         <Pagination
-          count={Math.ceil(products.total / ProductsPerPage)} // Обновите общее количество страниц
+          count={Math.ceil((products.count || 0) / ProductsPerPage)} // Обновите общее количество страниц
           page={currentPage}
           onChange={handleChangePage}
           sx={{

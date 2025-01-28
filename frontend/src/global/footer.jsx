@@ -4,15 +4,40 @@ import React from "react";
 const menuItems = [
   { text: "Доставка", href: "/delivery" },
   { text: "Реквизиты", href: "/deteils" },
-  {
-    text: "Возврат",
-    href: "/returnpolicy",
-  },
-  {
-    text: "О нас",
-    href: "/about",
-  },
+  { text: "Возврат", href: "/returnpolicy" },
+  { text: "О нас", href: "/about" },
   { text: "Контакты", href: "/contacts" },
+];
+
+const addresses = [
+  {
+    text: "г. Оренбург, ул. Шевченко д. 20 «В» Магазин - Склад",
+    phone: "+ 7 3532 93-52-41",
+  },
+  {
+    text: "г. Орск, проспект Мира. 15 «Д», ТД Яшма, магазин «Памперсы»",
+    phone: "+7 905 896-23-23",
+  },
+  {
+    text: "г. Уфа, ул. Степана Кувыкина, 41, Магазин-Склад",
+    phone: "+7 961 366-82-46",
+  },
+  {
+    text: "г. Екатеринбург, пр-т. Ленина 79 «Б», Центр обучения и обеспечения техническими средствами реабилитации",
+    phone: "+7 903 086-34-11",
+  },
+  {
+    text: "респ. Чечня, г. Гудермес, ул. Нагорная, 2",
+    phone: "+7 928 002-34-19",
+  },
+  {
+    text: "респ. Чечня, г. Грозный, ул. Маты Кишиева, 142",
+    phone: "+7 928 002-34-19",
+  },
+  {
+    text: "г. Нижний Новгород, ул Дежнëва, 2",
+    phone: "+7 960 181-03-50",
+  },
 ];
 
 export default function Footer() {
@@ -27,11 +52,7 @@ export default function Footer() {
           gridGap: "5%",
         }}
       >
-        <Box
-          sx={{
-            width: { xs: "100%", lg: "45%" },
-          }}
-        >
+        <Box sx={{ width: { xs: "100%", lg: "45%" } }}>
           <Box>
             <Link href="/">
               <img src="/public/medi_logo 2.png" alt="" />
@@ -44,7 +65,6 @@ export default function Footer() {
                   md: "center",
                   lg: "space-between",
                 },
-
                 flexDirection: { xs: "column", md: "column", lg: "unset" },
                 mt: 2,
                 gridGap: { xs: "20px", lg: 0 },
@@ -57,20 +77,17 @@ export default function Footer() {
                   gridGap: "20px",
                 }}
               >
-                {menuItems.map((item) => {
-                  {
-                    return (
-                      <Link
-                        sx={{ fontSize: "20px" }}
-                        underline="none"
-                        color="black"
-                        href={item.href}
-                      >
-                        {item.text}
-                      </Link>
-                    );
-                  }
-                })}
+                {menuItems.map((item, index) => (
+                  <Link
+                    key={index} // Use index or a unique identifier if available
+                    sx={{ fontSize: "20px" }}
+                    underline="none"
+                    color="black"
+                    href={item.href}
+                  >
+                    {item.text}
+                  </Link>
+                ))}
               </Box>
               <Box sx={{ display: "flex", flexDirection: "column" }}>
                 <Typography variant="h6">+7 (903) 086 3091</Typography>
@@ -101,63 +118,14 @@ export default function Footer() {
               mt: 3,
             }}
           >
-            <Box sx={{ width: "250px" }}>
-              <Typography variant="h6">
-                г. Оренбург, ул. Шевченко д. 20 «В» Магазин - Склад
-              </Typography>
-              <Typography variant="h6" color="text.secondary">
-                + 7 3532 93-52-41
-              </Typography>
-            </Box>
-            <Box sx={{ width: "250px" }}>
-              <Typography variant="h6">
-                г. Орск, проспект Мира. 15 «Д», ТД Яшма, магазин «Памперсы»
-              </Typography>
-              <Typography variant="h6" color="text.secondary">
-                +7 905 896-23-23
-              </Typography>
-            </Box>
-            <Box sx={{ width: "250px" }}>
-              <Typography variant="h6">
-                г. Уфа, ул. Степана Кувыкина, 41, Магазин-Склад
-              </Typography>
-              <Typography variant="h6" color="text.secondary">
-                +7 961 366-82-46
-              </Typography>
-            </Box>
-            <Box sx={{ width: "250px" }}>
-              <Typography variant="h6">
-                г. Екатеринбург, пр-т. Ленина 79 «Б», Центр обучения и
-                обеспечения техническими средствами реабилитации
-              </Typography>
-              <Typography variant="h6" color="text.secondary">
-                +7 903 086-34-11
-              </Typography>
-            </Box>
-            <Box sx={{ width: "250px" }}>
-              <Typography variant="h6">
-                респ. Чечня, г. Гудермес, ул. Нагорная, 2
-              </Typography>
-              <Typography variant="h6" color="text.secondary">
-                +7 928 002-34-19
-              </Typography>
-            </Box>
-            <Box sx={{ width: "250px" }}>
-              <Typography variant="h6">
-                респ. Чечня, г. Грозный, ул. Маты Кишиева, 142
-              </Typography>
-              <Typography variant="h6" color="text.secondary">
-                +7 928 002-34-19
-              </Typography>
-            </Box>
-            <Box sx={{ width: "250px" }}>
-              <Typography variant="h6">
-                г. Нижний Новгород, ул Дежнëва, 2
-              </Typography>
-              <Typography variant="h6" color="text.secondary">
-                +7 960 181-03-50
-              </Typography>
-            </Box>
+            {addresses.map((address, index) => (
+              <Box key={index} sx={{ width: "250px" }}>
+                <Typography variant="h6">{address.text}</Typography>
+                <Typography variant="h6" color="text.secondary">
+                  {address.phone}
+                </Typography>
+              </Box>
+            ))}
           </Box>
         </Box>
       </Container>
