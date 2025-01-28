@@ -5,6 +5,9 @@ import useBascketStore from "../../../store/bascketStore";
 export default function RightBar() {
   const { basket } = useBascketStore();
 
+  // Проверяем, существует ли basket.data
+  const basketData = basket.data || {}; // Если basket.data не существует, используем пустой объект
+
   return (
     <Box
       sx={{
@@ -22,10 +25,14 @@ export default function RightBar() {
           </Typography>
           <Box sx={{ mt: 2 }}>
             <Typography>
-              Итого товаров в корзине: {basket.data && basket.data.quantity}
+              Итого товаров в корзине: {basketData.quantity || 0}
             </Typography>
             <Typography variant="h6" sx={{ color: "#00B3A4", mt: 1 }}>
-              Общая сумма заказа: {basket.data && basket.data.total_price} ₽
+              Общая сумма заказа:{" "}
+              {basketData.total_price_with_promotion > 0
+                ? basketData.total_price_with_promotion
+                : basketData.total_price || 0}{" "}
+              ₽
             </Typography>
           </Box>
           <Box

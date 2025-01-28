@@ -11,15 +11,20 @@ import {
   TableCell,
   Pagination,
   Typography,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import useProductStore from "../../../../store/productStore";
 import { urlPictures } from "../../../../constants/constants";
+import useCategoryStore from "../../../../store/categoryStore";
 
 const AdminProductTable = () => {
   const { fetchProducts, products, deleteProduct } = useProductStore();
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
+  const [selectedCategory, setSelectedCategory] = useState(""); // Состояние для выбранной категории
+  const { fetchCategory, category, deleteCategory } = useCategoryStore();
 
   useEffect(() => {
     fetchProducts();
@@ -31,12 +36,29 @@ const AdminProductTable = () => {
     }
   }, [products]);
 
+  // Функция для фильтрации по категории
+  const handleCategoryChange = (event) => {
+    const category = event.target.value;
+    setSelectedCategory(category);
+
+    //   if (category) {
+    //     const filtered = products.data.filter((product) =>
+    //       product.categories.some((cat) => cat.name === category)
+    //     );
+    //     setFilteredProducts(filtered);
+    //   } else {
+    //     setFilteredProducts(products.data);
+    //   }
+  };
+
+  // Сортировка по дате создания (новые товары первыми)
+  const sortedProducts = filteredProducts.sort((a, b) => {
+    return new Date(b.created_at) - new Date(a.created_at);
+  });
+
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredProducts.slice(
-    indexOfFirstItem,
-    indexOfLastItem
-  );
+  const currentItems = sortedProducts.slice(indexOfFirstItem, indexOfLastItem);
 
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
@@ -47,11 +69,46 @@ const AdminProductTable = () => {
     fetchProducts();
   };
 
+  const handleSelectFilterCategory = async () => {
+    const category_id = parseInt(selectedCategory);
+    await fetchProducts(category_id);
+  };
+
+  useEffect(() => {
+    fetchCategory();
+    console.log(category);
+  }, []);
+
   return (
     <Box sx={{ padding: 2 }}>
       <Typography sx={{ fontSize: "30px", mb: 2, mt: 2 }}>
         Таблица с Продуктами
       </Typography>
+
+      {/* Фильтрация по категориям */}
+      <Select
+        value={selectedCategory}
+        onChange={handleCategoryChange}
+        displayEmpty
+        sx={{ mb: 2, minWidth: 200 }}
+      >
+        <MenuItem value="">
+          <em>Все категории</em>
+        </MenuItem>
+        {category.data &&
+          category?.data.map((category) => {
+            return <MenuItem value={category.id}>{category.name}</MenuItem>;
+          })}
+      </Select>
+
+      <Button
+        onClick={() => {
+          handleSelectFilterCategory();
+        }}
+      >
+        Применить
+      </Button>
+
       <Paper sx={{ width: "100%" }}>
         {/* Таблица для больших экранов */}
         <TableContainer
@@ -131,7 +188,7 @@ const AdminProductTable = () => {
                   {product.images.map((image) => (
                     <img
                       key={image.id}
-                      src={`http://127.0.0.1:8080/api/v1/image/${image.name}`}
+                      src={`${urlPictures}/${image.name}`}
                       alt="product"
                       style={{ width: 50, height: 50, borderRadius: "4px" }}
                     />

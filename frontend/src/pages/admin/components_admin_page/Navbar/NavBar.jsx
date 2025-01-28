@@ -74,6 +74,32 @@ const NavBar = () => {
         <Button
           color="inherit"
           id="basic-button"
+          aria-controls={openCategories ? "category-menu" : undefined}
+          aria-haspopup="true"
+          aria-expanded={openCategories ? "true" : undefined}
+          onClick={handleClickCategoryMenu}
+        >
+          Категории
+        </Button>
+        <Menu
+          id="category-menu"
+          anchorEl={menuCategories}
+          open={openCategories}
+          onClose={handleCloseCategoryMenu}
+          MenuListProps={{
+            "aria-labelledby": "basic-button",
+          }}
+        >
+          <MenuItem>
+            <Link href="/admin/create_category">Создать категорию</Link>
+          </MenuItem>
+          <MenuItem onClick={handleCloseCategoryMenu}>
+            <Link href="/admin/table_category">Таблица с категориями</Link>
+          </MenuItem>
+        </Menu>
+        <Button
+          color="inherit"
+          id="basic-button"
           aria-controls={openProducts ? "products-menu" : undefined}
           aria-haspopup="true"
           aria-expanded={openProducts ? "true" : undefined}

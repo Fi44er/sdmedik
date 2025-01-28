@@ -16,7 +16,7 @@ import useOrderStore from "../../store/orderStore";
 export default function UserAccount() {
   const { getUserInfo, user, Logout } = useUserStore();
   const { fetchUserOrders, userOrders } = useOrderStore();
-  const [currentProducts, setCurrentProducts] = useState([]); // Initialize with an empty array
+  const [currentProducts, setCurrentProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -37,7 +37,6 @@ export default function UserAccount() {
 
   useEffect(() => {
     if (userOrders.data?.length > 0) {
-      // Извлекаем все items из всех заказов
       const allItems = userOrders.data.flatMap((order) => order.items);
       setCurrentProducts(allItems);
     }
@@ -55,6 +54,20 @@ export default function UserAccount() {
       </Box>
     );
   }
+
+  const statusStyles = {
+    pending: { color: "orange", backgroundColor: "#fff3e0" },
+    processing: { color: "blue", backgroundColor: "#e3f2fd" },
+    completed: { color: "green", backgroundColor: "#e8f5e9" },
+    canceled: { color: "red", backgroundColor: "#ffebee" },
+  };
+
+  const statusTranslations = {
+    pending: "В ожидании",
+    processing: "Рассмотрен",
+    completed: "Завершен",
+    canceled: "Отменен",
+  };
 
   return (
     <Box sx={{ backgroundColor: "#f5f5f5", minHeight: "100vh" }}>
@@ -127,23 +140,40 @@ export default function UserAccount() {
                 >
                   <CardContent>
                     <CardHeader title={e.title} sx={{ p: 0 }} />
-                    <Typography variant="body2" color="text.secondary">
-                      {e.name}
+                    <Typography variant="h6" color="text.secondary">
+                      Название товара: {e.name}
                     </Typography>
                     <Typography variant="h6" sx={{ color: "black" }}>
-                      {e.price}
+                      Сумма: {e.price} руб
                     </Typography>
                     <Box sx={{ mt: 2 }}>
                       <Typography variant="h6" sx={{ fontWeight: "bold" }}>
                         Статус заказа
                       </Typography>
-                      <Typography variant="body2">
-                        {userOrders.data.status}
-                      </Typography>
+                      <Box
+                        sx={{
+                          ...statusStyles[
+                            userOrders.data.find(
+                              (order) => order.id === e.order_id
+                            )?.status
+                          ],
+                          padding: "5px",
+                          borderRadius: "4px",
+                          display: "inline-block",
+                        }}
+                      >
+                        <Typography variant="body2">
+                          {statusTranslations[
+                            userOrders.data.find(
+                              (order) => order.id === e.order_id
+                            )?.status
+                          ] || "Неизвестный статус"}
+                        </Typography>
+                      </Box>
                     </Box>
                     <Box sx={{ mt: 2 }}>
                       <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                        Количество
+                        Количество приобретенного товара:
                       </Typography>
                       <Typography variant="body2">{e.quantity}</Typography>
                     </Box>

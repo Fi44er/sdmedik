@@ -379,7 +379,13 @@ const AdminOrdersTable = () => {
                         Корзина
                       </Button>
                     </TableCell>
-                    <TableCell sx={{ display: "flex", gridGap: 5 }}>
+                    <TableCell
+                      sx={{
+                        display: "flex",
+                        gridGap: 5,
+                        flexDirection: "column",
+                      }}
+                    >
                       <Select
                         value={newStatuses[order.id] || order.status} // Используем статус из newStatuses или текущий статус
                         onChange={(e) =>
