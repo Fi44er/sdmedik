@@ -55,7 +55,7 @@ export default function Footer() {
         <Box sx={{ width: { xs: "100%", lg: "45%" } }}>
           <Box>
             <Link href="/">
-              <img src="/public/medi_logo2.png" alt="" />
+              <img src="/medi_logo2.png" alt="" />
             </Link>
             <Box
               sx={{
