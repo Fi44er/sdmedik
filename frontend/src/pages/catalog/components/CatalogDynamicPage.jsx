@@ -21,27 +21,34 @@ export default function CatalogDynamicPage() {
   const { fetchProducts, products } = useProductStore();
   const { addProductThisBascket } = useBascketStore();
   const [currentPage, setCurrentPage] = useState(1);
-  const [filters, setFilters] = useState(null); // Состояние для хранения фильтров
-  const [currentProducts, setCurrentProducts] = useState([]); // Переменная для хранения текущих продуктов
-  const [ProductsPerPage] = useState(20); // Количество продуктов на странице
+  const [filters, setFilters] = useState(null);
+  const [currentProducts, setCurrentProducts] = useState([]);
+  const [ProductsPerPage] = useState(20);
   const [quantity, setQuantity] = useState(1);
+  const [loading, setLoading] = useState(true); // Состояние загрузки
+  const [error, setError] = useState(null); // Состояние ошибки
 
   const category_id = id;
 
   useEffect(() => {
-    const offset = (currentPage - 1) * ProductsPerPage; // Рассчитываем offset
-    fetchProducts(category_id, filters, offset, ProductsPerPage); // Передаем offset и limit в fetchProducts
-  }, [category_id, fetchProducts, filters, currentPage]); // Добавляем currentPage в зависимости
+    const offset = (currentPage - 1) * ProductsPerPage;
+    setLoading(true); // Устанавливаем состояние загрузки
+    fetchProducts(category_id, filters, offset, ProductsPerPage)
+      .then(() => setLoading(false)) // Убираем состояние загрузки после успешного получения данных
+      .catch((err) => {
+        setLoading(false);
+        setError(err.message); // Устанавливаем сообщение об ошибке
+      });
+  }, [category_id, fetchProducts, filters, currentPage]);
 
   useEffect(() => {
     if (products?.data) {
-      let normalizedProducts = [];
-      if (!Array.isArray(products.data)) {
-        normalizedProducts = [products.data]; // Приводим объект к массиву
-      } else {
-        normalizedProducts = products.data;
-      }
+      let normalizedProducts = Array.isArray(products.data)
+        ? products.data
+        : [products.data];
       setCurrentProducts(normalizedProducts);
+    } else {
+      setCurrentProducts([]); // Устанавливаем пустой массив, если данных нет
     }
   }, [products]);
 
@@ -52,8 +59,6 @@ export default function CatalogDynamicPage() {
   const hendleAddProductThithBascket = async (id) => {
     setQuantity(quantity);
     const product_id = id;
-    console.log(id, quantity);
-
     await addProductThisBascket(product_id, quantity);
   };
 
@@ -68,7 +73,11 @@ export default function CatalogDynamicPage() {
         columns={{ xs: 4, sm: 4, md: 4 }}
         sx={{ height: 800, overflowX: "auto", pt: 2, pb: 2 }}
       >
-        {currentProducts.length > 0 ? (
+        {loading ? (
+          <Typography>Загрузка...</Typography>
+        ) : error ? (
+          <Typography color="error">Ошибка: {error}</Typography>
+        ) : currentProducts.length > 0 ? (
           currentProducts.map((e) => (
             <Grid item={"true"} key={e.id} xs={6} sm={4} md={3}>
               <Card
@@ -81,7 +90,7 @@ export default function CatalogDynamicPage() {
                   transition: "transform 0.2s, box-shadow 0.2s",
                   "&:hover": {
                     transform: "scale(1.05)",
-                    boxShadow: "0 8px 30px rgba(0, 0, 0, 0.2)",
+                    boxShadow: " 0 8px 30px rgba(0, 0, 0, 0.2)",
                   },
                   display: "flex",
                   flexDirection: "column",
@@ -199,7 +208,7 @@ export default function CatalogDynamicPage() {
       </Grid>
       {currentProducts.length > 0 && (
         <Pagination
-          count={Math.ceil((products.count || 0) / ProductsPerPage)} // Обновите общее количество страниц
+          count={Math.ceil((products.count || 0) / ProductsPerPage)}
           page={currentPage}
           onChange={handleChangePage}
           sx={{

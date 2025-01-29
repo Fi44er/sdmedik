@@ -13,6 +13,7 @@ import Grid from "@mui/material/Grid2";
 import React, { useEffect } from "react";
 import useCategoryStore from "../../store/categoryStore";
 import { urlPictures } from "../../constants/constants";
+import { Helmet } from "react-helmet";
 
 export default function СategoriesPage() {
   const { fetchCategory, category } = useCategoryStore();
@@ -24,19 +25,31 @@ export default function СategoriesPage() {
 
   return (
     <Box sx={{ mt: 5, mb: 5 }}>
+      <Helmet>
+        <title>Категории товаров | Название вашего сайта</title>
+        <meta
+          name="description"
+          content="Ознакомьтесь с нашими категориями товаров. Мы предлагаем широкий ассортимент продукции для ваших нужд."
+        />
+        <meta
+          name="keywords"
+          content="категории, товары, ассортимент, продукция"
+        />
+      </Helmet>
       <Container>
         <Grid
           container
           spacing={{ xs: 2, md: 2 }}
           columns={{ xs: 4, sm: 4, md: 4 }}
+          sx={{ display: "flex", justifyContent: "center" }}
         >
           {Array.isArray(category.data) && category.data.length > 0 ? (
             category.data.map((item) => (
-              <Grid item xs={1} sm={1} md={1} key={item.id}>
+              <Grid item={"true"} xs={1} sm={1} md={1} key={item.id}>
                 <Card
                   sx={{
                     width: { xs: "340px", md: "276px" },
-                    background: "#F5FCFF",
+                    background: "#fff",
                     borderRadius: "20px",
                     height: "360px",
                     display: "flex",
@@ -60,7 +73,7 @@ export default function СategoriesPage() {
                     <CardMedia
                       component="img"
                       image={`${urlPictures}/${item.images[0].name}`}
-                      alt={"wheelchair"}
+                      alt={`Изображение категории ${item.name}`}
                       sx={{
                         width: { xs: "270px", md: "180px", lg: "200px" },
                         height: {

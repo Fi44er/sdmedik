@@ -6,20 +6,13 @@ import {
   IconButton,
   Slider,
   Typography,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  useMediaQuery,
-  useTheme,
+  FormControlLabel,
+  Checkbox,
   Accordion,
   AccordionSummary,
   AccordionDetails,
-  FormControlLabel,
-  Checkbox,
   TextField,
   styled,
-  Paper,
 } from "@mui/material";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import CloseIcon from "@mui/icons-material/Close";
@@ -27,7 +20,6 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import useFilterStore from "../../../store/filterStore";
 import { useParams } from "react-router-dom";
 import useProductStore from "../../../store/productStore";
-import stringify from "json-stringify-safe";
 
 const CustomTextField = styled(TextField)({
   "& .MuiOutlinedInput-root": {
@@ -44,20 +36,17 @@ const CustomTextField = styled(TextField)({
 });
 
 const SidebarFilter = ({ setFilters }) => {
-  const theme = useTheme();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(0);
-  const [filtersApplied, setFiltersApplied] = useState(false);
   const { fetchFilter, filters } = useFilterStore();
-  const { fetchProducts, products } = useProductStore();
+  const { fetchProducts } = useProductStore();
   const [selectedValues, setSelectedValues] = useState([]);
   const { id } = useParams();
   const category_id = id;
 
   useEffect(() => {
     fetchFilter(category_id);
-    console.log(filters);
   }, [category_id]);
 
   useEffect(() => {
@@ -96,46 +85,25 @@ const SidebarFilter = ({ setFilters }) => {
   };
 
   const handleApplyFilters = async () => {
-    // Сбор данных фильтрации
     const filterData = {
       price: {
         min: minPrice,
         max: maxPrice,
       },
-      characteristics: selectedValues.filter((characteristic) =>
-        characteristic.values.length > 0 ? true : false
+      characteristics: selectedValues.filter(
+        (characteristic) => characteristic.values.length > 0
       ),
     };
 
-    // Оборачивание каждого значения в объект
-    const cleanedFilterData = {
-      ...filterData,
-      characteristics: filterData.characteristics.map((char) => ({
-        characteristic_id: char.characteristic_id,
-        values: char.values.map((val) => String(val)), // Каждое значение становится объектом
-      })),
-    };
-
-    // Преобразование данных в JSON
-    const jsonData = JSON.stringify(cleanedFilterData);
-
-    // Создание FormData для отправки
-    const formData = new FormData();
-    formData.append("filters", jsonData);
-
-    console.log("Результат фильтрации:", jsonData);
-
+    const jsonData = JSON.stringify(filterData);
     fetchProducts(category_id, jsonData);
   };
 
   const handleResetFilters = () => {
-    // Сбрасываем все состояния фильтров
     setSelectedValues([]);
     setMinPrice(0);
     setMaxPrice(0);
-
-    // Отправляем GET-запрос без фильтров
-    fetchProducts(category_id, null); // или пустой объект, если требуется
+    fetchProducts(category_id, null);
   };
 
   return (
@@ -204,16 +172,18 @@ const SidebarFilter = ({ setFilters }) => {
               />
             </Box>
             {filters &&
-              filters.data &&
+            filters.data &&
+            filters.data.characteristics &&
+            filters.data.characteristics.length > 0 ? (
               filters.data.characteristics.map((char) => (
                 <Accordion sx={{ mt: 2, mb: 2 }} key={char.id} defaultExpanded>
                   <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                     <Typography>{char.name}</Typography>
                   </AccordionSummary>
                   <AccordionDetails>
-                    {char.values.map((value, index) => (
+                    {char.values.map((value) => (
                       <FormControlLabel
-                        key={`${char.id}-${value}`} // Unique key for each checkbox
+                        key={`${char.id}-${value}`}
                         control={
                           <Checkbox
                             sx={{
@@ -241,7 +211,10 @@ const SidebarFilter = ({ setFilters }) => {
                     ))}
                   </AccordionDetails>
                 </Accordion>
-              ))}
+              ))
+            ) : (
+              <Typography>Нет доступных фильтров</Typography>
+            )}
           </Box>
           <Box
             sx={{
