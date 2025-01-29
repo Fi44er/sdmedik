@@ -60,6 +60,7 @@ export default function Delivery() {
               style={{
                 borderRadius: "8px",
                 objectFit: "cover",
+                width: "100%",
               }}
               src="/delivery.png"
               alt="Доставка"

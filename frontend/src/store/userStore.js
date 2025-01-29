@@ -48,7 +48,13 @@ const useUserStore = create((set, get) => ({
       return;
     }
     try {
-      const response = await axiosInstance.post(`${url}/auth/refresh`);
+      const response = await axiosInstance.post(
+        `${url}/auth/refresh`,
+        {},
+        {
+          withCredentials: true,
+        }
+      );
       // После обновления токена повторно вызываем функцию getUserInfo
       await get().getUserInfo();
     } catch (error) {
@@ -62,7 +68,13 @@ const useUserStore = create((set, get) => ({
   Logout: async () => {
     try {
       set({ isLoggingOut: true, logoutCalled: true });
-      const response = await axiosInstance.post(`${url}/auth/logout`);
+      const response = await axiosInstance.post(
+        `${url}/auth/logout`,
+        {},
+        {
+          withCredentials: true,
+        }
+      );
       set({ isLoggedOut: true, isLoggingOut: false });
     } catch (error) {
       if (error.code === "ECONNABORTED") {
