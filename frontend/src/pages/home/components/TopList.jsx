@@ -119,15 +119,17 @@ export default function TopList() {
                     </Box>
 
                     <CardContent>
-                      <CardHeader
+                      <Typography
+                        variant="h6"
                         sx={{
                           width: "235px",
                           overflow: "hidden",
                           textOverflow: "ellipsis",
                           whiteSpace: "nowrap",
                         }}
-                        title={item.name}
-                      />
+                      >
+                        {item.name}
+                      </Typography>
                       <Box
                         sx={{
                           display: "flex",
