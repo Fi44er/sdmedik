@@ -5,10 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "postbuild": "react-snap",
-    "eject": "react-scripts eject",
+    "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
