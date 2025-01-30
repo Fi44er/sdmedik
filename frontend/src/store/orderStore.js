@@ -21,7 +21,7 @@ const useOrderStore = create((set, get) => ({
 
     try {
       const response = await axios.post(
-        `http://localhost:8080/api/v1/order`,
+        `${url}/order`,
         {
           email,
           fio,
@@ -49,7 +49,7 @@ const useOrderStore = create((set, get) => ({
 
     try {
       const response = await axios.post(
-        `http://localhost:8080/api/v1/order/${id}`,
+        `${url}/order/${id}`,
         {
           email,
           fio,

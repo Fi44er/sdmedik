@@ -5,7 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "postbuild": "react-snap",
+    "eject": "react-scripts eject",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -29,6 +32,7 @@
     "react-hook-form": "^7.54.1",
     "react-router-dom": "^6.27.0",
     "react-slick": "^0.30.2",
+    "react-snap": "^1.23.0",
     "react-toastify": "^11.0.2",
     "react-yandex-maps": "^4.6.0",
     "recharts": "^2.15.0",

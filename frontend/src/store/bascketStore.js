@@ -16,7 +16,7 @@ const useBascketStore = create((set, get) => ({
   addProductThisBascket: async (product_id, quantity) => {
     try {
       const response = await axios.post(
-        "http://localhost:8080/api/v1/basket",
+        `${url}/basket`,
         { product_id, quantity },
         {
           withCredentials: true,

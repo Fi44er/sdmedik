@@ -5,7 +5,6 @@ import {
   IconButton,
   Typography,
   Paper,
-  Rating,
   Divider,
   List,
   ListItem,
@@ -22,6 +21,7 @@ import { useParams } from "react-router-dom";
 import useBascketStore from "../../store/bascketStore";
 import Regions from "../../constants/regionsData/regions";
 import { urlPictures } from "../../constants/constants";
+import { Helmet } from "react-helmet";
 
 export default function ProductDetailPage() {
   const [mainImageIndex, setMainImageIndex] = useState(0);
@@ -34,14 +34,14 @@ export default function ProductDetailPage() {
 
   useEffect(() => {
     fetchProductById(id);
-    console.log(products);
   }, [id]);
+
   useEffect(() => {
     if (products.data && products.data.images) {
       const fetchedImages = products.data.images.map(
         (image) => `${urlPictures}/${image.name}`
       );
-      setImages(fetchedImages); // Сохраните изображения в состоянии
+      setImages(fetchedImages);
     }
   }, [products.data]);
 
@@ -56,11 +56,7 @@ export default function ProductDetailPage() {
   };
 
   const hendleAddProductThithBascket = async (id) => {
-    setQuantity(quantity);
-    const product_id = id;
-    console.log(id, quantity);
-
-    await addProductThisBascket(product_id, quantity);
+    await addProductThisBascket(id, quantity);
   };
 
   const hendleChangeRegion = (event) => {
@@ -73,19 +69,84 @@ export default function ProductDetailPage() {
   };
 
   const renderFeatureValue = (value) => {
-    // Преобразуем строковые значения в булевы
     if (value === "true") {
       return "Есть";
     } else if (value === "false") {
-      return "Нету";
+      return "Нет";
     } else if (value === null || value === undefined || value === "") {
-      return "Нет данных"; // Обработка случая, когда значение отсутствует
+      return "Нет данных";
     }
-    return value; // Возвращаем значение, если оно не булевое
+    return value;
   };
 
   return (
     <Container sx={{ mt: 5, mb: 5 }}>
+      <Helmet>
+        <title>{products.data ? products.data.name : "Загрузка..."}</title>
+        <meta
+          name="description"
+          content={
+            products.data ? products.data.description : "Описание товара"
+          }
+        />
+        <meta
+          name="keywords"
+          content={
+            products.data
+              ? `${products.data.name}, ${products.data.article}, купить ${products.data.name}`
+              : "товар, артикул"
+          }
+        />
+        <meta
+          property="og:title"
+          content={products.data ? products.data.name : "Загрузка..."}
+        />
+        <meta
+          property="og:description"
+          content={
+            products.data ? products.data.description : "Описание товара"
+          }
+        />
+        <meta property="og:image" content={images[mainImageIndex]} />
+        <meta
+          property="og:url"
+          content={`https://yourwebsite.com/products/${id}`}
+        />
+        <meta property="og:type" content="product" />
+        <meta property="og:site_name" content="Your Website Name" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta
+          name="twitter:title"
+          content={products.data ? products.data.name : "Загрузка..."}
+        />
+        <meta
+          name="twitter:description"
+          content={
+            products.data ? products.data.description : "Описание товара"
+          }
+        />
+        <meta name="twitter:image" content={images[mainImageIndex]} />
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Product",
+            name: products.data ? products.data.name : "Загрузка...",
+            image: images[mainImageIndex],
+            description: products.data
+              ? products.data.description
+              : "Описание товара",
+            sku: products.data ? products.data.article : "Неизвестно",
+            offers: {
+              "@type": "Offer",
+              url: `https://yourwebsite.com/products/${id}`,
+              priceCurrency: "RUB",
+              price: products.data ? products.data.price : "0",
+              itemCondition: "https://schema.org/NewCondition",
+              availability: "https://schema.org/InStock",
+            },
+          })}
+        </script>
+      </Helmet>
       <Paper
         sx={{
           display: "flex",
@@ -94,8 +155,6 @@ export default function ProductDetailPage() {
           p: 2,
         }}
       >
-        {/* Основная картинка с слайдером */}
-
         <Box
           sx={{
             display: "flex",
@@ -103,7 +162,6 @@ export default function ProductDetailPage() {
             width: { xs: "100%", sm: "100%", md: "50%" },
           }}
         >
-          {/* Слайдер с изображениями */}
           <Container>
             <Box
               sx={{ display: "flex", justifyContent: "center", marginTop: 2 }}
@@ -117,7 +175,7 @@ export default function ProductDetailPage() {
                 >
                   <CardMedia
                     component="img"
-                    image={images[mainImageIndex]} // Отображаем основное изображение
+                    image={images[mainImageIndex]}
                     alt={`Product Image ${mainImageIndex + 1}`}
                     style={{
                       width: { xs: 300, sm: 350, md: 400 },
@@ -145,7 +203,6 @@ export default function ProductDetailPage() {
             </Box>
           </Container>
 
-          {/* Превью лента изображений */}
           <Box sx={{ display: "flex", justifyContent: "center", marginTop: 2 }}>
             {products.data &&
               products.data.images &&
@@ -176,7 +233,6 @@ export default function ProductDetailPage() {
           </Box>
         </Box>
 
-        {/* Информация о товаре */}
         <Box sx={{ width: { xs: "100%", sm: "100%", md: "50%" } }}>
           {products.data ? (
             <Box>
@@ -221,11 +277,11 @@ export default function ProductDetailPage() {
               </Box>
 
               <Typography variant="h5" sx={{ color: "#00B3A4" }}>
-                Цена: {products.data.price} руб
+                Цена: {products.data.price} ₽
               </Typography>
               <Typography variant="h5" sx={{ color: "#00B3A4" }}>
                 Стоимость при оплате сертификатом:{" "}
-                {products.data.certificate_price} руб
+                {products.data.certificate_price} ₽
               </Typography>
               {/* Other components */}
             </Box>
@@ -253,7 +309,7 @@ export default function ProductDetailPage() {
                 hendleAddProductThithBascket(products.data.id);
               }}
             >
-              <img src="/basket_Cards.png" alt="Добавить в корзину" />
+              <img src="/basket_cards.png" alt="Добавить в корзину" />
             </IconButton>
           </Box>
           <Divider sx={{ marginY: 2 }} />
