@@ -90,9 +90,12 @@ const SidebarFilter = ({ setFilters }) => {
         min: minPrice,
         max: maxPrice,
       },
-      characteristics: selectedValues.filter(
-        (characteristic) => characteristic.values.length > 0
-      ),
+      characteristics: selectedValues
+        .filter((characteristic) => characteristic.values.length > 0)
+        .map((characteristic) => ({
+          characteristic_id: characteristic.characteristic_id,
+          values: characteristic.values.map((value) => value.toString()),
+        })),
     };
 
     const jsonData = JSON.stringify(filterData);
