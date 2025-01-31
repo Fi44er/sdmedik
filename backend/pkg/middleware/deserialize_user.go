@@ -16,6 +16,7 @@ func DeserializeUser(cache *redis.Client, db *gorm.DB, config *config.Config) fi
 	return func(ctx *fiber.Ctx) error {
 		var accessToken string
 		authorization := ctx.Get("Authorization")
+		userAgent := strings.ReplaceAll(ctx.Get("User-Agent"), " ", "")
 
 		if strings.HasPrefix(authorization, "Bearer ") {
 			accessToken = strings.TrimPrefix(authorization, "Bearer ")
@@ -38,7 +39,8 @@ func DeserializeUser(cache *redis.Client, db *gorm.DB, config *config.Config) fi
 			})
 		}
 
-		userID, err := cache.Get(ctx.Context(), tokenClaims.TokenUUID).Result()
+		accessRedisKey := userAgent + ":" + tokenClaims.TokenUUID
+		userID, err := cache.Get(ctx.Context(), accessRedisKey).Result()
 		if err == redis.Nil {
 			return ctx.Status(401).JSON(fiber.Map{
 				"status":  "fail",

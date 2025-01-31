@@ -1,6 +1,9 @@
 package auth
 
 import (
+	"log"
+	"strings"
+
 	"github.com/Fi44er/sdmedik/backend/internal/dto"
 	_ "github.com/Fi44er/sdmedik/backend/internal/response"
 	"github.com/Fi44er/sdmedik/backend/pkg/errors"
@@ -18,16 +21,20 @@ import (
 // @Router /auth/login [post]
 func (i *Implementation) Login(ctx *fiber.Ctx) error {
 	user := new(dto.Login)
+	userAgent := strings.ReplaceAll(ctx.Get("User-Agent"), " ", "")
 
 	if err := ctx.BodyParser(&user); err != nil {
 		return ctx.Status(400).JSON("Failed to parse body")
 	}
 
-	accessToken, refreshToken, err := i.authService.Login(ctx.Context(), user)
+	accessToken, refreshToken, err := i.authService.Login(ctx.Context(), user, userAgent)
 	if err != nil {
 		code, msg := errors.GetErroField(err)
 		return ctx.Status(code).JSON(msg)
 	}
+
+	log.Println(accessToken)
+	log.Println(refreshToken)
 
 	ctx.Cookie(&fiber.Cookie{
 		Name:     "access_token",

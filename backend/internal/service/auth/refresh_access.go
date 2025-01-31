@@ -9,7 +9,7 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-func (s *service) RefreshAccessToken(ctx context.Context, refreshToken string) (string, error) {
+func (s *service) RefreshAccessToken(ctx context.Context, refreshToken string, userAgent string) (string, error) {
 	if refreshToken == "" {
 		return "", errors.New(403, "Could not refresh access token")
 	}
@@ -19,7 +19,8 @@ func (s *service) RefreshAccessToken(ctx context.Context, refreshToken string) (
 		return "", errors.New(403, err.Error())
 	}
 
-	userID, err := s.cache.Get(ctx, tokenClaims.TokenUUID).Result()
+	refreshRedisKey := userAgent + ":" + tokenClaims.TokenUUID
+	userID, err := s.cache.Get(ctx, refreshRedisKey).Result()
 	if err == redis.Nil {
 		return "", errors.New(403, "Could not refresh access token")
 	}
@@ -38,7 +39,8 @@ func (s *service) RefreshAccessToken(ctx context.Context, refreshToken string) (
 		return "", errors.New(422, err.Error())
 	}
 
-	errAccess := s.cache.Set(ctx, accessTokenDetails.TokenUUID, user.ID, time.Unix(*accessTokenDetails.ExpiresIn, 0).Sub(time.Now())).Err()
+	accessRedisKey := userAgent + ":" + accessTokenDetails.TokenUUID
+	errAccess := s.cache.Set(ctx, accessRedisKey, user.ID, time.Unix(*accessTokenDetails.ExpiresIn, 0).Sub(time.Now())).Err()
 	if errAccess != nil {
 		return "", errors.New(422, errAccess.Error())
 	}
