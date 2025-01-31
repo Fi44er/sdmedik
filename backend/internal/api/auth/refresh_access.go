@@ -1,6 +1,8 @@
 package auth
 
 import (
+	"strings"
+
 	_ "github.com/Fi44er/sdmedik/backend/internal/response"
 	"github.com/Fi44er/sdmedik/backend/pkg/errors"
 	"github.com/gofiber/fiber/v2"
@@ -15,8 +17,10 @@ import (
 // @Success 200 {object} response.Response "Successful refresh response"
 // @Router /auth/refresh [post]
 func (i *Implementation) RefreshAccessToken(ctx *fiber.Ctx) error {
+	userAgent := strings.ReplaceAll(ctx.Get("User-Agent"), " ", "")
+
 	refreshToken := ctx.Cookies("refresh_token")
-	accessToken, err := i.authService.RefreshAccessToken(ctx.Context(), refreshToken)
+	accessToken, err := i.authService.RefreshAccessToken(ctx.Context(), refreshToken, userAgent)
 	if err != nil {
 		code, msg := errors.GetErroField(err)
 		return ctx.Status(code).JSON(msg)

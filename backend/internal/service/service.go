@@ -21,9 +21,9 @@ type IUserService interface {
 
 type IAuthService interface {
 	Register(ctx context.Context, user *dto.Register) error
-	Login(ctx context.Context, user *dto.Login) (string, string, error)
-	Logout(ctx context.Context, refreshToken string, accessTokenUUID string) error
-	RefreshAccessToken(ctx context.Context, refreshToken string) (string, error)
+	Login(ctx context.Context, user *dto.Login, userAgent string) (string, string, error)
+	Logout(ctx context.Context, refreshToken string, accessTokenUUID string, userAgent string) error
+	RefreshAccessToken(ctx context.Context, refreshToken string, userAgent string) (string, error)
 	VerifyCode(ctx context.Context, data *dto.VerifyCode) error
 	SendCode(ctx context.Context, email string) error
 }
