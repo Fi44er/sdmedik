@@ -79,7 +79,7 @@ func (s *service) createIndex() (bleve.Index, error) {
 
 func (s *service) addSampleProducts(ctx context.Context) error {
 	// Генерируем товары
-	products, _, err := s.productService.Get(ctx, dto.ProductSearchCriteria{Minimal: true})
+	products, _, err := s.productService.Get(ctx, dto.ProductSearchCriteria{})
 	if err != nil {
 		return err
 	}
@@ -88,7 +88,7 @@ func (s *service) addSampleProducts(ctx context.Context) error {
 		products = &[]response.ProductResponse{}
 	}
 
-	newProducts := make([]response.ProductResponse, 0)
+	newProducts := []response.ProductResponse{}
 	for _, product := range *products {
 		if len(product.Categories) > 0 {
 			newProducts = append(newProducts, product)

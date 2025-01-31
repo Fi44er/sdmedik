@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"strings"
 	"time"
 
 	_ "github.com/Fi44er/sdmedik/backend/internal/response"
@@ -19,8 +20,9 @@ import (
 func (i *Implementation) Logout(ctx *fiber.Ctx) error {
 	refreshToken := ctx.Cookies("refresh_token")
 	accessTokenUUID := ctx.Locals("access_token_uuid")
+	userAgent := strings.ReplaceAll(ctx.Get("User-Agent"), " ", "")
 
-	if err := i.authService.Logout(ctx.Context(), refreshToken, accessTokenUUID.(string)); err != nil {
+	if err := i.authService.Logout(ctx.Context(), refreshToken, accessTokenUUID.(string), userAgent); err != nil {
 		code, msg := errors.GetErroField(err)
 		return ctx.Status(code).JSON(msg)
 	}

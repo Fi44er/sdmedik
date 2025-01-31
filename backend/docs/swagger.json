@@ -6,7 +6,7 @@
         "contact": {},
         "version": "1.0"
     },
-    "host": "localhost:8080",
+    "host": "192.168.4.9:8080",
     "basePath": "/api/v1/",
     "paths": {
         "/auth/login": {
@@ -1216,6 +1216,9 @@
                     "type": "string"
                 },
                 "end_date": {
+                    "type": "string"
+                },
+                "get_product_id": {
                     "type": "string"
                 },
                 "name": {

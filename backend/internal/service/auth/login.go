@@ -9,7 +9,7 @@ import (
 	"github.com/Fi44er/sdmedik/backend/pkg/utils"
 )
 
-func (s *service) Login(ctx context.Context, dto *dto.Login) (string, string, error) {
+func (s *service) Login(ctx context.Context, dto *dto.Login, userAgent string) (string, string, error) {
 	if err := s.validator.Struct(dto); err != nil {
 		return "", "", errors.New(400, err.Error())
 	}
@@ -34,12 +34,14 @@ func (s *service) Login(ctx context.Context, dto *dto.Login) (string, string, er
 		return "", "", errors.New(422, err.Error())
 	}
 
-	errAccess := s.cache.Set(ctx, accessTokenDetails.TokenUUID, existUser.ID, time.Unix(*accessTokenDetails.ExpiresIn, 0).Sub(time.Now())).Err()
+	accessRedisKey := userAgent + ":" + accessTokenDetails.TokenUUID
+	errAccess := s.cache.Set(ctx, accessRedisKey, existUser.ID, time.Unix(*accessTokenDetails.ExpiresIn, 0).Sub(time.Now())).Err()
 	if errAccess != nil {
 		return "", "", errors.New(422, errAccess.Error())
 	}
 
-	errRefresh := s.cache.Set(ctx, refreshTokenDetails.TokenUUID, existUser.ID, time.Unix(*refreshTokenDetails.ExpiresIn, 0).Sub(time.Now())).Err()
+	refreshRedisKey := userAgent + ":" + refreshTokenDetails.TokenUUID
+	errRefresh := s.cache.Set(ctx, refreshRedisKey, existUser.ID, time.Unix(*refreshTokenDetails.ExpiresIn, 0).Sub(time.Now())).Err()
 	if errRefresh != nil {
 		return "", "", errors.New(422, errRefresh.Error())
 	}

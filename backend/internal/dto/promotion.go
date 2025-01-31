@@ -12,14 +12,15 @@ type Promotion struct {
 }
 
 type CreatePromotion struct {
-	Name        string              `json:"name" validate:"required"`
-	Description string              `json:"description"`
-	Type        model.PromotionType `json:"type" validate:"required"`
-	TargetID    string              `json:"target_id" validate:"required"`
-	StartDate   string              `json:"start_date" validate:"required"`
-	EndDate     string              `json:"end_date" validate:"required"`
-	Condition   CreateCondition     `json:"condition"`
-	Reward      CreateReward        `json:"reward"`
+	Name         string              `json:"name" validate:"required"`
+	Description  string              `json:"description"`
+	Type         model.PromotionType `json:"type" validate:"required"`
+	TargetID     string              `json:"target_id" validate:"required"`
+	GetProductID string              `json:"get_product_id"`
+	StartDate    string              `json:"start_date" validate:"required"`
+	EndDate      string              `json:"end_date" validate:"required"`
+	Condition    CreateCondition     `json:"condition"`
+	Reward       CreateReward        `json:"reward"`
 }
 
 type CreateCondition struct {

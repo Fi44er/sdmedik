@@ -150,6 +150,10 @@ func (r *repository) Get(ctx context.Context, criteria dto.ProductSearchCriteria
 		}
 		request = request.Joins("JOIN product_categories ON product_categories.product_id = products.id").
 			Where("product_categories.category_id = ?", criteria.CategoryID)
+	} else {
+		if err := r.db.Model(&model.Product{}).Count(&count).Error; err != nil {
+			return nil, nil, err
+		}
 	}
 
 	if criteria.Filters.Price.Min > 0 || criteria.Filters.Price.Max > 0 {
