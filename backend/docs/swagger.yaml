@@ -51,6 +51,8 @@ definitions:
         type: string
       end_date:
         type: string
+      get_product_id:
+        type: string
       name:
         type: string
       reward:
@@ -196,7 +198,7 @@ definitions:
       status:
         type: string
     type: object
-host: localhost:8080
+host: 192.168.4.9:8080
 info:
   contact: {}
   description: Swagger docs from sdmedik backend
