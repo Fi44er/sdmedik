@@ -1,6 +1,5 @@
 import { create } from "zustand";
 import axios from "axios";
-import { useState } from "react";
 import { url } from "../constants/constants";
 
 const axiosInstance = axios.create({
@@ -13,6 +12,8 @@ const useUserStore = create((set, get) => ({
   isLoggedOut: false,
   isRefreshingToken: false,
   logoutCalled: false,
+  isLoggingOut: false,
+
   getUserInfo: async () => {
     try {
       if (get().logoutCalled) {
@@ -21,7 +22,7 @@ const useUserStore = create((set, get) => ({
       const response = await axiosInstance.get(`${url}/user/me`);
       set({ user: response.data, isLoggedOut: false });
     } catch (error) {
-      if (error.response.status === 401 && !get().isLoggedOut) {
+      if (error.response?.status === 401 && !get().isLoggedOut) {
         if (!get().isRefreshingToken && !get().isLoggingOut) {
           set({ isRefreshingToken: true });
           await get().refreshToken();
@@ -34,6 +35,7 @@ const useUserStore = create((set, get) => ({
       }
     }
   },
+
   users: [],
   fetchUsers: async () => {
     try {
@@ -43,6 +45,7 @@ const useUserStore = create((set, get) => ({
       console.error("Error fetching product:", error);
     }
   },
+
   refreshToken: async () => {
     if (get().logoutCalled) {
       return;
@@ -65,6 +68,7 @@ const useUserStore = create((set, get) => ({
       }
     }
   },
+
   Logout: async () => {
     try {
       set({ isLoggingOut: true, logoutCalled: true });
@@ -75,13 +79,16 @@ const useUserStore = create((set, get) => ({
           withCredentials: true,
         }
       );
-      set({ isLoggedOut: true, isLoggingOut: false });
+      // Очищаем состояние пользователя и сбрасываем флаги
+      set({ user: null, isLoggedOut: true, isLoggingOut: false, logoutCalled: false });
     } catch (error) {
       if (error.code === "ECONNABORTED") {
         console.error("Таймаут запроса истек");
       } else {
-        console.error("Ошибка при выходе:", error); // Рекомендуется обработать ошибку
+        console.error("Ошибка при выходе:", error);
       }
+      // В случае ошибки сбрасываем флаги
+      set({ isLoggingOut: false, logoutCalled: false });
     }
   },
 }));
