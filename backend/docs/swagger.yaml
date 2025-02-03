@@ -198,7 +198,7 @@ definitions:
       status:
         type: string
     type: object
-host: 192.168.4.9:8080
+host: localhost:8080
 info:
   contact: {}
   description: Swagger docs from sdmedik backend
