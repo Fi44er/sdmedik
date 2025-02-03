@@ -126,10 +126,15 @@ func (s *service) Update(ctx context.Context, data *dto.UpdateProduct, images *d
 		return err
 	}
 
+	product, _, err := s.repo.Get(ctx, dto.ProductSearchCriteria{ID: modelProduct.ID})
+	if err != nil {
+		return err
+	}
 	if len(modelProduct.Categories) > 0 {
 		s.evenBus.Publish(events.Event{
-			Type: events.EventDataCreatedOrUpdated,
-			Data: modelProduct,
+			Type:     events.EventDataCreatedOrUpdated,
+			Data:     (*product)[0],
+			DataType: "product",
 		})
 	} else {
 		s.evenBus.Publish(events.Event{
