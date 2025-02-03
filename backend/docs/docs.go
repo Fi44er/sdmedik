@@ -1433,7 +1433,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "192.168.4.9:8080",
+	Host:             "localhost:8080",
 	BasePath:         "/api/v1/",
 	Schemes:          []string{},
 	Title:            "sdmedik API",
