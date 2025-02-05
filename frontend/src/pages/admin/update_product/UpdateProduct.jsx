@@ -21,7 +21,7 @@ import { Delete as DeleteIcon } from "@mui/icons-material";
 
 export default function UpdateProduct() {
   const { fetchCategory, category } = useCategoryStore();
-  const { updateProduct } = useProductStore();
+  const { updateProduct, fetchProductById, products } = useProductStore();
   const { id } = useParams();
 
   const [product, setProduct] = useState({
@@ -42,6 +42,10 @@ export default function UpdateProduct() {
   useEffect(() => {
     fetchCategory();
   }, []);
+
+  useEffect(() => {
+    fetchProductById(id);
+  }, [id]);
 
   const handleCheckboxChange = (id) => {
     setSelectedCategories((prevSelected) => {
@@ -138,24 +142,26 @@ export default function UpdateProduct() {
               {/* Основная информация */}
               <Grid item xs={12}>
                 <TextField
-                  label="Название"
+                  // label="Название"
                   value={product.name}
                   onChange={(e) =>
                     setProduct({ ...product, name: e.target.value })
                   }
                   fullWidth
                   margin="normal"
+                  placeholder={products.data?.name}
                 />
               </Grid>
               <Grid item xs={12}>
                 <TextField
-                  label="Артикул"
+                  // label="Артикул"
                   value={product.article}
                   onChange={(e) =>
                     setProduct({ ...product, article: e.target.value })
                   }
                   fullWidth
                   margin="normal"
+                  placeholder={products.data?.article}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -169,6 +175,7 @@ export default function UpdateProduct() {
                       price: isNaN(priceValue) ? 0 : priceValue,
                     });
                   }}
+                  placeholder={products.data?.price}
                   fullWidth
                   margin="normal"
                   InputProps={{
@@ -189,6 +196,7 @@ export default function UpdateProduct() {
                   margin="normal"
                   multiline
                   rows={4}
+                  placeholder={products.data?.description}
                 />
               </Grid>
 

@@ -42,6 +42,9 @@ const ProductCard = memo(({ e, hendleAddProductThithBascket }) => {
           height: "300px",
           borderBottom: "1px solid #E0E0E0",
         }}
+        onClick={() => {
+          window.location.href = `/product/${e.id}`;
+        }}
       >
         <CardMedia
           component="img"
@@ -62,10 +65,20 @@ const ProductCard = memo(({ e, hendleAddProductThithBascket }) => {
             textOverflow: "ellipsis",
             whiteSpace: "nowrap",
           }}
+          onClick={() => {
+            window.location.href = `/product/${e.id}`;
+          }}
         >
           {e.name}
         </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          sx={{ mb: 1 }}
+          onClick={() => {
+            window.location.href = `/product/${e.id}`;
+          }}
+        >
           Артикул: {e.article}
         </Typography>
         <Box
@@ -76,7 +89,13 @@ const ProductCard = memo(({ e, hendleAddProductThithBascket }) => {
             mt: 1,
           }}
         >
-          <Typography variant="h6" sx={{ color: "#00B3A4" }}>
+          <Typography
+            variant="h6"
+            sx={{ color: "#00B3A4" }}
+            onClick={() => {
+              window.location.href = `/product/${e.id}`;
+            }}
+          >
             {e.price} ₽
           </Typography>
           {e.oldPrice && (
