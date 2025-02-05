@@ -26,8 +26,9 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Cookies from "js-cookie";
 import useAuthStore from "../store/authStore";
 import useSearchStore from "../store/serchStore";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useResolvedPath } from "react-router-dom";
 import Search from "./componets_header/Search";
+import useUserStore from "../store/userStore";
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   display: "flex",
   gridGap: "25px",
@@ -45,6 +46,7 @@ export default function Header() {
   const [menuLk, setMenuLk] = React.useState(null);
   const { isAuthenticated, setIsAuthenticated, checkAuthStatus } =
     useAuthStore();
+  const { getUserInfo, user, Logout } = useUserStore();
 
   // Используем хранилище Zustand для поиска
 
@@ -53,6 +55,14 @@ export default function Header() {
     const intervalId = setInterval(checkAuthStatus, 300000);
     return () => clearInterval(intervalId);
   }, [setIsAuthenticated]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      await getUserInfo();
+    };
+
+    fetchData();
+  }, [getUserInfo]);
 
   const openLk = Boolean(menuLk);
 
@@ -244,7 +254,17 @@ export default function Header() {
                   ? [
                       <MenuItem key="profile" onClick={handleCloseLk}>
                         <Link sx={{ color: "#26BDB8" }} href="/profile">
-                          Личный кабинет
+                          {user && user.data?.fio}
+                        </Link>
+                      </MenuItem>,
+                      <MenuItem
+                        key="profile"
+                        onClick={() => {
+                          Logout();
+                        }}
+                      >
+                        <Link sx={{ color: "#26BDB8" }} href="/">
+                          Выйти
                         </Link>
                       </MenuItem>,
                     ]
@@ -292,11 +312,7 @@ export default function Header() {
           }}
         >
           <Link href="/">
-            <img
-              style={{ width: "60px" }}
-              src="/Logo_Header.png"
-              alt="Logo"
-            />
+            <img style={{ width: "60px" }} src="/Logo_Header.png" alt="Logo" />
           </Link>
           <IconButton
             edge="start"

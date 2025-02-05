@@ -4,7 +4,7 @@ import { url } from "../constants/constants";
 
 const axiosInstance = axios.create({
   timeout: 5000, // таймаут в миллисекундах (5 секунд)
-  withCredentials: true,
+  withCredentials: true, // Важно для работы с куками
 });
 
 const useUserStore = create((set, get) => ({
@@ -14,6 +14,7 @@ const useUserStore = create((set, get) => ({
   logoutCalled: false,
   isLoggingOut: false,
 
+  // Функция для получения информации о пользователе
   getUserInfo: async () => {
     try {
       if (get().logoutCalled) {
@@ -22,13 +23,7 @@ const useUserStore = create((set, get) => ({
       const response = await axiosInstance.get(`${url}/user/me`);
       set({ user: response.data, isLoggedOut: false });
     } catch (error) {
-      if (error.response?.status === 401 && !get().isLoggedOut) {
-        if (!get().isRefreshingToken && !get().isLoggingOut) {
-          set({ isRefreshingToken: true });
-          await get().refreshToken();
-          set({ isRefreshingToken: false });
-        }
-      } else if (error.code === "ECONNABORTED") {
+      if (error.code === "ECONNABORTED") {
         console.error("Таймаут запроса истек");
       } else {
         console.error("Ошибка при получении данных:", error);
@@ -36,27 +31,17 @@ const useUserStore = create((set, get) => ({
     }
   },
 
-  users: [],
-  fetchUsers: async () => {
-    try {
-      const response = await axios.get(`${url}/user`);
-      set({ users: response.data });
-    } catch (error) {
-      console.error("Error fetching product:", error);
-    }
-  },
-
+  // Функция для обновления токена
   refreshToken: async () => {
     if (get().logoutCalled) {
       return;
     }
     try {
-      const response = await axiosInstance.post(
+      // Отправляем запрос на обновление токена
+      await axiosInstance.post(
         `${url}/auth/refresh`,
         {},
-        {
-          withCredentials: true,
-        }
+        { withCredentials: true }
       );
       // После обновления токена повторно вызываем функцию getUserInfo
       await get().getUserInfo();
@@ -64,23 +49,31 @@ const useUserStore = create((set, get) => ({
       if (error.code === "ECONNABORTED") {
         console.error("Таймаут запроса истек");
       } else {
-        console.error("Error:", error);
+        console.error("Ошибка при обновлении токена:", error);
       }
+      throw error; // Пробрасываем ошибку, чтобы обработать её в интерцепторе
     }
   },
 
+  // Функция для выхода из системы
   Logout: async () => {
     try {
       set({ isLoggingOut: true, logoutCalled: true });
-      const response = await axiosInstance.post(
+      await axiosInstance.post(
         `${url}/auth/logout`,
         {},
         {
           withCredentials: true,
+          skipAuthRefresh: true, // Флаг для пропуска обновления токена
         }
       );
       // Очищаем состояние пользователя и сбрасываем флаги
-      set({ user: null, isLoggedOut: true, isLoggingOut: false, logoutCalled: false });
+      set({
+        user: null,
+        isLoggedOut: true,
+        isLoggingOut: false,
+        logoutCalled: false,
+      });
     } catch (error) {
       if (error.code === "ECONNABORTED") {
         console.error("Таймаут запроса истек");
@@ -92,5 +85,33 @@ const useUserStore = create((set, get) => ({
     }
   },
 }));
+
+// Интерцептор для обработки ошибок 401
+axiosInstance.interceptors.response.use(
+  (response) => response, // Если ответ успешный, просто возвращаем его
+  async (error) => {
+    const originalRequest = error.config;
+
+    // Если ошибка 401 и это не запрос на обновление токена
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !originalRequest.skipAuthRefresh
+    ) {
+      originalRequest._retry = true; // Помечаем запрос как повторный
+
+      try {
+        await useUserStore.getState().refreshToken(); // Обновляем токен
+        return axiosInstance(originalRequest); // Повторяем оригинальный запрос
+      } catch (refreshError) {
+        // Если не удалось обновить токен, выходим из системы
+        await useUserStore.getState().Logout();
+        return Promise.reject(refreshError);
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);
 
 export default useUserStore;
