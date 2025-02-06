@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import axios from "axios";
 import { url } from "../constants/constants";
+import { toast } from "react-toastify";
 
 const axiosInstance = axios.create({
   timeout: 5000, // таймаут в миллисекундах (5 секунд)
@@ -82,6 +83,14 @@ const useUserStore = create((set, get) => ({
       }
       // В случае ошибки сбрасываем флаги
       set({ isLoggingOut: false, logoutCalled: false });
+    }
+  },
+  fetchUsers: async () => {
+    try {
+      const response = await axios.get(`${url}/user`);
+      set({ user: response.data });
+    } catch (error) {
+      toast.error(error.message);
     }
   },
 }));
