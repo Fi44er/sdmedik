@@ -14,7 +14,9 @@ const MainContent = () => {
 
       {/* <Box sx={{ mt: 5 }}>
       </Box> */}
-      <Box sx={{ mt: 5 }}>{/* <AdminUsersDiagramm /> */}</Box>
+      <Box sx={{ mt: 5 }}>
+        <AdminUsersDiagramm />
+      </Box>
     </Box>
   );
 };

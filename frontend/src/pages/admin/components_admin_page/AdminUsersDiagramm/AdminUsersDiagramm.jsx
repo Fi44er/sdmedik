@@ -13,25 +13,25 @@ import {
 } from "recharts";
 
 export default function AdminUsersDiagramm() {
-  const { fetchUsers, users } = useUserStore();
+  const { fetchUsers, allUsers } = useUserStore();
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [userGrowthData, setUserGrowthData] = useState([]);
 
   useEffect(() => {
     fetchUsers();
-  }, []);
+  }, [allUsers]);
 
   useEffect(() => {
-    if (users && users.data && Array.isArray(users.data.users)) {
-      setFilteredUsers(users.data.users);
+    if (allUsers && allUsers.data && Array.isArray(allUsers.data.users)) {
+      setFilteredUsers(allUsers.data.users);
       // Обновляем данные для диаграммы
-      const growthData = users.data.users.map((user, index) => ({
+      const growthData = allUsers.data.users.map((user, index) => ({
         name: `Пользователь ${index + 1}`,
         count: index + 1,
       }));
       setUserGrowthData(growthData);
     }
-  }, [users]);
+  }, [allUsers]);
 
   return (
     <Box>
@@ -59,7 +59,7 @@ export default function AdminUsersDiagramm() {
           </LineChart>
         </ResponsiveContainer>
         <Typography sx={{ fontSize: "20px", mb: 2, mt: 2, color: "green" }}>
-          Всего пользователей : ({users?.data?.count || 0}){" "}
+          Всего пользователей : ({allUsers?.data?.count || 0})
         </Typography>
       </Paper>
     </Box>

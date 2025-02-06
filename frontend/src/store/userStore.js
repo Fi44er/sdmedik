@@ -10,6 +10,7 @@ const axiosInstance = axios.create({
 
 const useUserStore = create((set, get) => ({
   user: null,
+  allUsers: [],
   isLoggedOut: false,
   isRefreshingToken: false,
   logoutCalled: false,
@@ -88,7 +89,7 @@ const useUserStore = create((set, get) => ({
   fetchUsers: async () => {
     try {
       const response = await axios.get(`${url}/user`);
-      set({ user: response.data });
+      set({ allUsers: response.data }); // Update allUsers state, not user state
     } catch (error) {
       toast.error(error.message);
     }
