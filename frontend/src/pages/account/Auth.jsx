@@ -10,8 +10,8 @@ import {
 import React from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import useAuthStore from "../../store/authStore";
 import { useForm } from "react-hook-form";
+import useUserStore from "../../store/userStore";
 
 const scaleVariants = {
   hidden: {
@@ -31,7 +31,7 @@ const scaleVariants = {
 
 export default function Auth() {
   const navigate = useNavigate();
-  const { loginFunc, email, setEmail, password, setPassword } = useAuthStore();
+  const { loginFunc, email, setEmail, password, setPassword } = useUserStore();
 
   const {
     register,

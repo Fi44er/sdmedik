@@ -11,10 +11,10 @@ import {
 } from "@mui/material";
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import useAuthStore from "../../store/authStore";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import CloseIcon from "@mui/icons-material/Close";
+import useUserStore from "../../store/userStore";
 
 const scaleVariants = {
   hidden: {
@@ -49,7 +49,7 @@ export default function Register() {
     setCode,
 
     verifyFunc,
-  } = useAuthStore();
+  } = useUserStore();
   const {
     register,
     handleSubmit,

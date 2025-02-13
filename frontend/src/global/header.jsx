@@ -24,7 +24,6 @@ import SearchIcon from "@mui/icons-material/Search";
 import MenuIcon from "@mui/icons-material/Menu";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Cookies from "js-cookie";
-import useAuthStore from "../store/authStore";
 import useSearchStore from "../store/serchStore";
 import { useNavigate, useResolvedPath } from "react-router-dom";
 import Search from "./componets_header/Search";
@@ -45,7 +44,7 @@ export default function Header() {
   const open = Boolean(anchorEl);
   const [menuLk, setMenuLk] = React.useState(null);
   const { isAuthenticated, setIsAuthenticated, checkAuthStatus } =
-    useAuthStore();
+    useUserStore();
   const { getUserInfo, user, Logout } = useUserStore();
 
   // Используем хранилище Zustand для поиска
