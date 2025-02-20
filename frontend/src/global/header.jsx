@@ -178,14 +178,46 @@ export default function Header() {
               alignItems: "center",
             }}
           >
-            <Box
+            <Paper
               sx={{
-                display: "flex",
-                justifyContent: "center",
+                width: "max-content",
+                background: "#FAFAFA",
+                borderRadius: "15px",
+                display: { xs: "none", sm: "none", md: "", lg: "flex" },
                 alignItems: "center",
+                padding: "20px 40px",
+                BoxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
               }}
             >
-              <Button
+              {/* <Button
+                variant="contained"
+                onClick={(e) => {
+                  e.preventDefault();
+                  window.location.href = "/catalog";
+                }}
+                sx={{
+                  width: "300px",
+                  background: `linear-gradient(95.61deg, #A5DED1 4.71%, #00B3A4 97.25%)`,
+                }}
+              >
+                Каталог
+              </Button> */}
+              <Link
+                underline="hover"
+                sx={{ ml: 2, mr: 2, color: "#26BDB8", fontSize: "18px" }}
+                href="/catalog"
+              >
+                Каталог
+              </Link>
+              <Link
+                underline="hover"
+                sx={{ ml: 2, mr: 2, color: "#26BDB8", fontSize: "18px" }}
+                href="/catalog/certificate"
+              >
+                Покупка по сертификату
+              </Link>
+
+              {/* <Button
                 id="basic-button"
                 variant="contained"
                 onClick={(e) => {
@@ -193,16 +225,12 @@ export default function Header() {
                   window.location.href = "/catalog";
                 }}
                 sx={{
-                  width: "200px",
-                  height: "54px",
                   background: `linear-gradient(95.61deg, #A5DED1 4.71%, #00B3A4 97.25%)`,
-                  borderRadius: "20px",
-                  fontSize: "18px",
                 }}
               >
-                Каталог
-              </Button>
-            </Box>
+                Покупка по электронному сертификату
+              </Button> */}
+            </Paper>
             <Box>
               <Paper
                 sx={{
@@ -378,6 +406,20 @@ export default function Header() {
                 href="/catalog"
               >
                 Каталог
+              </Link>
+              <Link
+                underline="hover"
+                color="black"
+                sx={{
+                  fontSize: "18px",
+                  ml: 4,
+                  mt: 4,
+                  textDicoration: "none",
+                  color: "#26BDB8",
+                }}
+                href="/catalog/certificate"
+              >
+                Покупка по сертификату
               </Link>
             </Box>
 

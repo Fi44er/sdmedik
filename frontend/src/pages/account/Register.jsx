@@ -32,6 +32,16 @@ const scaleVariants = {
   },
 };
 
+const formatPhoneNumber = (value) => {
+  const cleaned = value.replace(/\D/g, "");
+  const match = cleaned.match(/^7(\d{0,3})(\d{0,3})(\d{0,2})(\d{0,2})$/);
+  if (!match) return "+7 (";
+  const [, areaCode, firstPart, secondPart, thirdPart] = match;
+  return `+7 (${areaCode}${areaCode ? ")" : ""}${
+    firstPart ? ` ${firstPart}` : ""
+  }${secondPart ? `-${secondPart}` : ""}${thirdPart ? `-${thirdPart}` : ""}`;
+};
+
 export default function Register() {
   const {
     email,
@@ -47,7 +57,6 @@ export default function Register() {
     setShowConfirmation,
     code,
     setCode,
-
     verifyFunc,
   } = useUserStore();
   const {
@@ -69,6 +78,11 @@ export default function Register() {
 
   const handleVerify = async () => {
     await verifyFunc(navigate);
+  };
+
+  const handlePhoneNumberChange = (e) => {
+    const formattedPhoneNumber = formatPhoneNumber(e.target.value);
+    setPhone_number(formattedPhoneNumber);
   };
 
   return (
@@ -136,13 +150,12 @@ export default function Register() {
                 <TextField
                   variant="outlined"
                   label="Телефон"
-                  placeholder="+79228442121"
+                  placeholder="+7 (___) ___-__-__"
                   {...register("phone_number", {
                     required: "Это поле обязательно для заполнения",
-                    minLength: {
-                      value: 11,
-                      message:
-                        "Неправильный формат номера телефона,номер телефона должен быть 11 цифр",
+                    pattern: {
+                      value: /^\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}$/,
+                      message: "Неправильный формат номера телефона",
                     },
                   })}
                   error={!!errors.phone_number}
@@ -150,7 +163,7 @@ export default function Register() {
                     errors.phone_number ? errors.phone_number.message : ""
                   }
                   value={phone_number}
-                  onChange={(e) => setPhone_number(e.target.value)}
+                  onChange={handlePhoneNumberChange}
                   sx={{
                     "& .MuiOutlinedInput-root": {
                       "&.Mui-focused fieldset": {
@@ -196,7 +209,7 @@ export default function Register() {
                     required: "Это поле обязательно для заполнения",
                     minLength: {
                       value: 6,
-                      message: "Пороль не может быть кароче 6 символов",
+                      message: "Пароль не может быть короче 6 символов",
                     },
                   })}
                   error={!!errors.password}
@@ -220,9 +233,6 @@ export default function Register() {
                   type="submit"
                   variant="contained"
                   sx={{ background: "#2CC0B3" }}
-                  // onClick={(e) => {
-                  //   handleRegister();
-                  // }}
                 >
                   Зарегистрироваться
                 </Button>
