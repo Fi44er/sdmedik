@@ -28,6 +28,9 @@ import AdminUserTable from "../pages/admin/components_admin_page/AdminUserTable/
 import AdminProductTable from "../pages/admin/components_admin_page/AdminProductTable/AdminProductTable";
 import Paymants from "../pages/paymants/Paymants";
 import PayOnclick from "../pages/pay_onclick/PayOnclick";
+import CategoriesForCertificate from "../pages/categories_for_certificate/CategoriesForCertificate";
+import CatalogsCertificateLayout from "../pages/catalog/CatalogsCertificateLayout";
+import ProductDynamicCertificatePage from "../pages/Product/ProductDynamicCertificatePage";
 
 const UsersRoute = ({ children }) => {
   const isLoggedIn = Cookies.get("logged_in") === "true";
@@ -79,12 +82,24 @@ export const router = createBrowserRouter([
     element: <СategoriesPage />,
   },
   {
+    path: "/catalog/certificate",
+    element: <CategoriesForCertificate />,
+  },
+  {
     path: "/products/:id", // динамический маршрут
     element: <CatalogsLayout />, // Исправлено имя компонента
   },
   {
+    path: "/products/certificate/:id", // динамический маршрут
+    element: <CatalogsCertificateLayout />, // Исправлено имя компонента
+  },
+  {
     path: "/product/:id", // динамический маршрут
     element: <ProductDynamicPage />, // Исправлено имя компонента
+  },
+  {
+    path: "/product/certificate/:id", // динамический маршрут
+    element: <ProductDynamicCertificatePage />, // Исправлено имя компонента
   },
   {
     path: "/basket", // динамический маршрут
