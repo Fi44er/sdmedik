@@ -25,9 +25,10 @@ import MenuIcon from "@mui/icons-material/Menu";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Cookies from "js-cookie";
 import useSearchStore from "../store/serchStore";
-import { useNavigate, useResolvedPath } from "react-router-dom";
+import { useNavigate, useResolvedPath, useLocation } from "react-router-dom"; // Добавьте useLocation
 import Search from "./componets_header/Search";
 import useUserStore from "../store/userStore";
+
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   display: "flex",
   gridGap: "25px",
@@ -46,6 +47,7 @@ export default function Header() {
   const { isAuthenticated, setIsAuthenticated, checkAuthStatus } =
     useUserStore();
   const { getUserInfo, user, Logout } = useUserStore();
+  const location = useLocation(); // Получаем текущий путь
 
   // Используем хранилище Zustand для поиска
 
@@ -105,6 +107,12 @@ export default function Header() {
     },
     { text: "Контакты", href: "/contacts " },
   ];
+
+  // Проверяем, находится ли пользователь на одной из указанных страниц
+  const shouldHideCatalogButton =
+    location.pathname === "/catalog/certificate" ||
+    location.pathname.startsWith("/products/certificate/") ||
+    location.pathname.startsWith("/product/certificate/");
 
   return (
     <AppBar position="sticky" sx={{ background: "white", p: 1 }}>
@@ -178,59 +186,44 @@ export default function Header() {
               alignItems: "center",
             }}
           >
-            <Paper
+            <Box
               sx={{
-                width: "max-content",
-                background: "#FAFAFA",
-                borderRadius: "15px",
+                width: "400px",
                 display: { xs: "none", sm: "none", md: "", lg: "flex" },
                 alignItems: "center",
-                padding: "20px 40px",
-                BoxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+                gridGap: 20,
               }}
             >
-              {/* <Button
-                variant="contained"
-                onClick={(e) => {
-                  e.preventDefault();
-                  window.location.href = "/catalog";
-                }}
-                sx={{
-                  width: "300px",
-                  background: `linear-gradient(95.61deg, #A5DED1 4.71%, #00B3A4 97.25%)`,
-                }}
-              >
-                Каталог
-              </Button> */}
-              <Link
-                underline="hover"
-                sx={{ ml: 2, mr: 2, color: "#26BDB8", fontSize: "18px" }}
-                href="/catalog"
-              >
-                Каталог
-              </Link>
-              <Link
-                underline="hover"
-                sx={{ ml: 2, mr: 2, color: "#26BDB8", fontSize: "18px" }}
-                href="/catalog/certificate"
-              >
-                Покупка по сертификату
-              </Link>
-
-              {/* <Button
+              {!shouldHideCatalogButton && ( // Условие для отображения кнопки "Каталог"
+                <Button
+                  variant="contained"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    window.location.href = "/catalog";
+                  }}
+                  sx={{
+                    background: `linear-gradient(95.61deg, #A5DED1 4.71%, #00B3A4 97.25%)`,
+                    fontSize: "18px",
+                  }}
+                >
+                  Каталог
+                </Button>
+              )}
+              <Button
                 id="basic-button"
                 variant="contained"
                 onClick={(e) => {
                   e.preventDefault();
-                  window.location.href = "/catalog";
+                  window.location.href = "/catalog/certificate";
                 }}
                 sx={{
                   background: `linear-gradient(95.61deg, #A5DED1 4.71%, #00B3A4 97.25%)`,
+                  fontSize: "18px",
                 }}
               >
-                Покупка по электронному сертификату
-              </Button> */}
-            </Paper>
+                Покупка по сертификату
+              </Button>
+            </Box>
             <Box>
               <Paper
                 sx={{
@@ -239,7 +232,7 @@ export default function Header() {
                   borderRadius: "15px",
                   display: { xs: "none", sm: "none", md: "", lg: "flex" },
                   alignItems: "center",
-                  padding: "20px 40px",
+                  padding: "20px 5px",
                   BoxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
                 }}
               >
@@ -392,28 +385,31 @@ export default function Header() {
                 </ListItem>
               );
             })}
-            <Box sx={{ mt: 2 }}>
+            <Box sx={{ mt: 2, display: "flex", flexDirection: "column" }}>
+              {!shouldHideCatalogButton && ( // Условие для отображения кнопки "Каталог" в бургер-меню
+                <Link
+                  underline="hover"
+                  color="black"
+                  sx={{
+                    fontSize: "18px",
+                    ml: 4,
+                    mt: 4,
+                    textDicoration: "none",
+                    color: "#26BDB8",
+                  }}
+                  href="/catalog"
+                >
+                  Каталог
+                </Link>
+              )}
               <Link
                 underline="hover"
                 color="black"
                 sx={{
                   fontSize: "18px",
                   ml: 4,
-                  mt: 4,
-                  textDicoration: "none",
-                  color: "#26BDB8",
-                }}
-                href="/catalog"
-              >
-                Каталог
-              </Link>
-              <Link
-                underline="hover"
-                color="black"
-                sx={{
-                  fontSize: "18px",
-                  ml: 4,
-                  mt: 4,
+                  mt: 1,
+                  mb: 3,
                   textDicoration: "none",
                   color: "#26BDB8",
                 }}
