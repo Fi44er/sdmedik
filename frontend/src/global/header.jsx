@@ -47,7 +47,7 @@ export default function Header() {
   const { isAuthenticated, setIsAuthenticated, checkAuthStatus } =
     useUserStore();
   const { getUserInfo, user, Logout } = useUserStore();
-  const location = useLocation(); // Получаем текущий путь
+  // const location = useLocation(); // Получаем текущий путь
 
   // Используем хранилище Zustand для поиска
 
@@ -109,10 +109,10 @@ export default function Header() {
   ];
 
   // Проверяем, находится ли пользователь на одной из указанных страниц
-  const shouldHideCatalogButton =
-    location.pathname === "/catalog/certificate" ||
-    location.pathname.startsWith("/products/certificate/") ||
-    location.pathname.startsWith("/product/certificate/");
+  // const shouldHideCatalogButton =
+  //   location.pathname === "/catalog/certificate" ||
+  //   location.pathname.startsWith("/products/certificate/") ||
+  //   location.pathname.startsWith("/product/certificate/");
 
   return (
     <AppBar position="sticky" sx={{ background: "white", p: 1 }}>
@@ -188,27 +188,27 @@ export default function Header() {
           >
             <Box
               sx={{
-                width: "400px",
+                width: "max-content",
                 display: { xs: "none", sm: "none", md: "", lg: "flex" },
                 alignItems: "center",
                 gridGap: 20,
               }}
             >
-              {!shouldHideCatalogButton && ( // Условие для отображения кнопки "Каталог"
-                <Button
-                  variant="contained"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    window.location.href = "/catalog";
-                  }}
-                  sx={{
-                    background: `linear-gradient(95.61deg, #A5DED1 4.71%, #00B3A4 97.25%)`,
-                    fontSize: "18px",
-                  }}
-                >
-                  Каталог
-                </Button>
-              )}
+              {/* {!shouldHideCatalogButton && ( // Условие для отображения кнопки "Каталог" */}
+              <Button
+                variant="contained"
+                onClick={(e) => {
+                  e.preventDefault();
+                  window.location.href = "/catalog";
+                }}
+                sx={{
+                  background: `linear-gradient(95.61deg, #A5DED1 4.71%, #00B3A4 97.25%)`,
+                  fontSize: "18px",
+                }}
+              >
+                Каталог
+              </Button>
+              {/* )} */}
               <Button
                 id="basic-button"
                 variant="contained"
@@ -221,7 +221,7 @@ export default function Header() {
                   fontSize: "18px",
                 }}
               >
-                Покупка по сертификату
+                по электроному сертификату
               </Button>
             </Box>
             <Box>
@@ -386,22 +386,22 @@ export default function Header() {
               );
             })}
             <Box sx={{ mt: 2, display: "flex", flexDirection: "column" }}>
-              {!shouldHideCatalogButton && ( // Условие для отображения кнопки "Каталог" в бургер-меню
-                <Link
-                  underline="hover"
-                  color="black"
-                  sx={{
-                    fontSize: "18px",
-                    ml: 4,
-                    mt: 4,
-                    textDicoration: "none",
-                    color: "#26BDB8",
-                  }}
-                  href="/catalog"
-                >
-                  Каталог
-                </Link>
-              )}
+              {/* {!shouldHideCatalogButton && ( // Условие для отображения кнопки "Каталог" в бургер-меню */}
+              <Link
+                underline="hover"
+                color="black"
+                sx={{
+                  fontSize: "18px",
+                  ml: 4,
+                  mt: 4,
+                  textDicoration: "none",
+                  color: "#26BDB8",
+                }}
+                href="/catalog"
+              >
+                Каталог
+              </Link>
+              {/* )} */}
               <Link
                 underline="hover"
                 color="black"
@@ -415,7 +415,7 @@ export default function Header() {
                 }}
                 href="/catalog/certificate"
               >
-                Покупка по сертификату
+                По электроному сертификату
               </Link>
             </Box>
 
