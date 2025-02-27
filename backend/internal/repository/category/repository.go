@@ -113,3 +113,19 @@ func (r *repository) GetByIDs(ctx context.Context, ids []int) (*[]model.Category
 	r.logger.Info("Categories fetched by ids successfully")
 	return categories, nil
 }
+
+func (r *repository) Update(ctx context.Context, cateegory *model.Category, tx *gorm.DB) error {
+	r.logger.Info("Updating category...")
+	db := tx
+	if db == nil {
+		db = r.db
+	}
+
+	if err := db.WithContext(ctx).Model(cateegory).Updates(cateegory).Error; err != nil {
+		r.logger.Errorf("Failed to update category: %v", err)
+		return err
+	}
+
+	r.logger.Info("Category updated successfully")
+	return nil
+}

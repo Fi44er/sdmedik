@@ -45,6 +45,7 @@ type ICategoryService interface {
 	GetByID(ctx context.Context, id int) (*model.Category, error)
 	Delete(ctx context.Context, id int) error
 	GetByIDs(ctx context.Context, ids []int) (*[]model.Category, error)
+	Update(ctx context.Context, categoryID int, data *dto.UpdateCategory) error
 }
 
 type ICharacteristicService interface {
@@ -54,6 +55,7 @@ type ICharacteristicService interface {
 	GetByCategoryID(ctx context.Context, categoryID int) (*[]model.Characteristic, error)
 	Delete(ctx context.Context, id int) error
 	GetByIDs(ctx context.Context, ids []int) (*[]model.Characteristic, error)
+	Update(ctx context.Context, categoryID int, characteristics []dto.UpdateCharacteristic, tx *gorm.DB) error
 }
 
 type ICharacteristicValueService interface {
