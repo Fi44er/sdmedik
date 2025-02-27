@@ -15,22 +15,22 @@ services:
     networks:
       - app-network
 
-
-  backend:
-    build: .
-    container_name: backend
-    ports:
-      - "8080:8080"
-    volumes:
-      - ./image:/app/image
-      # - ./product_index:/app/product_index
-      - ./pkg/mailer/template:/app/template
-    depends_on:
-      - postgres
-      - redis
-    networks:
-      - app-network  # Используем сеть для связи между сервисами
-
+  #
+  # backend:
+  #   build: .
+  #   container_name: backend
+  #   ports:
+  #     - "8080:8080"
+  #   volumes:
+  #     - ./image:/app/image
+  #     # - ./product_index:/app/product_index
+  #     - ./pkg/mailer/template:/app/template
+  #   depends_on:
+  #     - postgres
+  #     - redis
+  #   networks:
+  #     - app-network  # Используем сеть для связи между сервисами
+  #
 
   redis:
     image: redis:alpine

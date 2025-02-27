@@ -23,6 +23,7 @@ type ICategoryRepository interface {
 	Delete(ctx context.Context, id int, tx *gorm.DB) error
 	GetByIDs(ctx context.Context, ids []int) (*[]model.Category, error)
 	GetByName(ctx context.Context, name string) (*model.Category, error)
+	Update(ctx context.Context, cateegory *model.Category, tx *gorm.DB) error
 }
 
 type IProductRepository interface {
@@ -56,6 +57,8 @@ type ICharacteristicRepository interface {
 	GetByCategoryID(ctx context.Context, categoryID int) (*[]model.Characteristic, error)
 	Delete(ctx context.Context, id int) error
 	GetByIDs(ctx context.Context, ids []int) (*[]model.Characteristic, error)
+	Update(ctx context.Context, data *model.Characteristic, tx *gorm.DB) error
+	DeleteMany(ctx context.Context, ids []int, tx *gorm.DB) error
 }
 
 type ICharacteristicValueRepository interface {

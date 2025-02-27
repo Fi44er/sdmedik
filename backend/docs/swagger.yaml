@@ -114,6 +114,32 @@ definitions:
     required:
     - email
     type: object
+  dto.UpdateCategory:
+    properties:
+      characteristics:
+        items:
+          $ref: '#/definitions/dto.UpdateCharacteristic'
+        type: array
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  dto.UpdateCharacteristic:
+    properties:
+      category_id:
+        type: integer
+      data_type:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+    required:
+    - category_id
+    - id
+    - name
+    type: object
   dto.UpdateUser:
     properties:
       email:
@@ -497,6 +523,32 @@ paths:
           schema:
             $ref: '#/definitions/response.ResponseData'
       summary: Get a category by ID
+      tags:
+      - category
+    put:
+      consumes:
+      - application/json
+      description: Updates a category with metadata (JSON)
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Category metadata as JSON
+        in: body
+        name: category
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateCategory'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseData'
+      summary: Update a category
       tags:
       - category
   /order:
