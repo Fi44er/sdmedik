@@ -130,6 +130,7 @@ func (a *App) initRouter() error {
 	category.Post("/", middleware.DeserializeUser(a.cache, a.db, a.config), a.serviceProvider.categoryProvider.CategoryImpl().Create)
 	category.Get("/:id", a.serviceProvider.categoryProvider.CategoryImpl().GetByID)
 	category.Delete("/:id", a.serviceProvider.categoryProvider.CategoryImpl().Delete)
+	category.Put("/:id", a.serviceProvider.categoryProvider.CategoryImpl().Update)
 
 	search := v1.Group("/search")
 	search.Get("/", a.serviceProvider.searchProvider.SearchImpl().Search)

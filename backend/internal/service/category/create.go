@@ -14,12 +14,12 @@ func (s *service) Create(ctx context.Context, data *dto.CreateCategory, image *d
 		return errors.New(400, err.Error())
 	}
 
-	existProduct, err := s.repo.GetByName(ctx, data.Name)
+	existCategory, err := s.repo.GetByName(ctx, data.Name)
 	if err != nil {
 		return err
 	}
 
-	if existProduct != nil {
+	if existCategory != nil {
 		return errors.New(409, "Category already exist")
 	}
 

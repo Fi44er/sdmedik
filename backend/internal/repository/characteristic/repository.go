@@ -111,3 +111,34 @@ func (r *repository) GetByIDs(ctx context.Context, ids []int) (*[]model.Characte
 	r.logger.Info("Characteristics fetched by ids successfully")
 	return characteristics, nil
 }
+
+func (r *repository) Update(ctx context.Context, data *model.Characteristic, tx *gorm.DB) error {
+	r.logger.Info("Updating characteristic...")
+	db := tx
+	if db == nil {
+		db = r.db
+	}
+
+	if err := db.WithContext(ctx).Model(data).Updates(data).Error; err != nil {
+		r.logger.Errorf("Failed to update characteristic: %v", err)
+		return err
+	}
+
+	r.logger.Info("Characteristic updated successfully")
+	return nil
+}
+
+func (r *repository) DeleteMany(ctx context.Context, ids []int, tx *gorm.DB) error {
+	r.logger.Infof("Deleting characteristics by ids: %v...", ids)
+	db := tx
+	if db == nil {
+		db = r.db
+	}
+	result := db.WithContext(ctx).Where("id in (?)", ids).Delete(&model.Characteristic{})
+	if err := result.Error; err != nil {
+		r.logger.Errorf("Failed to delete characteristics by ids: %v", err)
+		return err
+	}
+	r.logger.Infof("Characteristics deleted by ids: %v successfully", ids)
+	return nil
+}
