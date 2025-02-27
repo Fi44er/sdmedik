@@ -12,9 +12,9 @@ import {
 import Grid from "@mui/material/Grid2";
 import { useParams } from "react-router-dom";
 import useProductStore from "../../../store/productStore";
-import SidebarFilter from "./SidebarFilter";
 import useBascketStore from "../../../store/bascketStore";
 import { urlPictures } from "../../../constants/constants";
+import SidebarFilter from "./SidebarFilter";
 
 const ProductCard = memo(({ e, hendleAddProductThithBascket }) => {
   return (
@@ -43,7 +43,7 @@ const ProductCard = memo(({ e, hendleAddProductThithBascket }) => {
           borderBottom: "1px solid #E0E0E0",
         }}
         onClick={() => {
-          window.location.href = `/product/${e.id}`;
+          window.location.href = `/product/certificate/${e.id}`;
         }}
       >
         <CardMedia
@@ -66,7 +66,7 @@ const ProductCard = memo(({ e, hendleAddProductThithBascket }) => {
             whiteSpace: "nowrap",
           }}
           onClick={() => {
-            window.location.href = `/product/${e.id}`;
+            window.location.href = `/product/certificate/${e.id}`;
           }}
         >
           {e.name}
@@ -76,37 +76,11 @@ const ProductCard = memo(({ e, hendleAddProductThithBascket }) => {
           color="text.secondary"
           sx={{ mb: 1 }}
           onClick={() => {
-            window.location.href = `/product/${e.id}`;
+            window.location.href = `/product/certificate/${e.id}`;
           }}
         >
           Артикул: {e.article}
         </Typography>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            mt: 1,
-          }}
-        >
-          <Typography
-            variant="h6"
-            sx={{ color: "#00B3A4" }}
-            onClick={() => {
-              window.location.href = `/product/${e.id}`;
-            }}
-          >
-            {e.price} ₽
-          </Typography>
-          {e.oldPrice && (
-            <Typography
-              variant="body2"
-              sx={{ color: "text.secondary", textDecoration: "line-through" }}
-            >
-              {e.oldPrice} ₽
-            </Typography>
-          )}
-        </Box>
       </CardContent>
       <Box
         sx={{
@@ -127,7 +101,7 @@ const ProductCard = memo(({ e, hendleAddProductThithBascket }) => {
           }}
           variant="outlined"
           onClick={() => {
-            window.location.href = `/product/${e.id}`;
+            window.location.href = `/product/certificate/${e.id}`;
           }}
         >
           Подробнее
@@ -149,7 +123,7 @@ const ProductCard = memo(({ e, hendleAddProductThithBascket }) => {
   );
 });
 
-const CatalogDynamicPage = () => {
+const CatalogDynamicCertificatePage = () => {
   const { id } = useParams();
   const { fetchProducts, products } = useProductStore();
   const { addProductThisBascket } = useBascketStore();
@@ -236,4 +210,4 @@ const CatalogDynamicPage = () => {
   );
 };
 
-export default CatalogDynamicPage;
+export default CatalogDynamicCertificatePage;

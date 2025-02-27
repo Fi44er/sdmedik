@@ -84,6 +84,8 @@ func (s *service) addSampleProducts(ctx context.Context) error {
 		return err
 	}
 
+	s.logger.Infof("Добавляем %d товаров в индекс", len(*products))
+
 	if products == nil {
 		products = &[]response.ProductResponse{}
 	}

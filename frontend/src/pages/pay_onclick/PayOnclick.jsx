@@ -11,11 +11,10 @@ import {
 } from "@mui/material";
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import CloseIcon from "@mui/icons-material/Close";
 import useOrderStore from "../../store/orderStore";
-import { useParams } from "react-router-dom";
 
 const scaleVariants = {
   hidden: {
@@ -33,6 +32,16 @@ const scaleVariants = {
   },
 };
 
+const formatPhoneNumber = (value) => {
+  const cleaned = value.replace(/\D/g, "");
+  const match = cleaned.match(/^7(\d{0,3})(\d{0,3})(\d{0,2})(\d{0,2})$/);
+  if (!match) return "+7 (";
+  const [, areaCode, firstPart, secondPart, thirdPart] = match;
+  return `+7 (${areaCode}${areaCode ? ")" : ""}${
+    firstPart ? ` ${firstPart}` : ""
+  }${secondPart ? `-${secondPart}` : ""}${thirdPart ? `-${thirdPart}` : ""}`;
+};
+
 export default function PayOnclick() {
   const {
     email,
@@ -41,7 +50,6 @@ export default function PayOnclick() {
     setFio,
     phone_number,
     setPhone_number,
-
     payOrderById,
   } = useOrderStore();
   const {
@@ -53,11 +61,14 @@ export default function PayOnclick() {
   const { id } = useParams();
 
   const [error, setError] = useState(null);
-  //   const navigate = useNavigate();
 
   const handlePay = async () => {
     await payOrderById(id);
-    // window.location.href = response.data.data.id;
+  };
+
+  const handlePhoneNumberChange = (e) => {
+    const formattedPhoneNumber = formatPhoneNumber(e.target.value);
+    setPhone_number(formattedPhoneNumber);
   };
 
   return (
@@ -125,13 +136,12 @@ export default function PayOnclick() {
                 <TextField
                   variant="outlined"
                   label="Телефон"
-                  placeholder="+79228442121"
+                  placeholder="+7 (___) ___-__-__"
                   {...register("phone_number", {
                     required: "Это поле обязательно для заполнения",
-                    minLength: {
-                      value: 11,
-                      message:
-                        "Неправильный формат номера телефона,номер телефона должен быть 11 цифр",
+                    pattern: {
+                      value: /^\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}$/,
+                      message: "Неправильный формат номера телефона",
                     },
                   })}
                   error={!!errors.phone_number}
@@ -139,7 +149,7 @@ export default function PayOnclick() {
                     errors.phone_number ? errors.phone_number.message : ""
                   }
                   value={phone_number}
-                  onChange={(e) => setPhone_number(e.target.value)}
+                  onChange={handlePhoneNumberChange}
                   sx={{
                     "& .MuiOutlinedInput-root": {
                       "&.Mui-focused fieldset": {

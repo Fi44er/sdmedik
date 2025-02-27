@@ -24,10 +24,11 @@ import SearchIcon from "@mui/icons-material/Search";
 import MenuIcon from "@mui/icons-material/Menu";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Cookies from "js-cookie";
-import useAuthStore from "../store/authStore";
 import useSearchStore from "../store/serchStore";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useResolvedPath, useLocation } from "react-router-dom"; // Добавьте useLocation
 import Search from "./componets_header/Search";
+import useUserStore from "../store/userStore";
+
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   display: "flex",
   gridGap: "25px",
@@ -44,7 +45,9 @@ export default function Header() {
   const open = Boolean(anchorEl);
   const [menuLk, setMenuLk] = React.useState(null);
   const { isAuthenticated, setIsAuthenticated, checkAuthStatus } =
-    useAuthStore();
+    useUserStore();
+  const { getUserInfo, user, Logout } = useUserStore();
+  // const location = useLocation(); // Получаем текущий путь
 
   // Используем хранилище Zustand для поиска
 
@@ -53,6 +56,14 @@ export default function Header() {
     const intervalId = setInterval(checkAuthStatus, 300000);
     return () => clearInterval(intervalId);
   }, [setIsAuthenticated]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      await getUserInfo();
+    };
+
+    fetchData();
+  }, [getUserInfo]);
 
   const openLk = Boolean(menuLk);
 
@@ -96,6 +107,12 @@ export default function Header() {
     },
     { text: "Контакты", href: "/contacts " },
   ];
+
+  // Проверяем, находится ли пользователь на одной из указанных страниц
+  // const shouldHideCatalogButton =
+  //   location.pathname === "/catalog/certificate" ||
+  //   location.pathname.startsWith("/products/certificate/") ||
+  //   location.pathname.startsWith("/product/certificate/");
 
   return (
     <AppBar position="sticky" sx={{ background: "white", p: 1 }}>
@@ -171,27 +188,40 @@ export default function Header() {
           >
             <Box
               sx={{
-                display: "flex",
-                justifyContent: "center",
+                width: "max-content",
+                display: { xs: "none", sm: "none", md: "", lg: "flex" },
                 alignItems: "center",
+                gridGap: 20,
               }}
             >
+              {/* {!shouldHideCatalogButton && ( // Условие для отображения кнопки "Каталог" */}
               <Button
-                id="basic-button"
                 variant="contained"
                 onClick={(e) => {
                   e.preventDefault();
                   window.location.href = "/catalog";
                 }}
                 sx={{
-                  width: "200px",
-                  height: "54px",
                   background: `linear-gradient(95.61deg, #A5DED1 4.71%, #00B3A4 97.25%)`,
-                  borderRadius: "20px",
                   fontSize: "18px",
                 }}
               >
                 Каталог
+              </Button>
+              {/* )} */}
+              <Button
+                id="basic-button"
+                variant="contained"
+                onClick={(e) => {
+                  e.preventDefault();
+                  window.location.href = "/catalog/certificate";
+                }}
+                sx={{
+                  background: `linear-gradient(95.61deg, #A5DED1 4.71%, #00B3A4 97.25%)`,
+                  fontSize: "18px",
+                }}
+              >
+                по электроному сертификату
               </Button>
             </Box>
             <Box>
@@ -202,7 +232,7 @@ export default function Header() {
                   borderRadius: "15px",
                   display: { xs: "none", sm: "none", md: "", lg: "flex" },
                   alignItems: "center",
-                  padding: "20px 40px",
+                  padding: "20px 5px",
                   BoxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
                 }}
               >
@@ -244,7 +274,17 @@ export default function Header() {
                   ? [
                       <MenuItem key="profile" onClick={handleCloseLk}>
                         <Link sx={{ color: "#26BDB8" }} href="/profile">
-                          Личный кабинет
+                          {user && user.data?.fio}
+                        </Link>
+                      </MenuItem>,
+                      <MenuItem
+                        key="profile"
+                        onClick={() => {
+                          Logout();
+                        }}
+                      >
+                        <Link sx={{ color: "#26BDB8" }} href="/">
+                          Выйти
                         </Link>
                       </MenuItem>,
                     ]
@@ -292,11 +332,7 @@ export default function Header() {
           }}
         >
           <Link href="/">
-            <img
-              style={{ width: "60px" }}
-              src="/Logo_Header.png"
-              alt="Logo"
-            />
+            <img style={{ width: "60px" }} src="/Logo_Header.png" alt="Logo" />
           </Link>
           <IconButton
             edge="start"
@@ -349,7 +385,8 @@ export default function Header() {
                 </ListItem>
               );
             })}
-            <Box sx={{ mt: 2 }}>
+            <Box sx={{ mt: 2, display: "flex", flexDirection: "column" }}>
+              {/* {!shouldHideCatalogButton && ( // Условие для отображения кнопки "Каталог" в бургер-меню */}
               <Link
                 underline="hover"
                 color="black"
@@ -363,6 +400,22 @@ export default function Header() {
                 href="/catalog"
               >
                 Каталог
+              </Link>
+              {/* )} */}
+              <Link
+                underline="hover"
+                color="black"
+                sx={{
+                  fontSize: "18px",
+                  ml: 4,
+                  mt: 1,
+                  mb: 3,
+                  textDicoration: "none",
+                  color: "#26BDB8",
+                }}
+                href="/catalog/certificate"
+              >
+                По электроному сертификату
               </Link>
             </Box>
 

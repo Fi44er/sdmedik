@@ -28,6 +28,10 @@ import AdminUserTable from "../pages/admin/components_admin_page/AdminUserTable/
 import AdminProductTable from "../pages/admin/components_admin_page/AdminProductTable/AdminProductTable";
 import Paymants from "../pages/paymants/Paymants";
 import PayOnclick from "../pages/pay_onclick/PayOnclick";
+import CategoriesForCertificate from "../pages/categories_for_certificate/CategoriesForCertificate";
+import CatalogsCertificateLayout from "../pages/catalog/CatalogsCertificateLayout";
+import ProductDynamicCertificatePage from "../pages/Product/ProductDynamicCertificatePage";
+import LayoutWrapper from "../global/LayoutWrapper";
 
 const UsersRoute = ({ children }) => {
   const isLoggedIn = Cookies.get("logged_in") === "true";
@@ -72,70 +76,156 @@ export const AdminRoute = ({ children }) => {
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <HomePage />,
+    element: (
+      <LayoutWrapper>
+        <HomePage />
+      </LayoutWrapper>
+    ),
   },
   {
     path: "/catalog",
-    element: <СategoriesPage />,
+    element: (
+      <LayoutWrapper>
+        <СategoriesPage />
+      </LayoutWrapper>
+    ),
+  },
+  {
+    path: "/catalog/certificate",
+    element: (
+      <LayoutWrapper>
+        <CategoriesForCertificate />
+      </LayoutWrapper>
+    ),
   },
   {
     path: "/products/:id", // динамический маршрут
-    element: <CatalogsLayout />, // Исправлено имя компонента
+    element: (
+      <LayoutWrapper>
+        <CatalogsLayout />
+      </LayoutWrapper>
+    ), // Исправлено имя компонента
+  },
+  {
+    path: "/products/certificate/:id", // динамический маршрут
+    element: (
+      <LayoutWrapper>
+        <CatalogsCertificateLayout />
+      </LayoutWrapper>
+    ), // Исправлено имя компонента
   },
   {
     path: "/product/:id", // динамический маршрут
-    element: <ProductDynamicPage />, // Исправлено имя компонента
+    element: (
+      <LayoutWrapper>
+        <ProductDynamicPage />
+      </LayoutWrapper>
+    ), // Исправлено имя компонента
+  },
+  {
+    path: "/product/certificate/:id", // динамический маршрут
+    element: (
+      <LayoutWrapper>
+        <ProductDynamicCertificatePage />
+      </LayoutWrapper>
+    ), // Исправлено имя компонента
   },
   {
     path: "/basket", // динамический маршрут
-    element: <BasketLayout />, // Исправлено имя компонента
+    element: (
+      <LayoutWrapper>
+        <BasketLayout />
+      </LayoutWrapper>
+    ), // Исправлено имя компонента
   },
   {
     path: "/delivery", // динамический маршрут
-    element: <Delivery />, // Исправлено имя компонента
+    element: (
+      <LayoutWrapper>
+        <Delivery />
+      </LayoutWrapper>
+    ), // Исправлено имя компонента
   },
   {
     path: "/about", // динамический маршрут
-    element: <About />, // Исправлено имя компонента
+    element: (
+      <LayoutWrapper>
+        <About />
+      </LayoutWrapper>
+    ), // Исправлено имя компонента
   },
   {
     path: "/returnpolicy", // динамический маршрут
-    element: <Return_policy />, // Исправлено имя компонента
+    element: (
+      <LayoutWrapper>
+        <Return_policy />
+      </LayoutWrapper>
+    ), // Исправлено имя компонента
   },
   {
     path: "/deteils", // динамический маршрут
-    element: <Deteils />, // Исправлено имя компонента
+    element: (
+      <LayoutWrapper>
+        <Deteils />
+      </LayoutWrapper>
+    ), // Исправлено имя компонента
   },
   {
     path: "/certificate", // динамический маршрут
-    element: <Electronic_certificate />, // Исправлено имя компонента
+    element: (
+      <LayoutWrapper>
+        <Electronic_certificate />
+      </LayoutWrapper>
+    ), // Исправлено имя компонента
   },
   {
     path: "/contacts", // динамический маршрут
-    element: <Contacts />, // Исправлено имя компонента
+    element: (
+      <LayoutWrapper>
+        <Contacts />
+      </LayoutWrapper>
+    ), // Исправлено имя компонента
   },
 
   {
     path: "/auth",
-    element: <Auth />,
+    element: (
+      <LayoutWrapper>
+        <Auth />
+      </LayoutWrapper>
+    ),
   },
   {
     path: "/register",
-    element: <Register />,
+    element: (
+      <LayoutWrapper>
+        <Register />
+      </LayoutWrapper>
+    ),
   },
   {
     path: "/paymants",
-    element: <Paymants />,
+    element: (
+      <LayoutWrapper>
+        <Paymants />
+      </LayoutWrapper>
+    ),
   },
   {
     path: "/paymants/:id",
-    element: <PayOnclick />,
+    element: (
+      <LayoutWrapper>
+        <PayOnclick />
+      </LayoutWrapper>
+    ),
   },
   {
     path: "/profile",
     element: (
       <UsersRoute>
-        <UserAccount />
+        <LayoutWrapper>
+          <UserAccount />
+        </LayoutWrapper>
       </UsersRoute>
     ),
   },
@@ -143,7 +233,9 @@ export const router = createBrowserRouter([
     path: `/admin/*`,
     element: (
       <AdminRoute>
-        <AdminDashboard />
+        <LayoutWrapper>
+          <AdminDashboard />
+        </LayoutWrapper>
       </AdminRoute>
     ),
   },

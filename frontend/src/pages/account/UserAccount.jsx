@@ -106,11 +106,7 @@ export default function UserAccount() {
               <Button
                 variant="contained"
                 color="error"
-                onClick={(e) => {
-                  e.preventDefault();
-                  window.location.href = "/";
-                  Logout();
-                }}
+                onClick={() => Logout()}
                 sx={{ mt: 2 }}
               >
                 Выйти

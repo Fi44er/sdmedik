@@ -10,10 +10,8 @@ import "react-toastify/dist/ReactToastify.css";
 function App() {
   return (
     <Box>
-      <Header />
-      <ToastContainer />
-      <RouterProvider router={router} />
-      <Footer />
+      <RouterProvider router={router}/>
+        <ToastContainer />
     </Box>
   );
 }

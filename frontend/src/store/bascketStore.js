@@ -27,7 +27,13 @@ const useBascketStore = create((set, get) => ({
       console.log("Продукт добавлен в корзину:", response.data);
     } catch (error) {
       // Обработка ошибки
-      toast.error("Ошибка при создании продукта:", error);
+      if (error.response?.status === 401) {
+        // Перенаправление на страницу регистрации, если статус 401
+        window.location.href = "/auth";
+        toast.info("Чтобы получить доступ к корзине,войдите в личный кабинет");
+      } else {
+        toast.error("Ошибка при добавлении продукта в корзину:", error); // Обработка других ошибок
+      }
     }
   },
   editCountProductBascket: async (product_id, quantity) => {
