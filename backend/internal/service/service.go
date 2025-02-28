@@ -75,6 +75,8 @@ type IBasketService interface {
 	AddItem(ctx context.Context, dto *dto.AddBasketItem, userID string) error
 	DeleteItem(ctx context.Context, itemID string, userID string) error
 	GetByUserID(ctx context.Context, userID string) (*response.BasketResponse, error)
+
+	GetOrCreateGuestBasket(ctx context.Context, guestBasketID string) (*model.GuestBasket, error)
 }
 
 type ISearchService interface {
