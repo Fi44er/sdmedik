@@ -136,6 +136,10 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/response.Response'
+        "500":
+          description: Error
+          schema:
+            $ref: '#/definitions/response.Response'
       summary: Login user
       tags:
       - auth
@@ -148,7 +152,11 @@ paths:
       - application/json
       responses:
         "200":
-          description: Successful logout response
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Error
           schema:
             $ref: '#/definitions/response.Response'
       summary: Logout user
@@ -163,7 +171,11 @@ paths:
       - application/json
       responses:
         "200":
-          description: Successful refresh response
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Error
           schema:
             $ref: '#/definitions/response.Response'
       summary: Refresh access token
@@ -185,7 +197,11 @@ paths:
       - application/json
       responses:
         "200":
-          description: Successful registration response
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Error
           schema:
             $ref: '#/definitions/response.Response'
       summary: User registration
@@ -207,7 +223,11 @@ paths:
       - application/json
       responses:
         "200":
-          description: Successful code sending response
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Error
           schema:
             $ref: '#/definitions/response.Response'
       summary: Send verification code
@@ -229,7 +249,11 @@ paths:
       - application/json
       responses:
         "200":
-          description: Successful verification response
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Error
           schema:
             $ref: '#/definitions/response.Response'
       summary: Verify the provided code
@@ -252,7 +276,15 @@ paths:
         type: file
       produces:
       - application/json
-      responses: {}
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Error
+          schema:
+            $ref: '#/definitions/response.Response'
       summary: Create a new category
       tags:
       - categories

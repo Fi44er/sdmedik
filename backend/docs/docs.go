@@ -45,6 +45,12 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
                     }
                 }
             }
@@ -64,7 +70,13 @@ const docTemplate = `{
                 "summary": "Logout user",
                 "responses": {
                     "200": {
-                        "description": "Successful logout response",
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
@@ -87,7 +99,13 @@ const docTemplate = `{
                 "summary": "Refresh access token",
                 "responses": {
                     "200": {
-                        "description": "Successful refresh response",
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
@@ -121,7 +139,13 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Successful registration response",
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
@@ -155,7 +179,13 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Successful code sending response",
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
@@ -189,7 +219,13 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Successful verification response",
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
@@ -225,7 +261,20 @@ const docTemplate = `{
                         "in": "formData"
                     }
                 ],
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
             }
         },
         "/products": {

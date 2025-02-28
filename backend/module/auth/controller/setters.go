@@ -16,7 +16,8 @@ import (
 // @Accept json
 // @Produce json
 // @Param user body dto.RegisterDTO true "User Register"
-// @Success 200 {object} response.Response "Successful registration response"
+// @Success      200      {object}  response.Response "OK"
+// @Failure      500      {object}  response.Response "Error"
 // @Router /auth/register [post]
 func (c *AuthController) Register(ctx *fiber.Ctx) error {
 	data := new(dto.RegisterDTO)
@@ -37,7 +38,8 @@ func (c *AuthController) Register(ctx *fiber.Ctx) error {
 // @Tags auth
 // @Accept json
 // @Produce json
-// @Success 200 {object} response.Response "Successful logout response"
+// @Success      200      {object}  response.Response "OK"
+// @Failure      500      {object}  response.Response "Error"
 // @Router /auth/logout [post]
 func (c *AuthController) Logout(ctx *fiber.Ctx) error {
 	refreshToken := ctx.Cookies("refresh_token")
@@ -80,7 +82,8 @@ func (c *AuthController) Logout(ctx *fiber.Ctx) error {
 // @Tags auth
 // @Accept json
 // @Produce json
-// @Success 200 {object} response.Response "Successful refresh response"
+// @Success      200      {object}  response.Response "OK"
+// @Failure      500      {object}  response.Response "Error"
 // @Router /auth/refresh [post]
 func (c *AuthController) RefreshAccessToken(ctx *fiber.Ctx) error {
 	refreshToken := ctx.Cookies("refresh_token")
@@ -123,7 +126,8 @@ func (c *AuthController) RefreshAccessToken(ctx *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Param user body dto.LoginDTO true "User  login credentials"
-// @Success 200 {object} response.Response "OK"
+// @Success      200      {object}  response.Response "OK"
+// @Failure      500      {object}  response.Response "Error"
 // @Router /auth/login [post]
 func (c *AuthController) Login(ctx *fiber.Ctx) error {
 	dto := new(dto.LoginDTO)
@@ -177,7 +181,8 @@ func (c *AuthController) Login(ctx *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Param user body dto.SendCodeDTO true "User email"
-// @Success 200 {object} response.Response "Successful code sending response"
+// @Success      200      {object}  response.Response "OK"
+// @Failure      500      {object}  response.Response "Error"
 // @Router /auth/send-code [post]
 func (c *AuthController) SendCode(ctx *fiber.Ctx) error {
 	data := new(dto.SendCodeDTO)
@@ -200,7 +205,8 @@ func (c *AuthController) SendCode(ctx *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Param user body dto.VerifyCodeDTO true "User verification code"
-// @Success 200 {object} response.Response "Successful verification response"
+// @Success      200      {object}  response.Response "OK"
+// @Failure      500      {object}  response.Response "Error"
 // @Router /auth/verify-code [post]
 func (c *AuthController) VerifyCode(ctx *fiber.Ctx) error {
 	data := new(dto.VerifyCodeDTO)

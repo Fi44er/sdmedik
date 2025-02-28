@@ -5,6 +5,7 @@ import (
 
 	"github.com/Fi44er/sdmedik/backend/module/category/converter"
 	"github.com/Fi44er/sdmedik/backend/module/category/dto"
+	_ "github.com/Fi44er/sdmedik/backend/shared/response"
 	"github.com/Fi44er/sdmedik/backend/shared/utils"
 	"github.com/gofiber/fiber/v2"
 )
@@ -17,6 +18,8 @@ import (
 // @Produce      json
 // @Param        category  formData  string  true  "Category data in JSON format"
 // @Param        files     formData  file    false "Category images (can be multiple)"
+// @Success      200      {object}  response.Response "OK"
+// @Failure      500      {object}  response.Response "Error"
 // @Router       /categories [post]
 func (c *CategoryController) Create(ctx *fiber.Ctx) error {
 	categoryDTO := new(dto.CreateCategoryDTO)
