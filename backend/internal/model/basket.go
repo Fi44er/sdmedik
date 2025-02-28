@@ -16,3 +16,13 @@ func (b *Basket) BeforeCreate(tx *gorm.DB) error {
 
 	return nil
 }
+
+type GuestBasket struct {
+	ID    string       `gorm:"primaryKey;type:string;" json:"id"`
+	Items []BasketItem `gorm:"foreignKey:BasketID;constraint:OnDelete:CASCADE" json:"items"`
+}
+
+func (b *GuestBasket) BeforeCreate(tx *gorm.DB) error {
+	b.ID = uuid.New().String()
+	return nil
+}
