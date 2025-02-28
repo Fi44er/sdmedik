@@ -6,8 +6,8 @@
         "contact": {},
         "version": "1.0"
     },
-    "host": "localhost:8080",
-    "basePath": "/api/v1/",
+    "host": "127.0.0.1:8080",
+    "basePath": "/api/",
     "paths": {
         "/auth/login": {
             "post": {
@@ -29,7 +29,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.Login"
+                            "$ref": "#/definitions/dto.LoginDTO"
                         }
                     }
                 ],
@@ -109,7 +109,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.Register"
+                            "$ref": "#/definitions/dto.RegisterDTO"
                         }
                     }
                 ],
@@ -143,7 +143,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.SendCode"
+                            "$ref": "#/definitions/dto.SendCodeDTO"
                         }
                     }
                 ],
@@ -177,7 +177,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.VerifyCode"
+                            "$ref": "#/definitions/dto.VerifyCodeDTO"
                         }
                     }
                 ],
@@ -191,151 +191,9 @@
                 }
             }
         },
-        "/basket": {
-            "get": {
-                "description": "Get basket",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "basket"
-                ],
-                "summary": "Get basket",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    }
-                }
-            },
+        "/categories": {
             "post": {
-                "description": "Add item to basket",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "basket"
-                ],
-                "summary": "Add item to basket",
-                "parameters": [
-                    {
-                        "description": "Basket item data",
-                        "name": "basket",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.AddBasketItem"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/basket/create": {
-            "post": {
-                "description": "Create a new basket",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "basket"
-                ],
-                "summary": "Create a new basket",
-                "parameters": [
-                    {
-                        "description": "Basket data",
-                        "name": "basket",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.CreateBasket"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/basket/{id}": {
-            "delete": {
-                "description": "Delete item from basket",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "basket"
-                ],
-                "summary": "Delete item from basket",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Item ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/category": {
-            "get": {
-                "description": "Gets all categories",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "category"
-                ],
-                "summary": "Get all categories",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseListData"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Creates a new category with metadata (JSON) and a file (image)\nExample JSON:\n```\n{\n\"name\": \"category #1\",\n\"characteristics\": [\n{\n\"data_type\": \"string\",\n\"name\": \"characteristic #1\"\n},\n{\n\"data_type\": \"int\",\n\"name\": \"characteristic #2\"\n}\n]\n}",
+                "description": "Creates a new category with characteristics and images",
                 "consumes": [
                     "multipart/form-data"
                 ],
@@ -343,491 +201,30 @@
                     "application/json"
                 ],
                 "tags": [
-                    "category"
+                    "categories"
                 ],
                 "summary": "Create a new category",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Category metadata as JSON",
-                        "name": "json",
+                        "description": "Category data in JSON format",
+                        "name": "category",
                         "in": "formData",
                         "required": true
                     },
                     {
                         "type": "file",
-                        "description": "Category image file",
-                        "name": "file",
-                        "in": "formData",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseData"
-                        }
-                    }
-                }
-            }
-        },
-        "/category/{id}": {
-            "get": {
-                "description": "Gets a category by ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "category"
-                ],
-                "summary": "Get a category by ID",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Category ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseData"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "description": "Updates a category with metadata (JSON)",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "category"
-                ],
-                "summary": "Update a category",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Category ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Category metadata as JSON",
-                        "name": "category",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.UpdateCategory"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseData"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Deletes a category",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "category"
-                ],
-                "summary": "Delete a category",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Category ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseData"
-                        }
-                    }
-                }
-            }
-        },
-        "/order": {
-            "get": {
-                "description": "Get all orders",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "order"
-                ],
-                "summary": "Get all orders",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Limit",
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Offset",
-                        "name": "offset",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseData"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Creates a new order",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "order"
-                ],
-                "summary": "Create order",
-                "parameters": [
-                    {
-                        "description": "Order details",
-                        "name": "order",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.CreateOrder"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/order/my": {
-            "get": {
-                "description": "Get my orders",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "order"
-                ],
-                "summary": "Get my orders",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseData"
-                        }
-                    }
-                }
-            }
-        },
-        "/order/status": {
-            "put": {
-                "description": "Update order status",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "order"
-                ],
-                "summary": "Update order status",
-                "parameters": [
-                    {
-                        "description": "Order status data",
-                        "name": "order",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.ChangeOrderStatus"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/order/{id}": {
-            "post": {
-                "description": "Creates a new order",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "order"
-                ],
-                "summary": "Create order",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Product ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Order details",
-                        "name": "order",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.CreateOrder"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/product": {
-            "get": {
-                "description": "Gets a product",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "product"
-                ],
-                "summary": "Get a product",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Product ID",
-                        "name": "id",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Product article",
-                        "name": "article",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Product name",
-                        "name": "name",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Category ID",
-                        "name": "category_id",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Offset",
-                        "name": "offset",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Limit",
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Region ISO",
-                        "name": "iso",
-                        "in": "query"
-                    },
-                    {
-                        "type": "boolean",
-                        "description": "Minimal",
-                        "name": "minimal",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "example": "{\"price\":{\"min\":20,\"max\":100},\"characteristics\":[{\"characteristic_id\":1,\"values\":[\"string\"]}]}",
-                        "description": "Filters in JSON format",
-                        "name": "filters",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseData"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Creates a new product with metadata (JSON) and multiple files.\nExample JSON:\n```\n{\n\"article\": \"123-123-124\",\n\"category_ids\": [\n2\n],\n\"characteristic_values\": [\n{\n\"characteristic_id\": 3,\n\"value\": \"12\"\n}\n],\n\"description\": \"description #1\",\n\"name\": \"product #1\",\n\"price\": 123.12\n}\n```",
-                "consumes": [
-                    "multipart/form-data"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "product"
-                ],
-                "summary": "Create a new product",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Product metadata as JSON",
-                        "name": "json",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "array",
-                        "items": {
-                            "type": "file"
-                        },
-                        "collectionFormat": "csv",
-                        "description": "Product images (multiple files)",
+                        "description": "Category images (can be multiple)",
                         "name": "files",
-                        "in": "formData",
-                        "required": true
+                        "in": "formData"
                     }
                 ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseData"
-                        }
-                    }
-                }
+                "responses": {}
             }
         },
-        "/product/filter/{category_id}": {
-            "get": {
-                "description": "Get a product filter",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "product"
-                ],
-                "summary": "Get a product",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Category ID",
-                        "name": "category_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseData"
-                        }
-                    }
-                }
-            }
-        },
-        "/product/top/{limit}": {
-            "get": {
-                "description": "Gets top products",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "product"
-                ],
-                "summary": "Get top products",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Limit",
-                        "name": "limit",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseData"
-                        }
-                    }
-                }
-            }
-        },
-        "/product/{id}": {
-            "put": {
-                "description": "Updates a product with metadata (JSON) and multiple files\nExample JSON:\n```\n{\n\"name\": \"test update\",\n\"price\": 123.12,\n\"description\": \"test update\",\n\"category_ids\": [\n2\n],\n\"characteristic_values\": [\n{\n\"characteristic_id\": 2,\n\"value\": \"string\"\n},\n{\n\"characteristic_id\": 3,\n\"value\": \"12\"\n}\n],\n\"del_images\": [\n{\n\"id\": \"8832ed62-0a19-40e2-81b3-4c971884e962\",\n\"name\": \"cb44cbb3-aaf9-47a4-867c-f81dbc0485ab.jpg\"\n}\n]\n}\n```",
+        "/products": {
+            "post": {
+                "description": "Create product",
                 "consumes": [
                     "multipart/form-data"
                 ],
@@ -835,31 +232,20 @@
                     "application/json"
                 ],
                 "tags": [
-                    "product"
+                    "products"
                 ],
-                "summary": "Update a product",
+                "summary": "Create product",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Product ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Product metadata as JSON",
-                        "name": "json",
+                        "description": "A JSON object with product information (as a string)",
+                        "name": "product",
                         "in": "formData",
                         "required": true
                     },
                     {
-                        "type": "array",
-                        "items": {
-                            "type": "file"
-                        },
-                        "collectionFormat": "csv",
-                        "description": "Product images (multiple files)",
+                        "type": "file",
+                        "description": "Image files for the product (multiple possible)",
                         "name": "files",
                         "in": "formData"
                     }
@@ -868,13 +254,21 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseData"
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
                         }
                     }
                 }
-            },
-            "delete": {
-                "description": "Deletes a product",
+            }
+        },
+        "/products/{id}": {
+            "get": {
+                "description": "Get product by ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -882,9 +276,9 @@
                     "application/json"
                 ],
                 "tags": [
-                    "product"
+                    "products"
                 ],
-                "summary": "Delete a product",
+                "summary": "Get product by ID",
                 "parameters": [
                     {
                         "type": "string",
@@ -898,57 +292,23 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseData"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.ResponseData"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.ProductResponse"
+                                        }
+                                    }
+                                }
+                            ]
                         }
-                    }
-                }
-            }
-        },
-        "/promotion": {
-            "get": {
-                "description": "Get all promotions",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "promotion"
-                ],
-                "summary": "Get all promotions",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Creates a new promotion",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "promotion"
-                ],
-                "summary": "Create a new promotion",
-                "parameters": [
-                    {
-                        "description": "Promotion data",
-                        "name": "promotion",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.CreatePromotion"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
+                    },
+                    "500": {
+                        "description": "Error",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
@@ -956,67 +316,7 @@
                 }
             }
         },
-        "/promotion/{id}": {
-            "delete": {
-                "description": "Delete a promotion",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "promotion"
-                ],
-                "summary": "Delete a promotion",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Promotion ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/search": {
-            "get": {
-                "description": "Search products",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "search"
-                ],
-                "summary": "Search products",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Search query",
-                        "name": "query",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseData"
-                        }
-                    }
-                }
-            }
-        },
-        "/user": {
+        "/users": {
             "get": {
                 "description": "Get all users",
                 "consumes": [
@@ -1026,7 +326,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "users"
                 ],
                 "summary": "Get all users",
                 "parameters": [
@@ -1047,13 +347,72 @@
                     "200": {
                         "description": "OK",
                         "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.ResponseListData"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/dto.UserResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Create user",
+                "parameters": [
+                    {
+                        "description": "User",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UserDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
                     }
                 }
             }
         },
-        "/user/me": {
+        "/users/me": {
             "get": {
                 "description": "Get my user",
                 "consumes": [
@@ -1063,12 +422,30 @@
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "users"
                 ],
                 "summary": "Get my user",
                 "responses": {
                     "200": {
                         "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.ResponseData"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.UserResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
@@ -1076,7 +453,7 @@
                 }
             }
         },
-        "/user/{id}": {
+        "/users/{id}": {
             "get": {
                 "description": "Get user by ID",
                 "consumes": [
@@ -1086,7 +463,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "users"
                 ],
                 "summary": "Get user by ID",
                 "parameters": [
@@ -1102,6 +479,24 @@
                     "200": {
                         "description": "OK",
                         "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.ResponseData"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.UserResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
                     }
@@ -1116,7 +511,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "users"
                 ],
                 "summary": "Update user",
                 "parameters": [
@@ -1128,12 +523,12 @@
                         "required": true
                     },
                     {
-                        "description": "User update data",
+                        "description": "User",
                         "name": "user",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.UpdateUser"
+                            "$ref": "#/definitions/dto.UserDTO"
                         }
                     }
                 ],
@@ -1143,13 +538,17 @@
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
                     }
                 }
-            }
-        },
-        "/webscraper": {
-            "get": {
-                "description": "Scraper",
+            },
+            "delete": {
+                "description": "Delete user",
                 "consumes": [
                     "application/json"
                 ],
@@ -1157,12 +556,27 @@
                     "application/json"
                 ],
                 "tags": [
-                    "webscraper"
+                    "users"
                 ],
-                "summary": "Scraper",
+                "summary": "Delete user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
@@ -1172,127 +586,7 @@
         }
     },
     "definitions": {
-        "dto.AddBasketItem": {
-            "type": "object",
-            "required": [
-                "product_id",
-                "quantity"
-            ],
-            "properties": {
-                "product_id": {
-                    "type": "string"
-                },
-                "quantity": {
-                    "type": "integer"
-                }
-            }
-        },
-        "dto.ChangeOrderStatus": {
-            "type": "object",
-            "properties": {
-                "order_id": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "string"
-                }
-            }
-        },
-        "dto.CreateBasket": {
-            "type": "object",
-            "required": [
-                "user_id"
-            ],
-            "properties": {
-                "user_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "dto.CreateCondition": {
-            "type": "object",
-            "required": [
-                "type",
-                "value"
-            ],
-            "properties": {
-                "type": {
-                    "$ref": "#/definitions/model.ConditionType"
-                },
-                "value": {
-                    "type": "string"
-                }
-            }
-        },
-        "dto.CreateOrder": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "fio": {
-                    "type": "string"
-                },
-                "phone_number": {
-                    "type": "string"
-                }
-            }
-        },
-        "dto.CreatePromotion": {
-            "type": "object",
-            "required": [
-                "end_date",
-                "name",
-                "start_date",
-                "target_id",
-                "type"
-            ],
-            "properties": {
-                "condition": {
-                    "$ref": "#/definitions/dto.CreateCondition"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "end_date": {
-                    "type": "string"
-                },
-                "get_product_id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "reward": {
-                    "$ref": "#/definitions/dto.CreateReward"
-                },
-                "start_date": {
-                    "type": "string"
-                },
-                "target_id": {
-                    "type": "string"
-                },
-                "type": {
-                    "$ref": "#/definitions/model.PromotionType"
-                }
-            }
-        },
-        "dto.CreateReward": {
-            "type": "object",
-            "required": [
-                "type",
-                "value"
-            ],
-            "properties": {
-                "type": {
-                    "$ref": "#/definitions/model.RewardType"
-                },
-                "value": {
-                    "type": "number"
-                }
-            }
-        },
-        "dto.Login": {
+        "dto.LoginDTO": {
             "type": "object",
             "required": [
                 "email",
@@ -1304,10 +598,39 @@
                 },
                 "password": {
                     "type": "string"
+                },
+                "user_agent": {
+                    "type": "string"
                 }
             }
         },
-        "dto.Register": {
+        "dto.ProductResponse": {
+            "type": "object",
+            "properties": {
+                "article": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "image_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "name": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "number"
+                }
+            }
+        },
+        "dto.RegisterDTO": {
             "type": "object",
             "required": [
                 "email",
@@ -1323,15 +646,14 @@
                     "type": "string"
                 },
                 "password": {
-                    "type": "string",
-                    "minLength": 6
+                    "type": "string"
                 },
                 "phone_number": {
                     "type": "string"
                 }
             }
         },
-        "dto.SendCode": {
+        "dto.SendCodeDTO": {
             "type": "object",
             "required": [
                 "email"
@@ -1342,47 +664,11 @@
                 }
             }
         },
-        "dto.UpdateCategory": {
+        "dto.UserDTO": {
             "type": "object",
             "required": [
-                "name"
+                "fio"
             ],
-            "properties": {
-                "characteristics": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/dto.UpdateCharacteristic"
-                    }
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "dto.UpdateCharacteristic": {
-            "type": "object",
-            "required": [
-                "category_id",
-                "id",
-                "name"
-            ],
-            "properties": {
-                "category_id": {
-                    "type": "integer"
-                },
-                "data_type": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "dto.UpdateUser": {
-            "type": "object",
             "properties": {
                 "email": {
                     "type": "string"
@@ -1398,7 +684,27 @@
                 }
             }
         },
-        "dto.VerifyCode": {
+        "dto.UserResponse": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "fio": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "phone_number": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.VerifyCodeDTO": {
             "type": "object",
             "required": [
                 "code",
@@ -1412,60 +718,6 @@
                     "type": "string"
                 }
             }
-        },
-        "model.ConditionType": {
-            "type": "string",
-            "enum": [
-                "min_quantity",
-                "buy_n",
-                "get_m"
-            ],
-            "x-enum-comments": {
-                "ConditionTypeBuyN": "Купи N товаров",
-                "ConditionTypeGetM": "Получи M товаров",
-                "ConditionTypeMinQuantity": "Минимальное количество товаров"
-            },
-            "x-enum-varnames": [
-                "ConditionTypeMinQuantity",
-                "ConditionTypeBuyN",
-                "ConditionTypeGetM"
-            ]
-        },
-        "model.PromotionType": {
-            "type": "string",
-            "enum": [
-                "product_discount",
-                "category_discount",
-                "buy_n_get_m"
-            ],
-            "x-enum-comments": {
-                "PromotionTypeBuyNGetM": "Купи N, получи M",
-                "PromotionTypeCategoryDiscount": "Скидка на категорию",
-                "PromotionTypeProductDiscount": "Скидка на товар"
-            },
-            "x-enum-varnames": [
-                "PromotionTypeProductDiscount",
-                "PromotionTypeCategoryDiscount",
-                "PromotionTypeBuyNGetM"
-            ]
-        },
-        "model.RewardType": {
-            "type": "string",
-            "enum": [
-                "percentage",
-                "fixed",
-                "product"
-            ],
-            "x-enum-comments": {
-                "RewardTypeFixed": "Фиксированная скидка",
-                "RewardTypePercentage": "Скидка в процентах",
-                "RewardTypeProduct": "Бесплатный товар"
-            },
-            "x-enum-varnames": [
-                "RewardTypePercentage",
-                "RewardTypeFixed",
-                "RewardTypeProduct"
-            ]
         },
         "response.Response": {
             "type": "object",
@@ -1483,7 +735,8 @@
             "properties": {
                 "data": {},
                 "status": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "success"
                 }
             }
         },

@@ -1,103 +1,41 @@
-basePath: /api/v1/
+basePath: /api/
 definitions:
-  dto.AddBasketItem:
-    properties:
-      product_id:
-        type: string
-      quantity:
-        type: integer
-    required:
-    - product_id
-    - quantity
-    type: object
-  dto.ChangeOrderStatus:
-    properties:
-      order_id:
-        type: string
-      status:
-        type: string
-    type: object
-  dto.CreateBasket:
-    properties:
-      user_id:
-        type: string
-    required:
-    - user_id
-    type: object
-  dto.CreateCondition:
-    properties:
-      type:
-        $ref: '#/definitions/model.ConditionType'
-      value:
-        type: string
-    required:
-    - type
-    - value
-    type: object
-  dto.CreateOrder:
-    properties:
-      email:
-        type: string
-      fio:
-        type: string
-      phone_number:
-        type: string
-    type: object
-  dto.CreatePromotion:
-    properties:
-      condition:
-        $ref: '#/definitions/dto.CreateCondition'
-      description:
-        type: string
-      end_date:
-        type: string
-      get_product_id:
-        type: string
-      name:
-        type: string
-      reward:
-        $ref: '#/definitions/dto.CreateReward'
-      start_date:
-        type: string
-      target_id:
-        type: string
-      type:
-        $ref: '#/definitions/model.PromotionType'
-    required:
-    - end_date
-    - name
-    - start_date
-    - target_id
-    - type
-    type: object
-  dto.CreateReward:
-    properties:
-      type:
-        $ref: '#/definitions/model.RewardType'
-      value:
-        type: number
-    required:
-    - type
-    - value
-    type: object
-  dto.Login:
+  dto.LoginDTO:
     properties:
       email:
         type: string
       password:
+        type: string
+      user_agent:
         type: string
     required:
     - email
     - password
     type: object
-  dto.Register:
+  dto.ProductResponse:
+    properties:
+      article:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      image_ids:
+        items:
+          type: string
+        type: array
+      name:
+        type: string
+      price:
+        type: number
+    type: object
+  dto.RegisterDTO:
     properties:
       email:
         type: string
       fio:
         type: string
       password:
-        minLength: 6
         type: string
       phone_number:
         type: string
@@ -107,40 +45,14 @@ definitions:
     - password
     - phone_number
     type: object
-  dto.SendCode:
+  dto.SendCodeDTO:
     properties:
       email:
         type: string
     required:
     - email
     type: object
-  dto.UpdateCategory:
-    properties:
-      characteristics:
-        items:
-          $ref: '#/definitions/dto.UpdateCharacteristic'
-        type: array
-      name:
-        type: string
-    required:
-    - name
-    type: object
-  dto.UpdateCharacteristic:
-    properties:
-      category_id:
-        type: integer
-      data_type:
-        type: string
-      id:
-        type: integer
-      name:
-        type: string
-    required:
-    - category_id
-    - id
-    - name
-    type: object
-  dto.UpdateUser:
+  dto.UserDTO:
     properties:
       email:
         type: string
@@ -150,8 +62,23 @@ definitions:
         type: string
       phone_number:
         type: string
+    required:
+    - fio
     type: object
-  dto.VerifyCode:
+  dto.UserResponse:
+    properties:
+      email:
+        type: string
+      fio:
+        type: string
+      id:
+        type: string
+      phone_number:
+        type: string
+      role:
+        type: string
+    type: object
+  dto.VerifyCodeDTO:
     properties:
       code:
         type: string
@@ -161,48 +88,6 @@ definitions:
     - code
     - email
     type: object
-  model.ConditionType:
-    enum:
-    - min_quantity
-    - buy_n
-    - get_m
-    type: string
-    x-enum-comments:
-      ConditionTypeBuyN: Купи N товаров
-      ConditionTypeGetM: Получи M товаров
-      ConditionTypeMinQuantity: Минимальное количество товаров
-    x-enum-varnames:
-    - ConditionTypeMinQuantity
-    - ConditionTypeBuyN
-    - ConditionTypeGetM
-  model.PromotionType:
-    enum:
-    - product_discount
-    - category_discount
-    - buy_n_get_m
-    type: string
-    x-enum-comments:
-      PromotionTypeBuyNGetM: Купи N, получи M
-      PromotionTypeCategoryDiscount: Скидка на категорию
-      PromotionTypeProductDiscount: Скидка на товар
-    x-enum-varnames:
-    - PromotionTypeProductDiscount
-    - PromotionTypeCategoryDiscount
-    - PromotionTypeBuyNGetM
-  model.RewardType:
-    enum:
-    - percentage
-    - fixed
-    - product
-    type: string
-    x-enum-comments:
-      RewardTypeFixed: Фиксированная скидка
-      RewardTypePercentage: Скидка в процентах
-      RewardTypeProduct: Бесплатный товар
-    x-enum-varnames:
-    - RewardTypePercentage
-    - RewardTypeFixed
-    - RewardTypeProduct
   response.Response:
     properties:
       message:
@@ -214,6 +99,7 @@ definitions:
     properties:
       data: {}
       status:
+        example: success
         type: string
     type: object
   response.ResponseListData:
@@ -224,7 +110,7 @@ definitions:
       status:
         type: string
     type: object
-host: localhost:8080
+host: 127.0.0.1:8080
 info:
   contact: {}
   description: Swagger docs from sdmedik backend
@@ -242,7 +128,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/dto.Login'
+          $ref: '#/definitions/dto.LoginDTO'
       produces:
       - application/json
       responses:
@@ -294,7 +180,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/dto.Register'
+          $ref: '#/definitions/dto.RegisterDTO'
       produces:
       - application/json
       responses:
@@ -316,7 +202,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/dto.SendCode'
+          $ref: '#/definitions/dto.SendCodeDTO'
       produces:
       - application/json
       responses:
@@ -338,7 +224,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/dto.VerifyCode'
+          $ref: '#/definitions/dto.VerifyCodeDTO'
       produces:
       - application/json
       responses:
@@ -349,130 +235,41 @@ paths:
       summary: Verify the provided code
       tags:
       - auth
-  /basket:
-    get:
-      consumes:
-      - application/json
-      description: Get basket
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.Response'
-      summary: Get basket
-      tags:
-      - basket
-    post:
-      consumes:
-      - application/json
-      description: Add item to basket
-      parameters:
-      - description: Basket item data
-        in: body
-        name: basket
-        required: true
-        schema:
-          $ref: '#/definitions/dto.AddBasketItem'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.Response'
-      summary: Add item to basket
-      tags:
-      - basket
-  /basket/{id}:
-    delete:
-      consumes:
-      - application/json
-      description: Delete item from basket
-      parameters:
-      - description: Item ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.Response'
-      summary: Delete item from basket
-      tags:
-      - basket
-  /basket/create:
-    post:
-      consumes:
-      - application/json
-      description: Create a new basket
-      parameters:
-      - description: Basket data
-        in: body
-        name: basket
-        required: true
-        schema:
-          $ref: '#/definitions/dto.CreateBasket'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.Response'
-      summary: Create a new basket
-      tags:
-      - basket
-  /category:
-    get:
-      consumes:
-      - application/json
-      description: Gets all categories
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseListData'
-      summary: Get all categories
-      tags:
-      - category
+  /categories:
     post:
       consumes:
       - multipart/form-data
-      description: |-
-        Creates a new category with metadata (JSON) and a file (image)
-        Example JSON:
-        ```
-        {
-        "name": "category #1",
-        "characteristics": [
-        {
-        "data_type": "string",
-        "name": "characteristic #1"
-        },
-        {
-        "data_type": "int",
-        "name": "characteristic #2"
-        }
-        ]
-        }
+      description: Creates a new category with characteristics and images
       parameters:
-      - description: Category metadata as JSON
+      - description: Category data in JSON format
         in: formData
-        name: json
+        name: category
         required: true
         type: string
-      - description: Category image file
+      - description: Category images (can be multiple)
         in: formData
-        name: file
+        name: files
+        type: file
+      produces:
+      - application/json
+      responses: {}
+      summary: Create a new category
+      tags:
+      - categories
+  /products:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Create product
+      parameters:
+      - description: A JSON object with product information (as a string)
+        in: formData
+        name: product
         required: true
+        type: string
+      - description: Image files for the product (multiple possible)
+        in: formData
+        name: files
         type: file
       produces:
       - application/json
@@ -480,291 +277,19 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ResponseData'
-      summary: Create a new category
-      tags:
-      - category
-  /category/{id}:
-    delete:
-      consumes:
-      - application/json
-      description: Deletes a category
-      parameters:
-      - description: Category ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseData'
-      summary: Delete a category
-      tags:
-      - category
-    get:
-      consumes:
-      - application/json
-      description: Gets a category by ID
-      parameters:
-      - description: Category ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseData'
-      summary: Get a category by ID
-      tags:
-      - category
-    put:
-      consumes:
-      - application/json
-      description: Updates a category with metadata (JSON)
-      parameters:
-      - description: Category ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: Category metadata as JSON
-        in: body
-        name: category
-        required: true
-        schema:
-          $ref: '#/definitions/dto.UpdateCategory'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseData'
-      summary: Update a category
-      tags:
-      - category
-  /order:
-    get:
-      consumes:
-      - application/json
-      description: Get all orders
-      parameters:
-      - description: Limit
-        in: query
-        name: limit
-        type: integer
-      - description: Offset
-        in: query
-        name: offset
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseData'
-      summary: Get all orders
-      tags:
-      - order
-    post:
-      consumes:
-      - application/json
-      description: Creates a new order
-      parameters:
-      - description: Order details
-        in: body
-        name: order
-        required: true
-        schema:
-          $ref: '#/definitions/dto.CreateOrder'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Error
           schema:
             $ref: '#/definitions/response.Response'
-      summary: Create order
+      summary: Create product
       tags:
-      - order
-  /order/{id}:
-    post:
-      consumes:
-      - application/json
-      description: Creates a new order
-      parameters:
-      - description: Product ID
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: Order details
-        in: body
-        name: order
-        required: true
-        schema:
-          $ref: '#/definitions/dto.CreateOrder'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.Response'
-      summary: Create order
-      tags:
-      - order
-  /order/my:
+      - products
+  /products/{id}:
     get:
       consumes:
       - application/json
-      description: Get my orders
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseData'
-      summary: Get my orders
-      tags:
-      - order
-  /order/status:
-    put:
-      consumes:
-      - application/json
-      description: Update order status
-      parameters:
-      - description: Order status data
-        in: body
-        name: order
-        required: true
-        schema:
-          $ref: '#/definitions/dto.ChangeOrderStatus'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.Response'
-      summary: Update order status
-      tags:
-      - order
-  /product:
-    get:
-      consumes:
-      - application/json
-      description: Gets a product
-      parameters:
-      - description: Product ID
-        in: query
-        name: id
-        type: string
-      - description: Product article
-        in: query
-        name: article
-        type: string
-      - description: Product name
-        in: query
-        name: name
-        type: string
-      - description: Category ID
-        in: query
-        name: category_id
-        type: integer
-      - description: Offset
-        in: query
-        name: offset
-        type: integer
-      - description: Limit
-        in: query
-        name: limit
-        type: integer
-      - description: Region ISO
-        in: query
-        name: iso
-        type: string
-      - description: Minimal
-        in: query
-        name: minimal
-        type: boolean
-      - description: Filters in JSON format
-        example: '{"price":{"min":20,"max":100},"characteristics":[{"characteristic_id":1,"values":["string"]}]}'
-        in: query
-        name: filters
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseData'
-      summary: Get a product
-      tags:
-      - product
-    post:
-      consumes:
-      - multipart/form-data
-      description: |-
-        Creates a new product with metadata (JSON) and multiple files.
-        Example JSON:
-        ```
-        {
-        "article": "123-123-124",
-        "category_ids": [
-        2
-        ],
-        "characteristic_values": [
-        {
-        "characteristic_id": 3,
-        "value": "12"
-        }
-        ],
-        "description": "description #1",
-        "name": "product #1",
-        "price": 123.12
-        }
-        ```
-      parameters:
-      - description: Product metadata as JSON
-        in: formData
-        name: json
-        required: true
-        type: string
-      - collectionFormat: csv
-        description: Product images (multiple files)
-        in: formData
-        items:
-          type: file
-        name: files
-        required: true
-        type: array
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseData'
-      summary: Create a new product
-      tags:
-      - product
-  /product/{id}:
-    delete:
-      consumes:
-      - application/json
-      description: Deletes a product
+      description: Get product by ID
       parameters:
       - description: Product ID
         in: path
@@ -777,186 +302,20 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ResponseData'
-      summary: Delete a product
-      tags:
-      - product
-    put:
-      consumes:
-      - multipart/form-data
-      description: |-
-        Updates a product with metadata (JSON) and multiple files
-        Example JSON:
-        ```
-        {
-        "name": "test update",
-        "price": 123.12,
-        "description": "test update",
-        "category_ids": [
-        2
-        ],
-        "characteristic_values": [
-        {
-        "characteristic_id": 2,
-        "value": "string"
-        },
-        {
-        "characteristic_id": 3,
-        "value": "12"
-        }
-        ],
-        "del_images": [
-        {
-        "id": "8832ed62-0a19-40e2-81b3-4c971884e962",
-        "name": "cb44cbb3-aaf9-47a4-867c-f81dbc0485ab.jpg"
-        }
-        ]
-        }
-        ```
-      parameters:
-      - description: Product ID
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: Product metadata as JSON
-        in: formData
-        name: json
-        required: true
-        type: string
-      - collectionFormat: csv
-        description: Product images (multiple files)
-        in: formData
-        items:
-          type: file
-        name: files
-        type: array
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseData'
-      summary: Update a product
-      tags:
-      - product
-  /product/filter/{category_id}:
-    get:
-      consumes:
-      - application/json
-      description: Get a product filter
-      parameters:
-      - description: Category ID
-        in: path
-        name: category_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseData'
-      summary: Get a product
-      tags:
-      - product
-  /product/top/{limit}:
-    get:
-      consumes:
-      - application/json
-      description: Gets top products
-      parameters:
-      - description: Limit
-        in: path
-        name: limit
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseData'
-      summary: Get top products
-      tags:
-      - product
-  /promotion:
-    get:
-      description: Get all promotions
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
+            allOf:
+            - $ref: '#/definitions/response.ResponseData'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.ProductResponse'
+              type: object
+        "500":
+          description: Error
           schema:
             $ref: '#/definitions/response.Response'
-      summary: Get all promotions
+      summary: Get product by ID
       tags:
-      - promotion
-    post:
-      consumes:
-      - application/json
-      description: Creates a new promotion
-      parameters:
-      - description: Promotion data
-        in: body
-        name: promotion
-        required: true
-        schema:
-          $ref: '#/definitions/dto.CreatePromotion'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.Response'
-      summary: Create a new promotion
-      tags:
-      - promotion
-  /promotion/{id}:
-    delete:
-      description: Delete a promotion
-      parameters:
-      - description: Promotion ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.Response'
-      summary: Delete a promotion
-      tags:
-      - promotion
-  /search:
-    get:
-      consumes:
-      - application/json
-      description: Search products
-      parameters:
-      - description: Search query
-        in: query
-        name: query
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseData'
-      summary: Search products
-      tags:
-      - search
-  /user:
+      - products
+  /users:
     get:
       consumes:
       - application/json
@@ -976,11 +335,71 @@ paths:
         "200":
           description: OK
           schema:
+            allOf:
+            - $ref: '#/definitions/response.ResponseListData'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.UserResponse'
+                  type: array
+              type: object
+        "500":
+          description: Error
+          schema:
             $ref: '#/definitions/response.Response'
       summary: Get all users
       tags:
-      - user
-  /user/{id}:
+      - users
+    post:
+      consumes:
+      - application/json
+      description: Create user
+      parameters:
+      - description: User
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Create user
+      tags:
+      - users
+  /users/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete user
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Delete user
+      tags:
+      - users
     get:
       consumes:
       - application/json
@@ -997,10 +416,19 @@ paths:
         "200":
           description: OK
           schema:
+            allOf:
+            - $ref: '#/definitions/response.ResponseData'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.UserResponse'
+              type: object
+        "500":
+          description: Error
+          schema:
             $ref: '#/definitions/response.Response'
       summary: Get user by ID
       tags:
-      - user
+      - users
     put:
       consumes:
       - application/json
@@ -1011,12 +439,12 @@ paths:
         name: id
         required: true
         type: string
-      - description: User update data
+      - description: User
         in: body
         name: user
         required: true
         schema:
-          $ref: '#/definitions/dto.UpdateUser'
+          $ref: '#/definitions/dto.UserDTO'
       produces:
       - application/json
       responses:
@@ -1024,10 +452,14 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/response.Response'
+        "500":
+          description: Error
+          schema:
+            $ref: '#/definitions/response.Response'
       summary: Update user
       tags:
-      - user
-  /user/me:
+      - users
+  /users/me:
     get:
       consumes:
       - application/json
@@ -1038,23 +470,17 @@ paths:
         "200":
           description: OK
           schema:
+            allOf:
+            - $ref: '#/definitions/response.ResponseData'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.UserResponse'
+              type: object
+        "500":
+          description: Error
+          schema:
             $ref: '#/definitions/response.Response'
       summary: Get my user
       tags:
-      - user
-  /webscraper:
-    get:
-      consumes:
-      - application/json
-      description: Scraper
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.Response'
-      summary: Scraper
-      tags:
-      - webscraper
+      - users
 swagger: "2.0"
