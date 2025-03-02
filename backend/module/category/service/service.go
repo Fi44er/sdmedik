@@ -15,6 +15,9 @@ var _ ICategoryService = (*CategoryService)(nil)
 
 type ICategoryService interface {
 	Create(ctx context.Context, categoryDomain *domain.Category, files []*multipart.FileHeader) error
+
+	GetByID(ctx context.Context, id string) (*domain.Category, error)
+	GetAll(ctx context.Context) ([]domain.Category, error)
 }
 
 type CategoryService struct {

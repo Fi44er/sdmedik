@@ -38,13 +38,9 @@ func ToDomainFromDto(user *dto.UserDTO) *domain.User {
 }
 
 func ToDomainSliceFromModel(models []model.User) []domain.User {
-	if models == nil {
-		return nil
-	}
-
 	domains := make([]domain.User, len(models))
-	for i, m := range models {
-		domains[i] = *ToDomainFromModel(&m)
+	for i, model := range models {
+		domains[i] = *ToDomainFromModel(&model)
 	}
 	return domains
 }
@@ -60,13 +56,9 @@ func ToResponseFromDomain(domain *domain.User) *dto.UserResponse {
 }
 
 func ToResponseSliceFromDomain(domains []domain.User) []dto.UserResponse {
-	if domains == nil {
-		return nil
-	}
-
 	response := make([]dto.UserResponse, len(domains))
-	for i, d := range domains {
-		response[i] = *ToResponseFromDomain(&d)
+	for i, domain := range domains {
+		response[i] = *ToResponseFromDomain(&domain)
 	}
 	return response
 }

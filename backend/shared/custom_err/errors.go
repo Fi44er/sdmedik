@@ -14,4 +14,7 @@ var (
 
 	// --------------- PRODUCT ERRORS -----------------
 	ErrProductNotFound = NewError(404, "Product not found")
+
+	// --------------- CATEGORY ERRORS -----------------
+	ErrCategoryNotFound = NewError(404, "Category not found")
 )

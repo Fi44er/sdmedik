@@ -42,8 +42,7 @@ func (c *ProductController) Create(ctx *fiber.Ctx) error {
 	files := form.File["files"]
 
 	if err := c.service.Create(ctx.Context(), domain, files); err != nil {
-		c.logger.Errorf("error while creating product: %s", err)
-		return ctx.Status(500).JSON(fiber.Map{"status": "error", "message": "Failed to create product"})
+		return err
 	}
 
 	return ctx.Status(200).JSON(fiber.Map{

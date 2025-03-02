@@ -1,5 +1,16 @@
 basePath: /api/
 definitions:
+  dto.CategoryResponse:
+    properties:
+      id:
+        type: string
+      image_ids:
+        items:
+          type: string
+        type: array
+      name:
+        type: string
+    type: object
   dto.LoginDTO:
     properties:
       email:
@@ -260,6 +271,31 @@ paths:
       tags:
       - auth
   /categories:
+    get:
+      consumes:
+      - application/json
+      description: Get all categories
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ResponseData'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.CategoryResponse'
+                  type: array
+              type: object
+        "500":
+          description: Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Get all categories
+      tags:
+      - categories
     post:
       consumes:
       - multipart/form-data
@@ -288,7 +324,62 @@ paths:
       summary: Create a new category
       tags:
       - categories
+  /categories/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get category by ID
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ResponseData'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.CategoryResponse'
+              type: object
+        "500":
+          description: Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Get category by ID
+      tags:
+      - categories
   /products:
+    get:
+      consumes:
+      - application/json
+      description: Get all products
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ResponseData'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.ProductResponse'
+                  type: array
+              type: object
+        "500":
+          description: Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Get all products
+      tags:
+      - products
     post:
       consumes:
       - multipart/form-data

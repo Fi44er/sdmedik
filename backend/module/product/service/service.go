@@ -4,6 +4,7 @@ import (
 	"context"
 	"mime/multipart"
 
+	category_repository "github.com/Fi44er/sdmedik/backend/module/category/repository"
 	file_service "github.com/Fi44er/sdmedik/backend/module/file/service"
 	"github.com/Fi44er/sdmedik/backend/module/product/domain"
 	"github.com/Fi44er/sdmedik/backend/module/product/repository"
@@ -18,6 +19,7 @@ type IProductService interface {
 	Create(ctx context.Context, productDomain *domain.Product, files []*multipart.FileHeader) error
 
 	GetByID(ctx context.Context, id string) (*domain.Product, error)
+	GetAll(ctx context.Context) ([]domain.Product, error)
 }
 
 type ProductService struct {
@@ -27,6 +29,7 @@ type ProductService struct {
 	repo                   repository.IProductRepository
 	transactionManagerRepo transaction_manager_repo.ITransactionManagerRepository
 	fileServ               file_service.IFileService
+	categoryRepo           category_repository.ICategoryRepository
 }
 
 func NewProductService(
@@ -35,6 +38,7 @@ func NewProductService(
 	repo repository.IProductRepository,
 	transactionManagerRepo transaction_manager_repo.ITransactionManagerRepository,
 	fileServ file_service.IFileService,
+	categoryRepo category_repository.ICategoryRepository,
 ) *ProductService {
 	return &ProductService{
 		logger:                 logger,
@@ -42,5 +46,6 @@ func NewProductService(
 		repo:                   repo,
 		transactionManagerRepo: transactionManagerRepo,
 		fileServ:               fileServ,
+		categoryRepo:           categoryRepo,
 	}
 }

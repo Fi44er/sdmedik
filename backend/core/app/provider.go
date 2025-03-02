@@ -91,6 +91,7 @@ func (p *moduleProvider) CategoryModule() error {
 		p.app.db,
 		p.transactionManagerModule.TransactionManagerRepository(),
 		p.fileModule.FileService(),
+		p.fileModule.FileRepository(),
 	)
 	return nil
 }

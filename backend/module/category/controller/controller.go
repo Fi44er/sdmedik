@@ -11,6 +11,9 @@ var _ ICategoryController = (*CategoryController)(nil)
 
 type ICategoryController interface {
 	Create(ctx *fiber.Ctx) error
+
+	GetByID(ctx *fiber.Ctx) error
+	GetAll(ctx *fiber.Ctx) error
 }
 
 type CategoryController struct {

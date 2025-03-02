@@ -3,7 +3,7 @@ package logger
 import (
 	"fmt"
 	"os"
-	"path"
+	"path/filepath"
 	"runtime"
 	"sync"
 
@@ -52,7 +52,17 @@ func (l *Logger) logWithCaller(level logrus.Level, msg string) {
 		l.Logger.Log(level, msg)
 	}
 
-	fileLine := fmt.Sprintf("%s:%d", path.Base(file), line)
+	projectRoot, err := os.Getwd()
+	if err != nil {
+		projectRoot = ""
+	}
+
+	relativePath, err := filepath.Rel(projectRoot, file)
+	if err != nil {
+		relativePath = file // Если не удалось, используем полный путь
+	}
+
+	fileLine := fmt.Sprintf("%s:%d", relativePath, line)
 	coloredFileLine := fmt.Sprintf("\033[32m%s\033[0m", fileLine)
 	l.Logger.Log(level, fmt.Sprintf("%s %s", coloredFileLine, msg))
 }

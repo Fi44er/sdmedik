@@ -75,4 +75,5 @@ func (m *ProductModule) RegisterRoutes(router fiber.Router) {
 
 	product.Post("/", m.ProductController().Create)
 	product.Get("/:id", m.ProductController().GetByID)
+	product.Get("/", m.ProductController().GetAll)
 }

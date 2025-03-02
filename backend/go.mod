@@ -5,6 +5,7 @@ go 1.24
 toolchain go1.24.0
 
 require (
+	github.com/chai2010/webp v1.1.1
 	github.com/go-playground/validator/v10 v10.25.0
 	github.com/gofiber/fiber/v2 v2.52.6
 	github.com/gofiber/swagger v1.1.1

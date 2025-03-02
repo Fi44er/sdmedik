@@ -13,8 +13,11 @@ var _ IProductRepository = (*ProductRepository)(nil)
 
 type IProductRepository interface {
 	Create(ctx context.Context, productDomain *domain.Product, tx *gorm.DB) error
+	CreateProductCategoies(ctx context.Context, productCategory []domain.ProductCategory, tx *gorm.DB) error
 
 	GetByID(ctx context.Context, id string) (*domain.Product, error)
+	GetAll(ctx context.Context) ([]domain.Product, error)
+	GetByCategoryID(ctx context.Context, categoryID string) ([]domain.Product, error)
 }
 
 type ProductRepository struct {

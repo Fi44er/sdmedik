@@ -8,3 +8,8 @@ type Product struct {
 	Price       float64
 	ImageIDs    []string
 }
+
+type ProductCategory struct {
+	CategoryID string
+	ProductID  string
+}

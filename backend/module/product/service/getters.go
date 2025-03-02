@@ -20,3 +20,17 @@ func (s *ProductService) GetByID(ctx context.Context, id string) (*domain.Produc
 
 	return product, nil
 }
+
+func (s *ProductService) GetAll(ctx context.Context) ([]domain.Product, error) {
+	products, err := s.repo.GetAll(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(products) == 0 {
+		s.logger.Info("No products found")
+		return nil, customerr.ErrProductNotFound
+	}
+
+	return products, nil
+}

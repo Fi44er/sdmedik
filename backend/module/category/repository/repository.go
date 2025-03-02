@@ -13,6 +13,10 @@ var _ ICategoryRepository = (*CategoryRepository)(nil)
 
 type ICategoryRepository interface {
 	Create(ctx context.Context, categoryDomain *domain.Category, tx *gorm.DB) error
+
+	GetByID(ctx context.Context, id string) (*domain.Category, error)
+	GetAll(ctx context.Context) ([]domain.Category, error)
+	GetByIDs(ctx context.Context, ids []string) ([]domain.Category, error)
 }
 
 type CategoryRepository struct {

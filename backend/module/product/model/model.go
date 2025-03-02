@@ -8,3 +8,8 @@ type Product struct {
 	Price       float64  `json:"price"`
 	ImageIDs    []string `gorm:"-" json:"image_ids"`
 }
+
+type ProductCategory struct {
+	CategoryID string `gorm:"type:uuid;not null" json:"category_id"`
+	ProductID  string `gorm:"type:uuid;not null" json:"product_id"`
+}

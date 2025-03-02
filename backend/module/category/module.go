@@ -33,6 +33,7 @@ func NewCategoryModule(
 	db *gorm.DB,
 	transactionManagerRepo transaction_manager_repo.ITransactionManagerRepository,
 	fileServ file_service.IFileService,
+	fileRepo file_repository.IFileRepository,
 ) *CategoryModule {
 	return &CategoryModule{
 		logger:                 logger,
@@ -40,6 +41,7 @@ func NewCategoryModule(
 		db:                     db,
 		transactionManagerRepo: transactionManagerRepo,
 		fileServ:               fileServ,
+		fileRepo:               fileRepo,
 	}
 }
 
@@ -68,4 +70,6 @@ func (m *CategoryModule) RegisterRoutes(router fiber.Router) {
 	category := router.Group("/categories")
 
 	category.Post("/", m.CategoryController().Create)
+	category.Get("/:id", m.CategoryController().GetByID)
+	category.Get("/", m.CategoryController().GetAll)
 }

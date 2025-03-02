@@ -17,6 +17,14 @@ func ToDomainFromModel(model *model.Product) *domain.Product {
 	}
 }
 
+func ToDomainSlicceFromModel(models []model.Product) []domain.Product {
+	domains := make([]domain.Product, len(models))
+	for i, model := range models {
+		domains[i] = *ToDomainFromModel(&model)
+	}
+	return domains
+}
+
 func ToModelFromDomain(domain *domain.Product) *model.Product {
 	return &model.Product{
 		ID:          domain.ID,
@@ -49,13 +57,9 @@ func ToResponseFromDomain(domain *domain.Product) *dto.ProductResponse {
 }
 
 func ToResponseSliceFromDomain(domains []domain.Product) *dto.ProductsResponse {
-	if domains == nil {
-		return nil
-	}
-
 	productsRes := make([]dto.ProductResponse, len(domains))
-	for i, d := range domains {
-		productsRes[i] = *ToResponseFromDomain(&d)
+	for i, domain := range domains {
+		productsRes[i] = *ToResponseFromDomain(&domain)
 	}
 
 	response := &dto.ProductsResponse{
@@ -63,4 +67,34 @@ func ToResponseSliceFromDomain(domains []domain.Product) *dto.ProductsResponse {
 		Count:    0,
 	}
 	return response
+}
+
+func ToModelProductCategoryFromDomain(domain *domain.ProductCategory) *model.ProductCategory {
+	return &model.ProductCategory{
+		CategoryID: domain.CategoryID,
+		ProductID:  domain.ProductID,
+	}
+}
+
+func ToModelProductCategorySliceFromDomain(domains []domain.ProductCategory) []model.ProductCategory {
+	models := make([]model.ProductCategory, len(domains))
+	for i, domain := range domains {
+		models[i] = *ToModelProductCategoryFromDomain(&domain)
+	}
+	return models
+}
+
+func ToDomainProductCategoryFromModel(model *model.ProductCategory) *domain.ProductCategory {
+	return &domain.ProductCategory{
+		CategoryID: model.CategoryID,
+		ProductID:  model.ProductID,
+	}
+}
+
+func ToDomainProductCategorySliceFromModel(models []model.ProductCategory) []domain.ProductCategory {
+	domains := make([]domain.ProductCategory, len(models))
+	for i, model := range models {
+		domains[i] = *ToDomainProductCategoryFromModel(&model)
+	}
+	return domains
 }

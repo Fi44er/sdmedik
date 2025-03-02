@@ -34,3 +34,45 @@ func (r *ProductRepository) GetByID(ctx context.Context, id string) (*domain.Pro
 
 	return productDomain, nil
 }
+
+func (r *ProductRepository) GetAll(ctx context.Context) ([]domain.Product, error) {
+	r.logger.Info("Getting all products...")
+	var products []model.Product
+	err := r.db.Find(&products).Error
+	if err != nil {
+		r.logger.Errorf("Error getting all products: %v", err)
+		return nil, err
+	}
+
+	productDomains := make([]domain.Product, len(products))
+	for i, product := range products {
+		files, err := r.fileRepo.GetFilesByOwner(ctx, product.ID, "product")
+		if err != nil {
+			return nil, err
+		}
+		for _, f := range files {
+			product.ImageIDs = append(product.ImageIDs, f.ID)
+		}
+
+		productDomains[i] = *converter.ToDomainFromModel(&product)
+	}
+
+	return productDomains, nil
+}
+
+func (r *ProductRepository) GetByCategoryID(ctx context.Context, categoryID string) ([]domain.Product, error) {
+	r.logger.Infof("Getting products by category ID: %s...", categoryID)
+
+	var products []model.Product
+	err := r.db.Preload("Categories").
+		Joins("JOIN product_categories ON products.id = product_categories.product_id").
+		Where("product_categories.category_id = ?", categoryID).
+		Find(&products).Error
+	if err != nil {
+		return nil, err
+	}
+
+	productDomains := converter.ToDomainSlicceFromModel(products)
+
+	return productDomains, nil
+}

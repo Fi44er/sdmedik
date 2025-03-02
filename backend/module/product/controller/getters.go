@@ -29,3 +29,23 @@ func (c *ProductController) GetByID(ctx *fiber.Ctx) error {
 
 	return ctx.Status(200).JSON(fiber.Map{"status": "success", "data": response})
 }
+
+// GetAll godoc
+// @Summary Get all products
+// @Description Get all products
+// @Tags products
+// @Accept json
+// @Produce json
+// @Success 200 {object} response.ResponseData{data=[]dto.ProductResponse} "OK"
+// @Failure 500 {object} response.Response "Error"
+// @Router /products [get]
+func (c *ProductController) GetAll(ctx *fiber.Ctx) error {
+	products, err := c.service.GetAll(ctx.Context())
+	if err != nil {
+		return err
+	}
+
+	response := converter.ToResponseSliceFromDomain(products)
+
+	return ctx.Status(200).JSON(fiber.Map{"status": "success", "data": response})
+}
