@@ -19,6 +19,7 @@ const NavBar = () => {
   const openProducts = Boolean(menuProducts);
   const openUsers = Boolean(menuUsers);
   const openPromotion = Boolean(menuPromotion);
+
   const handleCloseCategoryMenu = () => {
     setMenuCategories(null);
   };

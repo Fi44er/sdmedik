@@ -4,7 +4,6 @@ import {
   Button,
   Drawer,
   IconButton,
-  Slider,
   Typography,
   FormControlLabel,
   Checkbox,
@@ -12,7 +11,10 @@ import {
   AccordionSummary,
   AccordionDetails,
   TextField,
+  Slider,
   styled,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import CloseIcon from "@mui/icons-material/Close";
@@ -38,12 +40,14 @@ const CustomTextField = styled(TextField)({
 const SidebarFilter = ({ setFilters }) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [minPrice, setMinPrice] = useState(0);
-  const [maxPrice, setMaxPrice] = useState(0);
+  const [maxPrice, setMaxPrice] = useState(100000); // Максимальная цена по умолчанию
   const { fetchFilter, filters } = useFilterStore();
   const { fetchProducts } = useProductStore();
   const [selectedValues, setSelectedValues] = useState([]);
   const { id } = useParams();
   const category_id = id;
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   useEffect(() => {
     fetchFilter(category_id);
@@ -84,6 +88,11 @@ const SidebarFilter = ({ setFilters }) => {
     }
   };
 
+  const handlePriceChange = (event, newValue) => {
+    setMinPrice(newValue[0]);
+    setMaxPrice(newValue[1]);
+  };
+
   const handleApplyFilters = async () => {
     const filterData = {
       price: {
@@ -100,13 +109,15 @@ const SidebarFilter = ({ setFilters }) => {
 
     const jsonData = JSON.stringify(filterData);
     fetchProducts(category_id, jsonData);
+    toggleDrawer();
   };
 
   const handleResetFilters = () => {
     setSelectedValues([]);
     setMinPrice(0);
-    setMaxPrice(0);
+    setMaxPrice(100000);
     fetchProducts(category_id, null);
+    toggleDrawer();
   };
 
   return (
@@ -118,11 +129,14 @@ const SidebarFilter = ({ setFilters }) => {
             color: "white",
             height: "50px",
             width: "150px",
+            "&:hover": {
+              backgroundColor: "#009B8A",
+            },
           }}
           onClick={toggleDrawer}
         >
           Фильтрация
-          <FilterListIcon />
+          <FilterListIcon sx={{ ml: 1 }} />
         </Button>
       </Box>
 
@@ -134,6 +148,7 @@ const SidebarFilter = ({ setFilters }) => {
           "& .MuiDrawer-paper": {
             width: { xs: "100%", sm: "100%", md: "350px" },
             height: "100vh",
+            overflowY: "auto",
           },
         }}
       >
@@ -146,115 +161,134 @@ const SidebarFilter = ({ setFilters }) => {
           </IconButton>
           <Typography
             variant="h6"
-            sx={{ fontWeight: "bold", color: "#00B3A4" }}
+            sx={{ fontWeight: "bold", color: "#00B3A4", mb: 2 }}
           >
             Фильтрация
           </Typography>
-          <Box sx={{ mt: 2 }}>
-            <Box sx={{ mb: 2 }}>
-              <Typography variant="body">Цена</Typography>
-            </Box>
+
+          {/* Ценовой диапазон */}
+          <Box sx={{ mb: 3 }}>
+            <Typography variant="body1" sx={{ fontWeight: "bold", mb: 1 }}>
+              Цена
+            </Typography>
+            <Slider
+              value={[minPrice, maxPrice]}
+              onChange={handlePriceChange}
+              valueLabelDisplay="auto"
+              min={0}
+              max={100000}
+              sx={{ color: "#00B3A4" }}
+            />
             <Box
               sx={{
                 display: "flex",
                 justifyContent: "space-between",
-                gridGap: "20px",
+                gap: 2,
+                mt: 2,
               }}
             >
               <CustomTextField
                 variant="outlined"
                 placeholder="От"
+                value={minPrice}
                 onChange={(e) => setMinPrice(Number(e.target.value))}
-                sx={{ width: "48%", mt: 2, color: "#00B3A4" }}
+                sx={{ width: "48%" }}
               />
               <CustomTextField
                 variant="outlined"
                 placeholder="До"
+                value={maxPrice}
                 onChange={(e) => setMaxPrice(Number(e.target.value))}
-                sx={{ width: "48%", mt: 2, color: "#00B3A4" }}
+                sx={{ width: "48%" }}
               />
             </Box>
-            {filters &&
+          </Box>
+
+          {/* Фильтры по характеристикам */}
+          {filters &&
             filters.data &&
             filters.data.characteristics &&
             filters.data.characteristics.length > 0 ? (
-              filters.data.characteristics.map((char) => (
-                <Accordion sx={{ mt: 2, mb: 2 }} key={char.id} defaultExpanded>
-                  <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                    <Typography>{char.name}</Typography>
-                  </AccordionSummary>
-                  <AccordionDetails>
-                    {char.values.map((value) => (
-                      <FormControlLabel
-                        key={`${char.id}-${value}`}
-                        control={
-                          <Checkbox
-                            sx={{
-                              color: "#00B3A4",
-                              "&.Mui-checked": { color: "#00B3A4" },
-                            }}
-                            checked={selectedValues.some(
-                              (c) =>
-                                c.characteristic_id === char.id &&
-                                c.values.includes(value)
-                            )}
-                            onChange={(e) =>
-                              handleChangeCheckbox(e, char.id, value)
-                            }
-                          />
-                        }
-                        label={
-                          typeof value === "boolean" ? (
-                            <>{value ? "Есть" : "Нету"}</>
-                          ) : (
-                            value
-                          )
-                        }
-                      />
-                    ))}
-                  </AccordionDetails>
-                </Accordion>
-              ))
-            ) : (
-              <Typography>Нет доступных фильтров</Typography>
-            )}
-          </Box>
+            filters.data.characteristics.map((char) => (
+              <Accordion key={char.id} defaultExpanded sx={{ mb: 2 }}>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                  <Typography sx={{ fontWeight: "bold" }}>{char.name}</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  {char.values.map((value) => (
+                    <FormControlLabel
+                      key={`${char.id}-${value}`}
+                      control={
+                        <Checkbox
+                          sx={{
+                            color: "#00B3A4",
+                            "&.Mui-checked": { color: "#00B3A4" },
+                          }}
+                          checked={selectedValues.some(
+                            (c) =>
+                              c.characteristic_id === char.id &&
+                              c.values.includes(value)
+                          )}
+                          onChange={(e) =>
+                            handleChangeCheckbox(e, char.id, value)
+                          }
+                        />
+                      }
+                      label={
+                        typeof value === "boolean" ? (
+                          <>{value ? "Есть" : "Нет"}</>
+                        ) : (
+                          value
+                        )
+                      }
+                    />
+                  ))}
+                </AccordionDetails>
+              </Accordion>
+            ))
+          ) : (
+            <Typography>Нет доступных фильтров</Typography>
+          )}
+
+          {/* Кнопки "Применить" и "Сбросить" */}
           <Box
             sx={{
               display: "flex",
-              justifyContent: "flex-end",
-              alignItems: "center",
-              mt: 2,
-              gridGap: 30,
+              justifyContent: "space-between",
+              gap: 2,
+              mt: 3,
+              position: "sticky",
+              bottom: 0,
+              backgroundColor: "#fff",
+              padding: 2,
+              boxShadow: "0px -2px 4px rgba(0, 0, 0, 0.1)",
             }}
           >
             <Button
               sx={{
                 background: "#00B3A4",
                 color: "white",
-                height: "50px",
-                width: { xs: "30%", md: "150px" },
+                flex: 1,
+                "&:hover": {
+                  backgroundColor: "#009B8A",
+                },
               }}
-              onClick={() => {
-                handleApplyFilters();
-                toggleDrawer();
-              }}
+              onClick={handleApplyFilters}
             >
-              Применить фильтры
+              Применить
             </Button>
             <Button
               sx={{
                 background: "#E74C3C",
                 color: "white",
-                height: "50px",
-                width: { xs: "30%", md: "150px" },
+                flex: 1,
+                "&:hover": {
+                  backgroundColor: "#C0392B",
+                },
               }}
-              onClick={() => {
-                handleResetFilters();
-                toggleDrawer();
-              }}
+              onClick={handleResetFilters}
             >
-              Сбросить фильтры
+              Сбросить
             </Button>
           </Box>
         </Box>

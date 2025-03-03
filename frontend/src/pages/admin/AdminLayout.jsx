@@ -13,6 +13,7 @@ import UpdateProduct from "./update_product/UpdateProduct";
 import { useEffect, useState } from "react";
 import CreatePromotion from "./create_promotion/CreatePromotion";
 import AdminPromotionTable from "./components_admin_page/AdminPromotionTable/AdminPromotionTable";
+
 function ProtectedRoute({ element }) {
   const { getUserInfo, user } = useUserStore();
   const [loading, setLoading] = useState(true);

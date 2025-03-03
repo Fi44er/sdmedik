@@ -88,7 +88,7 @@ export default function Basket() {
                   padding: 2,
                   borderRadius: 2,
                   boxShadow: 3,
-                  width: { xs: "100%", md: 600 },
+                  width: { xs: "91.5%", md: 600 },
                 }}
               >
                 <CardMedia

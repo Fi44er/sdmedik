@@ -11,8 +11,8 @@ export default function BasketLayout() {
           display: "flex",
           justifyContent: "space-between",
           gridGap: { xs: 30, md: 0 },
-          flexDirection: { xs: "column", lg: "unset" },
-          mt:5
+          flexDirection: { xs: "column-reverse", lg: "unset" },
+          mt: 5,
         }}
       >
         <Basket />

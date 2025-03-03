@@ -82,7 +82,7 @@ export default function TopList() {
           {/* </header> */}
           <Grid
             container
-            spacing={{ xs: 2, md: 4, lg: 2 }}
+            spacing={{ xs: 1, md: 4, lg: 2 }}
             columns={{ xs: 4, sm: 4, md: 4 }}
           >
             {products.data &&
@@ -90,13 +90,19 @@ export default function TopList() {
                 <Grid item="true" xs={1} sm={1} md={1} key={index}>
                   <Card
                     sx={{
-                      width: {
-                        xs: "100%",
-                        sm: "100%",
-                        md: "100%",
-                        lg: "276px",
-                      },
+                      width: { xs: "187px", md: "261px" },
+                      height: { xs: "385px", md: "514px" },
                       background: "#F5FCFF",
+                      boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
+                      borderRadius: "8px",
+                      transition: "transform 0.2s, box-shadow 0.2s",
+                      "&:hover": {
+                        transform: "scale(1.05)",
+                        boxShadow: " 0 8px 30px rgba(0, 0, 0, 0.2)",
+                      },
+                      display: "flex",
+                      flexDirection: "column",
+                      cursor:"pointer"
                     }}
                   >
                     <Box
@@ -104,43 +110,42 @@ export default function TopList() {
                         display: "flex",
                         justifyContent: "center",
                         alignItems: "center",
+                        height: "300px",
+                        borderBottom: "1px solid #E0E0E0",
+                      }}
+                      onClick={() => {
+                        window.location.href = `/product/${item.id}`;
                       }}
                     >
                       <CardMedia
                         component="img"
                         image={`${urlPictures}/${item.image}`}
-                        alt={"Кресло-коляска"}
+                        alt={item.name}
                         sx={{
-                          width: "200px",
-                          height: { xs: "200px", sm: "200px", md: "200px" },
+                          width: "100%",
+                          height: { xs: "200px", md: "300px" },
                           objectFit: "cover",
                         }}
+                        loading="lazy"
                       />
                     </Box>
-
                     <CardContent>
                       <Typography
-                        variant="h6"
                         sx={{
-                          width: "235px",
+                          fontSize: { xs: "0.9rem", md: "1.2rem" },
+                          fontWeight: "bold",
+                          mb: 1,
+                          width: { xs: "170px", md: "235px" },
                           overflow: "hidden",
                           textOverflow: "ellipsis",
                           whiteSpace: "nowrap",
                         }}
+                        onClick={() => {
+                          window.location.href = `/product/${item.id}`;
+                        }}
                       >
                         {item.name}
                       </Typography>
-                      <Box
-                        sx={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                        }}
-                      >
-                        <Typography variant="h6" sx={{ color: "#39C8B8" }}>
-                          {item.price} руб.
-                        </Typography>
-                      </Box>
                       <Typography
                         variant="body"
                         sx={{
@@ -150,43 +155,76 @@ export default function TopList() {
                       >
                         Всего заказов {item.order_count} шт.
                       </Typography>
-
                       <Box
                         sx={{
                           display: "flex",
                           justifyContent: "space-between",
                           alignItems: "center",
-                          mt: "20px",
+                          mt: 1,
                         }}
                       >
-                        <Button
-                          sx={{
-                            width: "157px",
-                            height: "50px",
-                            background: `linear-gradient(95.61deg, #A5DED1 4.71%, #00B3A4 97.25%)`,
-                            borderRadius: "10px",
-                            color: "#fff",
-                          }}
-                          variant=" contained"
+                        <Typography
+                          variant="h6"
+                          sx={{ color: "#00B3A4", fontWeight: "bold" }}
                           onClick={() => {
                             window.location.href = `/product/${item.id}`;
                           }}
                         >
-                          Подробнее
-                        </Button>
-                        <IconButton
-                          onClick={() => {
-                            hendleAddProductThithBascket(item.id);
+                          {item.price} ₽
+                        </Typography>
+                        {/* {e.oldPrice && (
+                              <Typography
+                                variant="body2"
+                                sx={{ color: "text.secondary", textDecoration: "line-through" }}
+                              >
+                                {e.oldPrice} ₽
+                              </Typography>
+                            )} */}
+                      </Box>
+                      <Button
+                        variant="contained"
+                        sx={{
+                          width: "100%",
+                          mt: { xs: 1, md: 5 },
+                          backgroundColor: "#00B3A4",
+                          color: "#FFFFFF",
+                          borderRadius: "8px",
+                          "&:hover": {
+                            backgroundColor: "#00B3A4",
+                          },
+                        }}
+                        onClick={() => {
+                          hendleAddProductThithBascket(item.id);
+                        }}
+                      >
+                        В корзину
+                      </Button>
+                    </CardContent>
+                    {/* <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            p: 2,
+                            borderTop: "1px solid #E0E0E0",
                           }}
                         >
-                          <img
-                            style={{ width: "50px", height: "50px" }}
-                            src="/basket_cards.png"
-                            alt="Корзина"
-                          />
-                        </IconButton>
-                      </Box>
-                    </CardContent>
+                          <Button
+                            sx={{
+                              width: "100%",
+                              height: "40px",
+                              border: `2px solid #00B3A4`,
+                              borderRadius: "12px",
+                              color: "#00B3A4",
+                            }}
+                            variant="outlined"
+                            onClick={() => {
+                              hendleAddProductThithBascket(e.id);
+                            }}
+                          >
+                            В корзину
+                          </Button>
+                        </Box> */}
                   </Card>
                 </Grid>
               ))}

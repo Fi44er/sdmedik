@@ -2,14 +2,12 @@ import {
   Box,
   Card,
   CardContent,
-  CardHeader,
-  CardMedia,
   Container,
   Typography,
+  Grid,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
-
-import Grid from "@mui/material/Grid2";
-
 import React, { useEffect } from "react";
 import useCategoryStore from "../../store/categoryStore";
 import { urlPictures } from "../../constants/constants";
@@ -17,16 +15,17 @@ import { Helmet } from "react-helmet";
 
 export default function CategoriesForCertificate() {
   const { fetchCategory, category } = useCategoryStore();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   useEffect(() => {
     fetchCategory();
-    console.log(category.data);
-  }, []);
+  }, [fetchCategory]);
 
   return (
     <Box sx={{ mt: 5, mb: 5 }}>
       <Helmet>
-        <title>Категории товаров | Sdmedik</title>
+        <title>Категории товаров | Sdmedik.ru</title>
         <meta
           name="description"
           content="Ознакомьтесь с нашими категориями товаров. Мы предлагаем широкий ассортимент продукции для ваших нужд."
@@ -37,64 +36,79 @@ export default function CategoriesForCertificate() {
         />
       </Helmet>
       <Container>
+        <Typography variant="h4" sx={{ fontWeight: "bold", mb: 3 }}>
+          Категории товаров
+        </Typography>
         <Grid
           container
-          spacing={{ xs: 2, md: 2 }}
-          columns={{ xs: 4, sm: 4, md: 4 }}
-          sx={{ display: "flex", justifyContent: "center" }}
+          spacing={isMobile ? 2 : 3}
+          columns={{ xs: 2, sm: 3, md: 4, lg: 5 }}
         >
           {Array.isArray(category.data) && category.data.length > 0 ? (
             category.data.map((item) => (
-              <Grid item={"true"} xs={1} sm={1} md={1} key={item.id}>
+              <Grid item xs={1} sm={1} md={1} lg={1} key={item.id}>
                 <Card
                   sx={{
-                    width: { xs: "340px", md: "276px" },
+                    width: "100%",
                     background: "#fff",
-                    borderRadius: "20px",
-                    height: "360px",
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "space-around",
-                    textAlign: "center",
+                    borderRadius: "12px",
+                    boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
+                    transition: "transform 0.2s, box-shadow 0.2s",
+                    "&:hover": {
+                      transform: "translateY(-4px)",
+                      boxShadow: "0px 8px 16px rgba(0, 0, 0, 0.2)",
+                    },
                     cursor: "pointer",
                   }}
-                  onClick={(e) => {
-                    e.preventDefault();
+                  onClick={() => {
                     window.location.href = `/products/certificate/${item.id}`;
                   }}
                 >
                   <Box
                     sx={{
                       display: "flex",
-                      justifyContent: "center",
+                      flexDirection: "column",
                       alignItems: "center",
+                      p: 2,
                     }}
                   >
-                    <CardMedia
-                      component="img"
-                      image={`${urlPictures}/${item.images[0].name}`}
-                      alt={`Изображение категории ${item.name}`}
+                    <Box
                       sx={{
-                        width: { xs: "270px", md: "180px", lg: "200px" },
-                        height: {
-                          xs: "270px",
-                          sm: "200px",
-                          md: "200px",
-                          lg: "200px",
-                        },
-                        objectFit: "cover",
+                        width: "100%",
+                        height: "160px",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        overflow: "hidden",
+                        borderRadius: "12px",
                       }}
-                    />
-                  </Box>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
-                  >
-                    <CardContent>
-                      <Typography variant="h6">{item.name}</Typography>
+                    >
+                      <img
+                        src={`${urlPictures}/${item.images[0].name}`}
+                        alt={`Изображение категории ${item.name}`}
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                        }}
+                      />
+                    </Box>
+                    <CardContent sx={{ textAlign: "center", p: 1 }}>
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          fontWeight: "bold",
+                          fontSize: isMobile ? "1rem" : "1.1rem",
+                        }}
+                      >
+                        {item.name}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        sx={{ color: "text.secondary", mt: 1 }}
+                      >
+                        {item.productCount || 0} товаров
+                      </Typography>
                     </CardContent>
                   </Box>
                 </Card>
