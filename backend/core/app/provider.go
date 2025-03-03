@@ -80,6 +80,7 @@ func (p *moduleProvider) ProductModule() error {
 		p.transactionManagerModule.TransactionManagerRepository(),
 		p.fileModule.FileService(),
 		p.fileModule.FileRepository(),
+		p.categoryModule.CategoryRepository(),
 	)
 	return nil
 }

@@ -10,7 +10,7 @@ import (
 )
 
 func (s *ProductService) Create(ctx context.Context, productDomain *domain.Product, files []*multipart.FileHeader) error {
-	categories, err := s.categoryRepo.GetByIDs(ctx, productDomain.ImageIDs)
+	categories, err := s.categoryRepo.GetByIDs(ctx, productDomain.CategoryIDs)
 	if err != nil {
 		s.logger.Errorf("Failed to get categories: %v", err)
 		return err
@@ -44,6 +44,8 @@ func (s *ProductService) Create(ctx context.Context, productDomain *domain.Produ
 			ProductID:  productDomain.ID,
 		}
 	}
+
+	s.logger.Infof("productDomain: %+v", categories)
 
 	if err := s.repo.CreateProductCategoies(ctx, productCategryDomains, tx); err != nil {
 		s.logger.Errorf("Failed to create product categories: %v", err)

@@ -7,6 +7,7 @@ type Product struct {
 	Description string
 	Price       float64
 	ImageIDs    []string
+	CategoryIDs []string
 }
 
 type ProductCategory struct {

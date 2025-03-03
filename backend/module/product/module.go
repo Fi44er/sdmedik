@@ -1,6 +1,7 @@
 package module
 
 import (
+	category_repository "github.com/Fi44er/sdmedik/backend/module/category/repository"
 	file_repository "github.com/Fi44er/sdmedik/backend/module/file/repository"
 	file_service "github.com/Fi44er/sdmedik/backend/module/file/service"
 	"github.com/Fi44er/sdmedik/backend/module/product/controller"
@@ -27,6 +28,7 @@ type ProductModule struct {
 	transactionMaanagerRepo transaction_manager_repo.ITransactionManagerRepository
 	fileServ                file_service.IFileService
 	fileRepo                file_repository.IFileRepository
+	categoryRepo            category_repository.ICategoryRepository
 }
 
 func NewProductModule(
@@ -37,6 +39,7 @@ func NewProductModule(
 	transactionMaanagerRepo transaction_manager_repo.ITransactionManagerRepository,
 	fileServ file_service.IFileService,
 	fileRepo file_repository.IFileRepository,
+	categoryRepo category_repository.ICategoryRepository,
 ) *ProductModule {
 	return &ProductModule{
 		logger:                  logger,
@@ -46,6 +49,7 @@ func NewProductModule(
 		transactionMaanagerRepo: transactionMaanagerRepo,
 		fileServ:                fileServ,
 		fileRepo:                fileRepo,
+		categoryRepo:            categoryRepo,
 	}
 }
 
@@ -58,7 +62,14 @@ func (m *ProductModule) ProductRepository() repository.IProductRepository {
 
 func (m *ProductModule) ProductService() service.IProductService {
 	if m.service == nil {
-		m.service = service.NewProductService(m.logger, m.evenBus, m.ProductRepository(), m.transactionMaanagerRepo, m.fileServ)
+		m.service = service.NewProductService(
+			m.logger,
+			m.evenBus,
+			m.ProductRepository(),
+			m.transactionMaanagerRepo,
+			m.fileServ,
+			m.categoryRepo,
+		)
 	}
 	return m.service
 }

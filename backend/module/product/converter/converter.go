@@ -42,6 +42,7 @@ func ToDomainFromDTO(dto *dto.CreateProductDTO) *domain.Product {
 		Name:        dto.Name,
 		Description: dto.Description,
 		Price:       float64(dto.Price),
+		CategoryIDs: dto.CategoryIDs,
 	}
 }
 

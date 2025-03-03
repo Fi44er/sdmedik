@@ -18,7 +18,7 @@ func Migrate(db *gorm.DB, trigger bool, log *logger.Logger) error {
 			&file_model.File{},
 			&category_model.Category{},
 			&prduct_model.Product{},
-			&category_model.ProductCategory{},
+			&prduct_model.ProductCategory{},
 		}
 
 		log.Info("📦 Creating types...")
