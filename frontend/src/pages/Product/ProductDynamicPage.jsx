@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -5,7 +6,6 @@ import {
   IconButton,
   Typography,
   Paper,
-  Divider,
   List,
   ListItem,
   CardMedia,
@@ -13,9 +13,8 @@ import {
   MenuItem,
 } from "@mui/material";
 import { ArrowBack, ArrowForward } from "@mui/icons-material";
-import React, { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/swiper-bundle.css"; // Импорт стилей Swiper
+import "swiper/swiper-bundle.css";
 import useProductStore from "../../store/productStore";
 import { useParams } from "react-router-dom";
 import useBascketStore from "../../store/bascketStore";
@@ -29,13 +28,14 @@ export default function ProductDetailPage() {
   const { fetchProductById, products } = useProductStore();
   const { addProductThisBascket } = useBascketStore();
   const [quantity, setQuantity] = useState(1);
-  const [newRegion, setNewRegion] = useState("Выберите регион");
+  const [newRegion, setNewRegion] = useState(null); // Изначально регион не выбран
   const { id } = useParams();
 
   useEffect(() => {
     fetchProductById(id);
   }, [id]);
 
+  // Обновление изображений при изменении данных о продукте
   useEffect(() => {
     if (products.data && products.data.images) {
       const fetchedImages = products.data.images.map(
@@ -45,6 +45,21 @@ export default function ProductDetailPage() {
     }
   }, [products.data]);
 
+  // Обработчик изменения региона через Select
+  const handleChangeRegion = (event) => {
+    const selectedValue = event.target.value; // Получаем значение региона (например, "RU-MOS")
+    const selectedRegion = Regions.find(
+      (region) => region.value === selectedValue
+    );
+
+    if (selectedRegion) {
+      setNewRegion(selectedRegion); // Обновляем состояние региона
+      // Автоматически отправляем запрос на сервер с новым регионом
+      fetchProductById(id, selectedRegion.value);
+    }
+  };
+
+  // Остальные функции (handleNextImage, handlePrevImage, handleAddProductToBasket и т.д.)
   const handleNextImage = () => {
     setMainImageIndex((prevIndex) => (prevIndex + 1) % images.length);
   };
@@ -55,17 +70,8 @@ export default function ProductDetailPage() {
     );
   };
 
-  const hendleAddProductThithBascket = async (id) => {
+  const handleAddProductToBasket = async (id) => {
     await addProductThisBascket(id, quantity);
-  };
-
-  const hendleChangeRegion = (event) => {
-    setNewRegion(event.target.value);
-  };
-
-  const handleGetCertificate = async () => {
-    const iso = newRegion;
-    fetchProductById(id, iso);
   };
 
   const renderFeatureValue = (value) => {
@@ -147,189 +153,175 @@ export default function ProductDetailPage() {
           })}
         </script>
       </Helmet>
+
+      {/* Основной блок с изображением и информацией */}
       <Paper
         sx={{
           display: "flex",
-          justifyContent: "space-between",
-          flexDirection: { xs: "column", sm: "column", md: "unset" },
-          p: 2,
+          flexDirection: { xs: "column", md: "row" },
+          p: 3,
+          gap: 3,
         }}
       >
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            width: { xs: "100%", sm: "100%", md: "50%" },
-          }}
-        >
-          <Container>
-            <Box
-              sx={{ display: "flex", justifyContent: "center", marginTop: 2 }}
-            >
-              <Swiper spaceBetween={10} slidesPerView={1} navigation={false}>
-                <SwiperSlide
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                  }}
-                >
-                  <CardMedia
-                    component="img"
-                    image={images[mainImageIndex]}
-                    alt={`Product Image ${mainImageIndex + 1}`}
-                    style={{
-                      width: { xs: 300, sm: 350, md: 400 },
-                      height: { xs: 300, sm: 350, md: 400 },
-                      borderRadius: 10,
-                      objectFit: "cover",
-                    }}
-                  />
-                </SwiperSlide>
-              </Swiper>
-            </Box>
-            <Box
+        {/* Блок с изображениями */}
+        <Box sx={{ width: { xs: "100%", md: "50%" } }}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              position: "relative",
+            }}
+          >
+            <CardMedia
+              component="img"
+              image={images[mainImageIndex]}
+              alt={`Product Image ${mainImageIndex + 1}`}
               sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                marginTop: 2,
+                width: { xs: "100%", md: "400px" },
+                height: { xs: "300px", md: "400px" },
+                borderRadius: 2,
+                objectFit: "contain",
               }}
+            />
+            <IconButton
+              onClick={handlePrevImage}
+              sx={{ position: "absolute", left: 0, top: "50%" }}
             >
-              <IconButton onClick={handlePrevImage}>
-                <ArrowBack />
-              </IconButton>
-              <IconButton onClick={handleNextImage}>
-                <ArrowForward />
-              </IconButton>
-            </Box>
-          </Container>
+              <ArrowBack />
+            </IconButton>
+            <IconButton
+              onClick={handleNextImage}
+              sx={{ position: "absolute", right: 0, top: "50%" }}
+            >
+              <ArrowForward />
+            </IconButton>
+          </Box>
 
-          <Box sx={{ display: "flex", justifyContent: "center", marginTop: 2 }}>
-            {products.data &&
-              products.data.images &&
-              products.data.images.map((image, index) => (
-                <Button
-                  variant="outlined"
-                  key={index}
-                  onClick={() => setMainImageIndex(index)}
-                  sx={{
-                    border:
-                      mainImageIndex === index ? "2px solid #00B3A4" : "none",
-                    color: "#00B3A4",
-                    margin: 1,
-                  }}
-                >
-                  <CardMedia
-                    image={`${urlPictures}/${image.name}`}
-                    alt={`Thumbnail ${index + 1}`}
-                    sx={{
-                      width: { xs: "50px", lg: "100px" },
-                      height: { xs: "50px", lg: "100px" },
-                      objectFit: "cover",
-                      borderRadius: "5px",
-                    }}
-                  />
-                </Button>
-              ))}
+          {/* Миниатюры */}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              gap: 1,
+              mt: 2,
+              flexWrap: "wrap",
+            }}
+          >
+            {images.map((image, index) => (
+              <Box
+                key={index}
+                onClick={() => setMainImageIndex(index)}
+                sx={{
+                  border:
+                    mainImageIndex === index
+                      ? "2px solid #00B3A4"
+                      : "1px solid #E0E0E0",
+                  borderRadius: 1,
+                  overflow: "hidden",
+                  cursor: "pointer",
+                  width: "60px",
+                  height: "60px",
+                }}
+              >
+                <CardMedia
+                  component="img"
+                  image={image}
+                  alt={`Thumbnail ${index + 1}`}
+                  sx={{ width: "100%", height: "100%", objectFit: "cover" }}
+                />
+              </Box>
+            ))}
           </Box>
         </Box>
 
-        <Box sx={{ width: { xs: "100%", sm: "100%", md: "50%" } }}>
-          {products.data ? (
-            <Box>
-              <Typography variant="h5" sx={{ fontWeight: "bold" }}>
-                {products.data.name}
-              </Typography>
-              <Typography variant="subtitle1" sx={{ color: "gray" }}>
-                Артикул: {products.data.article}
-              </Typography>
-              <Box
-                sx={{
-                  display: "flex",
-                  gridGap: 20,
-                  mt: 2,
-                  mb: 2,
-                  flexDirection: { xs: "column" },
-                }}
-              >
-                <Select
-                  value={newRegion}
-                  onChange={hendleChangeRegion}
-                  sx={{ minWidth: 200 }}
-                >
-                  <MenuItem value="Выберите регион">
-                    <em>Выберите регион</em>
-                  </MenuItem>
-                  {Regions.map((region) => (
-                    <MenuItem key={region.value} value={region.value}>
-                      {region.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-                <Button
-                  variant="outlined"
-                  onClick={() => {
-                    handleGetCertificate();
-                  }}
-                  sx={{ border: `2px solid #00B3A4`, color: "#00B3A4" }}
-                >
-                  Стоимость при оплате сертификатом
-                </Button>
-              </Box>
+        {/* Блок с информацией о товаре */}
+        <Box sx={{ width: { xs: "100%", md: "50%" } }}>
+          <Typography variant="h4" sx={{ fontWeight: "bold", mb: 1 }}>
+            {products.data?.name}
+          </Typography>
+          <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
+            Артикул: {products.data?.article}
+          </Typography>
 
-              <Typography variant="h5" sx={{ color: "#00B3A4" }}>
-                Цена: {products.data.price} ₽
-              </Typography>
-              <Typography variant="h5" sx={{ color: "#00B3A4" }}>
-                Стоимость при оплате сертификатом:{" "}
-                {products.data.certificate_price} ₽
-              </Typography>
-              {/* Other components */}
-            </Box>
-          ) : (
-            <Typography>Loading...</Typography>
-          )}
-          <Box sx={{ marginTop: 2 }}>
+          {/* Цена */}
+          <Box sx={{ mb: 2 }}>
+            <Typography
+              variant="h5"
+              sx={{ color: "#00B3A4", fontWeight: "bold" }}
+            >
+              {products.data?.price} ₽
+            </Typography>
+          </Box>
+
+          {/* Кнопки покупки */}
+          <Box sx={{ display: "flex", gap: 2, mb: 3 }}>
             <Button
+              variant="contained"
               sx={{
-                width: "157px",
-                height: "50px",
-                border: `2px solid #00B3A4`,
-                borderRadius: "20px",
+                backgroundColor: "#00B3A4",
+                color: "#FFFFFF",
+                "&:hover": {
+                  backgroundColor: "#009B8A",
+                },
+              }}
+              onClick={() => handleAddProductToBasket(products.data.id)}
+            >
+              В корзину
+            </Button>
+            <Button
+              variant="outlined"
+              sx={{
+                border: "2px solid #00B3A4",
                 color: "#00B3A4",
               }}
-              variant="outlined"
-              onClick={() => {
-                window.location.href = `/paymants/${products.data.id}`;
-              }}
+              onClick={() =>
+                (window.location.href = `/paymants/${products.data.id}`)
+              }
             >
-              В 1 клик
+              Купить в 1 клик
             </Button>
-            <IconButton
-              onClick={() => {
-                hendleAddProductThithBascket(products.data.id);
-              }}
-            >
-              <img src="/basket_cards.png" alt="Добавить в корзину" />
-            </IconButton>
           </Box>
-          <Divider sx={{ marginY: 2 }} />
-          <Box sx={{ marginTop: 2 }}>
-            <Typography variant="h6">Характеристики:</Typography>
+
+          {/* Выбор региона */}
+          <Box sx={{ mb: 3 }}>
+            <Select
+              value={newRegion ? newRegion.value : "Выберите регион"} // Используем newRegion.value, если регион выбран
+              onChange={handleChangeRegion}
+              sx={{ minWidth: 200, mr: 2 }}
+            >
+              <MenuItem value="Выберите регион">
+                <em>Выберите регион</em>
+              </MenuItem>
+              {Regions.map((region) => (
+                <MenuItem key={region.value} value={region.value}>
+                  {region.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </Box>
+
+          {/* Характеристики */}
+          <Box sx={{ mb: 3 }}>
+            <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1 }}>
+              Характеристики:
+            </Typography>
             <List>
               {products.data?.characteristic?.map((feature, index) => (
-                <ListItem key={index}>
+                <ListItem key={index} sx={{ py: 0.5 }}>
                   <Typography>
-                    {feature.name} : {renderFeatureValue(feature.value)}
+                    <strong>{feature.name}:</strong>{" "}
+                    {renderFeatureValue(feature.value)}
                   </Typography>
                 </ListItem>
               ))}
             </List>
           </Box>
-          <Divider sx={{ marginY: 2 }} />
         </Box>
       </Paper>
-      <Paper sx={{ marginTop: 4, p: 2 }}>
-        <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+
+      {/* Описание товара */}
+      <Paper sx={{ mt: 3, p: 3 }}>
+        <Typography variant="h6" sx={{ fontWeight: "bold", mb: 2 }}>
           Описание товара:
         </Typography>
         <Typography>{products.data?.description}</Typography>
@@ -337,3 +329,4 @@ export default function ProductDetailPage() {
     </Container>
   );
 }
+      

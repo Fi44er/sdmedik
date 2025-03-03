@@ -6,41 +6,47 @@ import {
   Container,
   Card,
   CardContent,
-  CardHeader,
   Button,
   Grid,
+  Tabs,
+  Tab,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Divider,
+  Badge,
 } from "@mui/material";
+import {
+  ShoppingCart,
+  Favorite,
+  AccountCircle,
+  LocalOffer,
+  Settings,
+  ExitToApp,
+} from "@mui/icons-material";
 import useUserStore from "../../store/userStore";
 import useOrderStore from "../../store/orderStore";
 
 export default function UserAccount() {
   const { getUserInfo, user, Logout } = useUserStore();
   const { fetchUserOrders, userOrders } = useOrderStore();
-  const [currentProducts, setCurrentProducts] = useState([]);
+  const [currentTab, setCurrentTab] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       await getUserInfo();
+      await fetchUserOrders();
       setLoading(false);
     };
 
     fetchData();
-  }, [getUserInfo]);
+  }, [getUserInfo, fetchUserOrders]);
 
-  useEffect(() => {
-    const fetchOrders = async () => {
-      await fetchUserOrders();
-    };
-    fetchOrders();
-  }, [fetchUserOrders]);
-
-  useEffect(() => {
-    if (userOrders.data?.length > 0) {
-      const allItems = userOrders.data.flatMap((order) => order.items);
-      setCurrentProducts(allItems);
-    }
-  }, [userOrders]);
+  const handleTabChange = (event, newValue) => {
+    setCurrentTab(newValue);
+  };
 
   if (loading) {
     return (
@@ -70,114 +76,185 @@ export default function UserAccount() {
   };
 
   return (
-    <Box sx={{ backgroundColor: "#f5f5f5", minHeight: "100vh" }}>
-      <Container sx={{ mt: 3 }}>
+    <Box sx={{ backgroundColor: "#f5f5f5", minHeight: "100vh", paddingTop: 3 }}>
+      <Container>
         <Box
           sx={{
             display: "flex",
-            alignItems: "center",
-            gridGap: 40,
             flexDirection: { xs: "column", md: "row" },
-            mb: 4,
-            padding: 2,
-            backgroundColor: "#ffffff",
-            borderRadius: 2,
-            boxShadow: 3,
+            gap: 4,
           }}
         >
-          <Box>
-            <img
-              src="/user_Profile.png"
-              alt="User  Profile"
-              style={{ borderRadius: "50%", width: "100px", height: "100px" }}
-            />
+          {/* Боковая панель */}
+          <Box sx={{ width: { xs: "100%", md: "350px" } }}>
+            <Card sx={{ borderRadius: 2, boxShadow: 3 }}>
+              <List>
+                <ListItem>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 2,
+                    }}
+                  >
+                    <AccountCircle sx={{ fontSize: 40, color: "#00B3A4" }} />
+                    <Box>
+                      <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                        {user?.data?.fio || "Пользователь"}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {user?.data?.email}
+                      </Typography>
+                    </Box>
+                  </Box>
+                </ListItem>
+                <Divider />
+                <ListItem button onClick={() => setCurrentTab(0)}>
+                  <ListItemIcon>
+                    <ShoppingCart />
+                  </ListItemIcon>
+                  <ListItemText primary="Мои заказы" />
+                </ListItem>
+                <ListItem button onClick={() => setCurrentTab(1)}>
+                  <ListItemIcon>
+                    <Favorite />
+                  </ListItemIcon>
+                  <ListItemText primary="Избранное" />
+                  {/* <Badge badgeContent={favorites?.length} color="success" /> */}
+                </ListItem>
+                <ListItem button onClick={() => setCurrentTab(2)}>
+                  <ListItemIcon>
+                    <LocalOffer />
+                  </ListItemIcon>
+                  <ListItemText primary="Бонусы и скидки" />
+                </ListItem>
+                <ListItem button onClick={() => setCurrentTab(3)}>
+                  <ListItemIcon>
+                    <Settings />
+                  </ListItemIcon>
+                  <ListItemText primary="Настройки" />
+                </ListItem>
+                <Divider />
+                <ListItem button onClick={Logout}>
+                  <ListItemIcon>
+                    <ExitToApp />
+                  </ListItemIcon>
+                  <ListItemText primary="Выйти" />
+                </ListItem>
+              </List>
+            </Card>
           </Box>
-          {user && user.data ? (
-            <Box>
-              <Typography variant="h5" sx={{ fontWeight: "bold" }}>
-                {user.data.fio}
-              </Typography>
-              <Typography variant="body1" sx={{ color: "gray" }}>
-                {user.data.email}
-              </Typography>
-              <Typography variant="body1" sx={{ color: "gray" }}>
-                {user.data.phone_number}
-              </Typography>
-              <Button
-                variant="contained"
-                color="error"
-                onClick={() => Logout()}
-                sx={{ mt: 2 }}
-              >
-                Выйти
-              </Button>
-            </Box>
-          ) : (
-            <Typography>Нет данных о пользователе</Typography>
-          )}
-        </Box>
-        <Box sx={{ mt: 3 }}>
-          <Typography variant="h4" sx={{ fontWeight: "bold", mb: 2 }}>
-            Мои заказы
-          </Typography>
-          <Grid container spacing={2}>
-            {currentProducts.map((e) => (
-              <Grid item key={e.id} xs={12} sm={6} md={4}>
-                <Card
-                  sx={{
-                    background: "#ffffff",
-                    borderRadius: 2,
-                    boxShadow: 2,
-                    transition: "0.3s",
-                    "&:hover": {
-                      boxShadow: 6,
-                    },
-                  }}
-                >
-                  <CardContent>
-                    <CardHeader title={e.title} sx={{ p: 0 }} />
-                    <Typography variant="h6" color="text.secondary">
-                      Название товара: {e.name}
-                    </Typography>
-                    <Typography variant="h6" sx={{ color: "black" }}>
-                      Сумма: {e.price} руб
-                    </Typography>
-                    <Box sx={{ mt: 2 }}>
-                      <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                        Статус заказа
-                      </Typography>
-                      <Box
-                        sx={{
-                          ...statusStyles[
-                            userOrders.data.find(
-                              (order) => order.id === e.order_id
-                            )?.status
-                          ],
-                          padding: "5px",
-                          borderRadius: "4px",
-                          display: "inline-block",
-                        }}
-                      >
-                        <Typography variant="body2">
-                          {statusTranslations[
-                            userOrders.data.find(
-                              (order) => order.id === e.order_id
-                            )?.status
-                          ] || "Неизвестный статус"}
-                        </Typography>
-                      </Box>
-                    </Box>
-                    <Box sx={{ mt: 2 }}>
-                      <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                        Количество приобретенного товара:
-                      </Typography>
-                      <Typography variant="body2">{e.quantity}</Typography>
-                    </Box>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
+
+          {/* Основной контент */}
+          <Box sx={{ flexGrow: 1 }}>
+            {currentTab === 0 && (
+              <Box>
+                <Typography variant="h4" sx={{ fontWeight: "bold", mb: 3 }}>
+                  Мои заказы
+                </Typography>
+                <Grid container spacing={3}>
+                  {userOrders.data?.map((order) => (
+                    <Grid item key={order.id} xs={12}>
+                      <Card sx={{ borderRadius: 2, boxShadow: 3 }}>
+                        <CardContent>
+                          <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                            Заказ №{order.id}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            Дата заказа:{" "}
+                            {new Date(order.created_at).toLocaleDateString()}
+                          </Typography>
+                          <Box sx={{ mt: 2 }}>
+                            <Typography
+                              variant="h6"
+                              sx={{ fontWeight: "bold" }}
+                            >
+                              Статус заказа
+                            </Typography>
+                            <Box
+                              sx={{
+                                ...statusStyles[order.status],
+                                padding: "5px",
+                                borderRadius: "4px",
+                                display: "inline-block",
+                              }}
+                            >
+                              <Typography variant="body2">
+                                {statusTranslations[order.status] ||
+                                  "Неизвестный статус"}
+                              </Typography>
+                            </Box>
+                          </Box>
+                          <Box sx={{ mt: 2 }}>
+                            <Typography
+                              variant="h6"
+                              sx={{ fontWeight: "bold" }}
+                            >
+                              Товары:
+                            </Typography>
+                            <List>
+                              {order.items.map((item) => (
+                                <ListItem key={item.id}>
+                                  <ListItemText
+                                    primary={item.name}
+                                    secondary={`Количество: ${item.quantity}, Цена: ${item.price} руб`}
+                                  />
+                                </ListItem>
+                              ))}
+                            </List>
+                          </Box>
+                        </CardContent>
+                      </Card>
+                    </Grid>
+                  ))}
+                </Grid>
+              </Box>
+            )}
+
+            {currentTab === 1 && (
+              <Box>
+                <Typography variant="h4" sx={{ fontWeight: "bold", mb: 3 }}>
+                  Избранное
+                </Typography>
+                <Grid container spacing={3}>
+                  {favorites.map((item) => (
+                    <Grid item key={item.id} xs={12} sm={6} md={4}>
+                      <Card sx={{ borderRadius: 2, boxShadow: 3 }}>
+                        <CardContent>
+                          <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                            {item.name}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            Цена: {item.price} руб
+                          </Typography>
+                        </CardContent>
+                      </Card>
+                    </Grid>
+                  ))}
+                </Grid>
+              </Box>
+            )}
+
+            {currentTab === 2 && (
+              <Box>
+                <Typography variant="h4" sx={{ fontWeight: "bold", mb: 3 }}>
+                  Бонусы и скидки
+                </Typography>
+                <Typography>
+                  Здесь будет информация о бонусах и скидках.
+                </Typography>
+              </Box>
+            )}
+
+            {currentTab === 3 && (
+              <Box>
+                <Typography variant="h4" sx={{ fontWeight: "bold", mb: 3 }}>
+                  Настройки
+                </Typography>
+                <Typography>Здесь будут настройки аккаунта.</Typography>
+              </Box>
+            )}
+          </Box>
         </Box>
       </Container>
     </Box>

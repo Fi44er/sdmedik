@@ -189,9 +189,9 @@ export default function Header() {
             <Box
               sx={{
                 width: "max-content",
-                display: { xs: "none", sm: "none", md: "", lg: "flex" },
+                display: { xs: "none", sm: "none", md: "flex", lg: "flex" },
                 alignItems: "center",
-                gridGap: 20,
+                gridGap: 10,
               }}
             >
               {/* {!shouldHideCatalogButton && ( // Условие для отображения кнопки "Каталог" */}
@@ -203,7 +203,7 @@ export default function Header() {
                 }}
                 sx={{
                   background: `linear-gradient(95.61deg, #A5DED1 4.71%, #00B3A4 97.25%)`,
-                  fontSize: "18px",
+                  fontSize: "16px",
                 }}
               >
                 Каталог
@@ -218,7 +218,7 @@ export default function Header() {
                 }}
                 sx={{
                   background: `linear-gradient(95.61deg, #A5DED1 4.71%, #00B3A4 97.25%)`,
-                  fontSize: "18px",
+                  fontSize: "16px",
                 }}
               >
                 по электроному сертификату

@@ -20,8 +20,8 @@ const ProductCard = memo(({ e, hendleAddProductThithBascket }) => {
   return (
     <Card
       sx={{
-        maxWidth: "261px",
-        height: "520px",
+        width: { xs: "187px", md: "261px" },
+        height: { xs: "385px", md: "514px" },
         background: "#F5FCFF",
         boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
         borderRadius: "8px",
@@ -32,6 +32,7 @@ const ProductCard = memo(({ e, hendleAddProductThithBascket }) => {
         },
         display: "flex",
         flexDirection: "column",
+        cursor: "pointer",
       }}
     >
       <Box
@@ -50,17 +51,21 @@ const ProductCard = memo(({ e, hendleAddProductThithBascket }) => {
           component="img"
           image={`${urlPictures}/${e.images[0].name}`}
           alt={e.name}
-          sx={{ width: "100%", height: "300px", objectFit: "cover" }}
+          sx={{
+            width: "100%",
+            height: { xs: "200px", md: "300px" },
+            objectFit: "cover",
+          }}
           loading="lazy"
         />
       </Box>
-      <CardContent sx={{ flexGrow: 1 }}>
+      <CardContent>
         <Typography
           sx={{
-            fontSize: "1.2rem",
+            fontSize: { xs: "0.9rem", md: "1.2rem" },
             fontWeight: "bold",
             mb: 1,
-            width: "235px",
+            width: { xs: "170px", md: "235px" },
             overflow: "hidden",
             textOverflow: "ellipsis",
             whiteSpace: "nowrap",
@@ -81,44 +86,76 @@ const ProductCard = memo(({ e, hendleAddProductThithBascket }) => {
         >
           Артикул: {e.article}
         </Typography>
-      </CardContent>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          p: 2,
-          borderTop: "1px solid #E0E0E0",
-        }}
-      >
-        <Button
+        <Box
           sx={{
-            width: "100%",
-            height: "40px",
-            border: `2px solid #00B3A4`,
-            borderRadius: "20px",
-            color: "#00B3A4",
-          }}
-          variant="outlined"
-          onClick={() => {
-            window.location.href = `/product/certificate/${e.id}`;
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mt: 1,
           }}
         >
-          Подробнее
-        </Button>
-        <IconButton
+          {/* <Typography
+            variant="h6"
+            sx={{ color: "#00B3A4", fontWeight: "bold" }}
+            onClick={() => {
+              window.location.href = `/product/certificate/${e.id}`;
+            }}
+          >
+            {e.price} ₽
+          </Typography> */}
+          {/* {e.oldPrice && (
+                <Typography
+                  variant="body2"
+                  sx={{ color: "text.secondary", textDecoration: "line-through" }}
+                >
+                  {e.oldPrice} ₽
+                </Typography>
+              )} */}
+        </Box>
+        <Button
+          variant="contained"
+          sx={{
+            width: "100%",
+            mt: { xs: 1, md: 5 },
+            backgroundColor: "#00B3A4",
+            color: "#FFFFFF",
+            borderRadius: "8px",
+            "&:hover": {
+              backgroundColor: "#00B3A4",
+            },
+          }}
           onClick={() => {
             hendleAddProductThithBascket(e.id);
           }}
         >
-          <img
-            style={{ width: "50px", height: "50px" }}
-            src="/basket_cards.png"
-            alt="Добавить в корзину"
-            loading="lazy"
-          />
-        </IconButton>
-      </Box>
+          В корзину
+        </Button>
+      </CardContent>
+      {/* <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              p: 2,
+              borderTop: "1px solid #E0E0E0",
+            }}
+          >
+            <Button
+              sx={{
+                width: "100%",
+                height: "40px",
+                border: `2px solid #00B3A4`,
+                borderRadius: "12px",
+                color: "#00B3A4",
+              }}
+              variant="outlined"
+              onClick={() => {
+                hendleAddProductThithBascket(e.id);
+              }}
+            >
+              В корзину
+            </Button>
+          </Box> */}
     </Card>
   );
 });
@@ -177,9 +214,9 @@ const CatalogDynamicCertificatePage = () => {
       </Box>
       <Grid
         container
-        spacing={{ xs: 2, md: 3 }}
+        spacing={{ xs: 1, md: 3 }}
         columns={{ xs: 4, sm: 4, md: 4 }}
-        sx={{ height: 800, overflowX: "auto", pt: 2, pb: 2 }}
+        sx={{ pt: 2, pb: 2 }}
       >
         {loading ? (
           <Typography>Загрузка...</Typography>
