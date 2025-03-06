@@ -18,6 +18,7 @@ func (s *service) AddItem(ctx context.Context, data *dto.AddBasketItem, userID s
 	if err != nil {
 		return fmt.Errorf("failed to get basket by user ID: %w", err)
 	}
+
 	if basket == nil {
 		return constants.ErrBasketNotFound
 	}

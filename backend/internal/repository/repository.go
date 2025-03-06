@@ -76,9 +76,6 @@ type IImageRepository interface {
 type IBasketRepository interface {
 	Create(ctx context.Context, data *model.Basket) error
 	GetByUserID(ctx context.Context, userID string) (*model.Basket, error)
-
-	CreateGuestBasket(ctx context.Context, basket *model.GuestBasket) error
-	GetGuestBasketByID(ctx context.Context, id string) (*model.GuestBasket, error)
 }
 
 type IBasketItemRepository interface {

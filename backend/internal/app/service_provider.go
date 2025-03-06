@@ -6,6 +6,7 @@ import (
 	events "github.com/Fi44er/sdmedik/backend/pkg/evenbus"
 	"github.com/Fi44er/sdmedik/backend/pkg/logger"
 	"github.com/go-playground/validator/v10"
+	"github.com/gofiber/fiber/v2/middleware/session"
 	"github.com/redis/go-redis/v9"
 	"github.com/robfig/cron"
 	"gorm.io/gorm"
@@ -37,7 +38,8 @@ type serviceProvider struct {
 	cache     *redis.Client
 	cron      *cron.Cron
 
-	eventBus *events.EventBus
+	eventBus  *events.EventBus
+	sessStore *session.Store
 }
 
 func newServiceProvider(

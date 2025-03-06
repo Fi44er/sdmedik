@@ -3,6 +3,7 @@ package app
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/Fi44er/sdmedik/backend/internal/config"
 	events "github.com/Fi44er/sdmedik/backend/pkg/evenbus"
@@ -11,6 +12,8 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/session"
+	redis_store "github.com/gofiber/storage/redis"
 	"github.com/gofiber/swagger" // swagger handler
 	"github.com/redis/go-redis/v9"
 	"github.com/robfig/cron"
@@ -28,6 +31,7 @@ type App struct {
 	config    *config.Config
 	cache     *redis.Client
 	cron      *cron.Cron
+	sessStore *session.Store
 }
 
 func NewApp(logger *logger.Logger, db *gorm.DB, vavalidator *validator.Validate, config *config.Config, cache *redis.Client) (*App, error) {
@@ -65,6 +69,7 @@ func (a *App) initDeps() error {
 		a.initConfig,
 		a.initServiceProvider,
 		a.initRouter,
+		a.initSessionStore,
 	}
 
 	for _, init := range inits {
@@ -73,6 +78,25 @@ func (a *App) initDeps() error {
 			return err
 		}
 	}
+
+	return nil
+}
+
+func (a *App) initSessionStore() error {
+	storage := redis_store.New(redis_store.Config{
+		Host:     "127.0.0.1",
+		Port:     6379,
+		Password: "", // если есть пароль, укажите его здесь
+		Database: 0,  // используйте 0 для дефолтной БД Redis
+		Reset:    false,
+	})
+
+	store := session.New(session.Config{
+		Storage:    storage,        // Подключаем Redis как хранилище
+		Expiration: 24 * time.Hour, // Время жизни сессии
+	})
+
+	a.sessStore = store
 
 	return nil
 }
@@ -101,10 +125,13 @@ func (a *App) initRouter() error {
 
 	a.app.Get("/swagger/*", swagger.HandlerDefault)
 
+	allowGuest := middleware.AllowGuest(a.cache, a.db, a.config, a.sessStore)
+	deserializeUser := middleware.DeserializeUser(a.cache, a.db, a.config)
+
 	v1 := a.app.Group("/api/v1")
 
 	user := v1.Group("/user")
-	user.Get("/me", middleware.DeserializeUser(a.cache, a.db, a.config), a.serviceProvider.userProvider.UserImpl().GetMy)
+	user.Get("/me", deserializeUser, a.serviceProvider.userProvider.UserImpl().GetMy)
 	user.Get("/", a.serviceProvider.userProvider.UserImpl().GetAll)
 	user.Get("/:id", a.serviceProvider.userProvider.UserImpl().GetByID)
 	user.Put("/:id", a.serviceProvider.userProvider.UserImpl().Update)
@@ -112,7 +139,7 @@ func (a *App) initRouter() error {
 	auth := v1.Group("/auth")
 	auth.Post("/register", a.serviceProvider.authProvider.AuthImpl().Register)
 	auth.Post("/login", a.serviceProvider.authProvider.AuthImpl().Login)
-	auth.Post("/logout", middleware.DeserializeUser(a.cache, a.db, a.config), a.serviceProvider.authProvider.AuthImpl().Logout)
+	auth.Post("/logout", deserializeUser, a.serviceProvider.authProvider.AuthImpl().Logout)
 	auth.Post("/send-code", a.serviceProvider.authProvider.AuthImpl().SendCode)
 	auth.Post("/verify-code", a.serviceProvider.authProvider.AuthImpl().VerifyCode)
 	auth.Post("/refresh", a.serviceProvider.authProvider.AuthImpl().RefreshAccessToken)
@@ -120,14 +147,14 @@ func (a *App) initRouter() error {
 	product := v1.Group("/product")
 	product.Get("/filter/:category_id", a.serviceProvider.productProvider.ProductImpl().GetFilter)
 	product.Get("/", a.serviceProvider.productProvider.ProductImpl().Get)
-	product.Post("/", middleware.DeserializeUser(a.cache, a.db, a.config), a.serviceProvider.productProvider.ProductImpl().Create)
+	product.Post("/", deserializeUser, a.serviceProvider.productProvider.ProductImpl().Create)
 	product.Put("/:id", a.serviceProvider.productProvider.ProductImpl().Update)
 	product.Delete("/:id", a.serviceProvider.productProvider.ProductImpl().Delete)
 	product.Get("/top/:limit", a.serviceProvider.productProvider.ProductImpl().GetTopProducts)
 
 	category := v1.Group("/category")
 	category.Get("/", a.serviceProvider.categoryProvider.CategoryImpl().GetAll)
-	category.Post("/", middleware.DeserializeUser(a.cache, a.db, a.config), a.serviceProvider.categoryProvider.CategoryImpl().Create)
+	category.Post("/", deserializeUser, a.serviceProvider.categoryProvider.CategoryImpl().Create)
 	category.Get("/:id", a.serviceProvider.categoryProvider.CategoryImpl().GetByID)
 	category.Delete("/:id", a.serviceProvider.categoryProvider.CategoryImpl().Delete)
 	category.Put("/:id", a.serviceProvider.categoryProvider.CategoryImpl().Update)
@@ -137,18 +164,17 @@ func (a *App) initRouter() error {
 
 	basket := v1.Group("/basket")
 	basket.Post("/create", a.serviceProvider.basketProvider.BasketImpl().Create)
-	basket.Post("/", middleware.DeserializeUser(a.cache, a.db, a.config), a.serviceProvider.basketProvider.BasketImpl().AddItem)
-	basket.Delete("/:id", middleware.DeserializeUser(a.cache, a.db, a.config), a.serviceProvider.basketProvider.BasketImpl().DeleteItem)
-	basket.Get("/guest/:id", a.serviceProvider.basketProvider.BasketImpl().CreateOrLoadGuestBasket)
-	basket.Get("/", middleware.DeserializeUser(a.cache, a.db, a.config), a.serviceProvider.basketProvider.BasketImpl().Get)
+	basket.Post("/", allowGuest, a.serviceProvider.basketProvider.BasketImpl().AddItem)
+	basket.Delete("/:id", allowGuest, a.serviceProvider.basketProvider.BasketImpl().DeleteItem)
+	basket.Get("/", allowGuest, a.serviceProvider.basketProvider.BasketImpl().Get)
 
 	webscraper := v1.Group("/webscraper")
 	webscraper.Get("/", a.serviceProvider.webScraperProvider.WebScraperImpl().Scraper)
 
 	order := v1.Group("/order")
 	order.Post("/:id", a.serviceProvider.orderProvider.OrderImpl().NotAuthCreate)
-	order.Post("/", middleware.DeserializeUser(a.cache, a.db, a.config), a.serviceProvider.orderProvider.OrderImpl().Create)
-	order.Get("/my", middleware.DeserializeUser(a.cache, a.db, a.config), a.serviceProvider.orderProvider.OrderImpl().GetMyOrders)
+	order.Post("/", deserializeUser, a.serviceProvider.orderProvider.OrderImpl().Create)
+	order.Get("/my", deserializeUser, a.serviceProvider.orderProvider.OrderImpl().GetMyOrders)
 	order.Get("/", a.serviceProvider.orderProvider.OrderImpl().GetAll)
 	order.Put("/status", a.serviceProvider.orderProvider.OrderImpl().UpdateStatus)
 

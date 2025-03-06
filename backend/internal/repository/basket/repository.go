@@ -43,24 +43,3 @@ func (r *repository) GetByUserID(ctx context.Context, userID string) (*model.Bas
 	r.logger.Info("Basket fetched by userID successfully")
 	return basket, nil
 }
-
-func (r *repository) GetGuestBasketByID(ctx context.Context, id string) (*model.GuestBasket, error) {
-	r.logger.Info("Fetching guest basket by ID...")
-	basket := new(model.GuestBasket)
-	if err := r.db.WithContext(ctx).Preload("Items").Where("id = ?", id).Find(basket, "id = ?", id).Error; err != nil {
-		r.logger.Errorf("Failed to fetch guest basket by ID: %v", err)
-		return nil, err
-	}
-	r.logger.Info("Guest basket fetched by ID successfully")
-	return basket, nil
-}
-
-func (r *repository) CreateGuestBasket(ctx context.Context, basket *model.GuestBasket) error {
-	r.logger.Info("Creating guest basket...")
-	if err := r.db.WithContext(ctx).Create(basket).Error; err != nil {
-		r.logger.Errorf("Failed to create guest basket: %v", err)
-		return err
-	}
-	r.logger.Info("Guest basket created successfully")
-	return nil
-}
