@@ -2,18 +2,35 @@ package basket
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"math"
 
 	"github.com/Fi44er/sdmedik/backend/internal/model"
 	"github.com/Fi44er/sdmedik/backend/internal/response"
 	"github.com/Fi44er/sdmedik/backend/pkg/constants"
+	"github.com/gofiber/fiber/v2/middleware/session"
 )
 
-func (s *service) GetByUserID(ctx context.Context, userID string) (*response.BasketResponse, error) {
+func (s *service) GetByUserID(ctx context.Context, userID string, sess *session.Session) (*response.BasketResponse, error) {
 	basketRes := new(response.BasketResponse)
-	basket, err := s.repo.GetByUserID(ctx, userID)
-	if err != nil {
-		return nil, err
+	var basket *model.Basket
+	var err error
+	if userID != "" {
+		basket, err = s.repo.GetByUserID(ctx, userID)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		if sess.Get("basket") != nil {
+			str, ok := sess.Get("basket").(string)
+			if !ok {
+				return nil, fmt.Errorf("Ошибка: interface{} не является строкой")
+			}
+			if err := json.Unmarshal([]byte(str), &basket); err != nil {
+				return nil, err
+			}
+		}
 	}
 
 	if basket == nil {

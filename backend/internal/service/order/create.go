@@ -13,7 +13,7 @@ func (s *service) Create(ctx context.Context, data *dto.CreateOrder, userID stri
 		return "", err
 	}
 
-	basket, err := s.basketService.GetByUserID(ctx, userID)
+	basket, err := s.basketService.GetByUserID(ctx, userID, nil)
 	if err != nil {
 		return "", err
 	}
@@ -41,7 +41,7 @@ func (s *service) Create(ctx context.Context, data *dto.CreateOrder, userID stri
 		}
 		orderItems = append(orderItems, orderItem)
 
-		if err := s.basketService.DeleteItem(ctx, item.ID, userID); err != nil {
+		if err := s.basketService.DeleteItem(ctx, item.ID, userID, nil); err != nil {
 			return "", err
 		}
 	}
