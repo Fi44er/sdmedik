@@ -7,6 +7,7 @@ import (
 	"github.com/Fi44er/sdmedik/backend/internal/model"
 	"github.com/Fi44er/sdmedik/backend/internal/response"
 	"github.com/blevesearch/bleve/v2"
+	"github.com/gofiber/fiber/v2/middleware/session"
 	"gorm.io/gorm"
 )
 
@@ -72,9 +73,9 @@ type IImageService interface {
 
 type IBasketService interface {
 	Create(ctx context.Context, dto *dto.CreateBasket) error
-	AddItem(ctx context.Context, dto *dto.AddBasketItem, userID string) error
-	DeleteItem(ctx context.Context, itemID string, userID string) error
-	GetByUserID(ctx context.Context, userID string) (*response.BasketResponse, error)
+	AddItem(ctx context.Context, dto *dto.AddBasketItem, userID string, sess *session.Session) error
+	DeleteItem(ctx context.Context, itemID string, userID string, sess *session.Session) error
+	GetByUserID(ctx context.Context, userID string, sess *session.Session) (*response.BasketResponse, error)
 }
 
 type ISearchService interface {

@@ -19,15 +19,21 @@ import (
 // @Router /basket [post]
 func (i *Implementation) AddItem(ctx *fiber.Ctx) error {
 	basketItem := new(dto.AddBasketItem)
-	user := ctx.Locals("user").(response.UserResponse)
-	sess := ctx.Locals("session").(session.Store)
-	store, _ := sess.Get(ctx)
-	store.Set("user_id", user.ID)
+	user := ctx.Locals("user")
+	var userRes response.UserResponse
+	var sessRes *session.Session
+	if user != nil {
+		userRes = user.(response.UserResponse)
+	}
+	sess := ctx.Locals("session")
+	if sess != nil {
+		sessRes = sess.(*session.Session)
+	}
 	if err := ctx.BodyParser(basketItem); err != nil {
 		return ctx.Status(400).JSON("Failed to parse body")
 	}
 
-	if err := i.basketService.AddItem(ctx.Context(), basketItem, user.ID); err != nil {
+	if err := i.basketService.AddItem(ctx.Context(), basketItem, userRes.ID, sessRes); err != nil {
 		code, msg := errors.GetErroField(err)
 		return ctx.Status(code).JSON(msg)
 	}
