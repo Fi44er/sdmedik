@@ -5,6 +5,7 @@ import (
 	"github.com/Fi44er/sdmedik/backend/internal/response"
 	"github.com/Fi44er/sdmedik/backend/pkg/errors"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/session"
 )
 
 // AddItem godoc
@@ -19,7 +20,9 @@ import (
 func (i *Implementation) AddItem(ctx *fiber.Ctx) error {
 	basketItem := new(dto.AddBasketItem)
 	user := ctx.Locals("user").(response.UserResponse)
-
+	sess := ctx.Locals("session").(session.Store)
+	store, _ := sess.Get(ctx)
+	store.Set("user_id", user.ID)
 	if err := ctx.BodyParser(basketItem); err != nil {
 		return ctx.Status(400).JSON("Failed to parse body")
 	}

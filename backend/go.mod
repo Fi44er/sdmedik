@@ -60,6 +60,7 @@ require (
 	github.com/gobwas/ws v1.4.0 // indirect
 	github.com/gocolly/colly v1.2.0 // indirect
 	github.com/gofiber/fiber/v2 v2.52.5 // indirect
+	github.com/gofiber/storage/redis v1.3.4 // indirect
 	github.com/gofiber/swagger v1.1.0 // indirect
 	github.com/golang-jwt/jwt/v5 v5.2.1 // indirect
 	github.com/golang/geo v0.0.0-20210211234256-740aa86cb551 // indirect
