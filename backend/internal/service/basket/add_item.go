@@ -90,7 +90,7 @@ func (s *service) AddItem(ctx context.Context, data *dto.AddBasketItem, userID s
 			s.logger.Infof("session is not nil: %+v", basket)
 			// Обновляем в сессии
 			for i, item := range basket.Items {
-				if item.ID == basketItem.ID {
+				if item.ProductID == basketItem.ProductID {
 					basket.Items[i] = *basketItem
 				}
 			}
