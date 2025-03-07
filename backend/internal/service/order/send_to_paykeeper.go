@@ -186,6 +186,7 @@ func (s *service) sendToPaykeeper(
 		Email:      data.Email,
 		Phone:      data.PhoneNumber,
 		FIO:        data.FIO,
+		Address:    data.Address,
 		Status:     "pending",
 	}
 

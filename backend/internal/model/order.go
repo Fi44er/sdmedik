@@ -14,6 +14,7 @@ type Order struct {
 	Email      string         `gorm:"type:string;not null" json:"email"`
 	Phone      string         `gorm:"type:string;not null" json:"phone"`
 	FIO        string         `gorm:"type:string;not null" json:"fio"`
+	Address    string         `gorm:"type:string;not null" json:"address"`
 	TotalPrice float64        `gorm:"not null" json:"total_price"`
 	Status     string         `gorm:"column:status;type:status;not null" json:"status"` // pending or completed
 	Items      []OrderItem    `gorm:"foreignKey:OrderID" json:"items"`
