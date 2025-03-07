@@ -6,14 +6,15 @@ import (
 
 	"github.com/Fi44er/sdmedik/backend/internal/dto"
 	"github.com/Fi44er/sdmedik/backend/internal/model"
+	"github.com/gofiber/fiber/v2/middleware/session"
 )
 
-func (s *service) Create(ctx context.Context, data *dto.CreateOrder, userID string) (string, error) {
+func (s *service) Create(ctx context.Context, data *dto.CreateOrder, userID string, sess *session.Session) (string, error) {
 	if err := s.validator.Struct(data); err != nil {
 		return "", err
 	}
 
-	basket, err := s.basketService.GetByUserID(ctx, userID, nil)
+	basket, err := s.basketService.GetByUserID(ctx, userID, sess)
 	if err != nil {
 		return "", err
 	}
@@ -29,6 +30,8 @@ func (s *service) Create(ctx context.Context, data *dto.CreateOrder, userID stri
 		return "", err
 	}
 
+	s.logger.Infof("Link: %v", link)
+
 	orderItems := []model.OrderItem{}
 	for _, item := range basket.Items {
 		orderItem := model.OrderItem{
@@ -41,7 +44,7 @@ func (s *service) Create(ctx context.Context, data *dto.CreateOrder, userID stri
 		}
 		orderItems = append(orderItems, orderItem)
 
-		if err := s.basketService.DeleteItem(ctx, item.ID, userID, nil); err != nil {
+		if err := s.basketService.DeleteItem(ctx, item.ID, userID, sess); err != nil {
 			return "", err
 		}
 	}

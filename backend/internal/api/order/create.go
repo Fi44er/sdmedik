@@ -5,6 +5,7 @@ import (
 	"github.com/Fi44er/sdmedik/backend/internal/response"
 	"github.com/Fi44er/sdmedik/backend/pkg/errors"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/session"
 )
 
 // Create godoc
@@ -18,13 +19,22 @@ import (
 // @Router /order [post]
 func (i *Implementation) Create(ctx *fiber.Ctx) error {
 	order := new(dto.CreateOrder)
-	user := ctx.Locals("user").(response.UserResponse)
+	user := ctx.Locals("user")
+	var userRes response.UserResponse
+	var sessRes *session.Session
+	if user != nil {
+		userRes = user.(response.UserResponse)
+	}
+	sess := ctx.Locals("session")
+	if sess != nil {
+		sessRes = sess.(*session.Session)
+	}
 
 	if err := ctx.BodyParser(order); err != nil {
 		return ctx.Status(400).JSON("Failed to parse body")
 	}
 
-	url, err := i.orderService.Create(ctx.Context(), order, user.ID)
+	url, err := i.orderService.Create(ctx.Context(), order, userRes.ID, sessRes)
 	if err != nil {
 		code, msg := errors.GetErroField(err)
 		return ctx.Status(code).JSON(msg)

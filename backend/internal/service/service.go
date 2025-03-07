@@ -97,7 +97,7 @@ type ICertificateService interface {
 }
 
 type IOrderService interface {
-	Create(ctx context.Context, data *dto.CreateOrder, userID string) (string, error)
+	Create(ctx context.Context, data *dto.CreateOrder, userID string, sess *session.Session) (string, error)
 	NotAuthCreate(ctx context.Context, data *dto.CreateOrder, productID string) (string, error)
 
 	ChangeStatus(ctx context.Context, data *dto.ChangeOrderStatus) error
