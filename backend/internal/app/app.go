@@ -173,7 +173,7 @@ func (a *App) initRouter() error {
 
 	order := v1.Group("/order")
 	order.Post("/:id", a.serviceProvider.orderProvider.OrderImpl().NotAuthCreate)
-	order.Post("/", deserializeUser, a.serviceProvider.orderProvider.OrderImpl().Create)
+	order.Post("/", allowGuest, a.serviceProvider.orderProvider.OrderImpl().Create)
 	order.Get("/my", deserializeUser, a.serviceProvider.orderProvider.OrderImpl().GetMyOrders)
 	order.Get("/", a.serviceProvider.orderProvider.OrderImpl().GetAll)
 	order.Put("/status", a.serviceProvider.orderProvider.OrderImpl().UpdateStatus)
