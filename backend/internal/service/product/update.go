@@ -26,13 +26,13 @@ func (s *service) Update(ctx context.Context, data *dto.UpdateProduct, images *d
 	}
 
 	var catalogBite uint8
+	s.logger.Infof("%v", catalogBite)
 	for _, catalog := range data.Catalogs {
 		catalogRegx := "^[12]$"
 		if ok, _ := regexp.MatchString(catalogRegx, strconv.Itoa(catalog)); !ok {
-			return errors.New("Invalid catalog")
+			return custom_errors.New(400, "Invalid catalog")
 		}
-
-		catalogBite |= (1 << (catalog - 1))
+		catalogBite |= 1 << (catalog - 1)
 	}
 
 	categories, err := s.categoryService.GetByIDs(ctx, data.CategoryIDs)
@@ -60,6 +60,7 @@ func (s *service) Update(ctx context.Context, data *dto.UpdateProduct, images *d
 
 	modelProduct.ID = id
 	modelProduct.Categories = *categories
+	modelProduct.Catalogs = catalogBite
 
 	dataValue := reflect.ValueOf(data).Elem()
 	modelValue := reflect.ValueOf(modelProduct).Elem()
@@ -68,6 +69,10 @@ func (s *service) Update(ctx context.Context, data *dto.UpdateProduct, images *d
 		fieldName := dataValue.Type().Field(i).Name
 
 		if fieldName == "CharacteristicValues" {
+			continue
+		}
+
+		if fieldName == "Catalogs" {
 			continue
 		}
 
@@ -84,6 +89,7 @@ func (s *service) Update(ctx context.Context, data *dto.UpdateProduct, images *d
 		return err
 	}
 
+	s.logger.Infof("%v", modelProduct.Catalogs)
 	if err := s.repo.Update(ctx, modelProduct, tx); err != nil {
 		if errors.Is(err, constants.ErrProductNotFound) {
 			s.transactionManagerRepo.Rollback(tx)

@@ -81,6 +81,14 @@ func (r *repository) Update(ctx context.Context, data *model.Product, tx *gorm.D
 	if db == nil {
 		db = r.db
 	}
+	if data.Catalogs == 0 {
+		result := db.WithContext(ctx).Model(data).Update("catalogs", 0)
+		if err := result.Error; err != nil {
+			r.logger.Errorf("Failed to update product: %v", err)
+			return err
+		}
+	}
+
 	result := db.WithContext(ctx).Model(data).Updates(data)
 	if err := result.Error; err != nil {
 		r.logger.Errorf("Failed to update product: %v", err)
@@ -175,6 +183,12 @@ func (r *repository) Get(ctx context.Context, criteria dto.ProductSearchCriteria
 				"cv"+strconv.Itoa(filter.CharacteristicID)+".value IN (?)", filter.Values,
 			)
 		}
+	}
+
+	if criteria.Catalogs > 0 {
+		var catalogMask uint8
+		catalogMask = 1 << (criteria.Catalogs - 1)
+		request = request.Where("catalogs & ? != 0", catalogMask)
 	}
 
 	if criteria.Offset != 0 {

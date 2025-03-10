@@ -709,6 +709,12 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "integer",
+                        "description": "Catalogs",
+                        "name": "catalogs",
+                        "in": "query"
+                    },
+                    {
                         "type": "string",
                         "example": "{\"price\":{\"min\":20,\"max\":100},\"characteristics\":[{\"characteristic_id\":1,\"values\":[\"string\"]}]}",
                         "description": "Filters in JSON format",

@@ -699,6 +699,10 @@ paths:
         in: query
         name: minimal
         type: boolean
+      - description: Catalogs
+        in: query
+        name: catalogs
+        type: integer
       - description: Filters in JSON format
         example: '{"price":{"min":20,"max":100},"characteristics":[{"characteristic_id":1,"values":["string"]}]}'
         in: query
