@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"reflect"
+	"regexp"
+	"strconv"
 
 	"github.com/Fi44er/sdmedik/backend/internal/dto"
 	"github.com/Fi44er/sdmedik/backend/internal/model"
@@ -21,6 +23,16 @@ func (s *service) Update(ctx context.Context, data *dto.UpdateProduct, images *d
 
 	if err := s.validator.Struct(data); err != nil {
 		return custom_errors.New(400, err.Error())
+	}
+
+	var catalogBite uint8
+	for _, catalog := range data.Catalogs {
+		catalogRegx := "^[12]$"
+		if ok, _ := regexp.MatchString(catalogRegx, strconv.Itoa(catalog)); !ok {
+			return errors.New("Invalid catalog")
+		}
+
+		catalogBite |= (1 << (catalog - 1))
 	}
 
 	categories, err := s.categoryService.GetByIDs(ctx, data.CategoryIDs)

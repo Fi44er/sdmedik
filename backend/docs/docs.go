@@ -286,38 +286,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/basket/guest/{id}": {
-            "get": {
-                "description": "Create or load guest basket",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "basket"
-                ],
-                "summary": "Create or load guest basket",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Basket ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    }
-                }
-            }
-        },
         "/basket/{id}": {
             "delete": {
                 "description": "Delete item from basket",
@@ -1265,6 +1233,9 @@ const docTemplate = `{
         "dto.CreateOrder": {
             "type": "object",
             "properties": {
+                "address": {
+                    "type": "string"
+                },
                 "email": {
                     "type": "string"
                 },

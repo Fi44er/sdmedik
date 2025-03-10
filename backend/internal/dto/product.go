@@ -50,6 +50,7 @@ type UpdateProduct struct {
 	DelImages            []DelImage            `json:"del_images" validate:"dive"`
 	CategoryIDs          []int                 `json:"category_ids"`
 	CharacteristicValues []CharacteristicValue `json:"characteristic_values" validate:"dive"`
+	Catalogs             []int                 `json:"catalogs"`
 }
 
 type DelImage struct {

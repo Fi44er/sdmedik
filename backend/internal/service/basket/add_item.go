@@ -9,6 +9,7 @@ import (
 	"github.com/Fi44er/sdmedik/backend/internal/model"
 	"github.com/Fi44er/sdmedik/backend/pkg/constants"
 	"github.com/gofiber/fiber/v2/middleware/session"
+	"github.com/google/uuid"
 )
 
 func (s *service) AddItem(ctx context.Context, data *dto.AddBasketItem, userID string, sess *session.Session) error {
@@ -121,6 +122,7 @@ func (s *service) AddItem(ctx context.Context, data *dto.AddBasketItem, userID s
 		}
 	} else {
 		// Добавляем в сессию
+		newBasketItem.ID = uuid.NewString()
 		basket.Items = append(basket.Items, newBasketItem)
 		basketStr, err := json.Marshal(basket)
 		if err != nil {

@@ -22,6 +22,8 @@ func (s *service) GetByUserID(ctx context.Context, userID string, sess *session.
 			return nil, err
 		}
 	} else {
+		s.logger.Infof("uid: %v", sess.Get("basket"))
+
 		if sess.Get("basket") != nil {
 			str, ok := sess.Get("basket").(string)
 			if !ok {

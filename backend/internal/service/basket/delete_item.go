@@ -31,7 +31,7 @@ func (s *service) DeleteItem(ctx context.Context, itemID string, userID string, 
 
 		newBasket := []model.BasketItem{}
 		for _, item := range basket.Items {
-			if item.ProductID != itemID {
+			if item.ID != itemID {
 				newBasket = append(newBasket, item)
 				break
 			}
