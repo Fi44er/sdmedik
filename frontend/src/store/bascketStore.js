@@ -67,15 +67,6 @@ const useBascketStore = create((set, get) => ({
       });
 
       set({ basket: response.data });
-
-      if (response.status === 401) {
-        // {{ edit_1 }}
-        // Если статус 401, обновляем токены и повторяем запрос
-        await get().refreshToken();
-        await get().fetchUserBasket();
-      } else {
-        throw new Error("No data in response");
-      }
     } catch (error) {
       console.error("Error fetching basket:", error);
     }

@@ -20,7 +20,7 @@ const ProductCard = memo(({ e, hendleAddProductThithBascket }) => {
   return (
     <Card
       sx={{
-        width: { xs: "187px", md: "261px" },
+        maxWidth: { xs: "167px", md: "261px" },
         height: { xs: "385px", md: "514px" },
         background: "#F5FCFF",
         boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
@@ -65,7 +65,7 @@ const ProductCard = memo(({ e, hendleAddProductThithBascket }) => {
             fontSize: { xs: "0.9rem", md: "1.2rem" },
             fontWeight: "bold",
             mb: 1,
-            width: { xs: "170px", md: "235px" },
+            width: { xs: "150px", md: "235px" },
             overflow: "hidden",
             textOverflow: "ellipsis",
             whiteSpace: "nowrap",
@@ -172,11 +172,12 @@ const CatalogDynamicPage = () => {
   const [error, setError] = useState(null);
 
   const category_id = id;
+  const catalogs = 1;
 
   useEffect(() => {
     const offset = (currentPage - 1) * ProductsPerPage;
     setLoading(true);
-    fetchProducts(category_id, filters, offset, ProductsPerPage)
+    fetchProducts(category_id, filters, offset, ProductsPerPage, catalogs)
       .then(() => setLoading(false))
       .catch((err) => {
         setLoading(false);

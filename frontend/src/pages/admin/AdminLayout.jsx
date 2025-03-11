@@ -13,6 +13,7 @@ import UpdateProduct from "./update_product/UpdateProduct";
 import { useEffect, useState } from "react";
 import CreatePromotion from "./create_promotion/CreatePromotion";
 import AdminPromotionTable from "./components_admin_page/AdminPromotionTable/AdminPromotionTable";
+import UpdateCategory from "./update_category/UpdateCategory";
 
 function ProtectedRoute({ element }) {
   const { getUserInfo, user } = useUserStore();
@@ -82,6 +83,10 @@ export default function AdminDashboard() {
           <Route
             path="/update_product/:id"
             element={<ProtectedRoute element={<UpdateProduct />} />}
+          />
+          <Route
+            path="/update_category/:id"
+            element={<ProtectedRoute element={<UpdateCategory />} />}
           />
         </Routes>
       </Container>

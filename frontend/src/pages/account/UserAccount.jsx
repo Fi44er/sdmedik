@@ -29,7 +29,7 @@ import useUserStore from "../../store/userStore";
 import useOrderStore from "../../store/orderStore";
 
 export default function UserAccount() {
-  const { getUserInfo, user, Logout } = useUserStore();
+  const { getUserInfo, user, logout } = useUserStore();
   const { fetchUserOrders, userOrders } = useOrderStore();
   const [currentTab, setCurrentTab] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -135,7 +135,13 @@ export default function UserAccount() {
                   <ListItemText primary="Настройки" />
                 </ListItem>
                 <Divider />
-                <ListItem button onClick={Logout}>
+                <ListItem
+                  sx={{ cursor: "pointer" }}
+                  button
+                  onClick={() => {
+                    logout();
+                  }}
+                >
                   <ListItemIcon>
                     <ExitToApp />
                   </ListItemIcon>

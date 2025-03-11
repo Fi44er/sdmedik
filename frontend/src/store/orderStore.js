@@ -9,15 +9,18 @@ const useOrderStore = create((set, get) => ({
   email: "",
   fio: "",
   phone_number: "",
+  delivery_address: "",
   setEmail: (email) => set({ email }),
   setFio: (fio) => set({ fio }),
   setPhone_number: (phone_number) => set({ phone_number }),
+  setDelivery_address: (delivery_address) => set({ delivery_address }),
   order: {},
   orders: {},
   userOrders: [],
 
   payOrder: async () => {
-    const { email, fio, phone_number } = useOrderStore.getState();
+    const { email, fio, phone_number, delivery_address } =
+      useOrderStore.getState();
 
     try {
       const response = await axios.post(
@@ -26,6 +29,7 @@ const useOrderStore = create((set, get) => ({
           email,
           fio,
           phone_number,
+          delivery_address,
         },
         {
           withCredentials: true,
@@ -45,7 +49,8 @@ const useOrderStore = create((set, get) => ({
     }
   },
   payOrderById: async (id) => {
-    const { email, fio, phone_number } = useOrderStore.getState();
+    const { email, fio, phone_number, delivery_address } =
+      useOrderStore.getState();
 
     try {
       const response = await axios.post(
@@ -54,6 +59,7 @@ const useOrderStore = create((set, get) => ({
           email,
           fio,
           phone_number,
+          delivery_address,
         },
         {
           withCredentials: true,

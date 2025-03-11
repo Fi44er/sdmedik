@@ -19,7 +19,7 @@ export default function AdminUsersDiagramm() {
 
   useEffect(() => {
     fetchUsers();
-  }, [allUsers]);
+  }, []);
 
   useEffect(() => {
     if (allUsers && allUsers.data && Array.isArray(allUsers.data.users)) {

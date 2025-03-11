@@ -2,12 +2,12 @@ import {
   Box,
   Card,
   CardContent,
-  CardHeader,
   CardMedia,
   IconButton,
   Typography,
+  Grid,
+  Button,
 } from "@mui/material";
-import Grid from "@mui/material/Grid2";
 import React, { useEffect, useState } from "react";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import useBascketStore from "../../../store/bascketStore";
@@ -44,10 +44,7 @@ export default function Basket() {
 
   const handleClick = async (product_id, action) => {
     try {
-      // Изменяем количество товара
       await editCountProductBascket(product_id, action === "plus" ? 1 : -1);
-
-      // Обновляем локальное состояние
       setCurrentProducts((prevProducts) =>
         prevProducts.map((product) =>
           product.product_id === product_id
@@ -56,7 +53,7 @@ export default function Basket() {
                 quantity:
                   action === "plus"
                     ? product.quantity + 1
-                    : Math.max(product.quantity - 1, 1), // Убедитесь, что количество не меньше 1
+                    : Math.max(product.quantity - 1, 1),
               }
             : product
         )
@@ -68,19 +65,14 @@ export default function Basket() {
   };
 
   return (
-    <Box sx={{ width: { xs: "100%", md: "64.5%" }, mb: 4 }}>
-      <Typography variant="h4" sx={{ mb: 2 }}>
+    <Box sx={{ width: { xs: "100%", md: "70%" }, mb: 4 }}>
+      <Typography variant="h4" sx={{ mb: 3, fontWeight: "bold" }}>
         Корзина
       </Typography>
-      <Grid
-        container
-        spacing={2}
-        columns={{ xs: 4, sm: 4, md: 4 }}
-        sx={{ mt: 2 }}
-      >
-        {currentProducts.length > 0 &&
+      <Grid container spacing={3}>
+        {currentProducts.length > 0 ? (
           currentProducts.map((product) => (
-            <Grid item={"true"} key={product.product_id} xs={12} sm={6} md={4}>
+            <Grid item key={product.product_id} xs={12}>
               <Card
                 sx={{
                   display: "flex",
@@ -88,7 +80,6 @@ export default function Basket() {
                   padding: 2,
                   borderRadius: 2,
                   boxShadow: 3,
-                  width: { xs: "91.5%", md: 600 },
                 }}
               >
                 <CardMedia
@@ -96,59 +87,78 @@ export default function Basket() {
                   image={`${urlPictures}/${product.image}`}
                   alt={product.title}
                   sx={{
-                    width: 120,
-                    height: 120,
+                    width: { xs: "100%", md: 150 },
+                    height: { xs: 200, md: 150 },
                     objectFit: "contain",
                     borderRadius: 1,
                   }}
                 />
-                <Box sx={{ flexGrow: 1, paddingLeft: 2 }}>
-                  <CardHeader
-                    title={product.name}
-                    subheader={product.brand}
-                    sx={{ paddingBottom: 0 }}
-                  />
-                  <CardContent sx={{ paddingTop: 0 }}>
-                    <Typography variant="h6">
-                      Цена: {product.price} ₽
-                    </Typography>
-                    <Typography variant="subtitle1">
-                      Количество: {product.quantity}
-                    </Typography>
-                    <Box
+                <Box
+                  sx={{
+                    flexGrow: 1,
+                    paddingLeft: { xs: 0, md: 2 },
+                    mt: { xs: 2, md: 0 },
+                  }}
+                >
+                  <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                    {product.name}
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                    {product.brand}
+                  </Typography>
+                  <Typography variant="h6" sx={{ mt: 1, color: "#00B3A4" }}>
+                    {product.price} ₽
+                  </Typography>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      mt: 2,
+                    }}
+                  >
+                    <Button
+                      onClick={() => handleClick(product.product_id, "minus")}
+                      disabled={product.quantity <= 1}
                       sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        marginTop: 1,
+                        minWidth: 50,
+                        padding: 0.5,
+                        fontSize: "22px",
+                        borderRadius: "50%",
                       }}
                     >
-                      <IconButton
-                        onClick={() => handleClick(product.product_id, "minus")}
-                        disabled={product.quantity <= 1}
-                      >
-                        -
-                      </IconButton>
-                      <Typography variant="body1" sx={{ mx: 1 }}>
-                        {product.quantity}
-                      </Typography>
-                      <IconButton
-                        onClick={() => handleClick(product.product_id, "plus")}
-                      >
-                        +
-                      </IconButton>
-                      <IconButton
-                        onClick={() => handleDeleteProductBasket(product.id)}
-                        color="error"
-                        sx={{ ml: 2 }}
-                      >
-                        <DeleteOutlineIcon />
-                      </IconButton>
-                    </Box>
-                  </CardContent>
+                      -
+                    </Button>
+                    <Typography variant="body1" sx={{ mx: 2 }}>
+                      {product.quantity}
+                    </Typography>
+                    <Button
+                      onClick={() => handleClick(product.product_id, "plus")}
+                      sx={{
+                        minWidth: 50,
+                        padding: 0.5,
+                        fontSize: "22px",
+                        borderRadius: "50%",
+                      }}
+                    >
+                      +
+                    </Button>
+                    <IconButton
+                      onClick={() => handleDeleteProductBasket(product.id)}
+                      color="error"
+                      sx={{ ml: "auto" }}
+                    >
+                      <DeleteOutlineIcon />
+                    </IconButton>
+                  </Box>
                 </Box>
               </Card>
             </Grid>
-          ))}
+          ))
+        ) : (
+          <Typography variant="h6" sx={{ mt: 3 }}>
+            Ваша корзина пуста
+          </Typography>
+        )}
       </Grid>
     </Box>
   );

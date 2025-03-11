@@ -37,6 +37,7 @@ export default function UpdateProduct() {
   const [characteristics, setCharacteristics] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [characteristicValues, setCharacteristicValues] = useState({});
+  const [catalogs, setCatalogs] = useState([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -46,6 +47,20 @@ export default function UpdateProduct() {
   useEffect(() => {
     fetchProductById(id);
   }, [id]);
+
+  const handleCatalogChange = (event) => {
+    const { value, checked } = event.target;
+
+    let updatedCatlogs = [...catalogs]; // Копируем текущее состояние
+
+    if (checked) {
+      updatedCatlogs.push(Number(value)); // Добавляем ID каталога
+    } else {
+      updatedCatlogs = updatedCatlogs.filter((log) => log !== Number(value)); // Удаляем ID каталога
+    }
+
+    setCatalogs(updatedCatlogs); // Обновляем состояние
+  };
 
   const handleCheckboxChange = (id) => {
     setSelectedCategories((prevSelected) => {
@@ -118,7 +133,9 @@ export default function UpdateProduct() {
       description: product.description,
       name: product.name,
       price: product.price,
+      catalogs: catalogs,
     };
+    console.log(productData);
 
     const formData = new FormData();
     formData.append("json", JSON.stringify(productData));
@@ -251,6 +268,23 @@ export default function UpdateProduct() {
                     <p>Данных нет</p>
                   )}
                 </Box>
+              </Grid>
+
+              <Grid item xs={12}>
+                <label>
+                  Каталог
+                  <Checkbox
+                    value={1}
+                    onChange={(event) => handleCatalogChange(event)}
+                  />
+                </label>
+                <label>
+                  Каталог по электроному сертификату
+                  <Checkbox
+                    value={2}
+                    onChange={(event) => handleCatalogChange(event)}
+                  />
+                </label>
               </Grid>
 
               {/* Характеристики */}

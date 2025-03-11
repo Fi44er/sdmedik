@@ -49,7 +49,9 @@ export default function PayOnclick() {
     fio,
     setFio,
     phone_number,
+    delivery_address,
     setPhone_number,
+    setDelivery_address,
     payOrderById,
   } = useOrderStore();
   const {
@@ -187,6 +189,34 @@ export default function PayOnclick() {
                     },
                   }}
                 />
+                <TextField
+                  variant="outlined"
+                  label="Адрес доставки"
+                  placeholder="ул. Примерная, д. 1"
+                  {...register("delivery_address", {
+                    required: "Это поле обязательно для заполнения",
+                  })}
+                  error={!!errors.delivery_address}
+                  helperText={
+                    errors.delivery_address
+                      ? errors.delivery_address.message
+                      : ""
+                  }
+                  onChange={(e) => setDelivery_address(e.target.value)}
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      "&.Mui-focused fieldset": {
+                        borderColor: "#2CC0B3",
+                      },
+                    },
+                    "& .MuiInputLabel-root": {
+                      "&.Mui-focused": {
+                        color: "#2CC0B3",
+                      },
+                    },
+                  }}
+                />
+
                 <Button
                   type="submit"
                   variant="contained"

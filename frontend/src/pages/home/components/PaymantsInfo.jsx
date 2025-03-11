@@ -47,7 +47,7 @@ export default function PaymantsInfo() {
         >
           <Box
             sx={{
-              width: "50%",
+              width: { xs: "100%", md: "100%", lg: "50%" },
               display: "flex",
               flexDirection: "column",
               gridGap: 20,

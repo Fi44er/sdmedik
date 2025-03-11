@@ -13,6 +13,7 @@ export default function BasketLayout() {
           gridGap: { xs: 30, md: 0 },
           flexDirection: { xs: "column-reverse", lg: "unset" },
           mt: 5,
+          mb: 5,
         }}
       >
         <Basket />

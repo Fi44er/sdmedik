@@ -23,7 +23,7 @@ const useProductStore = create((set, get) => ({
       toast.success("Продукт успешно создан");
     } catch (error) {
       // Обработка ошибки
-      console.error("Ошибка при создании продукта:", error);  
+      console.error("Ошибка при создании продукта:", error);
       if (error.response.status === 401) {
         // Если статус 401, обновляем токены и повторяем запрос
         await get().refreshToken();
@@ -73,7 +73,7 @@ const useProductStore = create((set, get) => ({
   },
 
   products: [],
-  fetchProducts: async (category_id, jsonData, offset, limit) => {
+  fetchProducts: async (category_id, jsonData, offset, limit, catalogs) => {
     try {
       const response = await axios.get(`${url}/product`, {
         params: {
@@ -81,6 +81,7 @@ const useProductStore = create((set, get) => ({
           filters: jsonData,
           offset: offset, // Добавляем offset
           limit: limit, // Добавляем limit
+          catalogs: catalogs,
         },
       });
       set({ products: response.data });

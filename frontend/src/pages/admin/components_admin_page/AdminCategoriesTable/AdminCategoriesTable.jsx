@@ -64,6 +64,16 @@ export default function AdminCategoriesTable() {
                     >
                       Удалить
                     </Button>
+                    <Button
+                      variant="contained"
+                      color="error"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        window.location.href = `/admin/update_category/${item.id}`;
+                      }}
+                    >
+                      Редактировать
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}

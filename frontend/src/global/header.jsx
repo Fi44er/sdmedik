@@ -46,7 +46,7 @@ export default function Header() {
   const [menuLk, setMenuLk] = React.useState(null);
   const { isAuthenticated, setIsAuthenticated, checkAuthStatus } =
     useUserStore();
-  const { getUserInfo, user, Logout } = useUserStore();
+  const { getUserInfo, user, logout } = useUserStore();
   // const location = useLocation(); // Получаем текущий путь
 
   // Используем хранилище Zustand для поиска
@@ -280,7 +280,7 @@ export default function Header() {
                       <MenuItem
                         key="profile"
                         onClick={() => {
-                          Logout();
+                          logout();
                         }}
                       >
                         <Link sx={{ color: "#26BDB8" }} href="/">
@@ -301,16 +301,14 @@ export default function Header() {
                       </MenuItem>,
                     ]}
               </Menu>
-              {isAuthenticated && (
-                <IconButton
-                  onClick={(e) => {
-                    e.preventDefault();
-                    window.location.href = "/basket";
-                  }}
-                >
-                  <img src="/basket_header.png" alt="" />
-                </IconButton>
-              )}
+              <IconButton
+                onClick={(e) => {
+                  e.preventDefault();
+                  window.location.href = "/basket";
+                }}
+              >
+                <img src="/basket_header.png" alt="" />
+              </IconButton>
             </Box>
           </Box>
         </StyledToolbar>
@@ -454,22 +452,21 @@ export default function Header() {
                       </Link>
                     </Box>,
                   ]}
-              {isAuthenticated && (
-                <Box>
-                  <IconButton
-                    onClick={(e) => {
-                      e.preventDefault();
-                      window.location.href = "/basket";
-                    }}
-                  >
-                    <img
-                      style={{ width: "50px" }}
-                      src="/basket_header.png"
-                      alt=""
-                    />
-                  </IconButton>
-                </Box>
-              )}
+
+              <Box>
+                <IconButton
+                  onClick={(e) => {
+                    e.preventDefault();
+                    window.location.href = "/basket";
+                  }}
+                >
+                  <img
+                    style={{ width: "50px" }}
+                    src="/basket_header.png"
+                    alt=""
+                  />
+                </IconButton>
+              </Box>
             </Box>
           </List>
         </Box>

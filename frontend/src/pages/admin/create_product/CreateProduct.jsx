@@ -35,11 +35,26 @@ export default function CreateProduct() {
   const [characteristics, setCharacteristics] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [characteristicValues, setCharacteristicValues] = useState({});
+  const [catalogs, setCatalogs] = useState([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetchCategory();
   }, []);
+
+  const handleCatalogChange = (event) => {
+    const { value, checked } = event.target;
+
+    let updatedCatlogs = [...catalogs]; // Копируем текущее состояние
+
+    if (checked) {
+      updatedCatlogs.push(Number(value)); // Добавляем ID каталога
+    } else {
+      updatedCatlogs = updatedCatlogs.filter((log) => log !== Number(value)); // Удаляем ID каталога
+    }
+
+    setCatalogs(updatedCatlogs); // Обновляем состояние
+  };
 
   const handleCheckboxChange = (id) => {
     setSelectedCategories((prevSelected) => {
@@ -112,6 +127,7 @@ export default function CreateProduct() {
       description: product.description,
       name: product.name,
       price: product.price,
+      catalogs: catalogs,
     };
 
     const formData = new FormData();
@@ -244,6 +260,23 @@ export default function CreateProduct() {
                     <p>Данных нет</p>
                   )}
                 </Box>
+              </Grid>
+
+              <Grid item xs={12}>
+                <label>
+                  Каталог
+                  <Checkbox
+                    value={1}
+                    onChange={(event) => handleCatalogChange(event)}
+                  />
+                </label>
+                <label>
+                  Каталог по электроному сертификату
+                  <Checkbox
+                    value={2}
+                    onChange={(event) => handleCatalogChange(event)}
+                  />
+                </label>
               </Grid>
 
               {/* Характеристики */}

@@ -41,23 +41,20 @@ const useCategoryStore = create((set, get) => ({
       const response = await axios.post(`${url}/category`, formData, {
         withCredentials: true,
         headers: {
-          "Content-Type": "multipart/form-data", // Убедитесь, что заголовок установлен правильно
+          "Content-Type": "multipart/form-data",
         },
       });
-      console.log("Response:", response.data);
-      // Обработка успешного ответа
       if (response.data.status === "success") {
         alert("Категория успешно сохранена!");
-        get().fetchCategory(); // Обновляем список категорий после создания новой
+        get().fetchCategory();
       } else {
         alert("Ошибка: " + response.data.message);
       }
     } catch (error) {
       console.error("Error:", error);
-      if (error.response.status === 401) {
-        // Если статус 401, обновляем токены и повторяем запрос
+      if (error.response?.status === 401) {
         await get().refreshToken();
-        await get().createCategory(data); // Повторяем запрос
+        await get().createCategory(formData);
       } else {
         alert(
           "Ошибка при сохранении категории: " +
@@ -66,9 +63,36 @@ const useCategoryStore = create((set, get) => ({
       }
     }
   },
+
+  updateCategory: async (id, formData) => {
+    try {
+      const response = await axios.put(`${url}/category/${id}`, formData, {
+        withCredentials: true,
+      });
+      if (response.data.status === "success") {
+        alert("Категория успешно обновлена!");
+        get().fetchCategory();
+      } else {
+        alert("Ошибка: " + response.data.message);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      if (error.response?.status === 401) {
+        await get().refreshToken();
+        await get().updateCategory(id, formData);
+      } else {
+        alert(
+          "Ошибка при обновлении категории: " +
+            (error.response?.data?.message || error.message)
+        );
+      }
+    }
+  },
+
   deleteCategory: async (id) => {
     try {
       const response = await axios.delete(`${url}/category/${id}`);
+      get().fetchCategory();
     } catch (error) {
       console.error("Error deleting category:", error);
     }

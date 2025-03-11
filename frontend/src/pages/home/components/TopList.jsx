@@ -90,7 +90,7 @@ export default function TopList() {
                 <Grid item="true" xs={1} sm={1} md={1} key={index}>
                   <Card
                     sx={{
-                      width: { xs: "187px", md: "261px" },
+                      maxWidth: { xs: "167px", md: "261px" },
                       height: { xs: "385px", md: "514px" },
                       background: "#F5FCFF",
                       boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
@@ -102,7 +102,7 @@ export default function TopList() {
                       },
                       display: "flex",
                       flexDirection: "column",
-                      cursor:"pointer"
+                      cursor: "pointer",
                     }}
                   >
                     <Box
@@ -135,7 +135,7 @@ export default function TopList() {
                           fontSize: { xs: "0.9rem", md: "1.2rem" },
                           fontWeight: "bold",
                           mb: 1,
-                          width: { xs: "170px", md: "235px" },
+                          width: { xs: "150px", md: "235px" },
                           overflow: "hidden",
                           textOverflow: "ellipsis",
                           whiteSpace: "nowrap",

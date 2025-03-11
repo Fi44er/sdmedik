@@ -2,19 +2,17 @@ import {
   Box,
   Button,
   Container,
-  Link,
   Paper,
   TextField,
   Typography,
-  Snackbar,
-  Modal,
+  Checkbox,
+  FormControlLabel,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import CloseIcon from "@mui/icons-material/Close";
 import useOrderStore from "../../store/orderStore";
+import useUserStore from "../../store/userStore"; // Импортируем хранилище пользователя
 
 const scaleVariants = {
   hidden: {
@@ -42,16 +40,19 @@ const formatPhoneNumber = (value) => {
   }${secondPart ? `-${secondPart}` : ""}${thirdPart ? `-${thirdPart}` : ""}`;
 };
 
-export default function Paymants() {
+export default function Payments() {
   const {
     email,
     setEmail,
     fio,
+    delivery_address,
     setFio,
     phone_number,
     setPhone_number,
+    setDelivery_address,
     payOrder,
   } = useOrderStore();
+  const { user, isAuthenticated, getUserInfo } = useUserStore(); // Получаем данные пользователя
   const {
     register,
     handleSubmit,
@@ -59,9 +60,35 @@ export default function Paymants() {
   } = useForm();
 
   const [error, setError] = useState(null);
+  const [isAnotherRecipient, setIsAnotherRecipient] = useState(false);
 
-  const handlePay = async () => {
-    await payOrder();
+  // Загружаем данные пользователя при монтировании компонента
+  useEffect(() => {
+    if (isAuthenticated) {
+      getUserInfo().then(() => {
+        // После получения данных пользователя, заполняем поля
+        if (user) {
+          setEmail(user.data.email);
+          setFio(user.data.fio);
+          setPhone_number(user.data.phone_number);
+        }
+      });
+    }
+  }, [isAuthenticated, getUserInfo, setEmail, setFio, setPhone_number]);
+
+  const handlePay = async (data) => {
+    if (isAuthenticated && !isAnotherRecipient) {
+      // Если пользователь авторизован и не указал другого получателя
+      await payOrder({
+        email: user.data.email,
+        fio: user.data.fio,
+        phone_number: user.data.phone_number,
+        delivery_address: data.delivery_address,
+      });
+    } else {
+      // Если пользователь не авторизован или указал другого получателя
+      await payOrder(data);
+    }
   };
 
   const handlePhoneNumberChange = (e) => {
@@ -77,7 +104,7 @@ export default function Paymants() {
         variants={scaleVariants}
         style={{ transformOrigin: "center" }}
       >
-        <Paper sx={{ p: 2, mt: 5, mb: 5, width: { xs: 320, md: 500 } }}>
+        <Paper sx={{ p: 4, mt: 5, mb: 5, width: { xs: 320, md: 500 } }}>
           <Container>
             <Box
               sx={{
@@ -99,55 +126,111 @@ export default function Paymants() {
                 style={{
                   display: "flex",
                   flexDirection: "column",
-                  gridGap: 30,
+                  gridGap: 20,
                   marginTop: "10px",
                 }}
               >
+                {(!isAuthenticated || isAnotherRecipient) && (
+                  <>
+                    <TextField
+                      variant="outlined"
+                      label="Email"
+                      placeholder="your@email.com"
+                      {...register("email", {
+                        required: "Это поле обязательно для заполнения",
+                        pattern: {
+                          value: /^\S+@\S+$/i,
+                          message: "Неправильный формат email",
+                        },
+                      })}
+                      error={!!errors.email}
+                      helperText={errors.email ? errors.email.message : ""}
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          "&.Mui-focused fieldset": {
+                            borderColor: "#2CC0B3",
+                          },
+                        },
+                        "& .MuiInputLabel-root": {
+                          "&.Mui-focused": {
+                            color: "#2CC0B3",
+                          },
+                        },
+                      }}
+                    />
+                    <TextField
+                      variant="outlined"
+                      label="Телефон"
+                      placeholder="+7 (___) ___-__-__"
+                      {...register("phone_number", {
+                        required: "Это поле обязательно для заполнения",
+                        pattern: {
+                          value: /^\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}$/,
+                          message: "Неправильный формат номера телефона",
+                        },
+                      })}
+                      error={!!errors.phone_number}
+                      helperText={
+                        errors.phone_number ? errors.phone_number.message : ""
+                      }
+                      value={phone_number}
+                      onChange={handlePhoneNumberChange}
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          "&.Mui-focused fieldset": {
+                            borderColor: "#2CC0B3",
+                          },
+                        },
+                        "& .MuiInputLabel-root": {
+                          "&.Mui-focused": {
+                            color: "#2CC0B3",
+                          },
+                        },
+                      }}
+                    />
+                    <TextField
+                      variant="outlined"
+                      label="ФИО"
+                      placeholder="Иванов Дмитрий Сергеевич"
+                      value={fio}
+                      {...register("fio", {
+                        required: "Это поле обязательно для заполнения",
+                      })}
+                      error={!!errors.fio}
+                      helperText={errors.fio ? errors.fio.message : ""}
+                      onChange={(e) => setFio(e.target.value)}
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          "&.Mui-focused fieldset": {
+                            borderColor: "#2CC0B3",
+                          },
+                        },
+                        "& .MuiInputLabel-root": {
+                          "&.Mui-focused": {
+                            color: "#2CC0B3",
+                          },
+                        },
+                      }}
+                    />
+                  </>
+                )}
+
                 <TextField
                   variant="outlined"
-                  label="Email"
-                  placeholder="your@email.com"
-                  {...register("email", {
+                  label="Адрес доставки"
+                  placeholder="ул. Примерная, д. 1"
+                  {...register("delivery_address", {
                     required: "Это поле обязательно для заполнения",
-                    pattern: {
-                      value: /^\S+@\S+$/i,
-                      message: "Неправильный формат email",
-                    },
                   })}
-                  error={!!errors.email}
-                  helperText={errors.email ? errors.email.message : ""}
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  sx={{
-                    "& .MuiOutlinedInput-root": {
-                      "&.Mui-focused fieldset": {
-                        borderColor: "#2CC0B3",
-                      },
-                    },
-                    "& .MuiInputLabel-root": {
-                      "&.Mui-focused": {
-                        color: "#2CC0B3",
-                      },
-                    },
-                  }}
-                />
-                <TextField
-                  variant="outlined"
-                  label="Телефон"
-                  placeholder="+7 (___) ___-__-__"
-                  {...register("phone_number", {
-                    required: "Это поле обязательно для заполнения",
-                    pattern: {
-                      value: /^\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}$/,
-                      message: "Неправильный формат номера телефона",
-                    },
-                  })}
-                  error={!!errors.phone_number}
+                  error={!!errors.delivery_address}
                   helperText={
-                    errors.phone_number ? errors.phone_number.message : ""
+                    errors.delivery_address
+                      ? errors.delivery_address.message
+                      : ""
                   }
-                  value={phone_number}
-                  onChange={handlePhoneNumberChange}
+                  onChange={(e) => setDelivery_address(e.target.value)}
                   sx={{
                     "& .MuiOutlinedInput-root": {
                       "&.Mui-focused fieldset": {
@@ -161,34 +244,32 @@ export default function Paymants() {
                     },
                   }}
                 />
-                <TextField
-                  variant="outlined"
-                  label="ФИО"
-                  placeholder="Иванов Дмитрий Сергеевич"
-                  value={fio}
-                  {...register("fio", {
-                    required: "Это поле обязательно для заполнения",
-                  })}
-                  error={!!errors.fio}
-                  helperText={errors.fio ? errors.fio.message : ""}
-                  onChange={(e) => setFio(e.target.value)}
-                  sx={{
-                    "& .MuiOutlinedInput-root": {
-                      "&.Mui-focused fieldset": {
-                        borderColor: "#2CC0B3",
-                      },
-                    },
-                    "& .MuiInputLabel-root": {
-                      "&.Mui-focused": {
-                        color: "#2CC0B3",
-                      },
-                    },
-                  }}
-                />
+
+                {isAuthenticated && (
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={isAnotherRecipient}
+                        onChange={(e) =>
+                          setIsAnotherRecipient(e.target.checked)
+                        }
+                        sx={{
+                          color: "#2CC0B3",
+                          "&.Mui-checked": {
+                            color: "#2CC0B3",
+                          },
+                        }}
+                      />
+                    }
+                    label="Указать другого получателя"
+                    sx={{ mt: 2, mb: 2 }}
+                  />
+                )}
+
                 <Button
                   type="submit"
                   variant="contained"
-                  sx={{ background: "#2CC0B3" }}
+                  sx={{ background: "#2CC0B3", mt: 2 }}
                 >
                   Перейти к оплате
                 </Button>

@@ -98,8 +98,8 @@ const useUserStore = create((set, get) => ({
     }
   },
 
-  loginFunc: async (navigate, register) => {
-    const { email, password, showLogin } = useUserStore.getState();
+  loginFunc: async (navigate) => {
+    const { email, password, } = useUserStore.getState();
     try {
       const response = await axios.post(
         `${url}/auth/login`,
@@ -195,7 +195,7 @@ const useUserStore = create((set, get) => ({
   },
 
   // Функция для выхода из системы
-  Logout: async () => {
+  logout: async () => {
     try {
       set({ isLoggingOut: true, logoutCalled: true });
       await axiosInstance.post(
