@@ -1,6 +1,8 @@
 package basket
 
 import (
+	"fmt"
+
 	"github.com/Fi44er/sdmedik/backend/internal/response"
 	"github.com/Fi44er/sdmedik/backend/pkg/errors"
 	"github.com/gofiber/fiber/v2"
@@ -26,6 +28,8 @@ func (i *Implementation) Get(ctx *fiber.Ctx) error {
 	if sess != nil {
 		sessRes = sess.(*session.Session)
 	}
+
+	fmt.Println(userRes.ID)
 	basket, err := i.basketService.GetByUserID(ctx.Context(), userRes.ID, sessRes)
 	if err != nil {
 		code, msg := errors.GetErroField(err)
