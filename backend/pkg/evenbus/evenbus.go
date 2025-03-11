@@ -7,6 +7,8 @@ type EventType string
 const (
 	EventDataCreatedOrUpdated EventType = "data_created_or_updated"
 	EventDataDeleted          EventType = "data_delete"
+
+	EventDataMoveBasket EventType = "data_move_basket"
 )
 
 type Event struct {

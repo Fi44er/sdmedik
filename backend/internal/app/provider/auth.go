@@ -5,6 +5,7 @@ import (
 	"github.com/Fi44er/sdmedik/backend/internal/config"
 	"github.com/Fi44er/sdmedik/backend/internal/service"
 	authService "github.com/Fi44er/sdmedik/backend/internal/service/auth"
+	events "github.com/Fi44er/sdmedik/backend/pkg/evenbus"
 	"github.com/Fi44er/sdmedik/backend/pkg/logger"
 	"github.com/go-playground/validator/v10"
 	"github.com/redis/go-redis/v9"
@@ -18,6 +19,7 @@ type AuthProvider struct {
 	validator *validator.Validate
 	config    *config.Config
 	cache     *redis.Client
+	eventBus  *events.EventBus
 
 	userService service.IUserService
 }
@@ -27,6 +29,7 @@ func NewAuthProvider(
 	validator *validator.Validate,
 	config *config.Config,
 	cache *redis.Client,
+	eventBus *events.EventBus,
 	userService service.IUserService,
 ) *AuthProvider {
 	return &AuthProvider{
@@ -34,13 +37,14 @@ func NewAuthProvider(
 		validator:   validator,
 		config:      config,
 		cache:       cache,
+		eventBus:    eventBus,
 		userService: userService,
 	}
 }
 
 func (p *AuthProvider) AuthService() service.IAuthService {
 	if p.authService == nil {
-		serviceAuth, err := authService.NewService(p.logger, p.validator, p.config, p.cache, p.userService)
+		serviceAuth, err := authService.NewService(p.logger, p.validator, p.config, p.cache, p.eventBus, p.userService)
 		if err != nil {
 			p.logger.Errorf("Error during initializing auth service: %s", err.Error())
 			return nil

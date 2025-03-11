@@ -6,20 +6,22 @@ import (
 
 	"github.com/Fi44er/sdmedik/backend/internal/dto"
 	"github.com/Fi44er/sdmedik/backend/pkg/errors"
+	events "github.com/Fi44er/sdmedik/backend/pkg/evenbus"
 	"github.com/Fi44er/sdmedik/backend/pkg/utils"
+	"github.com/gofiber/fiber/v2/middleware/session"
 )
 
-func (s *service) Login(ctx context.Context, dto *dto.Login, userAgent string) (string, string, error) {
-	if err := s.validator.Struct(dto); err != nil {
+func (s *service) Login(ctx context.Context, data *dto.Login, userAgent string, session *session.Session) (string, string, error) {
+	if err := s.validator.Struct(data); err != nil {
 		return "", "", errors.New(400, err.Error())
 	}
 
-	existUser, err := s.userService.GetByEmail(ctx, dto.Email)
+	existUser, err := s.userService.GetByEmail(ctx, data.Email)
 	if err != nil {
 		return "", "", err
 	}
 
-	if !utils.ComparePassword(existUser.Password, dto.Password) {
+	if !utils.ComparePassword(existUser.Password, data.Password) {
 		s.logger.Info("Invalid email or password")
 		return "", "", errors.New(400, "Invalid email or password")
 	}
@@ -45,6 +47,14 @@ func (s *service) Login(ctx context.Context, dto *dto.Login, userAgent string) (
 	if errRefresh != nil {
 		return "", "", errors.New(422, errRefresh.Error())
 	}
+
+	s.eventBus.Publish(events.Event{
+		Type: events.EventDataMoveBasket,
+		Data: dto.MoveBasket{
+			UserID:  existUser.ID,
+			Session: session,
+		},
+	})
 
 	return *accessTokenDetails.Token, *refreshTokenDetails.Token, nil
 }

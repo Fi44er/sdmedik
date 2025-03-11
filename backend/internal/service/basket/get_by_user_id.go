@@ -21,9 +21,14 @@ func (s *service) GetByUserID(ctx context.Context, userID string, sess *session.
 		if err != nil {
 			return nil, err
 		}
+		if basket.ID == "" {
+			basket.UserID = userID
+			if err := s.repo.Create(ctx, basket); err != nil {
+				return nil, err
+			}
+		}
 	} else {
-		s.logger.Infof("uid: %v", sess.Get("basket"))
-
+		s.logger.Infof("sess: %v", sess)
 		if sess.Get("basket") != nil {
 			str, ok := sess.Get("basket").(string)
 			if !ok {

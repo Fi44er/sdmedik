@@ -109,7 +109,7 @@ func (s *serviceProvider) initUserProvider() error {
 }
 
 func (s *serviceProvider) initAuthProvider() error {
-	s.authProvider = *provider.NewAuthProvider(s.logger, s.validator, s.config, s.cache, s.userProvider.UserService())
+	s.authProvider = *provider.NewAuthProvider(s.logger, s.validator, s.config, s.cache, s.eventBus, s.userProvider.UserService())
 	return nil
 }
 
@@ -174,7 +174,7 @@ func (s *serviceProvider) initSearchProvider() error {
 }
 
 func (s *serviceProvider) initBasketProvider() error {
-	s.basketProvider = *provider.NewBasketProvider(s.logger, s.db, s.validator, s.productProvider.ProductService(), s.promotionProvider.PromotionService())
+	s.basketProvider = *provider.NewBasketProvider(s.logger, s.db, s.validator, s.eventBus, s.productProvider.ProductService(), s.promotionProvider.PromotionService())
 	return nil
 }
 

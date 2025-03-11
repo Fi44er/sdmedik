@@ -3,6 +3,7 @@ package auth
 import (
 	"github.com/Fi44er/sdmedik/backend/internal/config"
 	def "github.com/Fi44er/sdmedik/backend/internal/service"
+	events "github.com/Fi44er/sdmedik/backend/pkg/evenbus"
 	"github.com/Fi44er/sdmedik/backend/pkg/logger"
 	"github.com/Fi44er/sdmedik/backend/pkg/mailer"
 	"github.com/go-playground/validator/v10"
@@ -17,6 +18,7 @@ type service struct {
 	cache     *redis.Client
 	config    *config.Config
 	mailer    *mailer.Mailer
+	eventBus  *events.EventBus
 
 	userService def.IUserService
 }
@@ -26,6 +28,7 @@ func NewService(
 	validator *validator.Validate,
 	config *config.Config,
 	cache *redis.Client,
+	eventBus *events.EventBus,
 	userService def.IUserService,
 ) (*service, error) {
 	templatePath := config.MailTemplatePath
@@ -49,6 +52,7 @@ func NewService(
 		config:      config,
 		cache:       cache,
 		mailer:      m,
+		eventBus:    eventBus,
 		userService: userService,
 	}, nil
 }

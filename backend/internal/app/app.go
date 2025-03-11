@@ -138,7 +138,7 @@ func (a *App) initRouter() error {
 
 	auth := v1.Group("/auth")
 	auth.Post("/register", a.serviceProvider.authProvider.AuthImpl().Register)
-	auth.Post("/login", a.serviceProvider.authProvider.AuthImpl().Login)
+	auth.Post("/login", allowGuest, a.serviceProvider.authProvider.AuthImpl().Login)
 	auth.Post("/logout", deserializeUser, a.serviceProvider.authProvider.AuthImpl().Logout)
 	auth.Post("/send-code", a.serviceProvider.authProvider.AuthImpl().SendCode)
 	auth.Post("/verify-code", a.serviceProvider.authProvider.AuthImpl().VerifyCode)

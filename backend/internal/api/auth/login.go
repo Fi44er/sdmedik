@@ -8,6 +8,7 @@ import (
 	_ "github.com/Fi44er/sdmedik/backend/internal/response"
 	"github.com/Fi44er/sdmedik/backend/pkg/errors"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/session"
 )
 
 // Login godoc
@@ -21,13 +22,18 @@ import (
 // @Router /auth/login [post]
 func (i *Implementation) Login(ctx *fiber.Ctx) error {
 	user := new(dto.Login)
+	var sessRes *session.Session
+	sess := ctx.Locals("session")
+	if sess != nil {
+		sessRes = sess.(*session.Session)
+	}
 	userAgent := strings.ReplaceAll(ctx.Get("User-Agent"), " ", "")
 
 	if err := ctx.BodyParser(&user); err != nil {
 		return ctx.Status(400).JSON("Failed to parse body")
 	}
 
-	accessToken, refreshToken, err := i.authService.Login(ctx.Context(), user, userAgent)
+	accessToken, refreshToken, err := i.authService.Login(ctx.Context(), user, userAgent, sessRes)
 	if err != nil {
 		code, msg := errors.GetErroField(err)
 		return ctx.Status(code).JSON(msg)
