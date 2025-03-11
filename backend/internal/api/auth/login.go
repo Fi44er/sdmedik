@@ -1,8 +1,8 @@
 package auth
 
 import (
-	"log"
 	"strings"
+	"time"
 
 	"github.com/Fi44er/sdmedik/backend/internal/dto"
 	_ "github.com/Fi44er/sdmedik/backend/internal/response"
@@ -39,9 +39,7 @@ func (i *Implementation) Login(ctx *fiber.Ctx) error {
 		return ctx.Status(code).JSON(msg)
 	}
 
-	log.Println(accessToken)
-	log.Println(refreshToken)
-
+	expired := time.Now().Add(-time.Hour * 24)
 	ctx.Cookie(&fiber.Cookie{
 		Name:     "access_token",
 		Value:    accessToken,
@@ -49,6 +47,12 @@ func (i *Implementation) Login(ctx *fiber.Ctx) error {
 		MaxAge:   i.config.AccessTokenMaxAge * 60,
 		Secure:   false,
 		HTTPOnly: true,
+	})
+
+	ctx.Cookie(&fiber.Cookie{
+		Name:    "session_id",
+		Value:   "",
+		Expires: expired,
 	})
 
 	ctx.Cookie(&fiber.Cookie{
