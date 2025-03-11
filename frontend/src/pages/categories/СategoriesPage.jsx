@@ -1,0 +1,124 @@
+import {
+  Box,
+  Card,
+  CardContent,
+  Container,
+  Typography,
+  Grid,
+  useTheme,
+  useMediaQuery,
+} from "@mui/material";
+import React, { useEffect } from "react";
+import useCategoryStore from "../../store/categoryStore";
+import { urlPictures } from "../../constants/constants";
+import { Helmet } from "react-helmet";
+
+export default function CategoriesPage() {
+  const { fetchCategory, category } = useCategoryStore();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+  useEffect(() => {
+    fetchCategory();
+  }, [fetchCategory]);
+
+  return (
+    <Box sx={{ mt: 5, mb: 5 }}>
+      <Helmet>
+        <title>Категории товаров | Sdmedik.ru</title>
+        <meta
+          name="description"
+          content="Ознакомьтесь с нашими категориями товаров. Мы предлагаем широкий ассортимент продукции для ваших нужд."
+        />
+        <meta
+          name="keywords"
+          content="категории, товары, ассортимент, продукция"
+        />
+      </Helmet>
+      <Container>
+        <Typography variant="h4" sx={{ fontWeight: "bold", mb: 3 }}>
+          Категории товаров
+        </Typography>
+        <Grid
+          container
+          spacing={isMobile ? 2 : 3}
+          columns={{ xs: 2, sm: 3, md: 4, lg: 5 }}
+        >
+          {Array.isArray(category.data) && category.data.length > 0 ? (
+            category.data.map((item) => (
+              <Grid item xs={1} sm={1} md={1} lg={1} key={item.id}>
+                <Card
+                  sx={{
+                    width: "100%",
+                    background: "#fff",
+                    borderRadius: "12px",
+                    boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
+                    transition: "transform 0.2s, box-shadow 0.2s",
+                    "&:hover": {
+                      transform: "translateY(-4px)",
+                      boxShadow: "0px 8px 16px rgba(0, 0, 0, 0.2)",
+                    },
+                    cursor: "pointer",
+                  }}
+                  onClick={() => {
+                    window.location.href = `/products/${item.id}`;
+                  }}
+                >
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      p: 2,
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        width: "100%",
+                        height: "160px",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        overflow: "hidden",
+                        borderRadius: "12px",
+                      }}
+                    >
+                      <img
+                        src={`${urlPictures}/${item.images[0].name}`}
+                        alt={`Изображение категории ${item.name}`}
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                        }}
+                      />
+                    </Box>
+                    <CardContent sx={{ textAlign: "center", p: 1 }}>
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          fontWeight: "bold",
+                          fontSize: isMobile ? "1rem" : "1.1rem",
+                        }}
+                      >
+                        {item.name}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        sx={{ color: "text.secondary", mt: 1 }}
+                      >
+                        {item.productCount || 0} товаров
+                      </Typography>
+                    </CardContent>
+                  </Box>
+                </Card>
+              </Grid>
+            ))
+          ) : (
+            <Typography variant="h6">Нет данных</Typography>
+          )}
+        </Grid>
+      </Container>
+    </Box>
+  );
+}
