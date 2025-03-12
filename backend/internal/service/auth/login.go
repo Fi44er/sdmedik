@@ -48,6 +48,8 @@ func (s *service) Login(ctx context.Context, data *dto.Login, userAgent string, 
 		return "", "", errors.New(422, errRefresh.Error())
 	}
 
+	s.logger.Infof("session login: %+v", session)
+
 	s.eventBus.Publish(events.Event{
 		Type: events.EventDataMoveBasket,
 		Data: dto.MoveBasket{
