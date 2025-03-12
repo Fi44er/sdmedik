@@ -17,7 +17,8 @@ import React, { useEffect, useState } from "react";
 import useCategoryStore from "../../../store/categoryStore";
 import useProductStore from "../../../store/productStore";
 import { useParams } from "react-router-dom";
-import { Delete as DeleteIcon } from "@mui/icons-material";
+import { Delete as DeleteIcon, DirtyLens } from "@mui/icons-material";
+import { urlPictures } from "../../../constants/constants";
 
 export default function UpdateProduct() {
   const { fetchCategory, category } = useCategoryStore();
@@ -32,12 +33,14 @@ export default function UpdateProduct() {
     name: "",
     images: [],
     price: 0,
+    del_images: [],
   });
 
   const [characteristics, setCharacteristics] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [characteristicValues, setCharacteristicValues] = useState({});
   const [catalogs, setCatalogs] = useState([]);
+  const [delImages, setDelImages] = useState({});
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -110,10 +113,21 @@ export default function UpdateProduct() {
     }));
   };
 
-  const handleRemoveImage = (index) => {
+  const handleRemoveImage = (image) => {
     setProduct((prevProduct) => ({
       ...prevProduct,
-      images: prevProduct.images.filter((_, i) => i !== index),
+      images: prevProduct.images.filter((img) => img !== image),
+      del_images: [
+        ...prevProduct.del_images,
+        {
+          id: image.id,
+          name: image.name,
+        },
+      ],
+    }));
+    setDelImages((prevDelImages) => ({
+      ...prevDelImages,
+      [image.id]: true, // Помечаем изображение как удалённое
     }));
   };
 
@@ -134,6 +148,7 @@ export default function UpdateProduct() {
       name: product.name,
       price: product.price,
       catalogs: catalogs,
+      del_images: product.del_images,
     };
     console.log(productData);
 
@@ -226,24 +241,43 @@ export default function UpdateProduct() {
                   accept="image/*"
                 />
                 <Box sx={{ display: "flex", flexWrap: "wrap", mt: 2 }}>
-                  {product.images.map((file, index) => (
-                    <Box
-                      key={index}
-                      sx={{ position: "relative", mr: 1, mb: 1 }}
-                    >
-                      <Avatar
-                        src={URL.createObjectURL(file)}
-                        alt="preview"
-                        sx={{ width: 100, height: 100 }}
-                      />
-                      <IconButton
-                        onClick={() => handleRemoveImage(index)}
-                        sx={{ position: "absolute", top: 0, right: 0 }}
+                  {products &&
+                    products.data &&
+                    products.data.images.map((e) => (
+                      <Box
+                        key={e.id}
+                        sx={{ position: "relative", mr: 1, mb: 1 }}
                       >
-                        <DeleteIcon />
-                      </IconButton>
-                    </Box>
-                  ))}
+                        <Avatar
+                          src={`${urlPictures}/${e.name}`}
+                          alt="preview"
+                          sx={{
+                            width: 100,
+                            height: 100,
+                            position: "relative",
+                            opacity: delImages[e.id] ? 0.5 : 1, // Уменьшаем прозрачность, если изображение удалено
+                            "&::before": delImages[e.id]
+                              ? {
+                                  content: '""',
+                                  position: "absolute",
+                                  top: "50%",
+                                  left: 0,
+                                  right: 0,
+                                  height: "2px",
+                                  backgroundColor: "red",
+                                  transform: "rotate(-45deg)",
+                                }
+                              : null, // Перечеркивание, если изображение удалено
+                          }}
+                        />
+                        <IconButton
+                          onClick={() => handleRemoveImage(e)}
+                          sx={{ position: "absolute", top: 0, right: 0 }}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </Box>
+                    ))}
                 </Box>
               </Grid>
 

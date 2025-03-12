@@ -115,19 +115,19 @@ export default function UserAccount() {
                   </ListItemIcon>
                   <ListItemText primary="Мои заказы" />
                 </ListItem>
-                <ListItem button onClick={() => setCurrentTab(1)}>
+                {/* <ListItem button onClick={() => setCurrentTab(1)}>
                   <ListItemIcon>
                     <Favorite />
                   </ListItemIcon>
                   <ListItemText primary="Избранное" />
-                  {/* <Badge badgeContent={favorites?.length} color="success" /> */}
-                </ListItem>
-                <ListItem button onClick={() => setCurrentTab(2)}>
+                  <Badge badgeContent={favorites?.length} color="success" />
+                </ListItem> */}
+                {/* <ListItem button onClick={() => setCurrentTab(2)}>
                   <ListItemIcon>
                     <LocalOffer />
                   </ListItemIcon>
                   <ListItemText primary="Бонусы и скидки" />
-                </ListItem>
+                </ListItem> */}
                 <ListItem button onClick={() => setCurrentTab(3)}>
                   <ListItemIcon>
                     <Settings />
