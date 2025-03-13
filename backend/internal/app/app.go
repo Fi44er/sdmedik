@@ -169,7 +169,8 @@ func (a *App) initRouter() error {
 	basket.Get("/", allowGuest, a.serviceProvider.basketProvider.BasketImpl().Get)
 
 	webscraper := v1.Group("/webscraper")
-	webscraper.Get("/", a.serviceProvider.webScraperProvider.WebScraperImpl().Scraper)
+	webscraper.Post("/start/", a.serviceProvider.webScraperProvider.WebScraperImpl().Scraper)
+	webscraper.Post("/cancel/", a.serviceProvider.webScraperProvider.WebScraperImpl().CancelScraper)
 
 	order := v1.Group("/order")
 	order.Post("/:id", a.serviceProvider.orderProvider.OrderImpl().NotAuthCreate)

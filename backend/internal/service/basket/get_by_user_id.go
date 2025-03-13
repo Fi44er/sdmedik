@@ -70,16 +70,36 @@ func (s *service) GetByUserID(ctx context.Context, userID string, sess *session.
 		if len(productMap[item.ProductID].Images) > 0 {
 			imageUrl = productMap[item.ProductID].Images[0].Name
 		}
-		basketRes.Items = append(basketRes.Items, response.BasketItemRes{
-			ID:         item.ID,
-			Article:    item.Article,
-			ProductID:  item.ProductID,
-			Name:       productMap[item.ProductID].Name,
-			Image:      imageUrl,
-			Quantity:   item.Quantity,
-			TotalPrice: item.TotalPrice,
-			Price:      productMap[item.ProductID].Price,
-		})
+
+		var catalogMask uint8
+		catalogMask = 1 << 1
+		if productMap[item.ProductID].Catalogs&catalogMask != 0 {
+			basketRes.Items = append(basketRes.Items, response.BasketItemRes{
+				ID:            item.ID,
+				Article:       item.Article,
+				ProductID:     item.ProductID,
+				Name:          productMap[item.ProductID].Name,
+				Image:         imageUrl,
+				Quantity:      item.Quantity,
+				TotalPrice:    item.TotalPrice,
+				Price:         productMap[item.ProductID].Price,
+				IsCertificate: item.IsCertificate,
+				Iso:           item.Iso,
+			})
+		} else {
+			basketRes.Items = append(basketRes.Items, response.BasketItemRes{
+				ID:            item.ID,
+				Article:       item.Article,
+				ProductID:     item.ProductID,
+				Name:          productMap[item.ProductID].Name,
+				Image:         imageUrl,
+				Quantity:      item.Quantity,
+				TotalPrice:    item.TotalPrice,
+				Price:         productMap[item.ProductID].Price,
+				IsCertificate: item.IsCertificate,
+				Iso:           item.Iso,
+			})
+		}
 	}
 
 	basketRes.ID = basket.ID

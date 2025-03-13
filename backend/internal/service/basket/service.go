@@ -54,6 +54,8 @@ func (s *service) handleDataMoveBasket(event events.Event) {
 	if !ok {
 		return
 	}
+
+	s.logger.Infof("%+v", dto)
 	if err := s.Move(ctx, &dto); err != nil {
 		s.logger.Errorf("Ошибка при перемещении корзины: %v", err)
 	}

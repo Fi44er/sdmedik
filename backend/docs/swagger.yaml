@@ -2,6 +2,8 @@ basePath: /api/v1/
 definitions:
   dto.AddBasketItem:
     properties:
+      iso:
+        type: string
       product_id:
         type: string
       quantity:
@@ -1047,8 +1049,23 @@ paths:
       summary: Get my user
       tags:
       - user
-  /webscraper:
-    get:
+  /webscraper/cancel:
+    post:
+      consumes:
+      - application/json
+      description: Отменяет выполнение текущего парсинга
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Парсинг отменён
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Отмена работы парсера
+      tags:
+      - webscraper
+  /webscraper/start:
+    post:
       consumes:
       - application/json
       description: Scraper

@@ -98,3 +98,17 @@ func (r *repository) UpdateItemQuantity(ctx context.Context, data *model.BasketI
 	r.logger.Infof("Basket item quantity updated successfully")
 	return nil
 }
+
+func (r *repository) GetByProductIDIsoIsCert(ctx context.Context, productID string, basketID string, iso string, isCert bool) (*model.BasketItem, error) {
+	r.logger.Info("Fetching basket item by product and basket ID...")
+	basketItem := new(model.BasketItem)
+	if err := r.db.WithContext(ctx).Where("product_id = ? AND basket_id = ? AND iso = ? AND is_certificate = ?", productID, basketID, iso, isCert).First(basketItem).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		r.logger.Errorf("Failed to fetch basket item by product and basket ID: %v", err)
+		return nil, err
+	}
+	r.logger.Info("Basket item fetched by product and basket ID successfully")
+	return basketItem, nil
+}

@@ -21,7 +21,6 @@ func (s *service) AddItem(ctx context.Context, data *dto.AddBasketItem, userID s
 	var err error
 
 	if userID != "" {
-		// Авторизованный пользователь → работаем с БД
 		basket, err = s.repo.GetByUserID(ctx, userID)
 		if err != nil {
 			return fmt.Errorf("failed to get basket by user ID: %w", err)
@@ -30,7 +29,6 @@ func (s *service) AddItem(ctx context.Context, data *dto.AddBasketItem, userID s
 			return constants.ErrBasketNotFound
 		}
 	} else {
-		// Гость → берем корзину из сессии
 		if sess.Get("basket") == nil {
 			basket = &model.Basket{}
 		} else {
@@ -44,8 +42,7 @@ func (s *service) AddItem(ctx context.Context, data *dto.AddBasketItem, userID s
 		}
 	}
 
-	// Получаем товар
-	product, _, err := s.productService.Get(ctx, dto.ProductSearchCriteria{ID: data.ProductID, Minimal: true})
+	product, _, err := s.productService.Get(ctx, dto.ProductSearchCriteria{ID: data.ProductID, Minimal: true, Iso: data.Iso})
 	if err != nil {
 		return fmt.Errorf("failed to get product: %w", err)
 	}
@@ -54,22 +51,21 @@ func (s *service) AddItem(ctx context.Context, data *dto.AddBasketItem, userID s
 		return constants.ErrProductNotFound
 	}
 
-	// Проверяем, есть ли товар в корзине
-	var basketItem *model.BasketItem
+	var catalogMask uint8 = 1 << 1
+	isSertificate := (*product)[0].Catalogs&catalogMask != 0 && data.Iso != ""
 
+	var basketItem *model.BasketItem
 	if userID != "" {
-		basketItem, err = s.basketItemRepo.GetByProductBasketID(ctx, data.ProductID, basket.ID)
+		// Ищем только тот товар, который совпадает по `ProductID` и `IsSertificate`
+		basketItem, err = s.basketItemRepo.GetByProductIDIsoIsCert(ctx, data.ProductID, basket.ID, data.Iso, isSertificate)
 		if err != nil {
 			return fmt.Errorf("failed to get basket item: %w", err)
 		}
 	} else {
-		// Гостевая корзина → ищем товар в сессионной корзине
-		if basket != nil {
-			for i, item := range basket.Items {
-				if item.ProductID == data.ProductID {
-					basketItem = &basket.Items[i]
-					break
-				}
+		for i, item := range basket.Items {
+			if item.ProductID == data.ProductID && item.IsCertificate == isSertificate && item.Iso == data.Iso {
+				basketItem = &basket.Items[i]
+				break
 			}
 		}
 	}
@@ -78,24 +74,26 @@ func (s *service) AddItem(ctx context.Context, data *dto.AddBasketItem, userID s
 		// Обновляем количество товара
 		basketItem.Quantity += data.Quantity
 		if basketItem.Quantity <= 0 {
-			return s.DeleteItem(ctx, basketItem.ID, userID, sess) // Удаление товара
+			return s.DeleteItem(ctx, basketItem.ID, userID, sess)
 		}
-		basketItem.TotalPrice = (*product)[0].Price * float64(basketItem.Quantity)
+
+		if isSertificate {
+			basketItem.TotalPrice = (*product)[0].CertificatePrice * float64(basketItem.Quantity)
+		} else {
+			basketItem.TotalPrice = (*product)[0].Price * float64(basketItem.Quantity)
+		}
 
 		if userID != "" {
-			// Обновляем в БД
 			if err := s.basketItemRepo.UpdateItemQuantity(ctx, basketItem); err != nil {
 				return fmt.Errorf("failed to update basket item quantity: %w", err)
 			}
 		} else {
 			s.logger.Infof("session is not nil: %+v", basket)
-			// Обновляем в сессии
 			for i, item := range basket.Items {
-				if item.ProductID == basketItem.ProductID {
+				if item.ProductID == basketItem.ProductID && item.IsCertificate == isSertificate {
 					basket.Items[i] = *basketItem
 				}
 			}
-
 			basketStr, err := json.Marshal(basket)
 			if err != nil {
 				return fmt.Errorf("failed to marshal basket: %w", err)
@@ -106,22 +104,31 @@ func (s *service) AddItem(ctx context.Context, data *dto.AddBasketItem, userID s
 		return nil
 	}
 
-	// Если товара нет в корзине, создаем новый элемент
+	// Создаем новый элемент в корзине
+	var totalPrice float64
+	iso := ""
+	if isSertificate {
+		totalPrice = (*product)[0].CertificatePrice * float64(data.Quantity)
+		iso = data.Iso
+	} else {
+		totalPrice = (*product)[0].Price * float64(data.Quantity)
+	}
+
 	newBasketItem := model.BasketItem{
-		Article:    (*product)[0].Article,
-		Quantity:   data.Quantity,
-		TotalPrice: (*product)[0].Price * float64(data.Quantity),
-		ProductID:  data.ProductID,
+		Article:       (*product)[0].Article,
+		Quantity:      data.Quantity,
+		TotalPrice:    totalPrice,
+		ProductID:     data.ProductID,
+		IsCertificate: isSertificate,
+		Iso:           iso,
 	}
 
 	if userID != "" {
-		// Сохраняем в БД
 		newBasketItem.BasketID = basket.ID
 		if err := s.basketItemRepo.Create(ctx, &newBasketItem); err != nil {
 			return fmt.Errorf("failed to create basket item: %w", err)
 		}
 	} else {
-		// Добавляем в сессию
 		newBasketItem.ID = uuid.NewString()
 		basket.Items = append(basket.Items, newBasketItem)
 		basketStr, err := json.Marshal(basket)
@@ -129,7 +136,6 @@ func (s *service) AddItem(ctx context.Context, data *dto.AddBasketItem, userID s
 			return fmt.Errorf("failed to marshal basket: %w", err)
 		}
 		sess.Set("basket", string(basketStr))
-		s.logger.Error("HUI")
 		if err := sess.Save(); err != nil {
 			return err
 		}

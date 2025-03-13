@@ -39,7 +39,7 @@ func (i *Implementation) Login(ctx *fiber.Ctx) error {
 		return ctx.Status(code).JSON(msg)
 	}
 
-	expired := time.Now().Add(-time.Hour * 24)
+	// expired := time.Now().Add(-time.Hour * 24)
 	ctx.Cookie(&fiber.Cookie{
 		Name:     "access_token",
 		Value:    accessToken,
@@ -47,12 +47,6 @@ func (i *Implementation) Login(ctx *fiber.Ctx) error {
 		MaxAge:   i.config.AccessTokenMaxAge * 60,
 		Secure:   false,
 		HTTPOnly: true,
-	})
-
-	ctx.Cookie(&fiber.Cookie{
-		Name:    "session_id",
-		Value:   "",
-		Expires: expired,
 	})
 
 	ctx.Cookie(&fiber.Cookie{
@@ -73,5 +67,6 @@ func (i *Implementation) Login(ctx *fiber.Ctx) error {
 		HTTPOnly: false,
 	})
 
+	time.Sleep(3 * time.Second)
 	return ctx.Status(200).JSON(fiber.Map{"status": "success", "message": "OK"})
 }

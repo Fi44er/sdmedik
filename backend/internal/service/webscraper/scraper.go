@@ -10,129 +10,148 @@ import (
 	"github.com/Fi44er/sdmedik/backend/internal/service/webscraper/structs"
 	"github.com/Fi44er/sdmedik/backend/pkg/utils"
 	"github.com/Fi44er/sdmedik/backend/pkg/webscraper"
+	scraper_structs "github.com/Fi44er/sdmedik/backend/pkg/webscraper/structs"
 )
 
 func (s *service) Scraper() error {
+	s.mu.Lock()
+	if s.cancelFunc != nil {
+		s.cancelFunc() // Отменяем предыдущий процесс, если он выполнялся
+	}
+	ctx, cancel := context.WithCancel(context.Background())
+	s.cancelFunc = cancel
+	s.mu.Unlock()
+
 	s.logger.Errorf("productService: %v", s.productService)
-	ctx := context.Background()
-	items := webscraper.Scraper()
+	itemsChan := make(chan []scraper_structs.Items, 1)
 
-	// Подготавливаем данные для поиска существующих сертификатов
-	getManyCert := make([]dto.GetManyCert, 0)
-	for _, item := range items {
-		for _, region := range item.Items {
-			getManyCert = append(getManyCert, dto.GetManyCert{
-				CategoryArticle: item.CategoryArticle,
-				RegionIso:       region.Region,
-			})
-		}
-	}
+	// Запускаем парсер в отдельной горутине
+	go func() {
+		items := webscraper.Scraper(ctx) // Новый парсер с контекстом
+		itemsChan <- items
+		close(itemsChan)
+	}()
 
-	chunks := s.chunkSlice(getManyCert, 1000)
-	// Получаем существующие сертификаты из базы данных
-	var allCerts []model.Certificate
-	for _, chunk := range chunks {
-		certs, err := s.certificateService.GetMany(ctx, &chunk)
-		if err != nil {
-			return err
-		}
-		allCerts = append(allCerts, *certs...)
-	}
-
-	// Создаём мапу для быстрого поиска существующих сертификатов
-	certMap := make(map[string]string)
-	for _, cert := range allCerts {
-		key := fmt.Sprintf("%s-%s", cert.CategoryArticle, cert.RegionIso)
-		certMap[key] = cert.ID
-	}
-
-	// Разделяем данные на создание и обновление
-	createCert := make([]model.Certificate, 0)
-	updateCert := make([]model.Certificate, 0)
-	createProducts := make([]dto.CreateProduct, 0)
-
-	for _, item := range items {
-		options := utils.RequestOptions{
-			Method: "GET",
-			URL:    "https://esnsi.gosuslugi.ru/rest/ext/v1/classifiers/10616/data",
-			Query: map[string]string{
-				"query": item.CategoryName,
-			},
-		}
-		esnsiRes, err := utils.MakeRequest(options)
-		if err != nil {
-			return err
-		}
-
-		var apiRes structs.ApiResponse
-		if err := json.Unmarshal(esnsiRes, &apiRes); err != nil {
-			fmt.Println("Ошибка при парсинге JSON:", err)
-		}
-
-		var tru string
-		if len(apiRes.Body) > 0 {
-			tru = apiRes.Body[0].Elements[3].Value
-		}
-
-		for _, region := range item.Items {
-			key := fmt.Sprintf("%s-%s", item.CategoryArticle, region.Region)
-
-			// Если запись существует, добавляем в updateCert
-			if certMap[key] != "" {
-				updateCert = append(updateCert, model.Certificate{
-					ID:              certMap[key],
+	select {
+	case <-ctx.Done():
+		return fmt.Errorf("парсинг отменён")
+	case items := <-itemsChan:
+		getManyCert := make([]dto.GetManyCert, 0)
+		for _, item := range items {
+			for _, region := range item.Items {
+				getManyCert = append(getManyCert, dto.GetManyCert{
 					CategoryArticle: item.CategoryArticle,
 					RegionIso:       region.Region,
-					Price:           region.Price,
-					TRUName:         item.CategoryName,
-					TRU:             tru,
-				})
-			} else {
-				// Если записи нет, добавляем в createCert
-				createCert = append(createCert, model.Certificate{
-					CategoryArticle: item.CategoryArticle,
-					RegionIso:       region.Region,
-					Price:           region.Price,
-					TRUName:         item.CategoryName,
-					TRU:             tru,
 				})
 			}
 		}
 
-		for _, product := range item.Product {
-			productDto := dto.CreateProduct{
-				Article: product.Article,
-				Name:    product.Name,
+		chunks := s.chunkSlice(getManyCert, 1000)
+		// Получаем существующие сертификаты из базы данных
+		var allCerts []model.Certificate
+		for _, chunk := range chunks {
+			certs, err := s.certificateService.GetMany(ctx, &chunk)
+			if err != nil {
+				return err
 			}
-			createProducts = append(createProducts, productDto)
+			allCerts = append(allCerts, *certs...)
 		}
-	}
 
-	productChank := s.chunkSliceProduct(createProducts, 1000)
-	for _, chunk := range productChank {
-		err := s.productService.CreateMany(ctx, &chunk)
-		if err != nil {
-			return err
+		// Создаём мапу для быстрого поиска существующих сертификатов
+		certMap := make(map[string]string)
+		for _, cert := range allCerts {
+			key := fmt.Sprintf("%s-%s", cert.CategoryArticle, cert.RegionIso)
+			certMap[key] = cert.ID
 		}
-	}
 
-	// Создаём новые записи
-	if len(createCert) > 0 {
-		err := s.certificateService.CreateMany(ctx, &createCert)
-		if err != nil {
-			return fmt.Errorf("failed to create certificates: %v", err)
+		// Разделяем данные на создание и обновление
+		createCert := make([]model.Certificate, 0)
+		updateCert := make([]model.Certificate, 0)
+		createProducts := make([]dto.CreateProduct, 0)
+
+		for _, item := range items {
+			options := utils.RequestOptions{
+				Method: "GET",
+				URL:    "https://esnsi.gosuslugi.ru/rest/ext/v1/classifiers/10616/data",
+				Query: map[string]string{
+					"query": item.CategoryName,
+				},
+			}
+			esnsiRes, err := utils.MakeRequest(options)
+			if err != nil {
+				return err
+			}
+
+			var apiRes structs.ApiResponse
+			if err := json.Unmarshal(esnsiRes, &apiRes); err != nil {
+				fmt.Println("Ошибка при парсинге JSON:", err)
+			}
+
+			var tru string
+			if len(apiRes.Body) > 0 {
+				tru = apiRes.Body[0].Elements[3].Value
+			}
+
+			for _, region := range item.Items {
+				key := fmt.Sprintf("%s-%s", item.CategoryArticle, region.Region)
+
+				// Если запись существует, добавляем в updateCert
+				if certMap[key] != "" {
+					updateCert = append(updateCert, model.Certificate{
+						ID:              certMap[key],
+						CategoryArticle: item.CategoryArticle,
+						RegionIso:       region.Region,
+						Price:           region.Price,
+						TRUName:         item.CategoryName,
+						TRU:             tru,
+					})
+				} else {
+					// Если записи нет, добавляем в createCert
+					createCert = append(createCert, model.Certificate{
+						CategoryArticle: item.CategoryArticle,
+						RegionIso:       region.Region,
+						Price:           region.Price,
+						TRUName:         item.CategoryName,
+						TRU:             tru,
+					})
+				}
+			}
+
+			for _, product := range item.Product {
+				productDto := dto.CreateProduct{
+					Article: product.Article,
+					Name:    product.Name,
+				}
+				createProducts = append(createProducts, productDto)
+			}
 		}
-	}
 
-	// Обновляем существующие записи
-	if len(updateCert) > 0 {
-		err := s.certificateService.UpdateMany(ctx, &updateCert)
-		if err != nil {
-			return fmt.Errorf("failed to update certificates: %v", err)
+		productChank := s.chunkSliceProduct(createProducts, 1000)
+		for _, chunk := range productChank {
+			err := s.productService.CreateMany(ctx, &chunk)
+			if err != nil {
+				return err
+			}
 		}
-	}
 
-	return nil
+		// Создаём новые записи
+		if len(createCert) > 0 {
+			err := s.certificateService.CreateMany(ctx, &createCert)
+			if err != nil {
+				return fmt.Errorf("failed to create certificates: %v", err)
+			}
+		}
+
+		// Обновляем существующие записи
+		if len(updateCert) > 0 {
+			err := s.certificateService.UpdateMany(ctx, &updateCert)
+			if err != nil {
+				return fmt.Errorf("failed to update certificates: %v", err)
+			}
+		}
+
+		return nil
+	}
 }
 
 func (s *service) chunkSlice(slice []dto.GetManyCert, chunkSize int) [][]dto.GetManyCert {

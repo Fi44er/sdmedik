@@ -1159,8 +1159,31 @@ const docTemplate = `{
                 }
             }
         },
-        "/webscraper": {
-            "get": {
+        "/webscraper/cancel": {
+            "post": {
+                "description": "Отменяет выполнение текущего парсинга",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "webscraper"
+                ],
+                "summary": "Отмена работы парсера",
+                "responses": {
+                    "200": {
+                        "description": "Парсинг отменён",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/webscraper/start": {
+            "post": {
                 "description": "Scraper",
                 "consumes": [
                     "application/json"
@@ -1191,6 +1214,9 @@ const docTemplate = `{
                 "quantity"
             ],
             "properties": {
+                "iso": {
+                    "type": "string"
+                },
                 "product_id": {
                     "type": "string"
                 },
