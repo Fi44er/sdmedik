@@ -23,7 +23,7 @@ import useCategoryStore from "../../../store/categoryStore";
 
 export default function UpdateCategory() {
   const { id } = useParams();
-  const { fetchCategoryId, updateCategory } = useCategoryStore();
+  const { fetchCategoryId, updateCategory, categoryId } = useCategoryStore();
   const [category, setCategory] = useState({
     name: "",
     characteristics: [],
@@ -33,9 +33,9 @@ export default function UpdateCategory() {
   // Загрузка данных категории
   useEffect(() => {
     if (id) {
-      fetchCategoryId(id).then((response) => {
-        if (response && response.data) {
-          const categoryData = response.data;
+      fetchCategoryId(id).then(() => {
+        if (categoryId && categoryId.data) {
+          const categoryData = categoryId.data;
           setCategory({
             name: categoryData.name || "",
             characteristics: categoryData.characteristic || [], // Используем characteristic
@@ -122,6 +122,8 @@ export default function UpdateCategory() {
             sx={{ mb: 2 }}
           />
 
+
+          
           {category.characteristics.length > 0 ? (
             category.characteristics.map((characteristic, index) => (
               <Grid
@@ -155,16 +157,13 @@ export default function UpdateCategory() {
                       }
                     >
                       <MenuItem value="string">Строковое значение</MenuItem>
-                      <MenuItem value="int">Целочисленное значение</MenuItem>
-                      <MenuItem value="float">Дробное значение</MenuItem>
-                      <MenuItem value="bool">Есть/нет</MenuItem>
                     </Select>
                   </FormControl>
                 </Grid>
                 <Grid item xs={2}>
                   <IconButton
                     onClick={() => removeCharacteristic(index)}
-                    color="error"
+                    color="warning"
                   >
                     <DeleteIcon />
                   </IconButton>

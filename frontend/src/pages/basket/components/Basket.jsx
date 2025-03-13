@@ -107,7 +107,7 @@ export default function Basket() {
                     {product.brand}
                   </Typography>
                   <Typography variant="h6" sx={{ mt: 1, color: "#00B3A4" }}>
-                    {product.price} ₽
+                    {product.total_price} ₽
                   </Typography>
                   <Box
                     sx={{
