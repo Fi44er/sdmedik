@@ -13,11 +13,11 @@ const useBascketStore = create((set, get) => ({
   },
   products: [],
   basket: {},
-  addProductThisBascket: async (product_id, quantity) => {
+  addProductThisBascket: async (product_id, quantity, iso) => {
     try {
       const response = await axios.post(
         `${url}/basket`,
-        { product_id, quantity },
+        { product_id, quantity, iso },
         {
           withCredentials: true,
         }
@@ -26,14 +26,7 @@ const useBascketStore = create((set, get) => ({
       toast.success("Продукт добавлен в корзину");
       console.log("Продукт добавлен в корзину:", response.data);
     } catch (error) {
-      // Обработка ошибки
-      if (error.response?.status === 401) {
-        // Перенаправление на страницу регистрации, если статус 401
-        window.location.href = "/auth";
-        toast.info("Чтобы получить доступ к корзине,войдите в личный кабинет");
-      } else {
-        toast.error("Ошибка при добавлении продукта в корзину:", error); // Обработка других ошибок
-      }
+      toast.error("Ошибка при добавлении продукта в корзину:", error); // Обработка других ошибок
     }
   },
   editCountProductBascket: async (product_id, quantity) => {
@@ -49,8 +42,6 @@ const useBascketStore = create((set, get) => ({
     } catch (error) {
       // Обработка ошибки
       if (error.response.status === 401) {
-        // Если статус 401, обновляем токены и повторяем запрос
-        await get().refreshToken();
         await get().addProductThisBascket(product_id, quantity); // Повторяем запрос
       } else {
         toast.error(

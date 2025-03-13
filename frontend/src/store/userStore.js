@@ -99,7 +99,7 @@ const useUserStore = create((set, get) => ({
   },
 
   loginFunc: async (navigate) => {
-    const { email, password, } = useUserStore.getState();
+    const { email, password } = useUserStore.getState();
     try {
       const response = await axios.post(
         `${url}/auth/login`,
@@ -111,7 +111,6 @@ const useUserStore = create((set, get) => ({
           withCredentials: true,
         }
       );
-      console.log("login", response);
       if (response.data.status === "success") {
         get().checkAuthStatus();
         navigate("/profile");

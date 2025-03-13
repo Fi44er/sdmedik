@@ -106,7 +106,8 @@ export default function ProductDynamicCertificatePage() {
   };
 
   const handleAddProductToBasket = async (id) => {
-    await addProductThisBascket(id, quantity);
+    const iso = newRegion?.value;
+    await addProductThisBascket(id, quantity, iso);
   };
 
   const handleChangeRegion = (event) => {
@@ -123,7 +124,6 @@ export default function ProductDynamicCertificatePage() {
   };
 
   const handleGetCertificate = async () => {
-    const iso = newRegion;
     fetchProductById(id, iso);
   };
 

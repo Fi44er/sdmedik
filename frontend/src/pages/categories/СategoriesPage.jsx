@@ -50,6 +50,7 @@ export default function CategoriesPage() {
                 <Card
                   sx={{
                     width: "100%",
+                    height: "336px",
                     background: "#fff",
                     borderRadius: "12px",
                     boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
@@ -59,6 +60,9 @@ export default function CategoriesPage() {
                       boxShadow: "0px 8px 16px rgba(0, 0, 0, 0.2)",
                     },
                     cursor: "pointer",
+                    display: "flex",
+                    flexDirection: "column",
+                    p: 2,
                   }}
                   onClick={() => {
                     window.location.href = `/products/${item.id}`;
@@ -66,51 +70,49 @@ export default function CategoriesPage() {
                 >
                   <Box
                     sx={{
+                      flexGrow: 1, // Занимает всё доступное пространство
                       display: "flex",
-                      flexDirection: "column",
+                      justifyContent: "center",
                       alignItems: "center",
-                      p: 2,
+                      overflow: "hidden",
+                      borderRadius: "12px",
                     }}
                   >
-                    <Box
-                      sx={{
+                    <img
+                      src={`${urlPictures}/${item.images[0].name}`}
+                      alt={`Изображение категории ${item.name}`}
+                      style={{
                         width: "100%",
-                        height: "160px",
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        overflow: "hidden",
-                        borderRadius: "12px",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
+                    />
+                  </Box>
+                  <CardContent
+                    sx={{
+                      textAlign: "center",
+                      p: 2,
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "flex-end", // Прижимаем текст к низу
+                    }}
+                  >
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        fontWeight: "bold",
+                        fontSize: isMobile ? "1rem" : "1.1rem",
                       }}
                     >
-                      <img
-                        src={`${urlPictures}/${item.images[0].name}`}
-                        alt={`Изображение категории ${item.name}`}
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          objectFit: "cover",
-                        }}
-                      />
-                    </Box>
-                    <CardContent sx={{ textAlign: "center", p: 1 }}>
-                      <Typography
-                        variant="h6"
-                        sx={{
-                          fontWeight: "bold",
-                          fontSize: isMobile ? "1rem" : "1.1rem",
-                        }}
-                      >
-                        {item.name}
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        sx={{ color: "text.secondary", mt: 1 }}
-                      >
-                        {item.productCount || 0} товаров
-                      </Typography>
-                    </CardContent>
-                  </Box>
+                      {item.name}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      sx={{ color: "text.secondary", mt: 1 }}
+                    >
+                      {item.productCount || 0} товаров
+                    </Typography>
+                  </CardContent>
                 </Card>
               </Grid>
             ))
