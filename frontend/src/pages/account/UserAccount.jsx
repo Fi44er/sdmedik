@@ -27,12 +27,20 @@ import {
 } from "@mui/icons-material";
 import useUserStore from "../../store/userStore";
 import useOrderStore from "../../store/orderStore";
+import { useLocation } from "react-router-dom";
 
 export default function UserAccount() {
   const { getUserInfo, user, logout } = useUserStore();
   const { fetchUserOrders, userOrders } = useOrderStore();
   const [currentTab, setCurrentTab] = useState(0);
   const [loading, setLoading] = useState(true);
+
+  const location = useLocation();
+
+  useEffect(() => {
+    // Очищаем историю, заменяя текущую запись
+    window.history.replaceState({}, document.title, location.pathname);
+  }, [location.pathname]);
 
   useEffect(() => {
     const fetchData = async () => {

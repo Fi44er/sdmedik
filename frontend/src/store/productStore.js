@@ -73,7 +73,14 @@ const useProductStore = create((set, get) => ({
   },
 
   products: [],
-  fetchProducts: async (category_id, jsonData, offset, limit, catalogs) => {
+  fetchProducts: async (
+    category_id,
+    jsonData,
+    offset,
+    limit,
+    catalogs,
+    searchTerm
+  ) => {
     try {
       const response = await axios.get(`${url}/product`, {
         params: {
@@ -82,6 +89,7 @@ const useProductStore = create((set, get) => ({
           offset: offset, // Добавляем offset
           limit: limit, // Добавляем limit
           catalogs: catalogs,
+          name: searchTerm,
         },
       });
       set({ products: response.data });

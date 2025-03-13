@@ -13,6 +13,7 @@ import {
   Typography,
   Select,
   MenuItem,
+  TextField,
 } from "@mui/material";
 import useProductStore from "../../../../store/productStore";
 import { urlPictures } from "../../../../constants/constants";
@@ -23,17 +24,24 @@ const AdminProductTable = () => {
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
-  const [selectedCategory, setSelectedCategory] = useState(""); // Состояние для выбранной категории
+  const [selectedCategory, setSelectedCategory] = useState("");
   const { fetchCategory, category } = useCategoryStore();
+  const [searchTerm, setSearchTerm] = useState("");
 
+  // Загрузка данных при изменении страницы или категории
   useEffect(() => {
-    const offset = (currentPage - 1) * itemsPerPage; // Рассчитываем offset
-    fetchProducts(selectedCategory, null, offset, itemsPerPage); // Передаем offset и limit в fetchProducts
-  }, [currentPage, selectedCategory]); // Добавляем currentPage и selectedCategory в зависимости
+    const offset = (currentPage - 1) * itemsPerPage;
+    fetchProducts(selectedCategory, null, offset, itemsPerPage);
+  }, [currentPage, selectedCategory]);
 
+  // Обновление filteredProducts при изменении products
   useEffect(() => {
-    if (Array.isArray(products.data)) {
-      setFilteredProducts(products.data);
+    if (products.data) {
+      // Если products.data — это объект, оборачиваем его в массив
+      const dataArray = Array.isArray(products.data)
+        ? products.data
+        : [products.data];
+      setFilteredProducts(dataArray);
     }
   }, [products]);
 
@@ -49,11 +57,22 @@ const AdminProductTable = () => {
 
   const handleDeleteProduct = async (id) => {
     await deleteProduct(id);
-    // После удаления, обновляем список товаров
-    const offset = (currentPage - 1) * itemsPerPage; // Рассчитываем новый offset
+    const offset = (currentPage - 1) * itemsPerPage;
     fetchProducts(selectedCategory, null, offset, itemsPerPage);
   };
 
+  const handleSearch = async () => {
+    try {
+      // Выполняем поиск
+      await fetchProducts(null, null, null, null, null, searchTerm);
+      // После успешного поиска, filteredProducts обновится автоматически
+      // благодаря useEffect, который отслеживает изменения products
+    } catch (error) {
+      console.error("Ошибка при поиске товаров:", error);
+    }
+  };
+
+  // Загрузка категорий
   useEffect(() => {
     fetchCategory();
   }, []);
@@ -63,8 +82,6 @@ const AdminProductTable = () => {
       <Typography sx={{ fontSize: "30px", mb: 2, mt: 2 }}>
         Таблица с Продуктами
       </Typography>
-
-      {/* Фильтрация по категориям */}
       <Select
         value={selectedCategory}
         onChange={handleCategoryChange}
@@ -81,7 +98,22 @@ const AdminProductTable = () => {
             </MenuItem>
           ))}
       </Select>
-
+      <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 3 }}>
+        <TextField
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder="Поиск по названию"
+        />
+        <Button
+          variant="contained"
+          onClick={(e) => {
+            e.preventDefault();
+            handleSearch();
+          }}
+        >
+          Найти
+        </Button>
+      </Box>
       <Paper sx={{ width: "100%" }}>
         <TableContainer sx={{ overflowX: "auto", height: "600px" }}>
           <Table>
@@ -100,27 +132,32 @@ const AdminProductTable = () => {
             <TableBody>
               {filteredProducts.map((product) => (
                 <TableRow key={product.id}>
-                  <TableCell>
-                    <Box sx={{ display: "flex", gap: 1 }}>{product.id}</Box>
-                  </TableCell>
+                  <TableCell>{product.id}</TableCell>
                   <TableCell>
                     <Box sx={{ display: "flex", gap: 1 }}>
-                      {product.images.map((image) => (
-                        <img
-                          key={image.id}
-                          src={`${urlPictures}/${image.name}`}
-                          alt="product"
-                          style={{ width: 50, height: 50, borderRadius: "4px" }}
-                        />
-                      ))}
+                      {product.images &&
+                        product.images.map((image) => (
+                          <img
+                            key={image.id}
+                            src={`${urlPictures}/${image.name}`}
+                            alt="product"
+                            style={{
+                              width: 50,
+                              height: 50,
+                              borderRadius: "4px",
+                            }}
+                          />
+                        ))}
                     </Box>
                   </TableCell>
                   <TableCell>{product.name}</TableCell>
                   <TableCell>{product.price}</TableCell>
                   <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>
                     {product.categories
-                      .map((category) => category.name)
-                      .join(", ")}
+                      ? product.categories
+                          .map((category) => category.name)
+                          .join(", ")
+                      : "Нет категории"}
                   </TableCell>
                   <TableCell>
                     <Box sx={{ display: "flex", gap: 1 }}>
@@ -129,7 +166,7 @@ const AdminProductTable = () => {
                         color="error"
                         onClick={() => handleDeleteProduct(product.id)}
                       >
-                        удалить
+                        Удалить
                       </Button>
                       <Button
                         variant="contained"
@@ -139,7 +176,7 @@ const AdminProductTable = () => {
                           window.location.href = `/admin/update_product/${product.id}`;
                         }}
                       >
-                        редактировать
+                        Редактировать
                       </Button>
                     </Box>
                   </TableCell>
@@ -149,10 +186,9 @@ const AdminProductTable = () => {
           </Table>
         </TableContainer>
 
-        {/* Пагинация */}
         <Box sx={{ display: "flex", justifyContent: "center", mt: 2, mb: 2 }}>
           <Pagination
-            count={Math.ceil((products.count || 0) / itemsPerPage)} // Use Math.ceil to ensure it's an integer
+            count={Math.ceil((products.count || 0) / itemsPerPage)}
             page={currentPage}
             onChange={handlePageChange}
             color="primary"

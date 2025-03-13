@@ -4,7 +4,6 @@ import {
   Box,
   Button,
   InputBase,
-  Link,
   MenuItem,
   styled,
   Toolbar,
@@ -25,7 +24,12 @@ import MenuIcon from "@mui/icons-material/Menu";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Cookies from "js-cookie";
 import useSearchStore from "../store/serchStore";
-import { useNavigate, useResolvedPath, useLocation } from "react-router-dom"; // Добавьте useLocation
+import {
+  useNavigate,
+  useResolvedPath,
+  useLocation,
+  Link,
+} from "react-router-dom"; // Добавьте useLocation
 import Search from "./componets_header/Search";
 import useUserStore from "../store/userStore";
 
@@ -47,6 +51,8 @@ export default function Header() {
   const { isAuthenticated, setIsAuthenticated, checkAuthStatus } =
     useUserStore();
   const { getUserInfo, user, logout } = useUserStore();
+
+  const navigate = useNavigate();
   // const location = useLocation(); // Получаем текущий путь
 
   // Используем хранилище Zustand для поиска
@@ -199,7 +205,7 @@ export default function Header() {
                 variant="contained"
                 onClick={(e) => {
                   e.preventDefault();
-                  window.location.href = "/catalog";
+                  navigate("/catalog");
                 }}
                 sx={{
                   background: `linear-gradient(95.61deg, #A5DED1 4.71%, #00B3A4 97.25%)`,
@@ -214,7 +220,7 @@ export default function Header() {
                 variant="contained"
                 onClick={(e) => {
                   e.preventDefault();
-                  window.location.href = "/catalog/certificate";
+                  navigate("/catalog/certificate");
                 }}
                 sx={{
                   background: `linear-gradient(95.61deg, #A5DED1 4.71%, #00B3A4 97.25%)`,
@@ -236,7 +242,7 @@ export default function Header() {
                   BoxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
                 }}
               >
-                {navItems.map((item) => {
+                {/* {navItems.map((item) => {
                   return (
                     <Link
                       underline="hover"
@@ -248,7 +254,12 @@ export default function Header() {
                       {item.text}
                     </Link>
                   );
-                })}
+                })} */}
+                <Link to="/delivery">Доставка</Link>
+                <Link to="/deteils">Реквизиты</Link>
+                <Link to="/returnpolicy">Возврат</Link>
+                <Link to="/about">О нас</Link>
+                <Link to="/contacts">Контакты</Link>
               </Paper>
             </Box>
             <Box>
@@ -273,7 +284,7 @@ export default function Header() {
                 {isAuthenticated
                   ? [
                       <MenuItem key="profile" onClick={handleCloseLk}>
-                        <Link sx={{ color: "#26BDB8" }} href="/profile">
+                        <Link style={{ color: "#26BDB8" }} to="/profile">
                           {user && user.data?.fio}
                         </Link>
                       </MenuItem>,
@@ -283,19 +294,19 @@ export default function Header() {
                           logout();
                         }}
                       >
-                        <Link sx={{ color: "#26BDB8" }} href="/">
+                        <Link style={{ color: "#26BDB8" }} to="/">
                           Выйти
                         </Link>
                       </MenuItem>,
                     ]
                   : [
                       <MenuItem key="login" onClick={handleCloseLk}>
-                        <Link sx={{ color: "#26BDB8" }} href="/auth">
+                        <Link style={{ color: "#26BDB8" }} to="/auth">
                           Войти
                         </Link>
                       </MenuItem>,
                       <MenuItem key="register" onClick={handleCloseLk}>
-                        <Link sx={{ color: "#26BDB8" }} href="/register">
+                        <Link style={{ color: "#26BDB8" }} to="/register">
                           Регистрация
                         </Link>
                       </MenuItem>,
@@ -304,7 +315,7 @@ export default function Header() {
               <IconButton
                 onClick={(e) => {
                   e.preventDefault();
-                  window.location.href = "/basket";
+                  navigate("/basket");
                 }}
               >
                 <img src="/basket_header.png" alt="" />
@@ -329,7 +340,7 @@ export default function Header() {
             width: "100%",
           }}
         >
-          <Link href="/">
+          <Link to="/">
             <img style={{ width: "60px" }} src="/Logo_Header.png" alt="Logo" />
           </Link>
           <IconButton
@@ -369,49 +380,59 @@ export default function Header() {
           onKeyDown={toggleDrawer(false)}
         >
           <List>
-            {navItems.map((item) => {
-              return (
-                <ListItem key={item.text}>
-                  <Link
-                    underline="hover"
-                    sx={{ color: "#26BDB8", ml: 2 }}
-                    color="black"
-                    href={item.href}
-                  >
-                    {item.text}
-                  </Link>
-                </ListItem>
-              );
-            })}
+            <ListItem>
+              <Link style={{ color: "#26BDB8", marginLeft: 2 }} to="/delivery">
+                Доставка
+              </Link>
+            </ListItem>
+            <ListItem>
+              <Link style={{ color: "#26BDB8", marginLeft: 2 }} to="/deteils">
+                Реквизиты
+              </Link>
+            </ListItem>
+            <ListItem>
+              <Link
+                style={{ color: "#26BDB8", marginLeft: 2 }}
+                to="/returnpolicy"
+              >
+                Возврат
+              </Link>
+            </ListItem>
+            <ListItem>
+              <Link style={{ color: "#26BDB8", marginLeft: 2 }} to="/about">
+                О нас
+              </Link>
+            </ListItem>
+            <ListItem>
+              <Link style={{ color: "#26BDB8", marginLeft: 2 }} to="/contacts">
+                Контакты
+              </Link>
+            </ListItem>
             <Box sx={{ mt: 2, display: "flex", flexDirection: "column" }}>
               {/* {!shouldHideCatalogButton && ( // Условие для отображения кнопки "Каталог" в бургер-меню */}
               <Link
-                underline="hover"
-                color="black"
-                sx={{
+                style={{
                   fontSize: "18px",
-                  ml: 4,
-                  mt: 4,
+                  marginLeft: 4,
+                  marginTop: 4,
                   textDicoration: "none",
                   color: "#26BDB8",
                 }}
-                href="/catalog"
+                to="/catalog"
               >
                 Каталог
               </Link>
               {/* )} */}
               <Link
-                underline="hover"
-                color="black"
-                sx={{
+                style={{
                   fontSize: "18px",
-                  ml: 4,
-                  mt: 1,
-                  mb: 3,
+                  marginLeft: "16px",
+                  marginTop: 4,
+                  marginBottom: 3,
                   textDicoration: "none",
                   color: "#26BDB8",
                 }}
-                href="/catalog/certificate"
+                to="/catalog/certificate"
               >
                 По электроному сертификату
               </Link>
@@ -428,8 +449,8 @@ export default function Header() {
               {isAuthenticated
                 ? [
                     <Link
-                      sx={{ color: "#26BDB8" }}
-                      href="/profile"
+                      style={{ color: "#26BDB8" }}
+                      to="/profile"
                       key="profile"
                     >
                       Личный кабинет
@@ -444,10 +465,10 @@ export default function Header() {
                       }}
                       key="auth-links"
                     >
-                      <Link sx={{ color: "#26BDB8" }} href="/auth">
+                      <Link style={{ color: "#26BDB8" }} to="/auth">
                         Войти
                       </Link>
-                      <Link sx={{ color: "#26BDB8" }} href="/register">
+                      <Link style={{ color: "#26BDB8" }} to="/register">
                         Регистрация
                       </Link>
                     </Box>,
@@ -457,7 +478,7 @@ export default function Header() {
                 <IconButton
                   onClick={(e) => {
                     e.preventDefault();
-                    window.location.href = "/basket";
+                    navigate("/basket");
                   }}
                 >
                   <img

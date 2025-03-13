@@ -346,7 +346,7 @@ export default function ProductDynamicCertificatePage() {
             >
               В корзину
             </Button>
-            <Button
+            {/* <Button
               variant="outlined"
               sx={{
                 border: "2px solid #00B3A4",
@@ -357,7 +357,7 @@ export default function ProductDynamicCertificatePage() {
               }
             >
               Купить по сертификату
-            </Button>
+            </Button> */}
           </Box>
 
           {/* Выбор региона */}

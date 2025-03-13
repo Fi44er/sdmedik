@@ -10,13 +10,14 @@ import {
   Typography,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import useProductStore from "../../../store/productStore";
 import SidebarFilter from "./SidebarFilter";
 import useBascketStore from "../../../store/bascketStore";
 import { urlPictures } from "../../../constants/constants";
 
 const ProductCard = memo(({ e, hendleAddProductThithBascket }) => {
+  const navigate = useNavigate();
   return (
     <Card
       sx={{
@@ -44,7 +45,7 @@ const ProductCard = memo(({ e, hendleAddProductThithBascket }) => {
           borderBottom: "1px solid #E0E0E0",
         }}
         onClick={() => {
-          window.location.href = `/product/${e.id}`;
+          navigate(`/product/${e.id}`);
         }}
       >
         <CardMedia
@@ -71,7 +72,7 @@ const ProductCard = memo(({ e, hendleAddProductThithBascket }) => {
             whiteSpace: "nowrap",
           }}
           onClick={() => {
-            window.location.href = `/product/${e.id}`;
+            navigate(`/product/${e.id}`);
           }}
         >
           {e.name}
@@ -81,7 +82,7 @@ const ProductCard = memo(({ e, hendleAddProductThithBascket }) => {
           color="text.secondary"
           sx={{ mb: 1 }}
           onClick={() => {
-            window.location.href = `/product/${e.id}`;
+            navigate(`/product/${e.id}`);
           }}
         >
           Артикул: {e.article}
@@ -98,7 +99,7 @@ const ProductCard = memo(({ e, hendleAddProductThithBascket }) => {
             variant="h6"
             sx={{ color: "#00B3A4", fontWeight: "bold" }}
             onClick={() => {
-              window.location.href = `/product/${e.id}`;
+              navigate(`/product/${e.id}`);
             }}
           >
             {e.price} ₽

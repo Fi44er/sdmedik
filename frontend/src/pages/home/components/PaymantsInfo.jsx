@@ -2,8 +2,10 @@ import { Box, Button, CardMedia, Typography } from "@mui/material";
 import { motion } from "framer-motion";
 import { Helmet } from "react-helmet";
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function PaymantsInfo() {
+  const navigate = useNavigate();
   return (
     <motion.div
       initial={{ y: -1000 }} // Начальная позиция (сверху)
@@ -76,7 +78,7 @@ export default function PaymantsInfo() {
               }}
               onClick={(e) => {
                 e.preventDefault();
-                window.location.href = "/certificate";
+                navigate("/certificate");
               }}
             >
               Подробнее
