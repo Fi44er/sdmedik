@@ -106,12 +106,12 @@ export default function CategoriesPage() {
                     >
                       {item.name}
                     </Typography>
-                    <Typography
+                    {/* <Typography
                       variant="body2"
                       sx={{ color: "text.secondary", mt: 1 }}
                     >
                       {item.productCount || 0} товаров
-                    </Typography>
+                    </Typography> */}
                   </CardContent>
                 </Card>
               </Grid>
