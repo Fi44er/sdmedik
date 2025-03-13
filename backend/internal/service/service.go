@@ -88,6 +88,7 @@ type IIndexService interface {
 
 type IWebScraperService interface {
 	Scraper() error
+	CancelScraper() error
 }
 
 type ICertificateService interface {

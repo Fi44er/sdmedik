@@ -1,6 +1,9 @@
 package webscraper
 
 import (
+	"context"
+	"sync"
+
 	def "github.com/Fi44er/sdmedik/backend/internal/service"
 	"github.com/Fi44er/sdmedik/backend/pkg/logger"
 	"github.com/go-playground/validator/v10"
@@ -17,6 +20,8 @@ type service struct {
 
 	certificateService def.ICertificateService
 	productService     def.IProductService
+	cancelFunc         context.CancelFunc
+	mu                 sync.Mutex
 }
 
 func NewService(
