@@ -2,6 +2,8 @@ basePath: /api/v1/
 definitions:
   dto.AddBasketItem:
     properties:
+      iso:
+        type: string
       product_id:
         type: string
       quantity:

@@ -84,6 +84,7 @@ type IBasketItemRepository interface {
 	Delete(ctx context.Context, itemID string, basketID string) error
 	GetByProductBasketID(ctx context.Context, productID string, basketID string) (*model.BasketItem, error)
 	UpdateItemQuantity(ctx context.Context, dto *model.BasketItem) error
+	GetByProductIDIsoIsCert(ctx context.Context, productID string, basketID string, iso string, isCert bool) (*model.BasketItem, error)
 }
 
 type ICertificateRepository interface {

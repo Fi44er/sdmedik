@@ -7,6 +7,7 @@ type CreateBasket struct {
 }
 
 type AddBasketItem struct {
+	Iso       string `json:"iso"`
 	ProductID string `json:"product_id" validate:"required"`
 	Quantity  int    `json:"quantity" validate:"required"`
 }

@@ -1191,6 +1191,9 @@ const docTemplate = `{
                 "quantity"
             ],
             "properties": {
+                "iso": {
+                    "type": "string"
+                },
                 "product_id": {
                     "type": "string"
                 },
