@@ -12,11 +12,13 @@ import React, { useEffect } from "react";
 import useCategoryStore from "../../store/categoryStore";
 import { urlPictures } from "../../constants/constants";
 import { Helmet } from "react-helmet";
+import { useNavigate } from "react-router-dom";
 
-export default function CategoriesForCertificate() {
+export default function CategoriesPage() {
   const { fetchCategory, category } = useCategoryStore();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchCategory();
@@ -41,7 +43,7 @@ export default function CategoriesForCertificate() {
         </Typography>
         <Grid
           container
-          spacing={isMobile ? 2 : 3}
+          spacing={{ xs: 3, md: 5, lg: 5 }}
           columns={{ xs: 2, sm: 3, md: 4, lg: 5 }}
         >
           {Array.isArray(category.data) && category.data.length > 0 ? (
@@ -50,6 +52,7 @@ export default function CategoriesForCertificate() {
                 <Card
                   sx={{
                     width: "100%",
+                    height: "336px", // Фиксированная высота карточки
                     background: "#fff",
                     borderRadius: "12px",
                     boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
@@ -59,58 +62,54 @@ export default function CategoriesForCertificate() {
                       boxShadow: "0px 8px 16px rgba(0, 0, 0, 0.2)",
                     },
                     cursor: "pointer",
+                    display: "flex",
+                    flexDirection: "column",
+                    p: { xs: 1, md: 2 },
                   }}
                   onClick={() => {
-                    window.location.href = `/products/certificate/${item.id}`;
+                    navigate(`/products/certificate/${item.id}`);
                   }}
                 >
                   <Box
                     sx={{
                       display: "flex",
-                      flexDirection: "column",
+                      justifyContent: "center",
                       alignItems: "center",
-                      p: 2,
+                      overflow: "hidden",
+                      borderRadius: "12px",
+                      height: "200px",
                     }}
                   >
-                    <Box
-                      sx={{
+                    <img
+                      src={`${urlPictures}/${item.images[0].name}`}
+                      alt={`Изображение категории ${item.name}`}
+                      style={{
                         width: "100%",
-                        height: "160px",
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        overflow: "hidden",
-                        borderRadius: "12px",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
+                    />
+                  </Box>
+                  <CardContent
+                    sx={{
+                      textAlign: "center",
+                      p: 2,
+                      display: "flex",
+                      flexDirection: "column",
+                      flexGrow: 1, // Занимает всё доступное пространство
+                    }}
+                  >
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        fontWeight: "bold",
+                        fontSize: isMobile ? "1rem" : "1.1rem",
+                        mt: "auto", // Прижимает текст к нижней части CardContent
                       }}
                     >
-                      <img
-                        src={`${urlPictures}/${item.images[0].name}`}
-                        alt={`Изображение категории ${item.name}`}
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          objectFit: "cover",
-                        }}
-                      />
-                    </Box>
-                    <CardContent sx={{ textAlign: "center", p: 1 }}>
-                      <Typography
-                        variant="h6"
-                        sx={{
-                          fontWeight: "bold",
-                          fontSize: isMobile ? "1rem" : "1.1rem",
-                        }}
-                      >
-                        {item.name}
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        sx={{ color: "text.secondary", mt: 1 }}
-                      >
-                        {item.productCount || 0} товаров
-                      </Typography>
-                    </CardContent>
-                  </Box>
+                      {item.name}
+                    </Typography>
+                  </CardContent>
                 </Card>
               </Grid>
             ))

@@ -16,7 +16,7 @@ import { ArrowBack, ArrowForward } from "@mui/icons-material";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/swiper-bundle.css";
 import useProductStore from "../../store/productStore";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import useBascketStore from "../../store/bascketStore";
 import Regions from "../../constants/regionsData/regions";
 import { urlPictures } from "../../constants/constants";
@@ -30,6 +30,7 @@ export default function ProductDetailPage() {
   const [quantity, setQuantity] = useState(1);
   const [newRegion, setNewRegion] = useState(null); // Изначально регион не выбран
   const { id } = useParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchProductById(id);
@@ -274,9 +275,7 @@ export default function ProductDetailPage() {
                 border: "2px solid #00B3A4",
                 color: "#00B3A4",
               }}
-              onClick={() =>
-                (window.location.href = `/paymants/${products.data.id}`)
-              }
+              onClick={() => navigate(`/paymants/${products.data.id}`)}
             >
               Купить в 1 клик
             </Button>
@@ -329,4 +328,3 @@ export default function ProductDetailPage() {
     </Container>
   );
 }
-      

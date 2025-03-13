@@ -15,11 +15,13 @@ import { Helmet } from "react-helmet";
 import useProductStore from "../../../store/productStore";
 import useBascketStore from "../../../store/bascketStore";
 import { urlPictures } from "../../../constants/constants";
+import { useNavigate } from "react-router-dom";
 export default function TopList() {
   const { fetchTopList, products } = useProductStore();
   const [quantity, setQuantity] = useState(1);
   const { addProductThisBascket } = useBascketStore();
   const [isVisible, setIsVisible] = useState(false);
+  const navigate = useNavigate();
 
   const handleScroll = () => {
     const componentPosition = document
@@ -114,7 +116,7 @@ export default function TopList() {
                         borderBottom: "1px solid #E0E0E0",
                       }}
                       onClick={() => {
-                        window.location.href = `/product/${item.id}`;
+                        navigate(`/product/${item.id}`);
                       }}
                     >
                       <CardMedia
@@ -141,7 +143,7 @@ export default function TopList() {
                           whiteSpace: "nowrap",
                         }}
                         onClick={() => {
-                          window.location.href = `/product/${item.id}`;
+                          navigate(`/product/${item.id}`);
                         }}
                       >
                         {item.name}
@@ -167,7 +169,7 @@ export default function TopList() {
                           variant="h6"
                           sx={{ color: "#00B3A4", fontWeight: "bold" }}
                           onClick={() => {
-                            window.location.href = `/product/${item.id}`;
+                            navigate(`/product/${item.id}`);
                           }}
                         >
                           {item.price} ₽

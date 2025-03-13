@@ -12,11 +12,13 @@ import React, { useEffect } from "react";
 import useCategoryStore from "../../store/categoryStore";
 import { urlPictures } from "../../constants/constants";
 import { Helmet } from "react-helmet";
+import { useNavigate } from "react-router-dom";
 
 export default function CategoriesPage() {
   const { fetchCategory, category } = useCategoryStore();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const navigate = useNavigate()
 
   useEffect(() => {
     fetchCategory();
@@ -41,7 +43,7 @@ export default function CategoriesPage() {
         </Typography>
         <Grid
           container
-          spacing={isMobile ? 2 : 3}
+          spacing={{ xs: 3, md: 5, lg: 5 }}
           columns={{ xs: 2, sm: 3, md: 4, lg: 5 }}
         >
           {Array.isArray(category.data) && category.data.length > 0 ? (
@@ -50,7 +52,7 @@ export default function CategoriesPage() {
                 <Card
                   sx={{
                     width: "100%",
-                    height: "336px",
+                    height: "336px", // Фиксированная высота карточки
                     background: "#fff",
                     borderRadius: "12px",
                     boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
@@ -62,20 +64,20 @@ export default function CategoriesPage() {
                     cursor: "pointer",
                     display: "flex",
                     flexDirection: "column",
-                    p: 2,
+                    p: { xs: 1, md: 2 },
                   }}
                   onClick={() => {
-                    window.location.href = `/products/${item.id}`;
+                     navigate(`/products/${item.id}`)
                   }}
                 >
                   <Box
                     sx={{
-                      flexGrow: 1, // Занимает всё доступное пространство
                       display: "flex",
                       justifyContent: "center",
                       alignItems: "center",
                       overflow: "hidden",
                       borderRadius: "12px",
+                      height: "200px",
                     }}
                   >
                     <img
@@ -94,7 +96,7 @@ export default function CategoriesPage() {
                       p: 2,
                       display: "flex",
                       flexDirection: "column",
-                      justifyContent: "flex-end", // Прижимаем текст к низу
+                      flexGrow: 1, // Занимает всё доступное пространство
                     }}
                   >
                     <Typography
@@ -102,16 +104,11 @@ export default function CategoriesPage() {
                       sx={{
                         fontWeight: "bold",
                         fontSize: isMobile ? "1rem" : "1.1rem",
+                        mt: "auto", // Прижимает текст к нижней части CardContent
                       }}
                     >
                       {item.name}
                     </Typography>
-                    {/* <Typography
-                      variant="body2"
-                      sx={{ color: "text.secondary", mt: 1 }}
-                    >
-                      {item.productCount || 0} товаров
-                    </Typography> */}
                   </CardContent>
                 </Card>
               </Grid>

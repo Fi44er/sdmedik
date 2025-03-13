@@ -1,10 +1,12 @@
 import { Box, Button, Container, Paper, Typography } from "@mui/material";
 import React from "react";
 import useBascketStore from "../../../store/bascketStore";
+import { useNavigate } from "react-router-dom";
 
 export default function RightBar() {
   const { basket } = useBascketStore();
   const basketData = basket.data || {};
+  const navigate = useNavigate();
 
   return (
     <Box sx={{ mt: { xs: 3, md: "75px" }, width: { xs: "100%", md: "25%" } }}>
@@ -43,7 +45,7 @@ export default function RightBar() {
           }}
           onClick={(e) => {
             e.preventDefault();
-            window.location.href = "/paymants";
+            navigate("/paymants");
           }}
         >
           Перейти к оплате
