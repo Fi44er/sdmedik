@@ -11,9 +11,10 @@ import SearchIcon from "@mui/icons-material/Search";
 import { debounce } from "lodash";
 import useSearchStore from "../../store/serchStore";
 
-const DEBOUNCE_DELAY = 250; // Задержка перед выполнением запроса
+// Константа для задержки дебаунсинга
+const DEBOUNCE_DELAY = 250;
 
-export default function Search() {
+const Search = () => {
   const {
     searchQuery,
     searchSuggestions,
@@ -24,67 +25,63 @@ export default function Search() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [isSuggestionsVisible, setIsSuggestionsVisible] = useState(false); // Состояние видимости подсказок
+  const [isSuggestionsVisible, setIsSuggestionsVisible] = useState(false);
   const inputRef = useRef(null);
-  const searchBoxRef = useRef(null); // Ref для контейнера поиска
+  const searchBoxRef = useRef(null);
 
-  // Обрабатываем ввод в поле поиска
+  // Обработка ввода в поле поиска
   const handleSearchInput = (query) => {
     setSearchQuery(query ?? "");
     if (query.trim().length) {
       setIsLoading(true);
       setError(null);
       debouncedSearchProducts(query);
-      setIsSuggestionsVisible(true); // Показываем подсказки при вводе
+      setIsSuggestionsVisible(true);
     } else {
       setSearchSuggestions([]);
-      setIsSuggestionsVisible(false); // Скрываем подсказки, если запрос пустой
+      setIsSuggestionsVisible(false);
     }
   };
 
-  // Дебаунсированная функция для выполнения поиска товаров
+  // Дебаунсированная функция для поиска
   const debouncedSearchProducts = useRef(
     debounce(async (query) => {
       try {
-        const suggestions = await searchProducts(query); // Выполняем поиск товаров
+        const suggestions = await searchProducts(query);
         setSearchSuggestions(suggestions ?? []);
       } catch (error) {
         console.error("Ошибка при получении подсказок:", error);
         setError("Произошла ошибка при поиске. Пожалуйста, попробуйте снова.");
-        setSearchSuggestions([]); // Установите пустой массив, если произошла ошибка
+        setSearchSuggestions([]);
       } finally {
         setIsLoading(false);
       }
     }, DEBOUNCE_DELAY)
   ).current;
 
-  // Обработчик клика по подсказке
+  // Обработка клика по подсказке
   const handleSuggestionClick = (suggestion) => {
     window.location.href = `/product/${suggestion.id}`;
-    setIsSuggestionsVisible(false); // Скрываем подсказки после выбора
+    setIsSuggestionsVisible(false);
   };
 
-  // Обработчик клика вне компонента
+  // Скрытие подсказок при клике вне компонента
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
         searchBoxRef.current &&
         !searchBoxRef.current.contains(event.target)
       ) {
-        setIsSuggestionsVisible(false); // Скрываем подсказки, если клик вне компонента
+        setIsSuggestionsVisible(false);
       }
     };
-
-    // Добавляем обработчик события клика
     document.addEventListener("click", handleClickOutside);
-
-    // Убираем обработчик при размонтировании компонента
     return () => {
       document.removeEventListener("click", handleClickOutside);
     };
   }, []);
 
-  // Отменяем предыдущие запросы при размонтаже компонента
+  // Отмена дебаунсинга при размонтировании
   useEffect(() => {
     return () => {
       debouncedSearchProducts.cancel();
@@ -93,16 +90,16 @@ export default function Search() {
 
   return (
     <Box
-      ref={searchBoxRef} // Привязываем ref к контейнеру поиска
+      ref={searchBoxRef}
       sx={{
         display: "flex",
         alignItems: "center",
-        width: "100%",
+        width: { xs: "100%", sm: "58%", md: "80%", lg: "100%" },
         maxWidth: "500px",
         position: "relative",
       }}
     >
-      {/* Поле поиска */}
+      {/* Поле ввода */}
       <InputBase
         ref={inputRef}
         type="text"
@@ -119,7 +116,7 @@ export default function Search() {
           backgroundColor: "#FAFAFA",
         }}
         onChange={(e) => handleSearchInput(e.target.value)}
-        onFocus={() => setIsSuggestionsVisible(true)} // Показываем подсказки при фокусе
+        onFocus={() => setIsSuggestionsVisible(true)}
       />
 
       {/* Кнопка поиска */}
@@ -132,9 +129,7 @@ export default function Search() {
           borderTopRightRadius: "10px",
           borderBottomRightRadius: "10px",
           backgroundColor: "#00B3A4",
-          "&:hover": {
-            backgroundColor: "#009688",
-          },
+          "&:hover": { backgroundColor: "#009688" },
         }}
       >
         <SearchIcon fontSize="large" />
@@ -173,16 +168,10 @@ export default function Search() {
               <CircularProgress color="success" size={24} />
             </Box>
           ) : error ? (
-            <Typography
-              sx={{
-                padding: "15px 20px",
-                color: "error.main",
-                fontFamily: "Arial, sans-serif",
-              }}
-            >
+            <Typography sx={{ padding: "15px 20px", color: "error.main" }}>
               {error}
             </Typography>
-          ) : (searchSuggestions ?? []).length > 0 ? (
+          ) : searchSuggestions.length > 0 ? (
             searchSuggestions.map((suggestion, index) => (
               <MenuItem
                 key={index}
@@ -193,27 +182,19 @@ export default function Search() {
                   alignItems: "center",
                   gap: "10px",
                   "&:hover": { backgroundColor: "#f5f5f5" },
-                  transition: "background-color 0.2s ease",
                 }}
               >
                 <Box>
                   <Typography
                     variant="body1"
-                    sx={{
-                      fontWeight: 500,
-                      color: "black",
-                      fontFamily: "Arial, sans-serif",
-                    }}
+                    sx={{ fontWeight: 500, color: "black" }}
                   >
                     {suggestion.name}
                   </Typography>
                   {suggestion.description && (
                     <Typography
                       variant="body2"
-                      sx={{
-                        color: "text.secondary",
-                        fontFamily: "Arial, sans-serif",
-                      }}
+                      sx={{ color: "text.secondary" }}
                     >
                       {suggestion.description}
                     </Typography>
@@ -222,13 +203,7 @@ export default function Search() {
               </MenuItem>
             ))
           ) : (
-            <Typography
-              sx={{
-                padding: "15px 20px",
-                color: "text.secondary",
-                fontFamily: "Arial, sans-serif",
-              }}
-            >
+            <Typography sx={{ padding: "15px 20px", color: "text.secondary" }}>
               Ничего не найдено
             </Typography>
           )}
@@ -236,4 +211,6 @@ export default function Search() {
       )}
     </Box>
   );
-}
+};
+
+export default Search;

@@ -42,9 +42,13 @@ export default function Basket() {
     fetchUserBasket();
   };
 
-  const handleClick = async (product_id, action) => {
+  const handleClick = async (product_id, action, iso) => {
     try {
-      await editCountProductBascket(product_id, action === "plus" ? 1 : -1);
+      await editCountProductBascket(
+        product_id,
+        action === "plus" ? 1 : -1,
+        iso
+      );
       setCurrentProducts((prevProducts) =>
         prevProducts.map((product) =>
           product.product_id === product_id
@@ -117,7 +121,9 @@ export default function Basket() {
                     }}
                   >
                     <Button
-                      onClick={() => handleClick(product.product_id, "minus")}
+                      onClick={() =>
+                        handleClick(product.product_id, "minus", product.iso)
+                      }
                       disabled={product.quantity <= 1}
                       sx={{
                         minWidth: 50,
@@ -132,7 +138,9 @@ export default function Basket() {
                       {product.quantity}
                     </Typography>
                     <Button
-                      onClick={() => handleClick(product.product_id, "plus")}
+                      onClick={() =>
+                        handleClick(product.product_id, "plus", product.iso)
+                      }
                       sx={{
                         minWidth: 50,
                         padding: 0.5,

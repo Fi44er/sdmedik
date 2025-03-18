@@ -8,6 +8,7 @@ import {
   Typography,
   Snackbar,
   Modal,
+  CircularProgress,
 } from "@mui/material";
 import React, { useState } from "react";
 import { motion } from "framer-motion";
@@ -63,8 +64,10 @@ export default function PayOnclick() {
   const { id } = useParams();
 
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const handlePay = async () => {
+    setLoading(true);
     await payOrderById(id);
   };
 
@@ -222,7 +225,11 @@ export default function PayOnclick() {
                   variant="contained"
                   sx={{ background: "#2CC0B3" }}
                 >
-                  Перейти к оплате
+                  {loading ? (
+                    <CircularProgress sx={{ color: "#fff" }} size={24} />
+                  ) : (
+                    "Перейти к оплате"
+                  )}
                 </Button>
               </form>
             </Box>

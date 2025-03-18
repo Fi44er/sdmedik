@@ -29,11 +29,11 @@ const useBascketStore = create((set, get) => ({
       toast.error("Ошибка при добавлении продукта в корзину:", error); // Обработка других ошибок
     }
   },
-  editCountProductBascket: async (product_id, quantity) => {
+  editCountProductBascket: async (product_id, quantity, iso) => {
     try {
       const response = await axios.post(
         `${url}/basket`,
-        { product_id, quantity },
+        { product_id, quantity, iso },
         {
           withCredentials: true,
         }

@@ -6,30 +6,26 @@ import {
   Paper,
   TextField,
   Typography,
+  CircularProgress,
 } from "@mui/material";
 import React from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import useUserStore from "../../store/userStore";
+import { useState } from "react";
 
 const scaleVariants = {
-  hidden: {
-    opacity: 0,
-    scale: 0,
-  },
+  hidden: { opacity: 0, scale: 0 },
   visible: {
     opacity: 1,
     scale: 1,
-    transition: {
-      type: "spring",
-      stiffness: 100,
-      damping: 25,
-    },
+    transition: { type: "spring", stiffness: 100, damping: 25 },
   },
 };
 
 export default function Auth() {
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { loginFunc, email, setEmail, password, setPassword } = useUserStore();
 
@@ -37,9 +33,26 @@ export default function Auth() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+    setValue,
+    watch,
+  } = useForm({
+    defaultValues: {
+      email: email || "",
+      password: password || "",
+    },
+  });
 
-  const handleAuth = async (data) => {
+  // Синхронизация полей со store
+  React.useEffect(() => {
+    const subscription = watch((value) => {
+      setEmail(value.email);
+      setPassword(value.password);
+    });
+    return () => subscription.unsubscribe();
+  }, [watch, setEmail, setPassword]);
+
+  const handleAuth = async () => {
+    setLoading(true);
     await loginFunc(navigate);
   };
 
@@ -80,22 +93,18 @@ export default function Auth() {
                     required: "Email is required",
                     pattern: {
                       value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-                      message: "Не правильный или не коректный email address",
+                      message: "Неправильный или некорректный email",
                     },
                   })}
                   error={!!errors.email}
-                  helperText={errors.email ? errors.email.message : ""}
-                  onChange={(e) => setEmail(e.target.value)}
+                  helperText={errors.email?.message}
+                  onChange={(e) => setValue("email", e.target.value)}
                   sx={{
                     "& .MuiOutlinedInput-root": {
-                      "&.Mui-focused fieldset": {
-                        borderColor: "#2CC0B3",
-                      },
+                      "&.Mui-focused fieldset": { borderColor: "#2CC0B3" },
                     },
                     "& .MuiInputLabel-root": {
-                      "&.Mui-focused": {
-                        color: "#2CC0B3",
-                      },
+                      "&.Mui-focused": { color: "#2CC0B3" },
                     },
                   }}
                 />
@@ -108,18 +117,14 @@ export default function Auth() {
                     required: "Password is required",
                   })}
                   error={!!errors.password}
-                  helperText={errors.password ? errors.password.message : ""}
-                  onChange={(e) => setPassword(e.target.value)}
+                  helperText={errors.password?.message}
+                  onChange={(e) => setValue("password", e.target.value)}
                   sx={{
                     "& .MuiOutlinedInput-root": {
-                      "&.Mui-focused fieldset": {
-                        borderColor: "#2CC0B3",
-                      },
+                      "&.Mui-focused fieldset": { borderColor: "#2CC0B3" },
                     },
                     "& .MuiInputLabel-root": {
-                      "&.Mui-focused": {
-                        color: "#2CC0B3",
-                      },
+                      "&.Mui-focused": { color: "#2CC0B3" },
                     },
                   }}
                 />
@@ -128,7 +133,11 @@ export default function Auth() {
                   sx={{ background: "#2CC0B3" }}
                   type="submit"
                 >
-                  Войти
+                  {loading ? (
+                    <CircularProgress sx={{ color: "#fff" }} size={24} />
+                  ) : (
+                    "Войти"
+                  )}
                 </Button>
               </form>
             </Box>
