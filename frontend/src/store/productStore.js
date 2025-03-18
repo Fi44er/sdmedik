@@ -79,7 +79,8 @@ const useProductStore = create((set, get) => ({
     offset,
     limit,
     catalogs,
-    searchTerm
+    searchTerm,
+    searchArcticle
   ) => {
     try {
       const response = await axios.get(`${url}/product`, {
@@ -90,6 +91,8 @@ const useProductStore = create((set, get) => ({
           limit: limit, // Добавляем limit
           catalogs: catalogs,
           name: searchTerm,
+          article: searchArcticle,
+
         },
       });
       set({ products: response.data });

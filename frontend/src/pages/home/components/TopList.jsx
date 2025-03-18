@@ -71,7 +71,6 @@ export default function TopList() {
       >
         <img style={{ width: "100%" }} src="/Line 1.png" alt="Линия" />
         <Box sx={{ mt: 3 }}>
-          {/* <header> */}
           <Typography
             variant="h5"
             color="Black"
@@ -81,14 +80,13 @@ export default function TopList() {
           >
             Лучшие товары
           </Typography>
-          {/* </header> */}
           <Grid
             container
             spacing={{ xs: 1, md: 4, lg: 2 }}
             columns={{ xs: 4, sm: 4, md: 4 }}
           >
             {products.data &&
-              products?.data.map((item, index) => (
+              products.data.map((item, index) => (
                 <Grid item="true" xs={1} sm={1} md={1} key={index}>
                   <Card
                     sx={{

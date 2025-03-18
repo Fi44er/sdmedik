@@ -6,7 +6,6 @@ import {
   Paper,
   TextField,
   Typography,
-  Snackbar,
   Modal,
 } from "@mui/material";
 import React, { useState } from "react";
@@ -17,18 +16,11 @@ import CloseIcon from "@mui/icons-material/Close";
 import useUserStore from "../../store/userStore";
 
 const scaleVariants = {
-  hidden: {
-    opacity: 0,
-    scale: 0,
-  },
+  hidden: { opacity: 0, scale: 0 },
   visible: {
     opacity: 1,
     scale: 1,
-    transition: {
-      type: "spring",
-      stiffness: 100,
-      damping: 25,
-    },
+    transition: { type: "spring", stiffness: 100, damping: 25 },
   },
 };
 
@@ -37,9 +29,9 @@ const formatPhoneNumber = (value) => {
   const match = cleaned.match(/^7(\d{0,3})(\d{0,3})(\d{0,2})(\d{0,2})$/);
   if (!match) return "+7 (";
   const [, areaCode, firstPart, secondPart, thirdPart] = match;
-  return `+7 (${areaCode}${areaCode ? ")" : ""}${
-    firstPart ? ` ${firstPart}` : ""
-  }${secondPart ? `-${secondPart}` : ""}${thirdPart ? `-${thirdPart}` : ""}`;
+  return `+7 (${areaCode}${areaCode ? ")" : ""}${firstPart ? ` ${firstPart}` : ""}${
+    secondPart ? `-${secondPart}` : ""
+  }${thirdPart ? `-${thirdPart}` : ""}`;
 };
 
 export default function Register() {
@@ -59,14 +51,35 @@ export default function Register() {
     setCode,
     verifyFunc,
   } = useUserStore();
+
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+    setValue,
+    watch,
+  } = useForm({
+    defaultValues: {
+      email: email || "",
+      phone_number: phone_number || "",
+      fio: fio || "",
+      password: password || "",
+    },
+  });
 
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+
+  // Синхронизация полей со store
+  React.useEffect(() => {
+    const subscription = watch((value) => {
+      setEmail(value.email);
+      setPhone_number(value.phone_number);
+      setFio(value.fio);
+      setPassword(value.password);
+    });
+    return () => subscription.unsubscribe();
+  }, [watch, setEmail, setPhone_number, setFio, setPassword]);
 
   const handleRegister = async () => {
     await registerFunc();
@@ -77,12 +90,16 @@ export default function Register() {
   };
 
   const handleVerify = async () => {
+    if (!code) {
+      setError("Код подтверждения обязателен");
+      return;
+    }
     await verifyFunc(navigate);
   };
 
   const handlePhoneNumberChange = (e) => {
     const formattedPhoneNumber = formatPhoneNumber(e.target.value);
-    setPhone_number(formattedPhoneNumber);
+    setValue("phone_number", formattedPhoneNumber);
   };
 
   return (
@@ -95,14 +112,7 @@ export default function Register() {
       >
         <Paper sx={{ p: 2, mt: 5, mb: 5, width: { xs: 320, md: 500 } }}>
           <Container>
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                gridGap: 15,
-                mb: 4,
-              }}
-            >
+            <Box sx={{ display: "flex", alignItems: "center", gridGap: 15, mb: 4 }}>
               <img src="/previwLogo.svg" alt="" />
               <Typography variant="h6" sx={{ color: "#2CC0B3" }}>
                 Sdmedik
@@ -112,38 +122,28 @@ export default function Register() {
               <Typography variant="h4">Регистрация</Typography>
               <form
                 onSubmit={handleSubmit(handleRegister)}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gridGap: 30,
-                  marginTop: "10px",
-                }}
+                style={{ display: "flex", flexDirection: "column", gridGap: 30, marginTop: "10px" }}
               >
                 <TextField
                   variant="outlined"
                   label="Email"
                   placeholder="your@email.com"
                   {...register("email", {
-                    required: "Это поле обязательно для заполнения",
+                    required: "Это поле обязательно",
                     pattern: {
                       value: /^\S+@\S+$/i,
                       message: "Неправильный формат email",
                     },
                   })}
                   error={!!errors.email}
-                  helperText={errors.email ? errors.email.message : ""}
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  helperText={errors.email?.message}
+                  onChange={(e) => setValue("email", e.target.value)}
                   sx={{
                     "& .MuiOutlinedInput-root": {
-                      "&.Mui-focused fieldset": {
-                        borderColor: "#2CC0B3",
-                      },
+                      "&.Mui-focused fieldset": { borderColor: "#2CC0B3" },
                     },
                     "& .MuiInputLabel-root": {
-                      "&.Mui-focused": {
-                        color: "#2CC0B3",
-                      },
+                      "&.Mui-focused": { color: "#2CC0B3" },
                     },
                   }}
                 />
@@ -152,28 +152,21 @@ export default function Register() {
                   label="Телефон"
                   placeholder="+7 (___) ___-__-__"
                   {...register("phone_number", {
-                    required: "Это поле обязательно для заполнения",
+                    required: "Это поле обязательно",
                     pattern: {
                       value: /^\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}$/,
                       message: "Неправильный формат номера телефона",
                     },
                   })}
                   error={!!errors.phone_number}
-                  helperText={
-                    errors.phone_number ? errors.phone_number.message : ""
-                  }
-                  value={phone_number}
+                  helperText={errors.phone_number?.message}
                   onChange={handlePhoneNumberChange}
                   sx={{
                     "& .MuiOutlinedInput-root": {
-                      "&.Mui-focused fieldset": {
-                        borderColor: "#2CC0B3",
-                      },
+                      "&.Mui-focused fieldset": { borderColor: "#2CC0B3" },
                     },
                     "& .MuiInputLabel-root": {
-                      "&.Mui-focused": {
-                        color: "#2CC0B3",
-                      },
+                      "&.Mui-focused": { color: "#2CC0B3" },
                     },
                   }}
                 />
@@ -181,23 +174,18 @@ export default function Register() {
                   variant="outlined"
                   label="ФИО"
                   placeholder="Иванов Дмитрий Сергеевич"
-                  value={fio}
                   {...register("fio", {
-                    required: "Это поле обязательно для заполнения",
+                    required: "Это поле обязательно",
                   })}
                   error={!!errors.fio}
-                  helperText={errors.fio ? errors.fio.message : ""}
-                  onChange={(e) => setFio(e.target.value)}
+                  helperText={errors.fio?.message}
+                  onChange={(e) => setValue("fio", e.target.value)}
                   sx={{
                     "& .MuiOutlinedInput-root": {
-                      "&.Mui-focused fieldset": {
-                        borderColor: "#2CC0B3",
-                      },
+                      "&.Mui-focused fieldset": { borderColor: "#2CC0B3" },
                     },
                     "& .MuiInputLabel-root": {
-                      "&.Mui-focused": {
-                        color: "#2CC0B3",
-                      },
+                      "&.Mui-focused": { color: "#2CC0B3" },
                     },
                   }}
                 />
@@ -206,34 +194,30 @@ export default function Register() {
                   label="Пароль"
                   type="password"
                   {...register("password", {
-                    required: "Это поле обязательно для заполнения",
+                    required: "Это поле обязательно",
                     minLength: {
                       value: 6,
-                      message: "Пароль не может быть короче 6 символов",
+                      message: "Пароль должен быть не короче 6 символов",
                     },
+                    // pattern: {
+                    //   value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{6,}$/,
+                    //   message:
+                    //     "Пароль должен содержать минимум одну заглавную букву, одну строчную и одну цифру",
+                    // },
                   })}
                   error={!!errors.password}
-                  helperText={errors.password ? errors.password.message : ""}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  helperText={errors.password?.message}
+                  onChange={(e) => setValue("password", e.target.value)}
                   sx={{
                     "& .MuiOutlinedInput-root": {
-                      "&.Mui-focused fieldset": {
-                        borderColor: "#2CC0B3",
-                      },
+                      "&.Mui-focused fieldset": { borderColor: "#2CC0B3" },
                     },
                     "& .MuiInputLabel-root": {
-                      "&.Mui-focused": {
-                        color: "#2CC0B3",
-                      },
+                      "&.Mui-focused": { color: "#2CC0B3" },
                     },
                   }}
                 />
-                <Button
-                  type="submit"
-                  variant="contained"
-                  sx={{ background: "#2CC0B3" }}
-                >
+                <Button variant="contained" sx={{ background: "#2CC0B3" }} type="submit">
                   Зарегистрироваться
                 </Button>
               </form>
@@ -269,9 +253,9 @@ export default function Register() {
           top: 400,
           left: { xs: 13, md: "37%" },
         }}
-        disableRestoreFocus // добавьте эту строку
-        disableAutoFocus // добавьте эту строку
-        hideBackdrop={true} // добавьте эту строку
+        disableRestoreFocus
+        disableAutoFocus
+        hideBackdrop={true}
       >
         <Box sx={{ p: 4, bgcolor: "white", borderRadius: 2, boxShadow: 3 }}>
           <Box
@@ -280,7 +264,7 @@ export default function Register() {
               alignItems: "center",
               gridGap: 15,
               mb: 2,
-              justifyContent: "space-between", // добавьте эту строку
+              justifyContent: "space-between",
             }}
           >
             <Box sx={{ display: "flex", alignItems: "center", gridGap: 15 }}>
@@ -306,18 +290,16 @@ export default function Register() {
             placeholder="Код"
             value={code}
             onChange={(e) => setCode(e.target.value)}
+            error={!!error}
+            helperText={error}
             sx={{
               mt: 2,
               width: "100%",
               "& .MuiOutlinedInput-root": {
-                "&.Mui-focused fieldset": {
-                  borderColor: "#2CC0B3",
-                },
+                "&.Mui-focused fieldset": { borderColor: "#2CC0B3" },
               },
               "& .MuiInputLabel-root": {
-                "&.Mui-focused": {
-                  color: "#2CC0B3",
-                },
+                "&.Mui-focused": { color: "#2CC0B3" },
               },
             }}
           />

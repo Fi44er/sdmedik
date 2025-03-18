@@ -7,6 +7,7 @@ import {
   Typography,
   Checkbox,
   FormControlLabel,
+  CircularProgress,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
@@ -61,6 +62,7 @@ export default function Payments() {
 
   const [error, setError] = useState(null);
   const [isAnotherRecipient, setIsAnotherRecipient] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   // Загружаем данные пользователя при монтировании компонента
   useEffect(() => {
@@ -77,6 +79,7 @@ export default function Payments() {
   }, [isAuthenticated, getUserInfo, setEmail, setFio, setPhone_number]);
 
   const handlePay = async (data) => {
+    setLoading(true);
     if (isAuthenticated && !isAnotherRecipient) {
       // Если пользователь авторизован и не указал другого получателя
       await payOrder({
@@ -271,7 +274,11 @@ export default function Payments() {
                   variant="contained"
                   sx={{ background: "#2CC0B3", mt: 2 }}
                 >
-                  Перейти к оплате
+                  {loading ? (
+                    <CircularProgress sx={{ color: "#fff" }} size={24} />
+                  ) : (
+                    "Перейти к оплате"
+                  )}
                 </Button>
               </form>
             </Box>

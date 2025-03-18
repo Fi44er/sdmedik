@@ -27,6 +27,7 @@ const AdminProductTable = () => {
   const [selectedCategory, setSelectedCategory] = useState("");
   const { fetchCategory, category } = useCategoryStore();
   const [searchTerm, setSearchTerm] = useState("");
+  const [searchArcticle, setSearchArcticle] = useState("");
 
   // Загрузка данных при изменении страницы или категории
   useEffect(() => {
@@ -61,10 +62,20 @@ const AdminProductTable = () => {
     fetchProducts(selectedCategory, null, offset, itemsPerPage);
   };
 
-  const handleSearch = async () => {
+  const handleSearchName = async () => {
     try {
       // Выполняем поиск
       await fetchProducts(null, null, null, null, null, searchTerm);
+      // После успешного поиска, filteredProducts обновится автоматически
+      // благодаря useEffect, который отслеживает изменения products
+    } catch (error) {
+      console.error("Ошибка при поиске товаров:", error);
+    }
+  };
+  const handleSearchArcticle = async () => {
+    try {
+      // Выполняем поиск
+      await fetchProducts(null, null, null, null, null, null, searchArcticle);
       // После успешного поиска, filteredProducts обновится автоматически
       // благодаря useEffect, который отслеживает изменения products
     } catch (error) {
@@ -108,7 +119,23 @@ const AdminProductTable = () => {
           variant="contained"
           onClick={(e) => {
             e.preventDefault();
-            handleSearch();
+            handleSearchName();
+          }}
+        >
+          Найти
+        </Button>
+      </Box>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 3 }}>
+        <TextField
+          value={searchArcticle}
+          onChange={(e) => setSearchArcticle(e.target.value)}
+          placeholder="Поиск по арктиклу"
+        />
+        <Button
+          variant="contained"
+          onClick={(e) => {
+            e.preventDefault();
+            handleSearchArcticle();
           }}
         >
           Найти
