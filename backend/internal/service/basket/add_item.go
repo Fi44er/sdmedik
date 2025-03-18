@@ -51,12 +51,11 @@ func (s *service) AddItem(ctx context.Context, data *dto.AddBasketItem, userID s
 		return constants.ErrProductNotFound
 	}
 
-	var catalogMask uint8 = 1 << 1
+	var catalogMask uint8 = 1 << 1 // для 2ого каталога
 	isSertificate := (*product)[0].Catalogs&catalogMask != 0 && data.Iso != ""
 
 	var basketItem *model.BasketItem
 	if userID != "" {
-		// Ищем только тот товар, который совпадает по `ProductID` и `IsSertificate`
 		basketItem, err = s.basketItemRepo.GetByProductIDIsoIsCert(ctx, data.ProductID, basket.ID, data.Iso, isSertificate)
 		if err != nil {
 			return fmt.Errorf("failed to get basket item: %w", err)
@@ -72,7 +71,9 @@ func (s *service) AddItem(ctx context.Context, data *dto.AddBasketItem, userID s
 
 	if basketItem != nil {
 		// Обновляем количество товара
+		s.logger.Infof("basketItem.Quantity: %v ", basketItem.Quantity)
 		basketItem.Quantity += data.Quantity
+		s.logger.Infof("basketItem.Quantity: %v ", basketItem.Quantity)
 		if basketItem.Quantity <= 0 {
 			return s.DeleteItem(ctx, basketItem.ID, userID, sess)
 		}
@@ -90,7 +91,7 @@ func (s *service) AddItem(ctx context.Context, data *dto.AddBasketItem, userID s
 		} else {
 			s.logger.Infof("session is not nil: %+v", basket)
 			for i, item := range basket.Items {
-				if item.ProductID == basketItem.ProductID && item.IsCertificate == isSertificate {
+				if item.ID == basketItem.ID {
 					basket.Items[i] = *basketItem
 				}
 			}
@@ -121,6 +122,10 @@ func (s *service) AddItem(ctx context.Context, data *dto.AddBasketItem, userID s
 		ProductID:     data.ProductID,
 		IsCertificate: isSertificate,
 		Iso:           iso,
+	}
+
+	if newBasketItem.Quantity <= 0 {
+		return nil
 	}
 
 	if userID != "" {
