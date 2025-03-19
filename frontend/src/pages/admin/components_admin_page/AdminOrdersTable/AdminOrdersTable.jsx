@@ -180,114 +180,6 @@ const AdminOrdersTable = () => {
         Таблица заказов и аналитикаческих данных
       </Typography>
 
-      <FormControl variant="outlined" sx={{ mb: 2, minWidth: 120 }}>
-        <InputLabel>Статус</InputLabel>
-        <Select
-          value={statusFilter}
-          onChange={handleStatusFilterChange}
-          label="Статус"
-        >
-          <MenuItem value="">
-            <em>Все</em>
-          </MenuItem>
-          <MenuItem value="pending">В ожидании</MenuItem>
-          <MenuItem value="processing">Рассмотрен</MenuItem>
-          <MenuItem value="completed">Завершен</MenuItem>
-          <MenuItem value="canceled">Отменен</MenuItem>
-        </Select>
-      </FormControl>
-
-      {/* Выбор промежутка времени */}
-      <FormControl variant="outlined" sx={{ mb: 2, minWidth: 120 }}>
-        <InputLabel>Промежуток времени</InputLabel>
-        <Select
-          value={timeFrame}
-          onChange={handleTimeFrameChange}
-          label="Промежуток времени"
-        >
-          <MenuItem value="day">По дням</MenuItem>
-          <MenuItem value="week">По неделям</MenuItem>
-          <MenuItem value="month">По месяцам</MenuItem>
-        </Select>
-      </FormControl>
-
-      {/* Диаграмма количества заказов по статусам и росту */}
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h6">
-          Количество заказов по статусам и росту ({timeFrame})
-        </Typography>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart
-            data={orderData}
-            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" stroke="#ccc" />
-            <XAxis
-              dataKey={
-                timeFrame === "month"
-                  ? "month"
-                  : timeFrame === "week"
-                  ? "week"
-                  : "date"
-              }
-            />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Bar
-              type="monotone"
-              dataKey="count"
-              fill="#4CAF50" // Зелёный цвет для количества заказов
-              strokeWidth={2}
-              barSize={20}
-              activeDot={{ r: 8 }}
-            />
-          </BarChart>
-        </ResponsiveContainer>
-      </Box>
-
-      {/* Диаграмма прибыли по статусам и росту */}
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h6">
-          Прибыль по статусам и росту ({timeFrame})
-        </Typography>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart
-            data={orderData}
-            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" stroke="#ccc" />
-            <XAxis
-              dataKey={
-                timeFrame === "month"
-                  ? "month"
-                  : timeFrame === "week"
-                  ? "week"
-                  : "date"
-              }
-            />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Bar
-              type="monotone"
-              dataKey="total"
-              fill="#82ca9d" // Светло-зелёный цвет
-              strokeWidth={2}
-              barSize={20}
-              activeDot={{ r: 8 }}
-            />
-          </BarChart>
-        </ResponsiveContainer>
-      </Box>
-
-      {/* Вывод общей информации */}
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h6">Общая информация</Typography>
-        <Typography>Всего заказов: {totalOrders}</Typography>
-        <Typography>Общая прибыль: {totalProfit.toFixed(2)} ₽</Typography>
-      </Box>
-
       {selectedOrder ? (
         // Отображение информации о выбранном заказе
         <Box
@@ -416,7 +308,15 @@ const AdminOrdersTable = () => {
           </TableContainer>
 
           {/* Пагинация */}
-          <Box sx={{ display: "flex", justifyContent: "center", mt: 2, mb: 2 }}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              mt: 2,
+              mb: 2,
+              p: 1,
+            }}
+          >
             <Pagination
               count={Math.ceil(filteredOrders.length / itemsPerPage)}
               page={currentPage}
@@ -426,6 +326,114 @@ const AdminOrdersTable = () => {
           </Box>
         </Paper>
       )}
+
+      <FormControl variant="outlined" sx={{ mb: 2, minWidth: 120 }}>
+        <InputLabel>Статус</InputLabel>
+        <Select
+          value={statusFilter}
+          onChange={handleStatusFilterChange}
+          label="Статус"
+        >
+          <MenuItem value="">
+            <em>Все</em>
+          </MenuItem>
+          <MenuItem value="pending">В ожидании</MenuItem>
+          <MenuItem value="processing">Рассмотрен</MenuItem>
+          <MenuItem value="completed">Завершен</MenuItem>
+          <MenuItem value="canceled">Отменен</MenuItem>
+        </Select>
+      </FormControl>
+
+      {/* Выбор промежутка времени */}
+      <FormControl variant="outlined" sx={{ mb: 2, minWidth: 120 }}>
+        <InputLabel>Промежуток времени</InputLabel>
+        <Select
+          value={timeFrame}
+          onChange={handleTimeFrameChange}
+          label="Промежуток времени"
+        >
+          <MenuItem value="day">По дням</MenuItem>
+          <MenuItem value="week">По неделям</MenuItem>
+          <MenuItem value="month">По месяцам</MenuItem>
+        </Select>
+      </FormControl>
+
+      {/* Диаграмма количества заказов по статусам и росту */}
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h6">
+          Количество заказов по статусам и росту ({timeFrame})
+        </Typography>
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart
+            data={orderData}
+            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" stroke="#ccc" />
+            <XAxis
+              dataKey={
+                timeFrame === "month"
+                  ? "month"
+                  : timeFrame === "week"
+                  ? "week"
+                  : "date"
+              }
+            />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <Bar
+              type="monotone"
+              dataKey="count"
+              fill="#4CAF50" // Зелёный цвет для количества заказов
+              strokeWidth={2}
+              barSize={20}
+              activeDot={{ r: 8 }}
+            />
+          </BarChart>
+        </ResponsiveContainer>
+      </Box>
+
+      {/* Диаграмма прибыли по статусам и росту */}
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h6">
+          Прибыль по статусам и росту ({timeFrame})
+        </Typography>
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart
+            data={orderData}
+            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" stroke="#ccc" />
+            <XAxis
+              dataKey={
+                timeFrame === "month"
+                  ? "month"
+                  : timeFrame === "week"
+                  ? "week"
+                  : "date"
+              }
+            />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <Bar
+              type="monotone"
+              dataKey="total"
+              fill="#82ca9d" // Светло-зелёный цвет
+              strokeWidth={2}
+              barSize={20}
+              activeDot={{ r: 8 }}
+            />
+          </BarChart>
+        </ResponsiveContainer>
+      </Box>
+
+      {/* Вывод общей информации */}
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h6">Общая информация</Typography>
+        <Typography>Всего заказов: {totalOrders}</Typography>
+        <Typography>Общая прибыль: {totalProfit.toFixed(2)} ₽</Typography>
+      </Box>
     </Box>
   );
 };
