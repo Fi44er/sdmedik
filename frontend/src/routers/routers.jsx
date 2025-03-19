@@ -32,6 +32,7 @@ import CategoriesForCertificate from "../pages/categories_for_certificate/Catego
 import CatalogsCertificateLayout from "../pages/catalog/CatalogsCertificateLayout";
 import ProductDynamicCertificatePage from "../pages/Product/ProductDynamicCertificatePage";
 import LayoutWrapper from "../global/LayoutWrapper";
+import NotFound from "../pages/notfound/NotFound";
 
 const UsersRoute = ({ children }) => {
   const isLoggedIn = Cookies.get("logged_in") === "true";
@@ -237,6 +238,14 @@ export const router = createBrowserRouter([
           <AdminDashboard />
         </LayoutWrapper>
       </AdminRoute>
+    ),
+  },
+  {
+    path: "*",
+    element: (
+      <LayoutWrapper>
+        <NotFound />
+      </LayoutWrapper>
     ),
   },
 ]);

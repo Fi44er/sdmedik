@@ -3,9 +3,7 @@ import {
   Button,
   Card,
   CardContent,
-  CardHeader,
   CardMedia,
-  IconButton,
   Typography,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
@@ -16,6 +14,7 @@ import useProductStore from "../../../store/productStore";
 import useBascketStore from "../../../store/bascketStore";
 import { urlPictures } from "../../../constants/constants";
 import { useNavigate } from "react-router-dom";
+
 export default function TopList() {
   const { fetchTopList, products } = useProductStore();
   const [quantity, setQuantity] = useState(1);
@@ -44,13 +43,10 @@ export default function TopList() {
 
   useEffect(() => {
     fetchTopList();
-    console.log(products);
-  }, []);
-  const hendleAddProductThithBascket = async (id) => {
-    setQuantity(quantity);
-    const product_id = id;
-    console.log(id, quantity);
+  }, [fetchTopList]);
 
+  const hendleAddProductThithBascket = async (id) => {
+    const product_id = id;
     await addProductThisBascket(product_id, quantity);
   };
 
@@ -73,7 +69,7 @@ export default function TopList() {
         <Box sx={{ mt: 3 }}>
           <Typography
             variant="h5"
-            color="Black"
+            color="black"
             sx={{
               mb: 4,
             }}
@@ -85,7 +81,7 @@ export default function TopList() {
             spacing={{ xs: 1, md: 4, lg: 2 }}
             columns={{ xs: 4, sm: 4, md: 4 }}
           >
-            {products.data &&
+            {products && Array.isArray(products.data) ? (
               products.data.map((item, index) => (
                 <Grid item="true" xs={1} sm={1} md={1} key={index}>
                   <Card
@@ -98,7 +94,7 @@ export default function TopList() {
                       transition: "transform 0.2s, box-shadow 0.2s",
                       "&:hover": {
                         transform: "scale(1.05)",
-                        boxShadow: " 0 8px 30px rgba(0, 0, 0, 0.2)",
+                        boxShadow: "0 8px 30px rgba(0, 0, 0, 0.2)",
                       },
                       display: "flex",
                       flexDirection: "column",
@@ -150,7 +146,6 @@ export default function TopList() {
                         variant="body"
                         sx={{
                           color: "text.secondary",
-                          // textDecoration: "line-through",
                         }}
                       >
                         Всего заказов {item.order_count} шт.
@@ -172,14 +167,6 @@ export default function TopList() {
                         >
                           {item.price} ₽
                         </Typography>
-                        {/* {e.oldPrice && (
-                              <Typography
-                                variant="body2"
-                                sx={{ color: "text.secondary", textDecoration: "line-through" }}
-                              >
-                                {e.oldPrice} ₽
-                              </Typography>
-                            )} */}
                       </Box>
                       <Button
                         variant="contained"
@@ -200,49 +187,13 @@ export default function TopList() {
                         В корзину
                       </Button>
                     </CardContent>
-                    {/* <Box
-                          sx={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                            p: 2,
-                            borderTop: "1px solid #E0E0E0",
-                          }}
-                        >
-                          <Button
-                            sx={{
-                              width: "100%",
-                              height: "40px",
-                              border: `2px solid #00B3A4`,
-                              borderRadius: "12px",
-                              color: "#00B3A4",
-                            }}
-                            variant="outlined"
-                            onClick={() => {
-                              hendleAddProductThithBascket(e.id);
-                            }}
-                          >
-                            В корзину
-                          </Button>
-                        </Box> */}
                   </Card>
                 </Grid>
-              ))}
+              ))
+            ) : (
+              <Typography>Загрузка товаров...</Typography>
+            )}
           </Grid>
-          {/* <Box sx={{ mt: 4, mb: 4, display: "flex", justifyContent: "right" }}>
-            <Button
-              sx={{
-                width: "260px",
-                height: "50px",
-                fontSize: "18px",
-                border: "2px solid #2CC0B3",
-                color: "#2CC0B3",
-              }}
-              variant="outlined"
-            >
-              Посмотреть все
-            </Button>
-          </Box> */}
         </Box>
       </motion.div>
     </Box>
