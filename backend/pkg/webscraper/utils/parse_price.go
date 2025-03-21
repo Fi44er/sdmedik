@@ -11,6 +11,7 @@ import (
 
 	"github.com/Fi44er/sdmedik/backend/pkg/webscraper/constants"
 	"github.com/andybalholm/brotli"
+	"github.com/gofiber/fiber/v2/log"
 	"golang.org/x/net/html"
 )
 
@@ -52,6 +53,7 @@ func ParceCertificatePriceRegion(region constants.Region, article string, articl
 			return nil
 		}
 
+		log.Info(doc)
 		certificatePrice = ParcePrice(doc)
 	} else {
 		certificatePrice = 0

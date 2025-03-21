@@ -15,69 +15,87 @@ import (
 func Scraper(ctx context.Context) []structs.Items {
 	regions := constants.Regions
 	articles := constants.Articles
-
 	mainUrl := "https://ktsr.sfr.gov.ru"
-	doc := utils.Request(mainUrl)
-	sectionsMap := utils.ParseSectionUrl(doc)
-	articleUrlMap := make(map[string]structs.Category)
-	items := make(map[string]structs.Items)
 
+	log.Info("Starting web scraper")
+	doc := utils.Request(mainUrl)
+	if doc == nil {
+		log.Error("Failed to fetch the main document")
+		return nil
+	}
+	log.Info("Fetched main document from: ", mainUrl)
+
+	sectionsMap := utils.ParseSectionUrl(doc)
+	log.Info("Parsed section URLs")
+
+	// Предварительное заполнение articleUrlMap
+	articleUrlMap := make(map[string]structs.Category)
+	for _, article := range articles {
+		articleType := strings.Split(article, "-")[0]
+		url := fmt.Sprintf("%v%v", mainUrl, sectionsMap[articleType])
+		if _, ok := articleUrlMap[article]; !ok {
+			log.Info("Pre-parsing category article URL for article: ", article, " URL: ", url)
+			utils.ParseCategoryArticleUrl(url, articleUrlMap)
+		}
+	}
+
+	// Предварительное заполнение productsMap
+	productsMap := make(map[string][]structs.ParseProductsArticlesType)
+	for article := range articleUrlMap {
+		url := articleUrlMap[article].URL
+		if _, ok := productsMap[url]; !ok {
+			log.Info("Fetching products articles for URL: ", url)
+			productsMap[url] = utils.ParseProductsArticles(url)
+		}
+	}
+
+	items := make(map[string]structs.Items)
 	results := make(chan struct {
 		article string
 		item    structs.Items
-	})
+	}, len(articles)*len(regions))
 
 	var wg sync.WaitGroup
 	var mu sync.Mutex
-
-	// Ограничиваем количество одновременно работающих горутин
-	maxGoroutines := 20 // Можно настроить в зависимости от возможностей системы
+	maxGoroutines := 50
 	sem := make(chan struct{}, maxGoroutines)
 
 	for _, article := range articles {
 		articleType := strings.Split(article, "-")[0]
-		log.Info("article: ", article, " articleType: ", articleType)
+		log.Info("Processing article: ", article, " with type: ", articleType)
 		for _, region := range regions {
 			wg.Add(1)
-			sem <- struct{}{} // Занимаем слот в семафоре
+			sem <- struct{}{}
 
-			go func(article string, articleType string, region constants.Region) {
+			go func(article, articleType string, region constants.Region) {
 				defer wg.Done()
-				defer func() { <-sem }() // Освобождаем слот в семафоре
+				defer func() { <-sem }()
 
 				select {
 				case <-ctx.Done():
-					return // Завершаем горутину при отмене контекста
+					log.Warn("Context done, stopping goroutine for article: ", article, " and region: ", region.Iso3166)
+					return
 				default:
 				}
 
 				certificatePrice := utils.ParceCertificatePriceRegion(region, article, articleType)
+				if certificatePrice == nil {
+					log.Warn("No certificate price found for article: ", article, " in region: ", region.Iso3166)
+					return
+				}
+
 				mu.Lock()
 				if existingItems, exist := items[article]; exist {
-					log.Info("Append price to existing item map")
 					existingItems.Items = append(existingItems.Items, structs.Item{
 						Price:  *certificatePrice,
 						Region: region.Iso3166,
 					})
 					items[article] = existingItems
-					mu.Unlock()
-					results <- struct {
-						article string
-						item    structs.Items
-					}{article, existingItems}
 				} else {
-					log.Info("Create new item map")
-					if _, ok := articleUrlMap[article]; !ok {
-						url := fmt.Sprintf("%v%v", mainUrl, sectionsMap[articleType])
-						utils.ParseCategoryArticleUrl(url, articleUrlMap)
-					}
-
-					log.Info(articleUrlMap[article].URL)
-					productsArticles := utils.ParseProductsArticles(articleUrlMap[article].URL)
 					newItems := structs.Items{
 						CategoryArticle: article,
 						CategoryName:    articleUrlMap[article].Name,
-						Product:         productsArticles,
+						Product:         productsMap[articleUrlMap[article].URL],
 						Items: []structs.Item{
 							{
 								Price:  *certificatePrice,
@@ -86,11 +104,17 @@ func Scraper(ctx context.Context) []structs.Items {
 						},
 					}
 					items[article] = newItems
-					mu.Unlock()
-					results <- struct {
-						article string
-						item    structs.Items
-					}{article, newItems}
+				}
+				result := items[article]
+				mu.Unlock()
+
+				select {
+				case <-ctx.Done():
+					return
+				case results <- struct {
+					article string
+					item    structs.Items
+				}{article, result}:
 				}
 			}(article, articleType, region)
 		}
@@ -112,5 +136,6 @@ func Scraper(ctx context.Context) []structs.Items {
 		itemSlice = append(itemSlice, item)
 	}
 
+	log.Info("Scraping completed. Total items scraped: ", len(itemSlice))
 	return itemSlice
 }
