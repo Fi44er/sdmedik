@@ -126,27 +126,41 @@ func (s *service) Scraper() error {
 			}
 		}
 
+		// Создаём новые записи
+		createCertChunk := s.chunckSliceCert(updateCert, 1000)
+		for _, chunk := range createCertChunk {
+			err := s.certificateService.CreateMany(ctx, &chunk)
+			if err != nil {
+				return fmt.Errorf("failed to update certificates: %v", err)
+			}
+		}
+		// if len(createCert) > 0 {
+		// 	err := s.certificateService.CreateMany(ctx, &createCert)
+		// 	if err != nil {
+		// 		return fmt.Errorf("failed to create certificates: %v", err)
+		// 	}
+		// }
+
+		// Обновляем существующие записи
+		updateCertChunk := s.chunckSliceCert(updateCert, 1000)
+		for _, chunk := range updateCertChunk {
+			err := s.certificateService.UpdateMany(ctx, &chunk)
+			if err != nil {
+				return fmt.Errorf("failed to update certificates: %v", err)
+			}
+		}
+		// if len(updateCert) > 0 {
+		// 	err := s.certificateService.UpdateMany(ctx, &updateCert)
+		// 	if err != nil {
+		// 		return fmt.Errorf("failed to update certificates: %v", err)
+		// 	}
+		// }
+
 		productChank := s.chunkSliceProduct(createProducts, 1000)
 		for _, chunk := range productChank {
 			err := s.productService.CreateMany(ctx, &chunk)
 			if err != nil {
 				return err
-			}
-		}
-
-		// Создаём новые записи
-		if len(createCert) > 0 {
-			err := s.certificateService.CreateMany(ctx, &createCert)
-			if err != nil {
-				return fmt.Errorf("failed to create certificates: %v", err)
-			}
-		}
-
-		// Обновляем существующие записи
-		if len(updateCert) > 0 {
-			err := s.certificateService.UpdateMany(ctx, &updateCert)
-			if err != nil {
-				return fmt.Errorf("failed to update certificates: %v", err)
 			}
 		}
 
@@ -168,6 +182,18 @@ func (s *service) chunkSlice(slice []dto.GetManyCert, chunkSize int) [][]dto.Get
 
 func (s *service) chunkSliceProduct(slice []dto.CreateProduct, chunkSize int) [][]dto.CreateProduct {
 	var chunks [][]dto.CreateProduct
+	for i := 0; i < len(slice); i += chunkSize {
+		end := i + chunkSize
+		if end > len(slice) {
+			end = len(slice)
+		}
+		chunks = append(chunks, slice[i:end])
+	}
+	return chunks
+}
+
+func (s *service) chunckSliceCert(slice []model.Certificate, chunkSize int) [][]model.Certificate {
+	var chunks [][]model.Certificate
 	for i := 0; i < len(slice); i += chunkSize {
 		end := i + chunkSize
 		if end > len(slice) {
