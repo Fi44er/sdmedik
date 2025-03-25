@@ -139,7 +139,7 @@ func (s *service) Scraper() error {
 		}
 
 		// Создаём новые записи
-		createCertChunk := s.chunckSliceCert(updateCert, 1000)
+		createCertChunk := s.chunckSliceCert(createCert, 1000)
 		for _, chunk := range createCertChunk {
 			err := s.certificateService.CreateMany(ctx, &chunk)
 			if err != nil {
