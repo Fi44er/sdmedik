@@ -6,7 +6,7 @@ import (
 	"fmt"
 
 	"github.com/Fi44er/sdmedik/backend/internal/dto"
-	"github.com/Fi44er/sdmedik/backend/internal/model" // Предположим, что Certificate находится в этом пакете
+	"github.com/Fi44er/sdmedik/backend/internal/model"
 	"github.com/Fi44er/sdmedik/backend/internal/service/webscraper/structs"
 	"github.com/Fi44er/sdmedik/backend/pkg/utils"
 	"github.com/Fi44er/sdmedik/backend/pkg/webscraper"
@@ -22,7 +22,8 @@ func (s *service) Scraper() error {
 	s.cancelFunc = cancel
 	s.mu.Unlock()
 
-	s.logger.Errorf("productService: %v", s.productService)
+	s.logger.Info("Starting web scraping process...")
+
 	itemsChan := make(chan []scraper_structs.Items, 1)
 
 	// Запускаем парсер в отдельной горутине
@@ -34,10 +35,14 @@ func (s *service) Scraper() error {
 
 	select {
 	case <-ctx.Done():
+		s.logger.Warn("Парсинг отменён")
 		return fmt.Errorf("парсинг отменён")
 	case items := <-itemsChan:
+		s.logger.Infof("Получено %d элементов для обработки", len(items))
 		getManyCert := make([]dto.GetManyCert, 0)
+
 		for _, item := range items {
+			s.logger.Infof("Обработка элемента: %s", item.CategoryArticle)
 			for _, region := range item.Items {
 				getManyCert = append(getManyCert, dto.GetManyCert{
 					CategoryArticle: item.CategoryArticle,
@@ -47,11 +52,12 @@ func (s *service) Scraper() error {
 		}
 
 		chunks := s.chunkSlice(getManyCert, 1000)
-		// Получаем существующие сертификаты из базы данных
+		s.logger.Infof("Получаем существующие сертификаты из базы данных, всего пакетов: %d", len(chunks))
 		var allCerts []model.Certificate
 		for _, chunk := range chunks {
 			certs, err := s.certificateService.GetMany(ctx, &chunk)
 			if err != nil {
+				s.logger.Errorf("Ошибка при получении сертификатов: %v", err)
 				return err
 			}
 			allCerts = append(allCerts, *certs...)
@@ -70,6 +76,7 @@ func (s *service) Scraper() error {
 		createProducts := make([]dto.CreateProduct, 0)
 
 		for _, item := range items {
+			s.logger.Infof("Запрос к API для категории: %s", item.CategoryName)
 			options := utils.RequestOptions{
 				Method: "GET",
 				URL:    "https://esnsi.gosuslugi.ru/rest/ext/v1/classifiers/10616/data",
@@ -79,12 +86,14 @@ func (s *service) Scraper() error {
 			}
 			esnsiRes, err := utils.MakeRequest(options)
 			if err != nil {
+				s.logger.Errorf("Ошибка при выполнении запроса: %v", err)
 				return err
 			}
 
 			var apiRes structs.ApiResponse
 			if err := json.Unmarshal(esnsiRes, &apiRes); err != nil {
-				fmt.Println("Ошибка при парсинге JSON:", err)
+				s.logger.Errorf("Ошибка при парсинге JSON: %v", err)
+				return err
 			}
 
 			var tru string
@@ -105,6 +114,7 @@ func (s *service) Scraper() error {
 						TRUName:         item.CategoryName,
 						TRU:             tru,
 					})
+					s.logger.Infof("Обновление сертификата: %s для региона: %s", certMap[key], region.Region)
 				} else {
 					// Если записи нет, добавляем в createCert
 					createCert = append(createCert, model.Certificate{
@@ -114,6 +124,7 @@ func (s *service) Scraper() error {
 						TRUName:         item.CategoryName,
 						TRU:             tru,
 					})
+					s.logger.Infof("Создание нового сертификата для категории: %s, регион: %s", item.CategoryArticle, region.Region)
 				}
 			}
 
@@ -123,6 +134,7 @@ func (s *service) Scraper() error {
 					Name:    product.Name,
 				}
 				createProducts = append(createProducts, productDto)
+				s.logger.Infof("Добавление продукта: %s", product.Name)
 			}
 		}
 
@@ -131,39 +143,34 @@ func (s *service) Scraper() error {
 		for _, chunk := range createCertChunk {
 			err := s.certificateService.CreateMany(ctx, &chunk)
 			if err != nil {
+				s.logger.Errorf("Ошибка при обновлении сертификатов: %v", err)
 				return fmt.Errorf("failed to update certificates: %v", err)
 			}
+			s.logger.Infof("Успешно обновлено %d сертификатов", len(chunk))
 		}
-		// if len(createCert) > 0 {
-		// 	err := s.certificateService.CreateMany(ctx, &createCert)
-		// 	if err != nil {
-		// 		return fmt.Errorf("failed to create certificates: %v", err)
-		// 	}
-		// }
 
 		// Обновляем существующие записи
 		updateCertChunk := s.chunckSliceCert(updateCert, 1000)
 		for _, chunk := range updateCertChunk {
 			err := s.certificateService.UpdateMany(ctx, &chunk)
 			if err != nil {
+				s.logger.Errorf("Ошибка при обновлении сертификатов: %v", err)
 				return fmt.Errorf("failed to update certificates: %v", err)
 			}
+			s.logger.Infof("Успешно обновлено %d сертификатов", len(chunk))
 		}
-		// if len(updateCert) > 0 {
-		// 	err := s.certificateService.UpdateMany(ctx, &updateCert)
-		// 	if err != nil {
-		// 		return fmt.Errorf("failed to update certificates: %v", err)
-		// 	}
-		// }
 
-		productChank := s.chunkSliceProduct(createProducts, 1000)
-		for _, chunk := range productChank {
+		productChunk := s.chunkSliceProduct(createProducts, 1000)
+		for _, chunk := range productChunk {
 			err := s.productService.CreateMany(ctx, &chunk)
 			if err != nil {
+				s.logger.Errorf("Ошибка при создании продуктов: %v", err)
 				return err
 			}
+			s.logger.Infof("Успешно создано %d продуктов", len(chunk))
 		}
 
+		s.logger.Info("Парсинг и обработка завершены успешно")
 		return nil
 	}
 }
