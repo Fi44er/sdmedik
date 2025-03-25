@@ -29,10 +29,15 @@ func ParseProductsArticles(url string) []structs.ParseProductsArticlesType {
 	results := make(chan structs.ParseProductsArticlesType)
 	var wg sync.WaitGroup
 
+	maxGoroutines := 5
+	semaphore := make(chan struct{}, maxGoroutines)
+
 	for _, paginationUrl := range paginationUrls {
 		wg.Add(1)
+		semaphore <- struct{}{} // Занимаем слот
 		go func(url string) {
 			defer wg.Done()
+			defer func() { <-semaphore }() // Освобождаем слот
 			log.Info("Parsing products from pagination URL: ", url)
 			parseProductsArticlesFromPage(url, results)
 		}(paginationUrl)

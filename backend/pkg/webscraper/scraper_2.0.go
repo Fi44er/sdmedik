@@ -57,7 +57,7 @@ func Scraper(ctx context.Context) []structs.Items {
 
 	var wg sync.WaitGroup
 	var mu sync.Mutex
-	maxGoroutines := 10
+	maxGoroutines := 5
 	sem := make(chan struct{}, maxGoroutines)
 
 	for _, article := range articles {
