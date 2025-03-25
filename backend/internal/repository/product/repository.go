@@ -13,6 +13,7 @@ import (
 	"github.com/Fi44er/sdmedik/backend/pkg/logger"
 	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 var _ def.IProductRepository = (*repository)(nil)
@@ -246,7 +247,10 @@ func (r *repository) GetTopProducts(ctx context.Context, limit int) ([]response.
 func (r *repository) CreateMany(ctx context.Context, data *[]model.Product) error {
 	r.logger.Info("Creating products...")
 
-	if err := r.db.WithContext(ctx).Create(data).Error; err != nil {
+	// Используем "ON CONFLICT DO NOTHING" для игнорирования дубликатов
+	if err := r.db.WithContext(ctx).Table("products").Clauses(clause.OnConflict{
+		DoNothing: true,
+	}).Create(data).Error; err != nil {
 		r.logger.Errorf("Failed to create products: %v", err)
 		return err
 	}

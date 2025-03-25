@@ -137,6 +137,5 @@ func Scraper(ctx context.Context) []structs.Items {
 	}
 
 	log.Info("Scraping completed. Total items scraped: ", len(itemSlice))
-	log.Info("Scraped items: ", itemSlice)
 	return itemSlice
 }

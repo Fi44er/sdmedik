@@ -29,15 +29,10 @@ func ParseProductsArticles(url string) []structs.ParseProductsArticlesType {
 	results := make(chan structs.ParseProductsArticlesType)
 	var wg sync.WaitGroup
 
-	maxGoroutines := 5
-	semaphore := make(chan struct{}, maxGoroutines)
-
 	for _, paginationUrl := range paginationUrls {
 		wg.Add(1)
-		semaphore <- struct{}{} // Занимаем слот
 		go func(url string) {
 			defer wg.Done()
-			defer func() { <-semaphore }() // Освобождаем слот
 			log.Info("Parsing products from pagination URL: ", url)
 			parseProductsArticlesFromPage(url, results)
 		}(paginationUrl)
@@ -66,6 +61,7 @@ func parseProductsArticlesFromPage(url string, results chan<- structs.ParseProdu
 		log.Errorf("Failed to fetch document from URL: %s", url)
 		return
 	}
+	log.Info("Fetched document success from URL: ", url)
 
 	doc.Find("a.product-item-info").Each(func(i int, s *goquery.Selection) {
 		// Извлекаем артикул и название для каждого продукта
