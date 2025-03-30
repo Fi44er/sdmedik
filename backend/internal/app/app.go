@@ -7,6 +7,7 @@ import (
 
 	"github.com/Fi44er/sdmedik/backend/internal/config"
 	"github.com/Fi44er/sdmedik/backend/pkg/logger"
+	"github.com/Fi44er/sdmedik/backend/pkg/middleware"
 	"github.com/Fi44er/sdmedik/backend/pkg/postgres"
 	redis_connect "github.com/Fi44er/sdmedik/backend/pkg/redis"
 	"github.com/go-playground/validator/v10"
@@ -55,6 +56,7 @@ func (app *App) Run() error {
 	}))
 
 	app.app.Use(logger.LoggerMiddleware())
+	app.app.Use(middleware.ErrHandler)
 
 	err := app.initDeps()
 	if err != nil {
@@ -183,7 +185,8 @@ func (app *App) runHttpServer() error {
 
 func (app *App) initRouter() error {
 	app.app.Get("/swagger/*", swagger.HandlerDefault)
-	// api := app.app.Group("/api")
+	api := app.app.Group("/api")
 
+	app.moduleProvider.userModule.InitDelivery(api)
 	return nil
 }

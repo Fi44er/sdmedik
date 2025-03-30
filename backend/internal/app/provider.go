@@ -1,7 +1,11 @@
 package app
 
+import user_module "github.com/Fi44er/sdmedik/backend/internal/module/user"
+
 type moduleProvider struct {
 	app *App
+
+	userModule *user_module.UserModule
 }
 
 func NewModuleProvider(app *App) (*moduleProvider, error) {
@@ -17,7 +21,9 @@ func NewModuleProvider(app *App) (*moduleProvider, error) {
 }
 
 func (p *moduleProvider) initDeps() error {
-	inits := []func() error{}
+	inits := []func() error{
+		p.UserModule,
+	}
 	for _, init := range inits {
 		err := init()
 		if err != nil {
@@ -25,5 +31,11 @@ func (p *moduleProvider) initDeps() error {
 			return err
 		}
 	}
+	return nil
+}
+
+func (p *moduleProvider) UserModule() error {
+	p.userModule = user_module.NewUserModule(p.app.logger, p.app.validator, p.app.db, p.app.redis)
+	p.userModule.Init()
 	return nil
 }
