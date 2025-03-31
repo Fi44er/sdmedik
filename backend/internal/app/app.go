@@ -9,12 +9,12 @@ import (
 	"github.com/Fi44er/sdmedik/backend/pkg/logger"
 	"github.com/Fi44er/sdmedik/backend/pkg/middleware"
 	"github.com/Fi44er/sdmedik/backend/pkg/postgres"
+	"github.com/Fi44er/sdmedik/backend/pkg/redis"
 	redis_connect "github.com/Fi44er/sdmedik/backend/pkg/redis"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/swagger"
-	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
 )
 
@@ -26,8 +26,8 @@ type App struct {
 	validator  *validator.Validate
 	httpConfig config.HTTPConfig
 
-	db    *gorm.DB
-	redis *redis.Client
+	db           *gorm.DB
+	redisManager redis.IRedisManager
 
 	moduleProvider *moduleProvider
 
@@ -120,16 +120,17 @@ func (app *App) initDb() error {
 }
 
 func (app *App) initRedis() error {
-	if app.redis == nil {
-		redis, err := redis_connect.Connect(app.config.RedisUrl, app.logger)
+	if app.redisManager == nil {
+		client, err := redis_connect.Connect(app.config.RedisUrl, app.logger)
 		if err != nil {
 			app.logger.Errorf("Failed to connect to Redis: %v", err)
 			return nil
 		}
-		app.redis = redis
+
+		app.redisManager = redis.NewRedisManger(client)
 
 		// Используем значение redisMode из структуры App
-		if err := redis_connect.FlushRedisCache(redis, app.redisMode, app.logger); err != nil {
+		if err := redis_connect.FlushRedisCache(client, app.redisMode, app.logger); err != nil {
 			err = fmt.Errorf("✖ Failed to flush redis cache: %v", err)
 			app.logger.Errorf("%s", err.Error())
 			return err

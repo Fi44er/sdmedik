@@ -35,7 +35,7 @@ func (p *moduleProvider) initDeps() error {
 }
 
 func (p *moduleProvider) UserModule() error {
-	p.userModule = user_module.NewUserModule(p.app.logger, p.app.validator, p.app.db, p.app.redis)
+	p.userModule = user_module.NewUserModule(p.app.logger, p.app.validator, p.app.db, p.app.redisManager)
 	p.userModule.Init()
 	return nil
 }

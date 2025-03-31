@@ -10,5 +10,9 @@ type User struct {
 	Surname      string       `gorm:"type:varchar(255);"`
 	Patronymic   string       `gorm:"type:varchar(255);"`
 	PhoneNumber  string       `gorm:"type:varchar(255);"`
-	Roles        []model.Role `gorm:"many2many:user_roles;"`
+	Roles        []model.Role `gorm:"many2many:user_module.user_roles;"`
+}
+
+func (User) TableName() string {
+	return "user_module.users"
 }

@@ -19,6 +19,10 @@ func Migrate(db *gorm.DB, trigger bool, log *logger.Logger) error {
 
 		log.Info("📦 Creating types...")
 
+		if err := db.Exec("CREATE SCHEMA IF NOT EXISTS \"user_module\"").Error; err != nil {
+			return err
+		}
+
 		if err := db.AutoMigrate(models...); err != nil {
 			log.Errorf("✖ Failed to migrate database: %v", err)
 			return err
