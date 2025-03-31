@@ -55,7 +55,7 @@ const ProductCard = memo(({ e, hendleAddProductThithBascket }) => {
           sx={{
             width: "100%",
             height: { xs: "200px", md: "300px" },
-            objectFit: "cover",
+            objectFit: "contain",
           }}
           loading="lazy"
         />
