@@ -30,7 +30,7 @@ const ContactMenu = () => {
         <MenuItem onClick={handleClose}>+7 (909) 617 8196</MenuItem>
         <MenuItem onClick={handleClose}>+7 (353) 293 5241</MenuItem>
       </Menu>
-      <Typography color="black">olimp1-info@yandex.ru</Typography>
+      {/* <Typography color="black">olimp1-info@yandex.ru</Typography> */}
     </Box>
   );
 };
