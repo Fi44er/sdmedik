@@ -27,7 +27,7 @@ const Logo = () => {
         cursor: "pointer",
       }}
     >
-      <img style={{ width: "100%" }} src={"/Logo_Header.png"} alt="logo" />
+      <img style={{ width: "100%" }} src={"/logo.png"} alt="logo" />
     </Box>
   );
 };
