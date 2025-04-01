@@ -82,7 +82,7 @@ func (s *service) GetByUserID(ctx context.Context, userID string, sess *session.
 				Image:         imageUrl,
 				Quantity:      item.Quantity,
 				TotalPrice:    item.TotalPrice,
-				Price:         productMap[item.ProductID].Price,
+				Price:         item.TotalPrice / float64(item.Quantity),
 				IsCertificate: item.IsCertificate,
 				Iso:           item.Iso,
 			})
