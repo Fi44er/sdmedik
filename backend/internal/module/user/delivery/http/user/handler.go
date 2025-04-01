@@ -7,6 +7,7 @@ import (
 	"github.com/Fi44er/sdmedik/backend/internal/module/user/entity"
 	"github.com/Fi44er/sdmedik/backend/pkg/logger"
 	_ "github.com/Fi44er/sdmedik/backend/pkg/response"
+	"github.com/Fi44er/sdmedik/backend/pkg/session"
 	"github.com/Fi44er/sdmedik/backend/pkg/utils"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
@@ -52,6 +53,12 @@ func NewUserHandler(
 // @Failure 500 {object} response.Response "Error"
 // @Router /users/me [get]
 func (h *UserHandler) GetMy(ctx *fiber.Ctx) error {
+	sess := session.FromContext(ctx.Context())
+	h.logger.Infof("session: %v", sess)
+
+	sessFiber := session.FromFiberContext(ctx)
+	h.logger.Infof("fiber session: %v", sessFiber)
+
 	// user := ctx.Locals("user").(dto.UserResponse)
 	return ctx.Status(200).JSON(fiber.Map{"status": "success", "data": "user"})
 }

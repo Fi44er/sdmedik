@@ -1,10 +1,11 @@
-package session
+package sessionstore
 
 import (
 	"context"
 	"encoding/json"
 	"time"
 
+	"github.com/Fi44er/sdmedik/backend/pkg/session"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -19,7 +20,7 @@ func NewRedisSessionStore(client *redis.Client) *RedisSessionStore {
 }
 
 // read retrieves a session by ID from Redis
-func (s *RedisSessionStore) read(id string) (*Session, error) {
+func (s *RedisSessionStore) Read(id string) (*session.Session, error) {
 	ctx := context.Background()
 	data, err := s.client.Get(ctx, "session:"+id).Bytes()
 	if err == redis.Nil {
@@ -28,7 +29,7 @@ func (s *RedisSessionStore) read(id string) (*Session, error) {
 		return nil, err
 	}
 
-	var session Session
+	var session session.Session
 	if err := json.Unmarshal(data, &session); err != nil {
 		return nil, err
 	}
@@ -36,7 +37,7 @@ func (s *RedisSessionStore) read(id string) (*Session, error) {
 }
 
 // write stores a session in Redis
-func (s *RedisSessionStore) write(session *Session) error {
+func (s *RedisSessionStore) Write(session *session.Session) error {
 	ctx := context.Background()
 	data, err := json.Marshal(session)
 	if err != nil {
@@ -44,18 +45,18 @@ func (s *RedisSessionStore) write(session *Session) error {
 	}
 
 	// Set the session with an expiration (e.g., 24 hours)
-	err = s.client.Set(ctx, "session:"+session.id, data, 24*time.Hour).Err()
+	err = s.client.Set(ctx, "session:"+session.ID, data, 24*time.Hour).Err()
 	return err
 }
 
 // destroy deletes a session by ID from Redis
-func (s *RedisSessionStore) destroy(id string) error {
+func (s *RedisSessionStore) Destroy(id string) error {
 	ctx := context.Background()
 	return s.client.Del(ctx, "session:"+id).Err()
 }
 
 // gc (garbage collection) removes expired sessions
-func (s *RedisSessionStore) gc(idleExpiration, absoluteExpiration time.Duration) error {
+func (s *RedisSessionStore) Gc(idleExpiration, absoluteExpiration time.Duration) error {
 	ctx := context.Background()
 	iter := s.client.Scan(ctx, 0, "session:*", 0).Iterator()
 	for iter.Next(ctx) {
@@ -65,13 +66,13 @@ func (s *RedisSessionStore) gc(idleExpiration, absoluteExpiration time.Duration)
 			continue
 		}
 
-		var session Session
+		var session session.Session
 		if err := json.Unmarshal(data, &session); err != nil {
 			continue
 		}
 
-		if time.Since(session.lastActivityAt) > idleExpiration ||
-			time.Since(session.createdAt) > absoluteExpiration {
+		if time.Since(session.LastActivityAt) > idleExpiration ||
+			time.Since(session.CreatedAt) > absoluteExpiration {
 			s.client.Del(ctx, key)
 		}
 	}

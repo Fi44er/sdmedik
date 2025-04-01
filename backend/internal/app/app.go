@@ -4,17 +4,21 @@ import (
 	"flag"
 	"fmt"
 	"sync"
+	"time"
 
 	"github.com/Fi44er/sdmedik/backend/internal/config"
 	"github.com/Fi44er/sdmedik/backend/pkg/logger"
 	"github.com/Fi44er/sdmedik/backend/pkg/middleware"
 	"github.com/Fi44er/sdmedik/backend/pkg/postgres"
-	"github.com/Fi44er/sdmedik/backend/pkg/redis"
 	redis_connect "github.com/Fi44er/sdmedik/backend/pkg/redis"
+	"github.com/Fi44er/sdmedik/backend/pkg/session"
+	sessionadapter "github.com/Fi44er/sdmedik/backend/pkg/session/adapters"
+	sessionstore "github.com/Fi44er/sdmedik/backend/pkg/session/store"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/swagger"
+	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
 )
 
@@ -26,8 +30,11 @@ type App struct {
 	validator  *validator.Validate
 	httpConfig config.HTTPConfig
 
-	db           *gorm.DB
-	redisManager redis.IRedisManager
+	db          *gorm.DB
+	redisClient *redis.Client
+
+	redisManager   redis_connect.IRedisManager
+	sessionManager *session.SessionManager
 
 	moduleProvider *moduleProvider
 
@@ -70,9 +77,10 @@ func (app *App) initDeps() error {
 	inits := []func() error{
 		app.initConfig,
 		app.initLogger,
-		app.initValidator,
 		app.initDb,
 		app.initRedis,
+		app.initSessionManager,
+		app.initValidator,
 		app.initModuleProvider,
 		app.initRouter,
 	}
@@ -127,7 +135,8 @@ func (app *App) initRedis() error {
 			return nil
 		}
 
-		app.redisManager = redis.NewRedisManger(client)
+		app.redisManager = redis_connect.NewRedisManger(client)
+		app.redisClient = client
 
 		// Используем значение redisMode из структуры App
 		if err := redis_connect.FlushRedisCache(client, app.redisMode, app.logger); err != nil {
@@ -151,6 +160,20 @@ func (app *App) initValidator() error {
 	if app.validator == nil {
 		app.validator = validator.New()
 	}
+	return nil
+}
+
+func (app *App) initSessionManager() error {
+	app.sessionManager = session.NewSessionManager(
+		sessionstore.NewRedisSessionStore(app.redisClient),
+		30*time.Minute,
+		1*time.Hour,
+		12*time.Hour,
+		"session",
+	)
+
+	app.app.Use(sessionadapter.FiberMiddleware(app.sessionManager))
+
 	return nil
 }
 

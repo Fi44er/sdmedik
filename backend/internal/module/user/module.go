@@ -1,15 +1,12 @@
 package user
 
 import (
-	"time"
-
 	"github.com/Fi44er/sdmedik/backend/internal/config"
 	user_handler "github.com/Fi44er/sdmedik/backend/internal/module/user/delivery/http/user"
 	user_repository "github.com/Fi44er/sdmedik/backend/internal/module/user/infrastructure/repository/user"
 	auth_usecase "github.com/Fi44er/sdmedik/backend/internal/module/user/usecase/auth"
 	user_usecase "github.com/Fi44er/sdmedik/backend/internal/module/user/usecase/user"
 	"github.com/gofiber/fiber/v2"
-	"github.com/redis/go-redis/v9"
 
 	"github.com/Fi44er/sdmedik/backend/pkg/logger"
 	redis_manager "github.com/Fi44er/sdmedik/backend/pkg/redis"
@@ -29,7 +26,6 @@ type UserModule struct {
 	validator      *validator.Validate
 	db             *gorm.DB
 	redisManager   redis_manager.IRedisManager
-	redis          *redis.Client
 	sessionManager *session.SessionManager
 	config         *config.Config
 }
@@ -38,21 +34,17 @@ func NewUserModule(
 	logger *logger.Logger,
 	validator *validator.Validate,
 	db *gorm.DB,
+	config *config.Config,
 	redisManager redis_manager.IRedisManager,
-	redis *redis.Client,
+	sessionManager *session.SessionManager,
 ) *UserModule {
 	return &UserModule{
-		logger:       logger,
-		validator:    validator,
-		db:           db,
-		redisManager: redisManager,
-		sessionManager: session.NewSessionManager(
-			session.NewRedisSessionStore(redis),
-			30*time.Minute,
-			1*time.Hour,
-			12*time.Hour,
-			"session",
-		),
+		logger:         logger,
+		validator:      validator,
+		db:             db,
+		config:         config,
+		redisManager:   redisManager,
+		sessionManager: sessionManager,
 	}
 }
 

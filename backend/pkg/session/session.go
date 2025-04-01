@@ -3,29 +3,29 @@ package session
 import "time"
 
 type Session struct {
-	createdAt      time.Time
-	lastActivityAt time.Time
-	id             string
-	data           map[string]any
+	ID             string
+	Data           map[string]any
+	CreatedAt      time.Time
+	LastActivityAt time.Time
 }
 
 func newSession() *Session {
 	return &Session{
-		id:             generateSessionId(),
-		data:           make(map[string]any),
-		createdAt:      time.Now(),
-		lastActivityAt: time.Now(),
+		ID:             generateSessionId(),
+		Data:           make(map[string]any),
+		CreatedAt:      time.Now(),
+		LastActivityAt: time.Now(),
 	}
 }
 
 func (s *Session) Get(key string) any {
-	return s.data[key]
+	return s.Data[key]
 }
 
 func (s *Session) Put(key string, value any) {
-	s.data[key] = value
+	s.Data[key] = value
 }
 
 func (s *Session) Delete(key string) {
-	delete(s.data, key)
+	delete(s.Data, key)
 }
