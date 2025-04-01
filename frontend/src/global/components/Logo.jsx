@@ -14,7 +14,7 @@ const Logo = () => {
   // Логика выбора изображения:
   // - Если экран >= md, используем /Logo_Header.png
   // - Если экран < md (включая sm и xs), используем /medi_logo2.png
-  const logoSrc = isMdUp ? "/Logo_Header.png" : "/medi_logo2.png";
+  // const logoSrc = isMdUp ? "/Logo_Header.png" : "/medi_logo2.png";
 
   return (
     <Box
@@ -27,7 +27,7 @@ const Logo = () => {
         cursor: "pointer",
       }}
     >
-      <img style={{ width: "100%" }} src={logoSrc} alt="logo" />
+      <img style={{ width: "100%" }} src={"/Logo_Header.png"} alt="logo" />
     </Box>
   );
 };
