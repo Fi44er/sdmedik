@@ -20,9 +20,10 @@ func (s *service) Create(ctx context.Context, data *dto.CreateOrder, userID stri
 	}
 
 	articles := make([]dto.GetManyCert, len(basket.Items))
+
 	for _, item := range basket.Items {
 		categoryArticle := strings.Split(item.Article, ".")[0]
-		articles = append(articles, dto.GetManyCert{CategoryArticle: categoryArticle})
+		articles = append(articles, dto.GetManyCert{CategoryArticle: categoryArticle, RegionIso: item.Iso})
 	}
 
 	link, orderModel, err := s.sendToPaykeeper(ctx, data, basket, articles, userID)
