@@ -8,8 +8,8 @@ const Logo = () => {
   const theme = useTheme();
 
   // Определяем, соответствует ли экран breakpoint'ам
-  const isSmUp = useMediaQuery(theme.breakpoints.up("sm")); // >= sm
-  const isMdUp = useMediaQuery(theme.breakpoints.up("md")); // >= md
+  // const isSmUp = useMediaQuery(theme.breakpoints.up("sm")); // >= sm
+  // const isMdUp = useMediaQuery(theme.breakpoints.up("md")); // >= md
 
   // Логика выбора изображения:
   // - Если экран >= md, используем /Logo_Header.png
