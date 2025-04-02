@@ -79,6 +79,9 @@ func (s *UserUsecase) GetByEmail(ctx context.Context, email string) (*entity.Use
 // === Mutation === //
 
 func (s *UserUsecase) Create(ctx context.Context, user *entity.User) error {
+	if err := user.Validate(); err != nil {
+		return constant.ErrInvalidUserData
+	}
 	if err := s.repository.Create(ctx, user); err != nil {
 		return err
 	}
@@ -87,6 +90,9 @@ func (s *UserUsecase) Create(ctx context.Context, user *entity.User) error {
 }
 
 func (s *UserUsecase) Update(ctx context.Context, user *entity.User) error {
+	if err := user.Validate(); err != nil {
+		return constant.ErrInvalidUserData
+	}
 	if err := s.repository.Update(ctx, user); err != nil {
 		return err
 	}

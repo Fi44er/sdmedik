@@ -6,9 +6,9 @@ import (
 	"time"
 
 	"github.com/Fi44er/sdmedik/backend/internal/config"
-	"github.com/Fi44er/sdmedik/backend/internal/module/user/dto"
-	"github.com/Fi44er/sdmedik/backend/internal/module/user/entity"
-	"github.com/Fi44er/sdmedik/backend/internal/module/user/pkg/constant"
+	"github.com/Fi44er/sdmedik/backend/internal/module/auth/dto"
+	"github.com/Fi44er/sdmedik/backend/internal/module/auth/entity"
+	"github.com/Fi44er/sdmedik/backend/internal/module/auth/pkg/constant"
 	"github.com/Fi44er/sdmedik/backend/pkg/logger"
 	"github.com/Fi44er/sdmedik/backend/pkg/mailer"
 	"github.com/Fi44er/sdmedik/backend/pkg/redis"
@@ -76,7 +76,7 @@ func (s *AuthUsecase) createAndStoreToken(ctx context.Context, userID string, ex
 
 func (s *AuthUsecase) SignIn(ctx context.Context, data *dto.LoginDTO) (*dto.LoginResponse, error) {
 	user, err := s.userUsecase.GetByEmail(ctx, data.Email)
-	if err != nil || !utils.ComparePassword(user.PasswordHash, data.Password) {
+	if err != nil || !utils.ComparePassword(user.Password, data.Password) {
 		return nil, constant.ErrInvalidEmailOrPassword
 	}
 
@@ -113,37 +113,32 @@ func (s *AuthUsecase) VerifyCode(ctx context.Context, data *dto.VerifyCodeDTO) e
 		return err
 	}
 
-	// user := converter.ConvertRegisterDtoToUserDomain(&tempUser)
-	// if err := s.userUsecase.Create(ctx, user); err != nil {
-	// 	return err
-	// }
-
 	return s.redisManager.Del(ctx, UserRedisPrefix+hashEmail)
 }
 
-func (s *AuthUsecase) SignUp(ctx context.Context, data *dto.RegisterDTO) error {
-	data.PhoneNumber = regexp.MustCompile("[^0-9]").ReplaceAllString(data.PhoneNumber, "")
-	if len(data.PhoneNumber) != 11 {
+func (s *AuthUsecase) SignUp(ctx context.Context, entity *entity.User) error {
+	entity.PhoneNumber = regexp.MustCompile("[^0-9]").ReplaceAllString(entity.PhoneNumber, "")
+	if len(entity.PhoneNumber) != 11 {
 		return constant.ErrInvalidPhoneNumber
 	}
 
-	user, err := s.userUsecase.GetByEmail(ctx, data.Email)
+	user, err := s.userUsecase.GetByEmail(ctx, entity.Email)
 	if err != nil || user != nil {
 		return constant.ErrUserAlreadyExists
 	}
 
-	data.Password = utils.GeneratePassword(data.Password)
+	entity.Password = utils.GeneratePassword(entity.Password)
 
-	hashEmail, err := utils.HashString(data.Email)
+	hashEmail, err := utils.HashString(entity.Email)
 	if err != nil {
 		return err
 	}
 
-	if err := s.redisManager.Set(ctx, UserRedisPrefix+hashEmail, data, 10*time.Minute); err != nil {
+	if err := s.redisManager.Set(ctx, UserRedisPrefix+hashEmail, entity, 10*time.Minute); err != nil {
 		return err
 	}
 
-	return s.SendCode(ctx, data.Email)
+	return s.SendCode(ctx, entity.Email)
 }
 
 func (s *AuthUsecase) SendCode(ctx context.Context, email string) error {
@@ -192,7 +187,7 @@ func (s *AuthUsecase) RefreshAccessToken(ctx context.Context, data *dto.RefreshT
 
 	user, err := s.userUsecase.GetByID(ctx, userID)
 	if err != nil || user == nil {
-		return "", constant.ErrUserNotFound
+		return "", err
 	}
 
 	return s.createAndStoreToken(ctx, user.ID, s.config.AccessTokenExpiresIn, s.config.AccessTokenPrivateKey, data.UserAgent)
