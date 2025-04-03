@@ -1,5 +1,5 @@
 import { Box, Button } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const CatalogButtons = () => {
   const navigate = useNavigate();
@@ -11,34 +11,64 @@ const CatalogButtons = () => {
         display: { xs: "none", sm: "none", md: "flex", lg: "flex" },
         alignItems: "center",
         gridGap: 10,
+        p: "0px 10px",
       }}
     >
-      <Button
-        variant="contained"
-        onClick={(e) => {
-          e.preventDefault();
-          navigate("/catalog");
-        }}
-        sx={{
+      {/* <Link
+        style={{
           background: `linear-gradient(95.61deg, #A5DED1 4.71%, #00B3A4 97.25%)`,
-          fontSize: "16px",
+          padding: "10px 20px",
+          fontSize: "18px",
+          fontWeight: "500",
+          borderRadius: "5px",
+          color: "#fff",
+          marginLeft: "0px",
+          marginRight: "0px",
         }}
-      >
-        Каталог
-      </Button>
-      <Button
-        variant="contained"
-        onClick={(e) => {
-          e.preventDefault();
-          navigate("/catalog/certificate");
-        }}
-        sx={{
+        to="/catalog"
+      > */}
+      {/* <Button
+          variant="contained"
+          onClick={(e) => {
+            e.preventDefault();
+            navigate("/catalog");
+          }}
+          sx={{
+            background: `linear-gradient(95.61deg, #A5DED1 4.71%, #00B3A4 97.25%)`,
+            fontSize: "16px",
+          }}
+        >
+          Каталог
+        </Button> */}
+      {/* Каталог
+      </Link> */}
+      <Link
+        style={{
           background: `linear-gradient(95.61deg, #A5DED1 4.71%, #00B3A4 97.25%)`,
-          fontSize: "16px",
+          padding: "10px 20px",
+          fontSize: "18px",
+          fontWeight: "300",
+          borderRadius: "5px",
+          marginLeft: "0px",
+          marginRight: "0px",
+          color: "#fff",
         }}
+        to="/catalog/certificate"
       >
+        {/* <Button
+          variant="contained"
+          // onClick={(e) => {
+          //   e.preventDefault();
+          //   navigate("/catalog/certificate");
+          // }}
+          sx={{
+            background: `linear-gradient(95.61deg, #A5DED1 4.71%, #00B3A4 97.25%)`,
+            fontSize: "16px",
+          }}
+        > */}
         По электронному сертификату
-      </Button>
+        {/* </Button> */}
+      </Link>
     </Box>
   );
 };
