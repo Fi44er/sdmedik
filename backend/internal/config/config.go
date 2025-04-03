@@ -23,12 +23,12 @@ type Config struct {
 	PayKeeperPass   string `mapstructure:"PAY_KEEPER_PASS"`
 	PayKeeperServer string `mapstructure:"PAY_KEEPER_SERVER"`
 
-	MailTemplatePath string `mapstructure:"MAIL_TEMPLATE_PATH"`
-	MailHost         string `mapstructure:"MAIL_HOST"`
-	MailUser         string `mapstructure:"MAIL_USER"`
-	MailPassword     string `mapstructure:"MAIL_PASSWORD"`
-	MailFrom         string `mapstructure:"MAIL_FROM"`
-	MailPort         string `mapstructure:"MAIL_PORT"`
+	SMTPTemplatePath string `mapstructure:"SMTP_TEMPLATE_PATH"`
+	SMTPHost         string `mapstructure:"SMTP_HOST"`
+	SMTPUser         string `mapstructure:"SMTP_USER"`
+	SMTPPassword     string `mapstructure:"SMTP_PASSWORD"`
+	SMTPFrom         string `mapstructure:"SMTP_FROM"`
+	SMTPPort         string `mapstructure:"SMTP_PORT"`
 
 	AccessTokenPrivateKey  string        `mapstructure:"ACCESS_TOKEN_PRIVATE_KEY"`
 	RefreshTokenPrivateKey string        `mapstructure:"REFRESH_TOKEN_PRIVATE_KEY"`
@@ -55,12 +55,12 @@ func validateConfig(config *Config) error {
 		"PAY_KEEPER_PASS":   config.PayKeeperPass,
 		"PAY_KEEPER_SERVER": config.PayKeeperServer,
 
-		"MAIL_TEMPLATE_PATH": config.MailTemplatePath,
-		"MAIL_HOST":          config.MailHost,
-		"MAIL_USER":          config.MailUser,
-		"MAIL_PASSWORD":      config.MailPassword,
-		"MAIL_FROM":          config.MailFrom,
-		"MAIL_PORT":          config.MailPort,
+		"SMTP_TEMPLATE_PATH": config.SMTPTemplatePath,
+		"SMTP_HOST":          config.SMTPHost,
+		"SMTP_USER":          config.SMTPUser,
+		"SMTP_PASSWORD":      config.SMTPPassword,
+		"MAIL_FROM":          config.SMTPFrom,
+		"MAIL_PORT":          config.SMTPPort,
 
 		"ACCESS_TOKEN_PRIVATE_KEY":  config.AccessTokenPrivateKey,
 		"REFRESH_TOKEN_PRIVATE_KEY": config.RefreshTokenPrivateKey,

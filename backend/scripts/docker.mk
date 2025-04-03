@@ -14,6 +14,10 @@ start_redis:
 conect_redis:
 	docker compose -f $(DOCKER_COMPOSE_PATH) exec -it redis redis-cli
 
+# RabbitMQ
+start_rabbitmq:
+	docker compose -f $(DOCKER_COMPOSE_PATH) up -d rabbitmq
+
 # Server
 docker_stop:
 	docker compose -f $(DOCKER_COMPOSE_PATH) down

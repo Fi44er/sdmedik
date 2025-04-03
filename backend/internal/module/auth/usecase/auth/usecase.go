@@ -35,12 +35,9 @@ func NewAuthUsecase(
 	config *config.Config,
 	userUsecase IUserUsecase,
 ) *AuthUsecase {
-	templatePath := config.MailTemplatePath
+	templatePath := config.SMTPTemplatePath
 	m, err := mailer.NewMailer(
-		config.MailHost,           // SMTP-хост
-		config.MailPort,           // Порт
-		config.MailFrom,           // Ваш email
-		config.MailPassword,       // Пароль от почты
+		"", "", "", "", // Пароль от почты
 		templatePath+"index.html", // Путь к шаблону
 		5,                         // Размер пула соединений
 	)

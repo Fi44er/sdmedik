@@ -1,4 +1,4 @@
-package user
+package repository
 
 import (
 	"github.com/Fi44er/sdmedik/backend/internal/module/user/entity"

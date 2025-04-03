@@ -28,7 +28,7 @@ services:
       # - postgres
       # - redis
     networks:
-      - app-network  # Используем сеть для связи между сервисами
+      - app-network  
 
   redis:
     image: redis:alpine
@@ -45,5 +45,5 @@ volumes:
   redis_data:
 
 networks:
-  app-network:  # Создаем сеть для связи между сервисами
+  app-network:  
     driver: bridge

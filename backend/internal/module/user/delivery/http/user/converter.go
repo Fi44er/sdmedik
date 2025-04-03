@@ -1,4 +1,4 @@
-package user
+package http
 
 import (
 	"github.com/Fi44er/sdmedik/backend/internal/module/user/dto"
