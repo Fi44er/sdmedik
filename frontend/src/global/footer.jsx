@@ -93,9 +93,9 @@ export default function Footer() {
                 <Typography variant="h6">+7 (903) 086 3091</Typography>
                 <Typography variant="h6">+7 (909) 617 8196</Typography>
                 <Typography variant="h6">+7 (353) 293 5241</Typography>
-                <Link sx={{ mt: 6 }} variant="h6" color="primary" href="/">
+                {/* <Link sx={{ mt: 6 }} variant="h6" color="primary" href="/">
                   olimp1-info@yandex.ru
-                </Link>
+                </Link> */}
               </Box>
             </Box>
           </Box>

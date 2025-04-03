@@ -12,7 +12,7 @@ import React, { useEffect } from "react";
 import useCategoryStore from "../../store/categoryStore";
 import { urlPictures } from "../../constants/constants";
 import { Helmet } from "react-helmet";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function CategoriesPage() {
   const { fetchCategory, category } = useCategoryStore();
@@ -49,68 +49,70 @@ export default function CategoriesPage() {
           {Array.isArray(category.data) && category.data.length > 0 ? (
             category.data.map((item) => (
               <Grid item xs={1} sm={1} md={1} lg={1} key={item.id}>
-                <Card
-                  sx={{
-                    width: "100%",
-                    height: "336px", // Фиксированная высота карточки
-                    background: "#fff",
-                    borderRadius: "12px",
-                    boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
-                    transition: "transform 0.2s, box-shadow 0.2s",
-                    "&:hover": {
-                      transform: "translateY(-4px)",
-                      boxShadow: "0px 8px 16px rgba(0, 0, 0, 0.2)",
-                    },
-                    cursor: "pointer",
-                    display: "flex",
-                    flexDirection: "column",
-                    p: { xs: 1, md: 2 },
-                  }}
-                  onClick={() => {
-                    navigate(`/products/certificate/${item.id}`);
-                  }}
-                >
-                  <Box
+                <Link to={`/products/certificate/${item.id}`}>
+                  <Card
                     sx={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      overflow: "hidden",
+                      width: "100%",
+                      height: "336px", // Фиксированная высота карточки
+                      background: "#fff",
                       borderRadius: "12px",
-                      height: "200px",
-                    }}
-                  >
-                    <img
-                      src={`${urlPictures}/${item.images[0].name}`}
-                      alt={`Изображение категории ${item.name}`}
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                      }}
-                    />
-                  </Box>
-                  <CardContent
-                    sx={{
-                      textAlign: "center",
-                      p: 2,
+                      boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
+                      transition: "transform 0.2s, box-shadow 0.2s",
+                      "&:hover": {
+                        transform: "translateY(-4px)",
+                        boxShadow: "0px 8px 16px rgba(0, 0, 0, 0.2)",
+                      },
+                      cursor: "pointer",
                       display: "flex",
                       flexDirection: "column",
-                      flexGrow: 1, // Занимает всё доступное пространство
+                      p: { xs: 1, md: 2 },
                     }}
+                    // onClick={() => {
+                    //   navigate(`/products/certificate/${item.id}`);
+                    // }}
                   >
-                    <Typography
-                      variant="h6"
+                    <Box
                       sx={{
-                        fontWeight: "bold",
-                        fontSize: isMobile ? "1rem" : "1.1rem",
-                        mt: "auto", // Прижимает текст к нижней части CardContent
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        overflow: "hidden",
+                        borderRadius: "12px",
+                        height: "200px",
                       }}
                     >
-                      {item.name}
-                    </Typography>
-                  </CardContent>
-                </Card>
+                      <img
+                        src={`${urlPictures}/${item.images[0].name}`}
+                        alt={`Изображение категории ${item.name}`}
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                        }}
+                      />
+                    </Box>
+                    <CardContent
+                      sx={{
+                        textAlign: "center",
+                        p: 2,
+                        display: "flex",
+                        flexDirection: "column",
+                        flexGrow: 1, // Занимает всё доступное пространство
+                      }}
+                    >
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          fontWeight: "bold",
+                          fontSize: isMobile ? "1rem" : "1.1rem",
+                          mt: "auto", // Прижимает текст к нижней части CardContent
+                        }}
+                      >
+                        {item.name}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Link>
               </Grid>
             ))
           ) : (
