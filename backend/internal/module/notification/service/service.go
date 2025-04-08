@@ -38,9 +38,6 @@ func (ns *NotificationService) Send(msg *Message, selectedNotifiers ...string) e
 				errors = append(errors, err)
 			}
 		}
-		// if err := notifier.Send(msg); err != nil {
-		// 	errors = append(errors, err)
-		// }
 	}
 	if len(errors) > 0 {
 		ns.logger.Errorf("ошибки при отправке: %v", errors)

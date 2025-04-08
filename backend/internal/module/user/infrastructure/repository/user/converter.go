@@ -2,18 +2,17 @@ package repository
 
 import (
 	"github.com/Fi44er/sdmedik/backend/internal/module/user/entity"
-	role_model "github.com/Fi44er/sdmedik/backend/internal/module/user/infrastructure/repository/role/model"
-	user_model "github.com/Fi44er/sdmedik/backend/internal/module/user/infrastructure/repository/user/model"
+	"github.com/Fi44er/sdmedik/backend/internal/module/user/infrastructure/repository/model"
 )
 
 type Converter struct{}
 
-func (c *Converter) ToModel(entity *entity.User) *user_model.User {
-	roles := make([]role_model.Role, len(entity.Roles))
+func (c *Converter) ToModel(entity *entity.User) *model.User {
+	roles := make([]model.Role, len(entity.Roles))
 	for i, r := range entity.Roles {
-		roles[i] = role_model.Role{ID: r.ID, Name: r.Name}
+		roles[i] = model.Role{ID: r.ID, Name: r.Name}
 	}
-	return &user_model.User{
+	return &model.User{
 		ID:           entity.ID,
 		Email:        entity.Email,
 		PasswordHash: entity.PasswordHash,
@@ -25,7 +24,7 @@ func (c *Converter) ToModel(entity *entity.User) *user_model.User {
 	}
 }
 
-func (c *Converter) ToEntity(model *user_model.User) *entity.User {
+func (c *Converter) ToEntity(model *model.User) *entity.User {
 	roles := make([]entity.Role, len(model.Roles))
 	for i, r := range model.Roles {
 		roles[i] = entity.Role{ID: r.ID, Name: r.Name}
