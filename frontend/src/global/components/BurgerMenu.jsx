@@ -37,7 +37,7 @@ const BurgerMenu = () => {
         </ListItem>
         <Box sx={{ mt: 2, display: "flex", flexDirection: "column" }}>
           {/* {!shouldHideCatalogButton && ( // Условие для отображения кнопки "Каталог" в бургер-меню */}
-          <Link
+          {/* <Link
             style={{
               fontSize: "18px",
               marginLeft: "16px",
@@ -48,7 +48,7 @@ const BurgerMenu = () => {
             to="/catalog"
           >
             Каталог
-          </Link>
+          </Link> */}
           {/* )} */}
           <Link
             style={{

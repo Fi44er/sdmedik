@@ -114,34 +114,7 @@ export default function Header() {
               }}
             >
               {/* {!shouldHideCatalogButton && ( // Условие для отображения кнопки "Каталог" */}
-              <Button
-                variant="contained"
-                onClick={(e) => {
-                  e.preventDefault();
-                  navigate("/catalog");
-                }}
-                sx={{
-                  background: `linear-gradient(95.61deg, #A5DED1 4.71%, #00B3A4 97.25%)`,
-                  fontSize: "16px",
-                }}
-              >
-                Каталог
-              </Button>
-              {/* )} */}
-              <Button
-                id="basic-button"
-                variant="contained"
-                onClick={(e) => {
-                  e.preventDefault();
-                  navigate("/catalog/certificate");
-                }}
-                sx={{
-                  background: `linear-gradient(95.61deg, #A5DED1 4.71%, #00B3A4 97.25%)`,
-                  fontSize: "16px",
-                }}
-              >
-                по электроному сертификату
-              </Button>
+              <CatalogButtons />
             </Box>
             <Box>
               <Navigation />

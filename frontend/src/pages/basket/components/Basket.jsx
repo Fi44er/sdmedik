@@ -7,6 +7,7 @@ import {
   Typography,
   Grid,
   Button,
+  TextField,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
@@ -65,6 +66,57 @@ export default function Basket() {
       await fetchUserBasket();
     } catch (error) {
       console.error("Ошибка при изменении количества товара:", error);
+    }
+  };
+
+  const handleQuantityChange = (product_id, value) => {
+    // Разрешаем любое значение, включая пустую строку
+    setCurrentProducts((prevProducts) =>
+      prevProducts.map((product) =>
+        product.product_id === product_id
+          ? { ...product, quantity: value }
+          : product
+      )
+    );
+  };
+
+  const handleQuantityBlur = async (product_id, iso) => {
+    const currentProduct = currentProducts.find(
+      (p) => p.product_id === product_id
+    );
+    if (currentProduct) {
+      let newQuantity = parseInt(currentProduct.quantity, 10);
+      // Если значение пустое, NaN или меньше 1, устанавливаем 1
+      if (isNaN(newQuantity) || newQuantity < 1) {
+        newQuantity = 1;
+        setCurrentProducts((prevProducts) =>
+          prevProducts.map((p) =>
+            p.product_id === product_id ? { ...p, quantity: 1 } : p
+          )
+        );
+      } else {
+        // Если значение корректное, обновляем состояние числом
+        setCurrentProducts((prevProducts) =>
+          prevProducts.map((p) =>
+            p.product_id === product_id ? { ...p, quantity: newQuantity } : p
+          )
+        );
+      }
+
+      const originalProduct = basket.data.items.find(
+        (p) => p.product_id === product_id
+      );
+      if (originalProduct) {
+        const difference = newQuantity - originalProduct.quantity;
+        if (difference !== 0) {
+          try {
+            await editCountProductBascket(product_id, difference, iso);
+            await fetchUserBasket();
+          } catch (error) {
+            console.error("Ошибка при обновлении количества:", error);
+          }
+        }
+      }
     }
   };
 
@@ -134,9 +186,17 @@ export default function Basket() {
                     >
                       -
                     </Button>
-                    <Typography variant="body1" sx={{ mx: 2 }}>
-                      {product.quantity}
-                    </Typography>
+                    <TextField
+                      type="text" // Изменяем type на text для большей гибкости
+                      value={product.quantity}
+                      onChange={(e) =>
+                        handleQuantityChange(product.product_id, e.target.value)
+                      }
+                      onBlur={() =>
+                        handleQuantityBlur(product.product_id, product.iso)
+                      }
+                      sx={{ width: 60, mx: 2 }}
+                    />
                     <Button
                       onClick={() =>
                         handleClick(product.product_id, "plus", product.iso)
