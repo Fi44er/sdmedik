@@ -47,26 +47,25 @@ export default function Delivery() {
           sx={{
             display: "flex",
             alignItems: "center",
+            justifyContent: "center",
             gridGap: "40px",
             mt: 5,
             mb: 5,
-            flexDirection: "column",
+            flexDirection: { xs: "column", md: "unset" },
           }}
         >
-          <Box
-            sx={{ display: "flex", width: "100%", justifyContent: "center" }}
-          >
+          <Box sx={{ display: "flex", width: "50%", justifyContent: "center" }}>
             <img
               style={{
                 borderRadius: "8px",
-                objectFit: "cover",
+                objectFit: "contain",
                 width: "100%",
               }}
               src="/delivery.png"
               alt="Доставка"
             />
           </Box>
-          <Box sx={{ width: "100%" }}>
+          <Box sx={{ width: "70%" }}>
             <Paper
               elevation={3}
               sx={{

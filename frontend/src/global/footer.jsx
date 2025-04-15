@@ -52,7 +52,7 @@ export default function Footer() {
           gridGap: "5%",
         }}
       >
-        <Box sx={{ width: { xs: "100%", lg: "45%" } }}>
+        <Box sx={{ width: { xs: "100%", lg: "100%" } }}>
           <Box>
             <Link href="/">
               <img src="/medi_logo2.png" alt="" />
@@ -73,7 +73,9 @@ export default function Footer() {
               <Box
                 sx={{
                   display: "flex",
-                  flexDirection: "column",
+                  flexDirection: { xs: "column", md: "unset" },
+                  justifyContent: "center",
+                  alignItems: "center",
                   gridGap: "20px",
                 }}
               >
@@ -89,7 +91,15 @@ export default function Footer() {
                   </Link>
                 ))}
               </Box>
-              <Box sx={{ display: "flex", flexDirection: "column" }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  gridGap: 20,
+                  flexDirection: { xs: "column", md: "unset" },
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
                 <Typography variant="h6">+7 (903) 086 3091</Typography>
                 <Typography variant="h6">+7 (909) 617 8196</Typography>
                 <Typography variant="h6">+7 (353) 293 5241</Typography>
@@ -100,7 +110,7 @@ export default function Footer() {
             </Box>
           </Box>
         </Box>
-        <Box
+        {/* <Box
           sx={{
             display: "flex",
             width: { xs: "100%", lg: "50%" },
@@ -127,7 +137,7 @@ export default function Footer() {
               </Box>
             ))}
           </Box>
-        </Box>
+        </Box> */}
       </Container>
       <Box
         sx={{
