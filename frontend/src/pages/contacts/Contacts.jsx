@@ -36,7 +36,7 @@ export default function Contacts() {
       address: "респ. Чечня, г. Грозный, ул. Маты Кишиева, 142",
       coords: [43.317, 45.694],
     },
-    { address: "г. Нижний Новгород, ул Дежнëва, 2", coords: [56.328, 44.002] },
+    // { address: "г. Нижний Новгород, ул Дежнëва, 2", coords: [56.328, 44.002] },
   ];
 
   return (
@@ -55,7 +55,7 @@ export default function Contacts() {
             component="h1"
             variant="h2"
             sx={{ fontWeight: "bold", color: "#333" }}
-          >   
+          >
             Контакты
           </Typography>
         </Box>
@@ -125,6 +125,9 @@ export default function Contacts() {
               </Box>
               <Box>
                 <List>
+                  <Typography sx={{ fontSize: "20px" }}>
+                    Пункты выдачи заказов:
+                  </Typography>
                   <ListItem>
                     г. Оренбург, ул. Шевченко д. 20 «В» Магазин - Склад{" "}
                     <br></br>+ 7 3532 93-52-41
@@ -150,9 +153,9 @@ export default function Contacts() {
                     респ. Чечня, г. Грозный, ул. Маты Кишиева, 142<br></br> +7
                     928 002-34-19
                   </ListItem>
-                  <ListItem>
+                  {/* <ListItem>
                     г. Нижний Новгород, ул Дежнëва, 2<br></br> +7 960 181-03-50
-                  </ListItem>
+                  </ListItem> */}
                 </List>
               </Box>
             </Box>
