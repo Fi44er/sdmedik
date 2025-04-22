@@ -3,7 +3,7 @@ package auth
 import (
 	"context"
 
-	"github.com/Fi44er/sdmedik/backend/internal/module/user/dto"
+	"github.com/Fi44er/sdmedik/backend/internal/module/auth/dto"
 )
 
 type IAuthUsecase interface {

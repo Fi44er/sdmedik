@@ -1,6 +1,11 @@
 package usecase
 
-import "github.com/Fi44er/sdmedik/backend/pkg/logger"
+import (
+	"context"
+
+	"github.com/Fi44er/sdmedik/backend/internal/module/file/dto"
+	"github.com/Fi44er/sdmedik/backend/pkg/logger"
+)
 
 type IFileRepository interface{}
 
@@ -26,6 +31,9 @@ func NewFileUsecase(
 	}
 }
 
-func (u *FileUsecase) UploadFiles() error {
+func (u *FileUsecase) UploadFiles(ctx *context.Context, dto dto.UploadFiles) error {
+	if err := u.fileStorage.UploadFiles(dto.Name, dto.Data); err != nil {
+		return err
+	}
 	return nil
 }

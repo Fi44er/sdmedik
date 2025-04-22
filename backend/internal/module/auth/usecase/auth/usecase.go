@@ -157,7 +157,7 @@ func (s *AuthUsecase) SendCode(ctx context.Context, email string) error {
 	templateData := struct{ Code string }{Code: code}
 
 	s.mailer.SendMailAsync(
-		s.config.MailFrom,
+		s.config.SMTPFrom,
 		email,
 		"Код подтверждения регистрации",
 		templateData,
