@@ -13,6 +13,12 @@ const UserMenu = () => {
   const handleCloseLk = () => setMenuLk(null);
 
   // Определяем, является ли пользователь администратором
+  // Используем метод из хранилища
+
+  // const profileText = isAdmin()
+  //   ? "Администратор"
+  //   : user?.data?.fio || "Профиль";
+  // const profilePath = isAdmin() ? "/admin" : "/profile"; // Используем единую проверку
   const isAdmin = user && user.data?.role_id === 1;
   const profileText = isAdmin ? "Администратор" : user?.data?.fio || "Профиль";
   const profilePath = isAdmin ? "/admin" : "/profile";
