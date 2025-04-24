@@ -92,7 +92,6 @@ const useProductStore = create((set, get) => ({
           catalogs: catalogs,
           name: searchTerm,
           article: searchArcticle,
-
         },
       });
       set({ products: response.data });
@@ -117,9 +116,13 @@ const useProductStore = create((set, get) => ({
       const response = await axios.get(`${url}/product`, {
         params: { id: id, iso: iso },
       });
-      set({ products: response.data });
+      set({ products: response.data }); // Исправлено: сохраняем response.data
     } catch (error) {
       console.error("Error fetching product:", error);
+      toast.error(
+        "Ошибка при загрузке продукта: " +
+          (error.response?.data?.message || error.message)
+      );
     }
   },
 

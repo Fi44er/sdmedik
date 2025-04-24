@@ -121,7 +121,7 @@ export default function Basket() {
   };
 
   return (
-    <Box sx={{ width: { xs: "100%", md: "70%" }, mb: 4 }}>
+    <Box sx={{ width: { xs: "100%", md: "70%" }, mb: 4, minHeight: 379 }}>
       <Typography variant="h4" sx={{ mb: 3, fontWeight: "bold" }}>
         Корзина
       </Typography>

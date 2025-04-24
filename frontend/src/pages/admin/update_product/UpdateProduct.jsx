@@ -17,7 +17,7 @@ import React, { useEffect, useState } from "react";
 import useCategoryStore from "../../../store/categoryStore";
 import useProductStore from "../../../store/productStore";
 import { useParams } from "react-router-dom";
-import { Delete as DeleteIcon, DirtyLens } from "@mui/icons-material";
+import { Delete as DeleteIcon } from "@mui/icons-material";
 import { urlPictures } from "../../../constants/constants";
 
 export default function UpdateProduct() {
@@ -35,34 +35,64 @@ export default function UpdateProduct() {
     price: 0,
     del_images: [],
   });
-
   const [characteristics, setCharacteristics] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [characteristicValues, setCharacteristicValues] = useState({});
   const [catalogs, setCatalogs] = useState([]);
   const [delImages, setDelImages] = useState({});
   const [loading, setLoading] = useState(false);
+  const [isFetching, setIsFetching] = useState(true);
 
+  // Загрузка категорий и данных продукта
   useEffect(() => {
     fetchCategory();
-  }, []);
+    fetchProductById(id).then(() => setIsFetching(false));
+  }, [id, fetchCategory, fetchProductById]);
 
+  // Инициализация формы данными из products.data
   useEffect(() => {
-    fetchProductById(id);
-  }, [id]);
+    if (products.data && !isFetching) {
+      setProduct({
+        article: products.data.article || "",
+        category_ids: products.data.categories?.map((cat) => cat.id) || [],
+        characteristic_values: products.data.characteristic || [],
+        description: products.data.description || "",
+        name: products.data.name || "",
+        images: products.data.images || [],
+        price: products.data.price || 0,
+        del_images: [],
+      });
+
+      setSelectedCategories(
+        products.data.categories?.map((cat) => cat.id) || []
+      );
+      setCatalogs([products.data.catalogs] || []);
+
+      // Инициализация характеристик
+      const initialCharValues = {};
+      products.data.characteristic?.forEach((char) => {
+        initialCharValues[char.id] = char.value;
+      });
+      setCharacteristicValues(initialCharValues);
+
+      // Инициализация характеристик категорий
+      const selectedCats = products.data.categories?.map((cat) => cat.id) || [];
+      const allCharacteristics = category.data
+        ?.filter((cat) => selectedCats.includes(cat.id))
+        .flatMap((cat) => cat.characteristic || []);
+      setCharacteristics([...new Set(allCharacteristics)] || []);
+    }
+  }, [products.data, isFetching, category.data]);
 
   const handleCatalogChange = (event) => {
     const { value, checked } = event.target;
-
-    let updatedCatlogs = [...catalogs]; // Копируем текущее состояние
-
+    let updatedCatalogs = [...catalogs];
     if (checked) {
-      updatedCatlogs.push(Number(value)); // Добавляем ID каталога
+      updatedCatalogs.push(Number(value));
     } else {
-      updatedCatlogs = updatedCatlogs.filter((log) => log !== Number(value)); // Удаляем ID каталога
+      updatedCatalogs = updatedCatalogs.filter((log) => log !== Number(value));
     }
-
-    setCatalogs(updatedCatlogs); // Обновляем состояние
+    setCatalogs(updatedCatalogs);
   };
 
   const handleCheckboxChange = (id) => {
@@ -119,15 +149,12 @@ export default function UpdateProduct() {
       images: prevProduct.images.filter((img) => img !== image),
       del_images: [
         ...prevProduct.del_images,
-        {
-          id: image.id,
-          name: image.name,
-        },
+        { id: image.id, name: image.name },
       ],
     }));
     setDelImages((prevDelImages) => ({
       ...prevDelImages,
-      [image.id]: true, // Помечаем изображение как удалённое
+      [image.id]: true,
     }));
   };
 
@@ -136,7 +163,7 @@ export default function UpdateProduct() {
     setLoading(true);
 
     const productData = {
-      article: product.article,
+      // article: product.article,
       category_ids: product.category_ids,
       characteristic_values: Object.entries(characteristicValues).map(
         ([id, value]) => ({
@@ -150,17 +177,26 @@ export default function UpdateProduct() {
       catalogs: catalogs,
       del_images: product.del_images,
     };
-    console.log(productData);
 
     const formData = new FormData();
     formData.append("json", JSON.stringify(productData));
     product.images.forEach((file) => {
-      formData.append("files", file);
+      if (file instanceof File) {
+        formData.append("files", file);
+      }
     });
 
     await updateProduct(id, formData);
     setLoading(false);
   };
+
+  if (isFetching) {
+    return (
+      <Box sx={{ display: "flex", justifyContent: "center", mt: 5 }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ mt: 5, mb: 5 }}>
@@ -174,26 +210,24 @@ export default function UpdateProduct() {
               {/* Основная информация */}
               <Grid item xs={12}>
                 <TextField
-                  // label="Название"
+                  label="Название"
                   value={product.name}
                   onChange={(e) =>
                     setProduct({ ...product, name: e.target.value })
                   }
                   fullWidth
                   margin="normal"
-                  placeholder={products.data?.name}
                 />
               </Grid>
               <Grid item xs={12}>
                 <TextField
-                  // label="Артикул"
+                  label="Артикул"
                   value={product.article}
                   onChange={(e) =>
                     setProduct({ ...product, article: e.target.value })
                   }
                   fullWidth
                   margin="normal"
-                  placeholder={products.data?.article}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -207,7 +241,6 @@ export default function UpdateProduct() {
                       price: isNaN(priceValue) ? 0 : priceValue,
                     });
                   }}
-                  placeholder={products.data?.price}
                   fullWidth
                   margin="normal"
                   InputProps={{
@@ -228,7 +261,6 @@ export default function UpdateProduct() {
                   margin="normal"
                   multiline
                   rows={4}
-                  placeholder={products.data?.description}
                 />
               </Grid>
 
@@ -241,43 +273,45 @@ export default function UpdateProduct() {
                   accept="image/*"
                 />
                 <Box sx={{ display: "flex", flexWrap: "wrap", mt: 2 }}>
-                  {products &&
-                    products.data &&
-                    products.data.images.map((e) => (
-                      <Box
-                        key={e.id}
-                        sx={{ position: "relative", mr: 1, mb: 1 }}
+                  {product.images.map((image, index) => (
+                    <Box
+                      key={image.id || index}
+                      sx={{ position: "relative", mr: 1, mb: 1 }}
+                    >
+                      <Avatar
+                        src={
+                          image instanceof File
+                            ? URL.createObjectURL(image)
+                            : `${urlPictures}/${image.name}`
+                        }
+                        alt="preview"
+                        sx={{
+                          width: 100,
+                          height: 100,
+                          position: "relative",
+                          opacity: delImages[image.id] ? 0.5 : 1,
+                          "&::before": delImages[image.id]
+                            ? {
+                                content: '""',
+                                position: "absolute",
+                                top: "50%",
+                                left: 0,
+                                right: 0,
+                                height: "2px",
+                                backgroundColor: "red",
+                                transform: "rotate(-45deg)",
+                              }
+                            : null,
+                        }}
+                      />
+                      <IconButton
+                        onClick={() => handleRemoveImage(image)}
+                        sx={{ position: "absolute", top: 0, right: 0 }}
                       >
-                        <Avatar
-                          src={`${urlPictures}/${e.name}`}
-                          alt="preview"
-                          sx={{
-                            width: 100,
-                            height: 100,
-                            position: "relative",
-                            opacity: delImages[e.id] ? 0.5 : 1, // Уменьшаем прозрачность, если изображение удалено
-                            "&::before": delImages[e.id]
-                              ? {
-                                  content: '""',
-                                  position: "absolute",
-                                  top: "50%",
-                                  left: 0,
-                                  right: 0,
-                                  height: "2px",
-                                  backgroundColor: "red",
-                                  transform: "rotate(-45deg)",
-                                }
-                              : null, // Перечеркивание, если изображение удалено
-                          }}
-                        />
-                        <IconButton
-                          onClick={() => handleRemoveImage(e)}
-                          sx={{ position: "absolute", top: 0, right: 0 }}
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      </Box>
-                    ))}
+                        <DeleteIcon />
+                      </IconButton>
+                    </Box>
+                  ))}
                 </Box>
               </Grid>
 
@@ -309,14 +343,16 @@ export default function UpdateProduct() {
                   Каталог
                   <Checkbox
                     value={1}
-                    onChange={(event) => handleCatalogChange(event)}
+                    checked={catalogs.includes(1)}
+                    onChange={handleCatalogChange}
                   />
                 </label>
                 <label>
-                  Каталог по электроному сертификату
+                  Каталог по электронному сертификату
                   <Checkbox
                     value={2}
-                    onChange={(event) => handleCatalogChange(event)}
+                    checked={catalogs.includes(2)}
+                    onChange={handleCatalogChange}
                   />
                 </label>
               </Grid>
@@ -333,7 +369,10 @@ export default function UpdateProduct() {
                           <FormControlLabel
                             control={
                               <Checkbox
-                                checked={characteristicValues[char.id] === true}
+                                checked={
+                                  characteristicValues[char.id] === "true" ||
+                                  characteristicValues[char.id] === true
+                                }
                                 onChange={() =>
                                   handleValueChange(char.id, true)
                                 }
@@ -345,6 +384,7 @@ export default function UpdateProduct() {
                             control={
                               <Checkbox
                                 checked={
+                                  characteristicValues[char.id] === "false" ||
                                   characteristicValues[char.id] === false
                                 }
                                 onChange={() =>
@@ -371,24 +411,34 @@ export default function UpdateProduct() {
               </Grid>
             </Grid>
 
-            {/* Кнопки управления */}
             <Box
               sx={{ display: "flex", justifyContent: "space-between", mt: 3 }}
             >
               <Button
                 variant="outlined"
                 color="secondary"
-                onClick={() =>
+                onClick={() => {
                   setProduct({
-                    article: "",
-                    category_ids: [],
-                    characteristic_values: [],
-                    description: "",
-                    name: "",
-                    images: [],
-                    price: 0,
-                  })
-                }
+                    article: products.data?.article || "",
+                    category_ids:
+                      products.data?.categories?.map((cat) => cat.id) || [],
+                    characteristic_values: products.data?.characteristic || [],
+                    description: products.data?.description || "",
+                    name: products.data?.name || "",
+                    images: products.data?.images || [],
+                    price: products.data?.price || 0,
+                    del_images: [],
+                  });
+                  setSelectedCategories(
+                    products.data?.categories?.map((cat) => cat.id) || []
+                  );
+                  setCatalogs([products.data?.catalogs] || []);
+                  const initialCharValues = {};
+                  products.data?.characteristic?.forEach((char) => {
+                    initialCharValues[char.id] = char.value;
+                  });
+                  setCharacteristicValues(initialCharValues);
+                }}
               >
                 Сбросить
               </Button>

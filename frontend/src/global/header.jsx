@@ -38,7 +38,6 @@ export default function Header() {
   const { isAuthenticated, setIsAuthenticated, checkAuthStatus } =
     useUserStore();
   const { getUserInfo, user, logout } = useUserStore();
-
   const navigate = useNavigate();
   // const location = useLocation(); // Получаем текущий путь
 

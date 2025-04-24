@@ -34,6 +34,25 @@ import ProductDynamicCertificatePage from "../pages/Product/ProductDynamicCertif
 import LayoutWrapper from "../global/LayoutWrapper";
 import NotFound from "../pages/notfound/NotFound";
 
+// const UsersRoute = ({ children }) => {
+//   const isLoggedIn = Cookies.get("logged_in") === "true";
+
+//   if (!isLoggedIn) {
+//     return <Navigate to="/" replace />;
+//   }
+//   return children;
+// };
+
+// export default UsersRoute;
+
+// export const AdminRoute = ({ children }) => {
+//   const { isAdmin, isLoadingUser } = useUserStore();
+
+//   if (isLoadingUser) return <div>Проверка прав доступа...</div>;
+
+//   return isAdmin() ? children : <Navigate to="/" replace />;
+// };
+
 const UsersRoute = ({ children }) => {
   const isLoggedIn = Cookies.get("logged_in") === "true";
 
