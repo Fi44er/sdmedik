@@ -1,8 +1,7 @@
 package postgres
 
 import (
-	role_model "github.com/Fi44er/sdmedik/backend/internal/module/user/infrastructure/repository/role/model"
-	user_model "github.com/Fi44er/sdmedik/backend/internal/module/user/infrastructure/repository/user/model"
+	"github.com/Fi44er/sdmedik/backend/internal/module/user/infrastructure/repository/model"
 	"github.com/Fi44er/sdmedik/backend/pkg/logger"
 	"gorm.io/gorm"
 )
@@ -12,9 +11,9 @@ func Migrate(db *gorm.DB, trigger bool, log *logger.Logger) error {
 	if trigger {
 		log.Info("📦 Migrating database...")
 		models := []interface{}{
-			role_model.Permission{},
-			role_model.Role{},
-			user_model.User{},
+			model.Permission{},
+			model.Role{},
+			model.User{},
 		}
 
 		log.Info("📦 Creating types...")

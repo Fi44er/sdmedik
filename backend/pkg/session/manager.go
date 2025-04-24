@@ -89,8 +89,6 @@ func (m *SessionManager) Start(ctx HttpContext) (context.Context, *Session) {
 		session = newSession()
 	}
 
-	// ctx.SetContext()
-
 	return context.WithValue(ctx.Context(), SessionContextKey, session), session
 }
 

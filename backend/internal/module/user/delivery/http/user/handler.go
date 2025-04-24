@@ -22,7 +22,7 @@ type IUserUsecase interface {
 }
 
 type UserHandler struct {
-	service IUserUsecase
+	usecase IUserUsecase
 
 	logger    *logger.Logger
 	validator *validator.Validate
@@ -31,12 +31,12 @@ type UserHandler struct {
 }
 
 func NewUserHandler(
-	service IUserUsecase,
+	usecase IUserUsecase,
 	logger *logger.Logger,
 	validator *validator.Validate,
 ) *UserHandler {
 	return &UserHandler{
-		service:   service,
+		usecase:   usecase,
 		logger:    logger,
 		validator: validator,
 		converter: &Converter{},
@@ -53,11 +53,13 @@ func NewUserHandler(
 // @Failure 500 {object} response.Response "Error"
 // @Router /users/me [get]
 func (h *UserHandler) GetMy(ctx *fiber.Ctx) error {
-	sess := session.FromContext(ctx.Context())
-	h.logger.Infof("session: %v", sess)
-
 	sessFiber := session.FromFiberContext(ctx)
 	h.logger.Infof("fiber session: %v", sessFiber)
+
+	h.logger.Infof("%v", sessFiber.Get("test"))
+	sessFiber.Put("test", "test")
+
+	h.logger.Infof("%v", sessFiber.Get("test"))
 
 	// user := ctx.Locals("user").(dto.UserResponse)
 	return ctx.Status(200).JSON(fiber.Map{"status": "success", "data": "user"})
@@ -76,7 +78,7 @@ func (h *UserHandler) GetMy(ctx *fiber.Ctx) error {
 func (h *UserHandler) GetByID(ctx *fiber.Ctx) error {
 	id := ctx.Params("id")
 
-	user, err := h.service.GetByID(ctx.Context(), id)
+	user, err := h.usecase.GetByID(ctx.Context(), id)
 	if err != nil {
 		return err
 	}
@@ -101,7 +103,7 @@ func (h *UserHandler) GetAll(ctx *fiber.Ctx) error {
 	offset := ctx.QueryInt("offset")
 	limit := ctx.QueryInt("limit")
 
-	users, err := h.service.GetAll(ctx.Context(), limit, offset)
+	users, err := h.usecase.GetAll(ctx.Context(), limit, offset)
 	if err != nil {
 		return err
 	}
@@ -129,7 +131,7 @@ func (h *UserHandler) Create(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	if err := h.service.Create(ctx.Context(), entity); err != nil {
+	if err := h.usecase.Create(ctx.Context(), entity); err != nil {
 		h.logger.Errorf("error while create user: %s", err)
 		return err
 	}
@@ -161,7 +163,7 @@ func (h *UserHandler) Update(ctx *fiber.Ctx) error {
 	}
 	entity.ID = id
 
-	if err := h.service.Update(ctx.Context(), entity); err != nil {
+	if err := h.usecase.Update(ctx.Context(), entity); err != nil {
 		h.logger.Errorf("error while update user: %s", err)
 		return err
 	}
@@ -185,7 +187,7 @@ func (h *UserHandler) Update(ctx *fiber.Ctx) error {
 func (h *UserHandler) Delete(ctx *fiber.Ctx) error {
 	id := ctx.Params("id")
 
-	if err := h.service.Delete(ctx.Context(), id); err != nil {
+	if err := h.usecase.Delete(ctx.Context(), id); err != nil {
 		h.logger.Errorf("error while delete user: %s", err)
 		return err
 	}

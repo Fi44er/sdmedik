@@ -10,10 +10,11 @@ import (
 	"github.com/Fi44er/sdmedik/backend/pkg/logger"
 	"github.com/Fi44er/sdmedik/backend/pkg/middleware"
 	"github.com/Fi44er/sdmedik/backend/pkg/postgres"
-	redis_connect "github.com/Fi44er/sdmedik/backend/pkg/redis"
+	redisConnect "github.com/Fi44er/sdmedik/backend/pkg/redis"
 	"github.com/Fi44er/sdmedik/backend/pkg/session"
 	sessionadapter "github.com/Fi44er/sdmedik/backend/pkg/session/adapters"
 	sessionstore "github.com/Fi44er/sdmedik/backend/pkg/session/store"
+	eventBus "github.com/asaskevich/EventBus"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -33,8 +34,10 @@ type App struct {
 	db          *gorm.DB
 	redisClient *redis.Client
 
-	redisManager   redis_connect.IRedisManager
+	redisManager   redisConnect.IRedisManager
 	sessionManager *session.SessionManager
+
+	eventbus *EventBus
 
 	moduleProvider *moduleProvider
 
@@ -83,6 +86,7 @@ func (app *App) initDeps() error {
 		app.initValidator,
 		app.initModuleProvider,
 		app.initRouter,
+		app.initEventBus,
 	}
 	for _, init := range inits {
 		err := init()
@@ -129,17 +133,17 @@ func (app *App) initDb() error {
 
 func (app *App) initRedis() error {
 	if app.redisManager == nil {
-		client, err := redis_connect.Connect(app.config.RedisUrl, app.logger)
+		client, err := redisConnect.Connect(app.config.RedisUrl, app.logger)
 		if err != nil {
 			app.logger.Errorf("Failed to connect to Redis: %v", err)
 			return nil
 		}
 
-		app.redisManager = redis_connect.NewRedisManger(client)
+		app.redisManager = redisConnect.NewRedisManger(client)
 		app.redisClient = client
 
 		// Используем значение redisMode из структуры App
-		if err := redis_connect.FlushRedisCache(client, app.redisMode, app.logger); err != nil {
+		if err := redisConnect.FlushRedisCache(client, app.redisMode, app.logger); err != nil {
 			err = fmt.Errorf("✖ Failed to flush redis cache: %v", err)
 			app.logger.Errorf("%s", err.Error())
 			return err
@@ -174,6 +178,13 @@ func (app *App) initSessionManager() error {
 
 	app.app.Use(sessionadapter.FiberMiddleware(app.sessionManager))
 
+	return nil
+}
+
+func (app *App) initEventBus() error {
+	if app.eventbus == nil {
+		app.eventbus = eventBus.New()
+	}
 	return nil
 }
 

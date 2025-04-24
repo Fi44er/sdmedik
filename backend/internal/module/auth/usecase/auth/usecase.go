@@ -5,6 +5,7 @@ import (
 	"regexp"
 	"time"
 
+	"entgo.io/ent"
 	"github.com/Fi44er/sdmedik/backend/internal/config"
 	"github.com/Fi44er/sdmedik/backend/internal/module/auth/dto"
 	"github.com/Fi44er/sdmedik/backend/internal/module/auth/entity"
@@ -71,18 +72,18 @@ func (s *AuthUsecase) createAndStoreToken(ctx context.Context, userID string, ex
 	return *tokenDetails.Token, err
 }
 
-func (s *AuthUsecase) SignIn(ctx context.Context, data *dto.LoginDTO) (*dto.LoginResponse, error) {
-	user, err := s.userUsecase.GetByEmail(ctx, data.Email)
-	if err != nil || !utils.ComparePassword(user.Password, data.Password) {
+func (s *AuthUsecase) SignIn(ctx context.Context, user *entity.User) (*dto.LoginResponse, error) {
+	user, err := s.userUsecase.GetByEmail(ctx, user.Email)
+	if err != nil || !utils.ComparePassword(user.Password, user.Password) {
 		return nil, constant.ErrInvalidEmailOrPassword
 	}
 
-	accessToken, err := s.createAndStoreToken(ctx, user.ID, s.config.AccessTokenExpiresIn, s.config.AccessTokenPrivateKey, data.UserAgent)
+	accessToken, err := s.createAndStoreToken(ctx, user.ID, s.config.AccessTokenExpiresIn, s.config.AccessTokenPrivateKey, user.UserAgent)
 	if err != nil {
 		return nil, err
 	}
 
-	refreshToken, err := s.createAndStoreToken(ctx, user.ID, s.config.RefreshTokenExpiresIn, s.config.RefreshTokenPrivateKey, data.UserAgent)
+	refreshToken, err := s.createAndStoreToken(ctx, user.ID, s.config.RefreshTokenExpiresIn, s.config.RefreshTokenPrivateKey, user.UserAgent)
 	if err != nil {
 		return nil, err
 	}
