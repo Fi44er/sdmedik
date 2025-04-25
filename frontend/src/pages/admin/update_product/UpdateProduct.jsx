@@ -19,12 +19,14 @@ import useProductStore from "../../../store/productStore";
 import { useParams } from "react-router-dom";
 import { Delete as DeleteIcon } from "@mui/icons-material";
 import { urlPictures } from "../../../constants/constants";
+import { toast } from "react-toastify";
 
 export default function UpdateProduct() {
   const { fetchCategory, category } = useCategoryStore();
   const { updateProduct, fetchProductById, products } = useProductStore();
   const { id } = useParams();
 
+  // Состояние формы
   const [product, setProduct] = useState({
     article: "",
     category_ids: [],
@@ -43,15 +45,27 @@ export default function UpdateProduct() {
   const [loading, setLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
 
+  // Допустимые значения для catalogs
+  const VALID_CATALOG_IDS = [1, 2];
+
   // Загрузка категорий и данных продукта
   useEffect(() => {
+    setIsFetching(true);
     fetchCategory();
-    fetchProductById(id).then(() => setIsFetching(false));
+    fetchProductById(id)
+      .then(() => setIsFetching(false))
+      .catch((error) => {
+        console.error("Ошибка загрузки продукта:", error);
+        toast.error("Не удалось загрузить данные продукта");
+        setIsFetching(false);
+      });
   }, [id, fetchCategory, fetchProductById]);
 
   // Инициализация формы данными из products.data
   useEffect(() => {
     if (products.data && !isFetching) {
+      console.log("products.data.catalogs:", products.data.catalogs); // Для отладки
+
       setProduct({
         article: products.data.article || "",
         category_ids: products.data.categories?.map((cat) => cat.id) || [],
@@ -66,7 +80,14 @@ export default function UpdateProduct() {
       setSelectedCategories(
         products.data.categories?.map((cat) => cat.id) || []
       );
-      setCatalogs([products.data.catalogs] || []);
+
+      // Инициализация catalogs: фильтруем только допустимые значения
+      const catalogValue = products.data.catalogs;
+      const initialCatalogs =
+        catalogValue && VALID_CATALOG_IDS.includes(catalogValue)
+          ? [catalogValue]
+          : [];
+      setCatalogs(initialCatalogs);
 
       // Инициализация характеристик
       const initialCharValues = {};
@@ -84,17 +105,36 @@ export default function UpdateProduct() {
     }
   }, [products.data, isFetching, category.data]);
 
+  // Обработчик изменения каталогов
   const handleCatalogChange = (event) => {
     const { value, checked } = event.target;
-    let updatedCatalogs = [...catalogs];
-    if (checked) {
-      updatedCatalogs.push(Number(value));
-    } else {
-      updatedCatalogs = updatedCatalogs.filter((log) => log !== Number(value));
+    const catalogId = Number(value);
+
+    // Проверяем, что значение допустимо
+    if (!VALID_CATALOG_IDS.includes(catalogId)) {
+      console.warn(`Недопустимое значение catalogId: ${catalogId}`);
+      toast.error(`Недопустимый каталог: ${catalogId}`);
+      return;
     }
-    setCatalogs(updatedCatalogs);
+
+    setCatalogs((prevCatalogs) => {
+      let updatedCatalogs = [...prevCatalogs];
+      if (checked) {
+        if (!updatedCatalogs.includes(catalogId)) {
+          updatedCatalogs.push(catalogId);
+        }
+      } else {
+        updatedCatalogs = updatedCatalogs.filter((log) => log !== catalogId);
+      }
+      // Фильтруем undefined, 0 и недопустимые значения
+      updatedCatalogs = updatedCatalogs.filter((id) =>
+        VALID_CATALOG_IDS.includes(id)
+      );
+      return updatedCatalogs;
+    });
   };
 
+  // Обработчик изменения категорий
   const handleCheckboxChange = (id) => {
     setSelectedCategories((prevSelected) => {
       const isSelected = prevSelected.includes(id);
@@ -128,6 +168,7 @@ export default function UpdateProduct() {
     });
   };
 
+  // Обработчик изменения значений характеристик
   const handleValueChange = (id, value) => {
     setCharacteristicValues((prevValues) => ({
       ...prevValues,
@@ -135,6 +176,7 @@ export default function UpdateProduct() {
     }));
   };
 
+  // Обработчик загрузки файлов
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
     setProduct((prevProduct) => ({
@@ -143,6 +185,7 @@ export default function UpdateProduct() {
     }));
   };
 
+  // Обработчик удаления изображений
   const handleRemoveImage = (image) => {
     setProduct((prevProduct) => ({
       ...prevProduct,
@@ -158,25 +201,36 @@ export default function UpdateProduct() {
     }));
   };
 
+  // Обработчик отправки формы
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
+    // Валидация обязательных полей
+    if (!product.name || !product.price || !product.description) {
+      toast.error("Заполните все обязательные поля: название, цена, описание");
+      setLoading(false);
+      return;
+    }
+
+    // Формируем данные, исключая article и отправляя price как число
     const productData = {
-      // article: product.article,
+      name: product.name,
+      price: Number(product.price), // Отправляем price как число
+      description: product.description,
       category_ids: product.category_ids,
       characteristic_values: Object.entries(characteristicValues).map(
         ([id, value]) => ({
           characteristic_id: Number(id),
-          value: String(value),
+          value: String(value), // Все значения — строки
         })
       ),
-      description: product.description,
-      name: product.name,
-      price: product.price,
-      catalogs: catalogs,
+      catalogs: catalogs.filter((id) => VALID_CATALOG_IDS.includes(id)), // Фильтруем только допустимые значения
       del_images: product.del_images,
     };
+
+    // Логируем данные для отладки
+    console.log("Отправляемые данные:", productData);
 
     const formData = new FormData();
     formData.append("json", JSON.stringify(productData));
@@ -186,10 +240,26 @@ export default function UpdateProduct() {
       }
     });
 
-    await updateProduct(id, formData);
-    setLoading(false);
+    // Логируем содержимое FormData
+    for (let [key, value] of formData.entries()) {
+      console.log(`FormData ${key}:`, value);
+    }
+
+    try {
+      await updateProduct(id, formData);
+      toast.success("Продукт успешно обновлен");
+    } catch (error) {
+      console.error("Ошибка при отправке данных:", error);
+      toast.error(
+        "Ошибка при обновлении продукта: " +
+          (error.response?.data?.message || error.message)
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
+  // Отображение индикатора загрузки
   if (isFetching) {
     return (
       <Box sx={{ display: "flex", justifyContent: "center", mt: 5 }}>
@@ -217,6 +287,7 @@ export default function UpdateProduct() {
                   }
                   fullWidth
                   margin="normal"
+                  required
                 />
               </Grid>
               <Grid item xs={12}>
@@ -243,6 +314,8 @@ export default function UpdateProduct() {
                   }}
                   fullWidth
                   margin="normal"
+                  type="number"
+                  required
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">₽</InputAdornment>
@@ -261,6 +334,7 @@ export default function UpdateProduct() {
                   margin="normal"
                   multiline
                   rows={4}
+                  required
                 />
               </Grid>
 
@@ -338,23 +412,31 @@ export default function UpdateProduct() {
                 </Box>
               </Grid>
 
+              {/* Каталоги */}
               <Grid item xs={12}>
-                <label>
-                  Каталог
-                  <Checkbox
-                    value={1}
-                    checked={catalogs.includes(1)}
-                    onChange={handleCatalogChange}
+                <Typography variant="h6">Каталоги</Typography>
+                <Box>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        value={1}
+                        checked={catalogs.includes(1)}
+                        onChange={handleCatalogChange}
+                      />
+                    }
+                    label="Каталог"
                   />
-                </label>
-                <label>
-                  Каталог по электронному сертификату
-                  <Checkbox
-                    value={2}
-                    checked={catalogs.includes(2)}
-                    onChange={handleCatalogChange}
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        value={2}
+                        checked={catalogs.includes(2)}
+                        onChange={handleCatalogChange}
+                      />
+                    }
+                    label="Каталог по электронному сертификату"
                   />
-                </label>
+                </Box>
               </Grid>
 
               {/* Характеристики */}
@@ -374,7 +456,7 @@ export default function UpdateProduct() {
                                   characteristicValues[char.id] === true
                                 }
                                 onChange={() =>
-                                  handleValueChange(char.id, true)
+                                  handleValueChange(char.id, "true")
                                 }
                               />
                             }
@@ -388,7 +470,7 @@ export default function UpdateProduct() {
                                   characteristicValues[char.id] === false
                                 }
                                 onChange={() =>
-                                  handleValueChange(char.id, false)
+                                  handleValueChange(char.id, "false")
                                 }
                               />
                             }
@@ -411,6 +493,7 @@ export default function UpdateProduct() {
               </Grid>
             </Grid>
 
+            {/* Кнопки управления */}
             <Box
               sx={{ display: "flex", justifyContent: "space-between", mt: 3 }}
             >
@@ -432,12 +515,18 @@ export default function UpdateProduct() {
                   setSelectedCategories(
                     products.data?.categories?.map((cat) => cat.id) || []
                   );
-                  setCatalogs([products.data?.catalogs] || []);
+                  const catalogValue = products.data?.catalogs;
+                  setCatalogs(
+                    catalogValue && VALID_CATALOG_IDS.includes(catalogValue)
+                      ? [catalogValue]
+                      : []
+                  );
                   const initialCharValues = {};
                   products.data?.characteristic?.forEach((char) => {
                     initialCharValues[char.id] = char.value;
                   });
                   setCharacteristicValues(initialCharValues);
+                  setDelImages({});
                 }}
               >
                 Сбросить
