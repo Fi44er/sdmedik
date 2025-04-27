@@ -2,6 +2,11 @@ basePath: /api/v1/
 definitions:
   dto.AddBasketItem:
     properties:
+      dynamic_options:
+        description: выбранные характеристики
+        items:
+          $ref: '#/definitions/dto.DinamicOption'
+        type: array
       iso:
         type: string
       product_id:
@@ -82,6 +87,16 @@ definitions:
         type: number
     required:
     - type
+    - value
+    type: object
+  dto.DinamicOption:
+    properties:
+      id:
+        type: integer
+      value:
+        type: string
+    required:
+    - id
     - value
     type: object
   dto.Login:
@@ -735,7 +750,7 @@ paths:
         "characteristic_values": [
         {
         "characteristic_id": 3,
-        "value": "12"
+        "value": ["12"]
         }
         ],
         "description": "description #1",
@@ -805,11 +820,11 @@ paths:
         "characteristic_values": [
         {
         "characteristic_id": 2,
-        "value": "string"
+        "value": ["string"]
         },
         {
         "characteristic_id": 3,
-        "value": "12"
+        "value": ["12"]
         }
         ],
         "del_images": [

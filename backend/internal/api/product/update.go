@@ -23,11 +23,11 @@ import (
 // @Description 	"characteristic_values": [
 // @Description 		{
 // @Description 			"characteristic_id": 2,
-// @Description 			"value": "string"
+// @Description 			"value": ["string"]
 // @Description 		},
 // @Description 		{
 // @Description 			"characteristic_id": 3,
-// @Description 			"value": "12"
+// @Description 			"value": ["12"]
 // @Description 		}
 // @Description 	],
 // @Description 	"del_images": [

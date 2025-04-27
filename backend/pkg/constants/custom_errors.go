@@ -20,3 +20,5 @@ var ErrOrderNotFound = errors.New(404, "Order not found")
 
 var ErrPromotionDateBad = errors.New(400, "Promotion date is bad")
 var ErrPromotionNotFound = errors.New(404, "Promotion not found")
+
+var ErrOptionNotFound = errors.New(404, "Option not found")

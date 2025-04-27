@@ -732,7 +732,7 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "description": "Creates a new product with metadata (JSON) and multiple files.\nExample JSON:\n` + "`" + `` + "`" + `` + "`" + `\n{\n\"article\": \"123-123-124\",\n\"category_ids\": [\n2\n],\n\"characteristic_values\": [\n{\n\"characteristic_id\": 3,\n\"value\": \"12\"\n}\n],\n\"description\": \"description #1\",\n\"name\": \"product #1\",\n\"price\": 123.12\n}\n` + "`" + `` + "`" + `` + "`" + `",
+                "description": "Creates a new product with metadata (JSON) and multiple files.\nExample JSON:\n` + "`" + `` + "`" + `` + "`" + `\n{\n\"article\": \"123-123-124\",\n\"category_ids\": [\n2\n],\n\"characteristic_values\": [\n{\n\"characteristic_id\": 3,\n\"value\": [\"12\"]\n}\n],\n\"description\": \"description #1\",\n\"name\": \"product #1\",\n\"price\": 123.12\n}\n` + "`" + `` + "`" + `` + "`" + `",
                 "consumes": [
                     "multipart/form-data"
                 ],
@@ -839,7 +839,7 @@ const docTemplate = `{
         },
         "/product/{id}": {
             "put": {
-                "description": "Updates a product with metadata (JSON) and multiple files\nExample JSON:\n` + "`" + `` + "`" + `` + "`" + `\n{\n\"name\": \"test update\",\n\"price\": 123.12,\n\"description\": \"test update\",\n\"category_ids\": [\n2\n],\n\"characteristic_values\": [\n{\n\"characteristic_id\": 2,\n\"value\": \"string\"\n},\n{\n\"characteristic_id\": 3,\n\"value\": \"12\"\n}\n],\n\"del_images\": [\n{\n\"id\": \"8832ed62-0a19-40e2-81b3-4c971884e962\",\n\"name\": \"cb44cbb3-aaf9-47a4-867c-f81dbc0485ab.jpg\"\n}\n]\n}\n` + "`" + `` + "`" + `` + "`" + `",
+                "description": "Updates a product with metadata (JSON) and multiple files\nExample JSON:\n` + "`" + `` + "`" + `` + "`" + `\n{\n\"name\": \"test update\",\n\"price\": 123.12,\n\"description\": \"test update\",\n\"category_ids\": [\n2\n],\n\"characteristic_values\": [\n{\n\"characteristic_id\": 2,\n\"value\": [\"string\"]\n},\n{\n\"characteristic_id\": 3,\n\"value\": [\"12\"]\n}\n],\n\"del_images\": [\n{\n\"id\": \"8832ed62-0a19-40e2-81b3-4c971884e962\",\n\"name\": \"cb44cbb3-aaf9-47a4-867c-f81dbc0485ab.jpg\"\n}\n]\n}\n` + "`" + `` + "`" + `` + "`" + `",
                 "consumes": [
                     "multipart/form-data"
                 ],
@@ -1214,6 +1214,13 @@ const docTemplate = `{
                 "quantity"
             ],
             "properties": {
+                "dynamic_options": {
+                    "description": "выбранные характеристики",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.DinamicOption"
+                    }
+                },
                 "iso": {
                     "type": "string"
                 },
@@ -1330,6 +1337,21 @@ const docTemplate = `{
                 },
                 "value": {
                     "type": "number"
+                }
+            }
+        },
+        "dto.DinamicOption": {
+            "type": "object",
+            "required": [
+                "id",
+                "value"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "value": {
+                    "type": "string"
                 }
             }
         },

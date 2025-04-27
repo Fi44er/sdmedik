@@ -6,14 +6,15 @@ import (
 )
 
 type BasketItem struct {
-	ID            string  `gorm:"primaryKey;type:varchar(36)" json:"id"`
-	Article       string  `gorm:"type:varchar(255);not null" json:"article"`
-	Quantity      int     `gorm:"not null" json:"quantity"`
-	TotalPrice    float64 `gorm:"not null" json:"total_price"`
-	ProductID     string  `gorm:"type:varchar(36);not null" json:"product_id"`
-	BasketID      string  `gorm:"type:varchar(36);not null" json:"basket_id"`
-	IsCertificate bool    `gorm:"type:bool;not null;default:false" json:"is_certificate"`
-	Iso           string  `json:"iso"`
+	ID              string        `gorm:"primaryKey;type:varchar(36)" json:"id"`
+	Article         string        `gorm:"type:varchar(255);not null" json:"article"`
+	Quantity        int           `gorm:"not null" json:"quantity"`
+	TotalPrice      float64       `gorm:"not null" json:"total_price"`
+	ProductID       string        `gorm:"type:varchar(36);not null" json:"product_id"`
+	BasketID        string        `gorm:"type:varchar(36);not null" json:"basket_id"`
+	IsCertificate   bool          `gorm:"type:bool;not null;default:false" json:"is_certificate"`
+	Iso             string        `json:"iso"`
+	SelectedOptions []interface{} `gorm:"type:json;serializer:json;" json:"selected_options"` // выбранные характеристики
 }
 
 func (b *BasketItem) BeforeCreate(tx *gorm.DB) error {

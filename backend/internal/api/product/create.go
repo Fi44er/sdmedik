@@ -22,7 +22,7 @@ import (
 // @Description 	"characteristic_values": [
 // @Description 		{
 // @Description 			"characteristic_id": 3,
-// @Description 			"value": "12"
+// @Description 			"value": ["12"]
 // @Description 		}
 // @Description 	],
 // @Description 	"description": "description #1",

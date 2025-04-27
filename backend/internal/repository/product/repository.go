@@ -2,6 +2,7 @@ package product
 
 import (
 	"context"
+	"encoding/json"
 	"reflect"
 	"strconv"
 
@@ -176,13 +177,30 @@ func (r *repository) Get(ctx context.Context, criteria dto.ProductSearchCriteria
 
 	if len(criteria.Filters.Characteristics) > 0 {
 		for _, filter := range criteria.Filters.Characteristics {
+			// request = request.Joins(
+			// 	"JOIN characteristic_values AS cv"+strconv.Itoa(filter.CharacteristicID)+" ON cv"+strconv.Itoa(filter.CharacteristicID)+".product_id = products.id",
+			// ).Where(
+			// 	"cv"+strconv.Itoa(filter.CharacteristicID)+".characteristic_id = ?", filter.CharacteristicID,
+			// ).Where(
+			// 	"cv"+strconv.Itoa(filter.CharacteristicID)+".value IN (?)", filter.Values,
+			// )
+
+			joinAlias := "cv" + strconv.Itoa(filter.CharacteristicID)
+
 			request = request.Joins(
-				"JOIN characteristic_values AS cv"+strconv.Itoa(filter.CharacteristicID)+" ON cv"+strconv.Itoa(filter.CharacteristicID)+".product_id = products.id",
+				"JOIN characteristic_values AS "+joinAlias+" ON "+joinAlias+".product_id = products.id",
 			).Where(
-				"cv"+strconv.Itoa(filter.CharacteristicID)+".characteristic_id = ?", filter.CharacteristicID,
-			).Where(
-				"cv"+strconv.Itoa(filter.CharacteristicID)+".value IN (?)", filter.Values,
+				joinAlias+".characteristic_id = ?", filter.CharacteristicID,
 			)
+
+			if len(filter.Values) > 0 {
+				jsonValue, _ := json.Marshal(filter.Values)
+
+				// Явное приведение типа с обеих сторон оператора
+				request = request.Where(
+					joinAlias+".value::jsonb @> ?::jsonb", string(jsonValue),
+				)
+			}
 		}
 	}
 

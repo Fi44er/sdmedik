@@ -42,7 +42,7 @@ func (s *service) AddItem(ctx context.Context, data *dto.AddBasketItem, userID s
 		}
 	}
 
-	product, _, err := s.productService.Get(ctx, dto.ProductSearchCriteria{ID: data.ProductID, Minimal: true, Iso: data.Iso})
+	product, _, err := s.productService.Get(ctx, dto.ProductSearchCriteria{ID: data.ProductID, Iso: data.Iso})
 	if err != nil {
 		return fmt.Errorf("failed to get product: %w", err)
 	}
@@ -106,6 +106,43 @@ func (s *service) AddItem(ctx context.Context, data *dto.AddBasketItem, userID s
 	}
 
 	// Создаем новый элемент в корзине
+	// data.DinamicOptions
+	charMap := make(map[int]struct {
+		Name   string
+		Values []string
+	})
+	selectedOption := make([]interface{}, 0)
+	for _, char := range (*product)[0].Characteristic {
+		charMap[char.ID] = struct {
+			Name   string
+			Values []string
+		}{Name: char.Name, Values: char.Value}
+	}
+
+	selectedOptionInCtx := ctx.Value("dinamic_options")
+	if selectedOptionInCtx != nil {
+		selectedOption = selectedOptionInCtx.([]interface{})
+	} else {
+		for _, option := range data.DinamicOptions {
+			if values, exist := charMap[option.ID]; exist {
+				existOption := false
+				for _, val := range values.Values {
+					if option.Value == val {
+						existOption = true
+						selectedOption = append(selectedOption, struct {
+							Name  string `json:"name"`
+							Value string `json:"value"`
+						}{Name: values.Name, Value: option.Value})
+						break
+					}
+				}
+				if !existOption {
+					return constants.ErrOptionNotFound
+				}
+			}
+		}
+	}
+
 	var totalPrice float64
 	iso := ""
 	if isSertificate {
@@ -116,13 +153,16 @@ func (s *service) AddItem(ctx context.Context, data *dto.AddBasketItem, userID s
 	}
 
 	newBasketItem := model.BasketItem{
-		Article:       (*product)[0].Article,
-		Quantity:      data.Quantity,
-		TotalPrice:    totalPrice,
-		ProductID:     data.ProductID,
-		IsCertificate: isSertificate,
-		Iso:           iso,
+		Article:         (*product)[0].Article,
+		Quantity:        data.Quantity,
+		TotalPrice:      totalPrice,
+		ProductID:       data.ProductID,
+		IsCertificate:   isSertificate,
+		Iso:             iso,
+		SelectedOptions: selectedOption,
 	}
+
+	s.logger.Infof("newBasketItem: %+v", newBasketItem)
 
 	if newBasketItem.Quantity <= 0 {
 		return nil

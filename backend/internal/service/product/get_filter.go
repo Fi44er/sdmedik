@@ -3,7 +3,6 @@ package product
 import (
 	"context"
 	"encoding/json"
-	"strconv"
 
 	"github.com/Fi44er/sdmedik/backend/internal/dto"
 	"github.com/Fi44er/sdmedik/backend/internal/model"
@@ -51,46 +50,50 @@ func (s *service) GetFilter(ctx context.Context, categoryID int) (*response.Prod
 			}
 
 			if char.CategoryID == categoryID {
-				var value interface{}
-				switch char.DataType {
-				case model.TypeInt:
-					value, err = strconv.Atoi(charValue.Value)
-				case model.TypeFloat:
-					value, err = strconv.ParseFloat(charValue.Value, 64)
-				case model.TypeBool:
-					value, err = strconv.ParseBool(charValue.Value)
-				default:
-					value = charValue.Value
-				}
+				var value []interface{}
+				// switch char.DataType {
+				// case model.TypeInt:
+				// 	value, err = strconv.Atoi(charValue.Value)
+				// case model.TypeFloat:
+				// 	value, err = strconv.ParseFloat(charValue.Value, 64)
+				// case model.TypeBool:
+				// 	value, err = strconv.ParseBool(charValue.Value)
+				// default:
+				// 	value = charValue.Value
+				// }
 
-				if err != nil {
-					s.logger.Errorf("Error converting characteristic value: %v", err)
-					continue
-				}
+				for _, charValue := range charValue.Value {
+					if _, exists := charMap[char.Name]; !exists {
+						charMap[char.Name] = struct {
+							ID     int
+							Type   string
+							Values []interface{}
+						}{
+							ID:     char.ID,
+							Type:   string(char.DataType),
+							Values: []interface{}{},
+						}
+					}
 
-				if _, exists := charMap[char.Name]; !exists {
-					charMap[char.Name] = struct {
-						ID     int
-						Type   string
-						Values []interface{}
-					}{
-						ID:     char.ID,
-						Type:   string(char.DataType),
-						Values: []interface{}{},
+					if !contains(charMap[char.Name].Values, value) {
+						charMap[char.Name] = struct {
+							ID     int
+							Type   string
+							Values []interface{}
+						}{
+							ID:     char.ID,
+							Type:   charMap[char.Name].Type,
+							Values: append(charMap[char.Name].Values, charValue),
+						}
 					}
 				}
+				// value = charValue.Value
 
-				if !contains(charMap[char.Name].Values, value) {
-					charMap[char.Name] = struct {
-						ID     int
-						Type   string
-						Values []interface{}
-					}{
-						ID:     char.ID,
-						Type:   charMap[char.Name].Type,
-						Values: append(charMap[char.Name].Values, value),
-					}
-				}
+				// if err != nil {
+				// 	s.logger.Errorf("Error converting characteristic value: %v", err)
+				// 	continue
+				// }
+
 			}
 		}
 	}
