@@ -2,6 +2,7 @@ package mailer
 
 import (
 	"bytes"
+	"crypto/tls"
 	"fmt"
 	"html/template"
 	"log"
@@ -24,8 +25,12 @@ func NewMailer(smtpHost, smtpPort, username, password, templatePath string, pool
 		return nil, fmt.Errorf("failed to parse email template: %w", err)
 	}
 
+	tlsConfig := tls.Config{
+		InsecureSkipVerify: true,
+	}
+
 	auth := smtp.PlainAuth("", username, password, smtpHost)
-	pool, err := email.NewPool(fmt.Sprintf("%s:%s", smtpHost, smtpPort), poolSize, auth)
+	pool, err := email.NewPool(fmt.Sprintf("%s:%s", smtpHost, smtpPort), poolSize, auth, &tlsConfig)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create email pool: %w", err)
 	}

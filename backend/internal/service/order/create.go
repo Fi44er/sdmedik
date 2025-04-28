@@ -3,6 +3,7 @@ package order
 import (
 	"context"
 	"strings"
+	"time"
 
 	"github.com/Fi44er/sdmedik/backend/internal/dto"
 	"github.com/Fi44er/sdmedik/backend/internal/model"
@@ -34,6 +35,30 @@ func (s *service) Create(ctx context.Context, data *dto.CreateOrder, userID stri
 	s.logger.Infof("Link: %v", link)
 
 	orderItems := []model.OrderItem{}
+	templateData := struct {
+		Date          string
+		ClientName    string
+		ClientPhone   string
+		ClientEmail   string
+		ClientAddress string
+		Data          struct {
+			Items      []model.OrderItem
+			TotalPrice float64
+		}
+	}{
+		Date:          string(time.Now().Format("02.01.2006")),
+		ClientName:    data.FIO,
+		ClientPhone:   data.PhoneNumber,
+		ClientEmail:   data.Email,
+		ClientAddress: data.Address,
+		Data: struct {
+			Items      []model.OrderItem
+			TotalPrice float64
+		}{
+			Items:      make([]model.OrderItem, 0),
+			TotalPrice: 0,
+		},
+	}
 	for _, item := range basket.Items {
 		orderItem := model.OrderItem{
 			OrderID:         orderModel.ID,
@@ -45,6 +70,8 @@ func (s *service) Create(ctx context.Context, data *dto.CreateOrder, userID stri
 			SelectedOptions: item.SelectedOptions,
 		}
 		orderItems = append(orderItems, orderItem)
+		templateData.Data.Items = append(templateData.Data.Items, orderItem)
+		templateData.Data.TotalPrice += orderItem.TotalPrice
 
 		if err := s.basketService.DeleteItem(ctx, item.ID, userID, sess); err != nil {
 			return "", err
@@ -54,6 +81,13 @@ func (s *service) Create(ctx context.Context, data *dto.CreateOrder, userID stri
 	if err := s.repo.AddItems(ctx, &orderItems); err != nil {
 		return "", err
 	}
+
+	s.mailer.SendMailAsync(
+		s.config.MailFrom,
+		"sales@sdmedik.ru",
+		"Новый заказ",
+		templateData,
+	)
 
 	return link, nil
 }

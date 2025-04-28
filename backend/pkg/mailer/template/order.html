@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Новая заявка</title>
+    <style type="text/css">
+      /* Основные стили для поддержки в почтовых клиентах */
+      body,
+      html {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        line-height: 1.4;
+        color: #333333;
+        background-color: #f5f5f5;
+      }
+      .email-container {
+        max-width: 600px;
+        margin: 0 auto;
+        background: #ffffff;
+      }
+      .header {
+        background-color: #4a6da7;
+        color: white;
+        padding: 20px;
+        text-align: center;
+      }
+      .content {
+        padding: 20px;
+      }
+      .order-details {
+        background-color: #f9f9f9;
+        border-left: 4px solid #4a6da7;
+        padding: 15px;
+        margin: 15px 0;
+      }
+      .footer {
+        background-color: #eeeeee;
+        padding: 10px;
+        text-align: center;
+        font-size: 12px;
+        color: #777777;
+      }
+      .button {
+        display: inline-block;
+        background-color: #4a6da7;
+        color: white !important;
+        padding: 10px 20px;
+        text-decoration: none;
+        border-radius: 4px;
+        margin-top: 15px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      table td {
+        padding: 8px;
+        border-bottom: 1px solid #dddddd;
+      }
+      table tr:last-child td {
+        border-bottom: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="email-container">
+      <!-- Шапка письма -->
+      <div class="header">
+        <h1>Новая заявка на сайте</h1>
+      </div>
+
+      <!-- Основное содержимое -->
+      <div class="content">
+        <p>Здравствуйте!</p>
+        <p>На сайте была оформлена новая заявка. Детали ниже:</p>
+
+        <div class="order-details">
+          <h2>Данные заявки #ORDER_ID</h2>
+          <table>
+            <tr>
+              <td><strong>Дата:</strong></td>
+              <td>{{.Date}}</td>
+            </tr>
+            <tr>
+              <td><strong>Имя клиента:</strong></td>
+              <td>{{.ClientName}}</td>
+            </tr>
+            <tr>
+              <td><strong>Телефон:</strong></td>
+              <td>{{.ClientPhone}}</td>
+            </tr>
+            <tr>
+              <td><strong>Email:</strong></td>
+              <td>{{.ClientEmail}}</td>
+            </tr>
+            <tr>
+              <td><strong>Аддресс:</strong></td>
+              <td>{{.ClientAddress}}</td>
+            </tr>
+          </table>
+        </div>
+
+        <h3>Состав заказа:</h3>
+        <table>
+          <tr>
+            <td><strong>Товар</strong></td>
+            <td><strong>Количество</strong></td>
+            <td><strong>Цена</strong></td>
+          </tr>
+          <!-- Повторить для каждого товара -->
+          {{range .Data.Items}}
+          <tr>
+            <td>{{.Name}}</td>
+            <td>{{.Quantity}}</td>
+            <td>{{.Price}}</td>
+          </tr>
+          {{end}}
+
+          <!-- Конец товаров -->
+          <tr>
+            <td colspan="2"><strong>Итого:</strong></td>
+            <td><strong>{{.Data.TotalPrice}}</strong></td>
+          </tr>
+        </table>
+
+        <p>
+          <a href="#ORDER_LINK" class="button"
+            >Перейти к заявке в панели управления</a
+          >
+        </p>
+      </div>
+
+      <!-- Подвал -->
+      <div class="footer">
+        <p>
+          Это письмо отправлено автоматически. Пожалуйста, не отвечайте на него.
+        </p>
+        <p>© 2024 Ваша компания. Все права защищены.</p>
+      </div>
+    </div>
+  </body>
+</html>
