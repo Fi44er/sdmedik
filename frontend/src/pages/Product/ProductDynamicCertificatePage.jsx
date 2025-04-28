@@ -15,41 +15,13 @@ import {
 import { ArrowBack, ArrowForward } from "@mui/icons-material";
 import React, { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/swiper-bundle.css"; // Импорт стилей Swiper
+import "swiper/swiper-bundle.css";
 import useProductStore from "../../store/productStore";
 import { useParams } from "react-router-dom";
 import useBascketStore from "../../store/bascketStore";
 import Regions from "../../constants/regionsData/regions";
 import { urlPictures } from "../../constants/constants";
 import { Helmet } from "react-helmet";
-import axios from "axios";
-
-// const YANDEX_API_KEY = "1fe0be30-02a2-4c9c-b6f9-31cbadd264db"; // Замените на ваш ключ
-
-// const getRegionFromCoordinates = async (latitude, longitude) => {
-//   const url = `https://geocode-maps.yandex.ru/1.x/?format=json&apikey=${YANDEX_API_KEY}&geocode=${longitude},${latitude}`;
-
-//   try {
-//     const response = await axios.get(url);
-//     const data = response.data;
-
-//     // Поиск региона в ответе
-//     const featureMember = data.response.GeoObjectCollection.featureMember;
-//     if (featureMember.length > 0) {
-//       const addressComponents =
-//         featureMember[0].GeoObject.metaDataProperty.GeocoderMetaData.Address
-//           .Components;
-//       const region = addressComponents.find(
-//         (component) =>
-//           component.kind === "province" || component.kind === "region"
-//       );
-//       return region ? region.name : null;
-//     }
-//   } catch (error) {
-//     console.error("Ошибка при определении региона:", error);
-//   }
-//   return null;
-// };
 
 export default function ProductDynamicCertificatePage() {
   const [mainImageIndex, setMainImageIndex] = useState(0);
@@ -58,10 +30,35 @@ export default function ProductDynamicCertificatePage() {
   const { addProductThisBascket } = useBascketStore();
   const [quantity, setQuantity] = useState(1);
   const [newRegion, setNewRegion] = useState(null);
+  const [selectedSize, setSelectedSize] = useState("");
   const { id } = useParams();
 
+  // Категории, требующие выбора размера
+  const SIZE_CATEGORIES = [
+    "Кресла-коляски",
+    "Спецодежда",
+    "Бандажи",
+    "Корсеты",
+    "Ортопедическая обувь",
+  ];
+
+  // Проверка принадлежности к категориям с размерами
+  const isSizeRequired = products.data?.categories?.some((category) =>
+    SIZE_CATEGORIES.includes(category.name)
+  );
+
   useEffect(() => {
-    fetchProductById(id);
+    const loadProduct = async () => {
+      await fetchProductById(id);
+      // Инициализация размеров из характеристик
+      if (products.data?.characteristic) {
+        const sizes = products.data.characteristic
+          .filter((c) => c.name.toLowerCase() === "размер")
+          .map((c) => c.value);
+        setSelectedSize(sizes[0] || ""); // Автовыбор первого размера
+      }
+    };
+    loadProduct();
   }, [id]);
 
   useEffect(() => {
@@ -73,28 +70,6 @@ export default function ProductDynamicCertificatePage() {
     }
   }, [products.data]);
 
-  // useEffect(() => {
-  //   if (navigator.geolocation) {
-  //     navigator.geolocation.getCurrentPosition(
-  //       async (position) => {
-  //         const region = await getRegionFromCoordinates(
-  //           position.coords.latitude,
-  //           position.coords.longitude
-  //         );
-  //         if (region) {
-  //           setNewRegion(region);
-  //           fetchProductById(id, region);
-  //         }
-  //       },
-  //       (error) => {
-  //         console.error("Ошибка при получении местоположения:", error);
-  //       }
-  //     );
-  //   } else {
-  //     console.error("Геолокация не поддерживается вашим браузером.");
-  //   }
-  // }, [id]);
-
   const handleNextImage = () => {
     setMainImageIndex((prevIndex) => (prevIndex + 1) % images.length);
   };
@@ -105,36 +80,43 @@ export default function ProductDynamicCertificatePage() {
     );
   };
 
-  const handleAddProductToBasket = async (id) => {
+  const handleAddProductToBasket = async (productId) => {
+    if (isSizeRequired && !selectedSize) {
+      alert("Пожалуйста, выберите размер");
+      return;
+    }
+
     const iso = newRegion?.value;
-    await addProductThisBascket(id, quantity, iso);
+    const sizeCharacteristic = products.data?.characteristic?.find(
+      (c) => c.name.toLowerCase() === "размер"
+    );
+    const dynamicOptions = isSizeRequired
+      ? [
+          {
+            id: sizeCharacteristic?.id || 0, // Используем id характеристики размера
+            value: selectedSize,
+          },
+        ]
+      : [];
+    await addProductThisBascket(productId, quantity, iso, dynamicOptions);
   };
 
   const handleChangeRegion = (event) => {
-    const selectedValue = event.target.value; // Получаем значение региона (например, "RU-MOS")
+    const selectedValue = event.target.value;
     const selectedRegion = Regions.find(
       (region) => region.value === selectedValue
     );
 
     if (selectedRegion) {
-      setNewRegion(selectedRegion); // Обновляем состояние региона
-      // Автоматически отправляем запрос на сервер с новым регионом
+      setNewRegion(selectedRegion);
       fetchProductById(id, selectedRegion.value);
     }
   };
 
-  const handleGetCertificate = async () => {
-    fetchProductById(id, iso);
-  };
-
   const renderFeatureValue = (value) => {
-    if (value === "true") {
-      return "Есть";
-    } else if (value === "false") {
-      return "Нет";
-    } else if (value === null || value === undefined || value === "") {
-      return "Нет данных";
-    }
+    if (value === "true") return "Есть";
+    if (value === "false") return "Нет";
+    if (!value) return "Нет данных";
     return value;
   };
 
@@ -148,66 +130,8 @@ export default function ProductDynamicCertificatePage() {
             products.data ? products.data.description : "Описание товара"
           }
         />
-        <meta
-          name="keywords"
-          content={
-            products.data
-              ? `${products.data.name}, ${products.data.article}, купить ${products.data.name}`
-              : "товар, артикул"
-          }
-        />
-        <meta
-          property="og:title"
-          content={products.data ? products.data.name : "Загрузка..."}
-        />
-        <meta
-          property="og:description"
-          content={
-            products.data ? products.data.description : "Описание товара"
-          }
-        />
-        <meta property="og:image" content={images[mainImageIndex]} />
-        <meta
-          property="og:url"
-          content={`https://yourwebsite.com/products/${id}`}
-        />
-        <meta property="og:type" content="product" />
-        <meta property="og:site_name" content="Your Website Name" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta
-          name="twitter:title"
-          content={products.data ? products.data.name : "Загрузка..."}
-        />
-        <meta
-          name="twitter:description"
-          content={
-            products.data ? products.data.description : "Описание товара"
-          }
-        />
-        <meta name="twitter:image" content={images[mainImageIndex]} />
-        <script type="application/ld+json">
-          {JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Product",
-            name: products.data ? products.data.name : "Загрузка...",
-            image: images[mainImageIndex],
-            description: products.data
-              ? products.data.description
-              : "Описание товара",
-            sku: products.data ? products.data.article : "Неизвестно",
-            offers: {
-              "@type": "Offer",
-              url: `https://yourwebsite.com/products/${id}`,
-              priceCurrency: "RUB",
-              price: products.data ? products.data.price : "0",
-              itemCondition: "https://schema.org/NewCondition",
-              availability: "https://schema.org/InStock",
-            },
-          })}
-        </script>
       </Helmet>
 
-      {/* Основной блок с изображением и информацией */}
       <Paper
         sx={{
           display: "flex",
@@ -287,7 +211,7 @@ export default function ProductDynamicCertificatePage() {
           </Box>
         </Box>
 
-        {/* Блок с информацией о товаре */}
+        {/* Блок с информацией */}
         <Box sx={{ width: { xs: "100%", md: "50%" } }}>
           <Typography variant="h4" sx={{ fontWeight: "bold", mb: 1 }}>
             {products.data?.name}
@@ -296,11 +220,15 @@ export default function ProductDynamicCertificatePage() {
             Артикул: {products.data?.article}
           </Typography>
 
-          <Box sx={{ mb: 3, display: "flex", gridGap: 1 }}>
+          {/* Выбор региона */}
+          <Box sx={{ mb: 3 }}>
+          <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1 }}>
+                Выберите регион:
+              </Typography>
             <Select
-              value={newRegion ? newRegion.value : "Выберите регион"} // Используем newRegion.value, если регион выбран
+              value={newRegion?.value || "Выберите регион"}
               onChange={handleChangeRegion}
-              sx={{ minWidth: 200, mr: 2 }}
+              sx={{ minWidth: 200 }}
             >
               <MenuItem value="Выберите регион">
                 <em>Выберите регион</em>
@@ -313,7 +241,34 @@ export default function ProductDynamicCertificatePage() {
             </Select>
           </Box>
 
-          {/* Цена */}
+          {/* Выбор размера */}
+          {isSizeRequired && (
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1 }}>
+                Выберите размер:
+              </Typography>
+              <Select
+                value={selectedSize}
+                onChange={(e) => setSelectedSize(e.target.value)}
+                required
+                sx={{ minWidth: 200 }}
+              >
+                <MenuItem value="" disabled>
+                  Выберите размер
+                </MenuItem>
+                {products.data?.characteristic
+                  ?.filter((c) => c.name.toLowerCase() === "размер")
+                  .flatMap((size) => size.value)
+                  .map((individualSize, index) => (
+                    <MenuItem key={index} value={individualSize}>
+                      {individualSize}
+                    </MenuItem>
+                  ))}
+              </Select>
+            </Box>
+          )}
+
+          {/* Цена и кнопки */}
           <Box sx={{ mb: 2 }}>
             <Typography
               variant="h5"
@@ -321,46 +276,22 @@ export default function ProductDynamicCertificatePage() {
             >
               {products.data?.certificate_price} ₽
             </Typography>
-            {/* {products.data?.price && (
-              <Typography
-                variant="body1"
-                sx={{ color: "text.secondary", textDecoration: "line-through" }}
-              >
-                {products.data.price + 3000} ₽
-              </Typography>
-            )} */}
           </Box>
 
-          {/* Кнопки покупки */}
           <Box sx={{ display: "flex", gap: 2, mb: 3 }}>
             <Button
               variant="contained"
               sx={{
                 backgroundColor: "#00B3A4",
                 color: "#FFFFFF",
-                "&:hover": {
-                  backgroundColor: "#009B8A",
-                },
+                "&:hover": { backgroundColor: "#009B8A" },
               }}
               onClick={() => handleAddProductToBasket(products.data.id)}
+              disabled={isSizeRequired && !selectedSize}
             >
               В корзину
             </Button>
-            {/* <Button
-              variant="outlined"
-              sx={{
-                border: "2px solid #00B3A4",
-                color: "#00B3A4",
-              }}
-              onClick={() =>
-                (window.location.href = `/paymants/${products.data.id}`)
-              }
-            >
-              Купить по сертификату
-            </Button> */}
           </Box>
-
-          {/* Выбор региона */}
 
           {/* Характеристики */}
           <Box sx={{ mb: 3 }}>
@@ -368,14 +299,16 @@ export default function ProductDynamicCertificatePage() {
               Характеристики:
             </Typography>
             <List>
-              {products.data?.characteristic?.map((feature, index) => (
-                <ListItem key={index} sx={{ py: 0.5 }}>
-                  <Typography>
-                    <strong>{feature.name}:</strong>{" "}
-                    {renderFeatureValue(feature.value)}
-                  </Typography>
-                </ListItem>
-              ))}
+              {products.data?.characteristic
+                ?.filter((c) => c.name.toLowerCase() !== "размер")
+                .map((feature, index) => (
+                  <ListItem key={index} sx={{ py: 0.5 }}>
+                    <Typography>
+                      <strong>{feature.name}:</strong>{" "}
+                      {renderFeatureValue(feature.value)}
+                    </Typography>
+                  </ListItem>
+                ))}
             </List>
           </Box>
         </Box>

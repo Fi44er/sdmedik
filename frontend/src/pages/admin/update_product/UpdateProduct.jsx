@@ -37,6 +37,7 @@ export default function UpdateProduct() {
     price: 0,
     del_images: [],
   });
+  const [originalCharacteristics, setOriginalCharacteristics] = useState([]); // Сохраняем оригинальные характеристики
   const [characteristics, setCharacteristics] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [characteristicValues, setCharacteristicValues] = useState({});
@@ -64,8 +65,6 @@ export default function UpdateProduct() {
   // Инициализация формы данными из products.data
   useEffect(() => {
     if (products.data && !isFetching) {
-      console.log("products.data.catalogs:", products.data.catalogs); // Для отладки
-
       setProduct({
         article: products.data.article || "",
         category_ids: products.data.categories?.map((cat) => cat.id) || [],
@@ -81,7 +80,7 @@ export default function UpdateProduct() {
         products.data.categories?.map((cat) => cat.id) || []
       );
 
-      // Инициализация catalogs: фильтруем только допустимые значения
+      // Инициализация catalogs
       const catalogValue = products.data.catalogs;
       const initialCatalogs =
         catalogValue && VALID_CATALOG_IDS.includes(catalogValue)
@@ -92,9 +91,12 @@ export default function UpdateProduct() {
       // Инициализация характеристик
       const initialCharValues = {};
       products.data.characteristic?.forEach((char) => {
-        initialCharValues[char.id] = char.value;
+        initialCharValues[char.id] = Array.isArray(char.value)
+          ? char.value.join(", ")
+          : String(char.value);
       });
       setCharacteristicValues(initialCharValues);
+      setOriginalCharacteristics(products.data.characteristic || []);
 
       // Инициализация характеристик категорий
       const selectedCats = products.data.categories?.map((cat) => cat.id) || [];
@@ -110,7 +112,6 @@ export default function UpdateProduct() {
     const { value, checked } = event.target;
     const catalogId = Number(value);
 
-    // Проверяем, что значение допустимо
     if (!VALID_CATALOG_IDS.includes(catalogId)) {
       console.warn(`Недопустимое значение catalogId: ${catalogId}`);
       toast.error(`Недопустимый каталог: ${catalogId}`);
@@ -126,7 +127,6 @@ export default function UpdateProduct() {
       } else {
         updatedCatalogs = updatedCatalogs.filter((log) => log !== catalogId);
       }
-      // Фильтруем undefined, 0 и недопустимые значения
       updatedCatalogs = updatedCatalogs.filter((id) =>
         VALID_CATALOG_IDS.includes(id)
       );
@@ -213,24 +213,48 @@ export default function UpdateProduct() {
       return;
     }
 
-    // Формируем данные, исключая article и отправляя price как число
+    // Формируем characteristic_values
+    const formattedCharacteristics = Object.entries(characteristicValues)
+      .filter(([id]) => characteristics.some((char) => char.id === Number(id)))
+      .map(([id, value]) => {
+        const originalChar = originalCharacteristics.find(
+          (c) => c.id === Number(id)
+        );
+        const char = characteristics.find((c) => c.id === Number(id));
+
+        // Если значение не изменилось, возвращаем оригинальное
+        const originalValue = Array.isArray(originalChar?.value)
+          ? originalChar.value.join(", ")
+          : String(originalChar?.value);
+        if (value === originalValue) {
+          return {
+            characteristic_id: Number(id),
+            value: originalChar.value, // Сохраняем оригинальный формат (массив строк)
+          };
+        }
+
+        // Если значение изменилось, форматируем как массив строк
+        return {
+          characteristic_id: Number(id),
+          value:
+            char?.data_type === "bool"
+              ? [String(value)]
+              : String(value)
+                  .split(",")
+                  .map((v) => v.trim())
+                  .filter((v) => v),
+        };
+      });
+
     const productData = {
       name: product.name,
-      price: Number(product.price), // Отправляем price как число
+      price: Number(product.price),
       description: product.description,
       category_ids: product.category_ids,
-      characteristic_values: Object.entries(characteristicValues).map(
-        ([id, value]) => ({
-          characteristic_id: Number(id),
-          value: String(value), // Все значения — строки
-        })
-      ),
-      catalogs: catalogs.filter((id) => VALID_CATALOG_IDS.includes(id)), // Фильтруем только допустимые значения
+      characteristic_values: formattedCharacteristics,
+      catalogs: catalogs.filter((id) => VALID_CATALOG_IDS.includes(id)),
       del_images: product.del_images,
     };
-
-    // Логируем данные для отладки
-    console.log("Отправляемые данные:", productData);
 
     const formData = new FormData();
     formData.append("json", JSON.stringify(productData));
@@ -239,11 +263,6 @@ export default function UpdateProduct() {
         formData.append("files", file);
       }
     });
-
-    // Логируем содержимое FormData
-    for (let [key, value] of formData.entries()) {
-      console.log(`FormData ${key}:`, value);
-    }
 
     try {
       await updateProduct(id, formData);
@@ -443,53 +462,66 @@ export default function UpdateProduct() {
               <Grid item xs={12}>
                 <Typography variant="h6">Характеристики</Typography>
                 {Array.isArray(characteristics) &&
-                  characteristics.map((char) => (
-                    <Box key={char.id} sx={{ mb: 2 }}>
-                      <Typography>{char.name}:</Typography>
-                      {char.data_type === "bool" ? (
-                        <Box>
-                          <FormControlLabel
-                            control={
-                              <Checkbox
-                                checked={
-                                  characteristicValues[char.id] === "true" ||
-                                  characteristicValues[char.id] === true
-                                }
-                                onChange={() =>
-                                  handleValueChange(char.id, "true")
-                                }
-                              />
+                  characteristics.map((char) => {
+                    const isSizeCharacteristic =
+                      char.name.toLowerCase() === "размер";
+
+                    return (
+                      <Box key={char.id} sx={{ mb: 2 }}>
+                        <Typography>{char.name}:</Typography>
+
+                        {char.data_type === "bool" ? (
+                          <Box>
+                            <FormControlLabel
+                              control={
+                                <Checkbox
+                                  checked={
+                                    characteristicValues[char.id] === "true" ||
+                                    characteristicValues[char.id] === true
+                                  }
+                                  onChange={() =>
+                                    handleValueChange(char.id, "true")
+                                  }
+                                />
+                              }
+                              label="Да"
+                            />
+                            <FormControlLabel
+                              control={
+                                <Checkbox
+                                  checked={
+                                    characteristicValues[char.id] === "false" ||
+                                    characteristicValues[char.id] === false
+                                  }
+                                  onChange={() =>
+                                    handleValueChange(char.id, "false")
+                                  }
+                                />
+                              }
+                              label="Нет"
+                            />
+                          </Box>
+                        ) : (
+                          <TextField
+                            label={
+                              isSizeCharacteristic
+                                ? "Значения размера (через запятую)"
+                                : `Значения для ${char.name} (через запятую)`
                             }
-                            label="Да"
-                          />
-                          <FormControlLabel
-                            control={
-                              <Checkbox
-                                checked={
-                                  characteristicValues[char.id] === "false" ||
-                                  characteristicValues[char.id] === false
-                                }
-                                onChange={() =>
-                                  handleValueChange(char.id, "false")
-                                }
-                              />
+                            value={characteristicValues[char.id] || ""}
+                            onChange={(e) =>
+                              handleValueChange(char.id, e.target.value)
                             }
-                            label="Нет"
+                            fullWidth
+                            margin="normal"
+                            inputProps={{
+                              inputMode: "text",
+                            }}
                           />
-                        </Box>
-                      ) : (
-                        <TextField
-                          label={`Значение для ${char.name}`}
-                          value={characteristicValues[char.id] || ""}
-                          onChange={(e) =>
-                            handleValueChange(char.id, e.target.value)
-                          }
-                          fullWidth
-                          margin="normal"
-                        />
-                      )}
-                    </Box>
-                  ))}
+                        )}
+                      </Box>
+                    );
+                  })}
               </Grid>
             </Grid>
 
@@ -523,9 +555,14 @@ export default function UpdateProduct() {
                   );
                   const initialCharValues = {};
                   products.data?.characteristic?.forEach((char) => {
-                    initialCharValues[char.id] = char.value;
+                    initialCharValues[char.id] = Array.isArray(char.value)
+                      ? char.value.join(", ")
+                      : String(char.value);
                   });
                   setCharacteristicValues(initialCharValues);
+                  setOriginalCharacteristics(
+                    products.data?.characteristic || []
+                  );
                   setDelImages({});
                 }}
               >

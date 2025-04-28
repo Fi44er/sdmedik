@@ -154,7 +154,7 @@ export default function Footer() {
           }}
         >
           <Typography color="#6E8CA9" variant="body">
-            ©️ 2024 ООО “МедТехника”. Все права защищены.
+            ©️ 2024 ООО “Sdmedik”. Все права защищены.
           </Typography>
           <Typography color="#6E8CA9" variant="body">
             Политика кондефициальных данных
