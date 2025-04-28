@@ -52,6 +52,9 @@ const CatalogButtons = () => {
           marginLeft: "0px",
           marginRight: "0px",
           color: "#fff",
+          width: "150px",
+          display: "flex",
+          justifyContent: "center",
         }}
         to="/catalog/certificate"
       >
@@ -66,7 +69,7 @@ const CatalogButtons = () => {
             fontSize: "16px",
           }}
         > */}
-        По электронному сертификату
+        Каталог
         {/* </Button> */}
       </Link>
     </Box>

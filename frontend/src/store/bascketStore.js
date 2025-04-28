@@ -13,11 +13,11 @@ const useBascketStore = create((set, get) => ({
   },
   products: [],
   basket: {},
-  addProductThisBascket: async (product_id, quantity, iso) => {
+  addProductThisBascket: async (product_id, quantity, iso, dynamicOptions) => {
     try {
       const response = await axios.post(
         `${url}/basket`,
-        { product_id, quantity, iso },
+        { product_id, quantity, iso, dynamic_options: dynamicOptions },
         {
           withCredentials: true,
         }
