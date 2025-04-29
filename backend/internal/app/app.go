@@ -127,6 +127,7 @@ func (a *App) initRouter() error {
 
 	allowGuest := middleware.AllowGuest(a.cache, a.db, a.config, a.sessStore)
 	deserializeUser := middleware.DeserializeUser(a.cache, a.db, a.config)
+	adminRoleRequired := middleware.RoleRequired("admin")
 
 	v1 := a.app.Group("/api/v1")
 
@@ -147,17 +148,17 @@ func (a *App) initRouter() error {
 	product := v1.Group("/product")
 	product.Get("/filter/:category_id", a.serviceProvider.productProvider.ProductImpl().GetFilter)
 	product.Get("/", a.serviceProvider.productProvider.ProductImpl().Get)
-	product.Post("/", a.serviceProvider.productProvider.ProductImpl().Create)
-	product.Put("/:id", a.serviceProvider.productProvider.ProductImpl().Update)
-	product.Delete("/:id", a.serviceProvider.productProvider.ProductImpl().Delete)
+	product.Post("/", deserializeUser, adminRoleRequired, a.serviceProvider.productProvider.ProductImpl().Create)
+	product.Put("/:id", deserializeUser, adminRoleRequired, a.serviceProvider.productProvider.ProductImpl().Update)
+	product.Delete("/:id", deserializeUser, adminRoleRequired, a.serviceProvider.productProvider.ProductImpl().Delete)
 	product.Get("/top/:limit", a.serviceProvider.productProvider.ProductImpl().GetTopProducts)
 
 	category := v1.Group("/category")
 	category.Get("/", a.serviceProvider.categoryProvider.CategoryImpl().GetAll)
-	category.Post("/", a.serviceProvider.categoryProvider.CategoryImpl().Create)
+	category.Post("/", deserializeUser, adminRoleRequired, a.serviceProvider.categoryProvider.CategoryImpl().Create)
 	category.Get("/:id", a.serviceProvider.categoryProvider.CategoryImpl().GetByID)
-	category.Delete("/:id", a.serviceProvider.categoryProvider.CategoryImpl().Delete)
-	category.Put("/:id", a.serviceProvider.categoryProvider.CategoryImpl().Update)
+	category.Delete("/:id", deserializeUser, adminRoleRequired, a.serviceProvider.categoryProvider.CategoryImpl().Delete)
+	category.Put("/:id", deserializeUser, adminRoleRequired, a.serviceProvider.categoryProvider.CategoryImpl().Update)
 
 	search := v1.Group("/search")
 	search.Get("/", a.serviceProvider.searchProvider.SearchImpl().Search)
@@ -169,20 +170,20 @@ func (a *App) initRouter() error {
 	basket.Get("/", allowGuest, a.serviceProvider.basketProvider.BasketImpl().Get)
 
 	webscraper := v1.Group("/webscraper")
-	webscraper.Post("/start/", a.serviceProvider.webScraperProvider.WebScraperImpl().Scraper)
-	webscraper.Post("/cancel/", a.serviceProvider.webScraperProvider.WebScraperImpl().CancelScraper)
+	webscraper.Post("/start/", deserializeUser, adminRoleRequired, a.serviceProvider.webScraperProvider.WebScraperImpl().Scraper)
+	webscraper.Post("/cancel/", deserializeUser, adminRoleRequired, a.serviceProvider.webScraperProvider.WebScraperImpl().CancelScraper)
 
 	order := v1.Group("/order")
 	order.Post("/:id", a.serviceProvider.orderProvider.OrderImpl().NotAuthCreate)
 	order.Post("/", allowGuest, a.serviceProvider.orderProvider.OrderImpl().Create)
 	order.Get("/my", deserializeUser, a.serviceProvider.orderProvider.OrderImpl().GetMyOrders)
-	order.Get("/", a.serviceProvider.orderProvider.OrderImpl().GetAll)
-	order.Put("/status", a.serviceProvider.orderProvider.OrderImpl().UpdateStatus)
+	order.Get("/", deserializeUser, adminRoleRequired, a.serviceProvider.orderProvider.OrderImpl().GetAll)
+	order.Put("/status", deserializeUser, adminRoleRequired, a.serviceProvider.orderProvider.OrderImpl().UpdateStatus)
 
 	promotion := v1.Group("/promotion")
-	promotion.Post("/", a.serviceProvider.promotionProvider.PromotionImpl().Create)
+	promotion.Post("/", deserializeUser, adminRoleRequired, a.serviceProvider.promotionProvider.PromotionImpl().Create)
 	promotion.Get("/", a.serviceProvider.promotionProvider.PromotionImpl().GetAll)
-	promotion.Delete("/:id", a.serviceProvider.promotionProvider.PromotionImpl().Delete)
+	promotion.Delete("/:id", deserializeUser, adminRoleRequired, a.serviceProvider.promotionProvider.PromotionImpl().Delete)
 
 	return nil
 }
