@@ -36,12 +36,13 @@ func (s *service) Create(ctx context.Context, data *dto.CreateOrder, userID stri
 	orderItems := []model.OrderItem{}
 	for _, item := range basket.Items {
 		orderItem := model.OrderItem{
-			OrderID:    orderModel.ID,
-			Name:       item.Name,
-			Price:      item.Price,
-			Quantity:   item.Quantity,
-			TotalPrice: item.TotalPrice,
-			ProductID:  item.ProductID,
+			OrderID:         orderModel.ID,
+			Name:            item.Name,
+			Price:           item.Price,
+			Quantity:        item.Quantity,
+			TotalPrice:      item.TotalPrice,
+			ProductID:       item.ProductID,
+			SelectedOptions: item.SelectedOptions,
 		}
 		orderItems = append(orderItems, orderItem)
 

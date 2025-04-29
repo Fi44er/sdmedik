@@ -9,17 +9,18 @@ type BasketResponse struct {
 }
 
 type BasketItemRes struct {
-	ID                      string  `json:"id"`
-	Article                 string  `json:"article"`
-	ProductID               string  `json:"product_id"`
-	Name                    string  `json:"name"`
-	Image                   string  `json:"image"`
-	Quantity                int     `json:"quantity"`
-	TotalPrice              float64 `json:"total_price"`
-	Price                   float64 `json:"price"`
-	PriceWithPromotion      float64 `json:"price_with_promotion"`
-	TotalPriceWithPromotion float64 `json:"total_price_with_promotion"`
-	IsFree                  bool    `json:"is_free"`
-	IsCertificate           bool    `json:"is_certificate"`
-	Iso                     string  `json:"iso"`
+	ID                      string        `json:"id"`
+	Article                 string        `json:"article"`
+	ProductID               string        `json:"product_id"`
+	Name                    string        `json:"name"`
+	Image                   string        `json:"image"`
+	Quantity                int           `json:"quantity"`
+	TotalPrice              float64       `json:"total_price"`
+	Price                   float64       `json:"price"`
+	PriceWithPromotion      float64       `json:"price_with_promotion"`
+	TotalPriceWithPromotion float64       `json:"total_price_with_promotion"`
+	IsFree                  bool          `json:"is_free"`
+	IsCertificate           bool          `json:"is_certificate"`
+	Iso                     string        `json:"iso"`
+	SelectedOptions         []interface{} `json:"selected_options"`
 }

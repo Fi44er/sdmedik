@@ -16,8 +16,6 @@ func (s *service) Get(ctx context.Context, criteria dto.ProductSearchCriteria) (
 		return nil, nil, err
 	}
 
-	// panic(1)
-
 	// Создаем слайс для результата
 	productRes := make([]response.ProductResponse, 0, len(*products))
 

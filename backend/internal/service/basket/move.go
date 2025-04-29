@@ -21,6 +21,7 @@ func (s *service) Move(ctx context.Context, data *dto.MoveBasket) error {
 	}
 
 	for _, item := range sessBasket.Items {
+		newCtx := context.WithValue(ctx, "dinamic_options", item.SelectedOptions)
 		if err := s.AddItem(newCtx, &dto.AddBasketItem{
 			ProductID: item.ProductID,
 			Quantity:  item.Quantity,
