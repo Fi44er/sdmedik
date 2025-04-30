@@ -3,6 +3,7 @@ import React from "react";
 import PaymantsInfo from "./components/PaymantsInfo";
 import TopList from "./components/TopList";
 import PromotionalSlider from "./components/PromotionalSlider";
+import Info from "./components/Info";
 
 export default function HomePage() {
   return (
@@ -16,6 +17,9 @@ export default function HomePage() {
         </Box>
         <Box sx={{ mt: "40px" }}>
           <PromotionalSlider />
+        </Box>
+        <Box sx={{ mt: "40px" }}>
+          <Info />
         </Box>
       </Container>
     </Box>
