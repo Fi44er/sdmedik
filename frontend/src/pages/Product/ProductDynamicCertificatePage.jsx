@@ -36,10 +36,8 @@ export default function ProductDynamicCertificatePage() {
   // Категории, требующие выбора размера
   const SIZE_CATEGORIES = [
     "Кресла-коляски",
-    "Спецодежда",
-    "Бандажи",
-    "Корсеты",
-    "Ортопедическая обувь",
+    "Специальная одежда",
+    "Бандажи, корсеты, отртопедия",
   ];
 
   // Проверка принадлежности к категориям с размерами
@@ -222,9 +220,9 @@ export default function ProductDynamicCertificatePage() {
 
           {/* Выбор региона */}
           <Box sx={{ mb: 3 }}>
-          <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1 }}>
-                Выберите регион:
-              </Typography>
+            <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1 }}>
+              Выберите регион:
+            </Typography>
             <Select
               value={newRegion?.value || "Выберите регион"}
               onChange={handleChangeRegion}

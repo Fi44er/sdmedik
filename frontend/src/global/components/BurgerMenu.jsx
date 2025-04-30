@@ -61,7 +61,7 @@ const BurgerMenu = () => {
             }}
             to="/catalog/certificate"
           >
-            По электроному сертификату
+            Каталог
           </Link>
         </Box>
 
