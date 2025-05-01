@@ -68,6 +68,7 @@ export default function Info() {
               fontWeight: "bold",
               textShadow: "0 3px 6px rgba(0,0,0,0.3)",
               lineHeight: 1.2,
+              color: "red",
             }}
           >
             Важное объявление!

@@ -13,14 +13,15 @@ export default function HomePage() {
           <PaymantsInfo />
         </Box>
         <Box sx={{ mt: "40px" }}>
+          <Info />
+        </Box>
+        <Box sx={{ mt: "40px" }}>
           <TopList />
         </Box>
         <Box sx={{ mt: "40px" }}>
           <PromotionalSlider />
         </Box>
-        <Box sx={{ mt: "40px" }}>
-          <Info />
-        </Box>
+       
       </Container>
     </Box>
   );
