@@ -1,9 +1,9 @@
 import { create } from "zustand";
 import axios from "axios";
-import { useState } from "react";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
 import { url } from "../constants/constants";
+import api from "../configs/axiosConfig";
 
 const useOrderStore = create((set, get) => ({
   email: "",
@@ -100,41 +100,20 @@ const useOrderStore = create((set, get) => ({
   },
   fetchOrders: async () => {
     try {
-      const response = await axios.get(`${url}/order`, {
-        withCredentials: true,
-      });
-
+      const response = await api.get(`${url}/order`);
       set({ orders: response.data });
-
-      if (response.status === 401) {
-        // {{ edit_1 }}
-        // Если статус 401, обновляем токены и повторяем запрос
-        await get().refreshToken();
-        await get().fetchUserBasket();
-      } else {
-        throw new Error("No data in response");
-      }
     } catch (error) {
-      console.error("Error fetching basket:", error);
+      console.error("Error fetching orders:", error);
+      throw error;
     }
   },
   fetchUserOrders: async () => {
     try {
-      const response = await axios.get(`${url}/order/my`, {
-        withCredentials: true,
-      });
-
+      const response = await api.get(`${url}/order/my`);
       set({ userOrders: response.data });
-
-      if (response.status === 401) {
-        // {{ edit_1 }}
-        // Если статус 401, обновляем токены и повторяем запрос
-        await get().refreshToken();
-      } else {
-        throw new Error("No data in response");
-      }
     } catch (error) {
-      console.error("Error fetching basket:", error);
+      console.error("Error fetching user orders:", error);
+      throw error;
     }
   },
 }));

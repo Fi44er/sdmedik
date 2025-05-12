@@ -2,6 +2,7 @@ import { create } from "zustand";
 import axios from "axios";
 import { url } from "../constants/constants";
 import { toast } from "react-toastify";
+import api from "../configs/axiosConfig";
 
 const useProductStore = create((set, get) => ({
   product: {
@@ -13,7 +14,7 @@ const useProductStore = create((set, get) => ({
   },
   createProduct: async (formData) => {
     try {
-      const response = await axios.post(`${url}/product`, formData, {
+      const response = await api.post(`/product`, formData, {
         withCredentials: true,
         headers: {
           "Content-Type": "multipart/form-data", // Убедитесь, что заголовок установлен правильно
@@ -39,7 +40,7 @@ const useProductStore = create((set, get) => ({
 
   updateProduct: async (id, formData) => {
     try {
-      const response = await axios.put(`${url}/product/${id}`, formData, {
+      const response = await api.put(`/product/${id}`, formData, {
         withCredentials: true,
         headers: {
           "Content-Type": "multipart/form-data", // Убедитесь, что заголовок установлен правильно
@@ -47,20 +48,13 @@ const useProductStore = create((set, get) => ({
       });
       // Обработка успешного ответа
       console.log("Продукт обновлен:", response.data);
-      toast.success("Продукт успешно обновлен");
+      toast.success("Продукт успешно обновлен", response.data);
     } catch (error) {
       // Обработка ошибки
-      console.error("Ошибка при обновлении продукта:", error);
-      if (error.response?.status === 401) {
-        // Если статус 401, обновляем токены и повторяем запрос
-        await get().refreshToken();
-        await get().updateProduct(id, formData); // Повторяем запрос
-      } else {
-        toast.error(
-          "Ошибка при обновлении продукта: " +
-            (error.response?.data?.message || error.message)
-        );
-      }
+      toast.error(
+        "Ошибка при обновлении продукта: " +
+          (error.response?.data?.message || error.message)
+      );
     }
   },
 

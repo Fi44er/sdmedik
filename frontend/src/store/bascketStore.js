@@ -1,8 +1,6 @@
 import { create } from "zustand";
-import axios from "axios";
 import { toast } from "react-toastify";
-import { url } from "../constants/constants";
-
+import api from "../configs/axiosConfig";
 const useBascketStore = create((set, get) => ({
   product: {
     article: "",
@@ -15,8 +13,8 @@ const useBascketStore = create((set, get) => ({
   basket: {},
   addProductThisBascket: async (product_id, quantity, iso, dynamicOptions) => {
     try {
-      const response = await axios.post(
-        `${url}/basket`,
+      const response = await api.post(
+        `/basket`,
         { product_id, quantity, iso, dynamic_options: dynamicOptions },
         {
           withCredentials: true,
@@ -31,8 +29,8 @@ const useBascketStore = create((set, get) => ({
   },
   editCountProductBascket: async (product_id, quantity, iso) => {
     try {
-      const response = await axios.post(
-        `${url}/basket`,
+      const response = await api.post(
+        `/basket`,
         { product_id, quantity, iso },
         {
           withCredentials: true,
@@ -53,7 +51,7 @@ const useBascketStore = create((set, get) => ({
   },
   fetchUserBasket: async () => {
     try {
-      const response = await axios.get(`${url}/basket`, {
+      const response = await api.get(`/basket`, {
         withCredentials: true,
       });
 
@@ -68,7 +66,7 @@ const useBascketStore = create((set, get) => ({
   //       let products = [];
   //       for (let item of items) {
   //         try {
-  //           const response = await axios.get(
+  //           const response = await api.get(
   //             "http://localhost:8080/api/v1/product",
   //             {
   //               params: { id: item.toString() },
@@ -87,7 +85,7 @@ const useBascketStore = create((set, get) => ({
   //   },
   deleteProductThithBasket: async (id) => {
     try {
-      const response = await axios.delete(`${url}/basket/${id}`, {
+      const response = await api.delete(`/basket/${id}`, {
         withCredentials: true,
       });
       toast.success("Продукт удален из корзины");
@@ -106,8 +104,8 @@ const useBascketStore = create((set, get) => ({
 
   refreshToken: async () => {
     try {
-      const response = await axios.post(
-        `${url}/auth/refresh`,
+      const response = await api.post(
+        `/auth/refresh`,
         {},
         {
           withCredentials: true,

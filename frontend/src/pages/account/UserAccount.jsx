@@ -43,9 +43,9 @@ export default function UserAccount() {
   }, [location.pathname]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      await getUserInfo();
-      await fetchUserOrders();
+    const fetchData = () => {
+      getUserInfo();
+      fetchUserOrders();
       setLoading(false);
     };
 
