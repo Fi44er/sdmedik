@@ -28,10 +28,10 @@ export default function Contacts() {
       address: "г. Екатеринбург, пр-т. Ленина 79 «Б», Центр обучения",
       coords: [56.838, 60.597],
     },
-    {
-      address: "респ. Чечня, г. Гудермес, ул. Нагорная, 2",
-      coords: [43.307, 45.826],
-    },
+    // {
+    //   address: "респ. Чечня, г. Гудермес, ул. Нагорная, 2",
+    //   coords: [43.307, 45.826],
+    // },
     // {
     //   address: "респ. Чечня, г. Грозный, ул. Маты Кишиева, 142",
     //   coords: [43.317, 45.694],
@@ -111,14 +111,14 @@ export default function Contacts() {
                 <Typography>+7 (353) 293 5241</Typography>
               </Box>
             </Box>
-            <Box sx={{ display: "flex", gridGap: 20, alignItems: "center" }}>
+            {/* <Box sx={{ display: "flex", gridGap: 20, alignItems: "center" }}>
               <Box>
                 <img src="/mail.png" alt="Почта" />
               </Box>
               <Box>
                 <Link>olimp1-info@yandex.ru</Link>
               </Box>
-            </Box>
+            </Box> */}
             <Box sx={{ display: "flex", gridGap: 20 }}>
               <Box>
                 <img src="/mark.png" alt="Адрес" />
@@ -145,10 +145,10 @@ export default function Contacts() {
                     обеспечения техническими средствами реабилитации<br></br> +7
                     903 086-34-11
                   </ListItem>
-                  <ListItem>
+                  {/* <ListItem>
                     р . Чечня, г. Гудермес, ул. Нагорная, 2<br></br> +7 928
                     002-34-19
-                  </ListItem>
+                  </ListItem> */}
                   {/* <ListItem>
                     респ. Чечня, г. Грозный, ул. Маты Кишиева, 142<br></br> +7
                     928 002-34-19
