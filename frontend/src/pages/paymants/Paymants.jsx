@@ -67,30 +67,43 @@ export default function Payments() {
   // Загружаем данные пользователя при монтировании компонента
   useEffect(() => {
     if (isAuthenticated) {
-      getUserInfo().then(() => {
-        // После получения данных пользователя, заполняем поля
-        if (user) {
-          setEmail(user.data.email);
-          setFio(user.data.fio);
-          setPhone_number(user.data.phone_number);
+      const fetchUserInfo = async () => {
+        try {
+          const userInfo = await getUserInfo();
+          if (userInfo && userInfo.data) {
+            setEmail(userInfo.data.email);
+            setFio(userInfo.data.fio);
+            setPhone_number(userInfo.data.phone_number);
+          }
+        } catch (error) {
+          console.error("Failed to fetch user info:", error);
         }
-      });
+      };
+
+      fetchUserInfo();
     }
   }, [isAuthenticated, getUserInfo, setEmail, setFio, setPhone_number]);
 
   const handlePay = async (data) => {
     setLoading(true);
-    if (isAuthenticated && !isAnotherRecipient) {
-      // Если пользователь авторизован и не указал другого получателя
-      await payOrder({
-        email: user.data.email,
-        fio: user.data.fio,
-        phone_number: user.data.phone_number,
-        delivery_address: data.delivery_address,
-      });
-    } else {
-      // Если пользователь не авторизован или указал другого получателя
-      await payOrder(data);
+    try {
+      if (isAuthenticated && !isAnotherRecipient) {
+        // If user is authenticated and not specifying another recipient
+        await payOrder({
+          email: user?.data?.email || email,
+          fio: user?.data?.fio || fio,
+          phone_number: user?.data?.phone_number || phone_number,
+          delivery_address: data.delivery_address,
+        });
+      } else {
+        // If user is not authenticated or specifying another recipient
+        await payOrder(data);
+      }
+    } catch (error) {
+      setError(error.message);
+      console.error("Payment error:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
