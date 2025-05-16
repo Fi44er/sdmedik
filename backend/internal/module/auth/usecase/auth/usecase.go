@@ -5,14 +5,12 @@ import (
 	"regexp"
 	"time"
 
-	"entgo.io/ent"
 	"github.com/Fi44er/sdmedik/backend/internal/config"
 	"github.com/Fi44er/sdmedik/backend/internal/module/auth/dto"
 	"github.com/Fi44er/sdmedik/backend/internal/module/auth/entity"
 	"github.com/Fi44er/sdmedik/backend/internal/module/auth/pkg/constant"
 	"github.com/Fi44er/sdmedik/backend/pkg/logger"
 	"github.com/Fi44er/sdmedik/backend/pkg/mailer"
-	"github.com/Fi44er/sdmedik/backend/pkg/redis"
 	"github.com/Fi44er/sdmedik/backend/pkg/utils"
 )
 
@@ -22,17 +20,23 @@ type IUserUsecase interface {
 	Create(ctx context.Context, user *entity.User) error
 }
 
+type ICache interface {
+	Set(ctx context.Context, key string, value interface{}, expiration time.Duration) error
+	Get(ctx context.Context, key string, dest interface{}) error
+	Del(ctx context.Context, key string) error
+}
+
 type AuthUsecase struct {
-	logger       *logger.Logger
-	redisManager redis.IRedisManager
-	config       *config.Config
-	mailer       *mailer.Mailer
-	userUsecase  IUserUsecase
+	logger      *logger.Logger
+	cache       ICache
+	config      *config.Config
+	mailer      *mailer.Mailer
+	userUsecase IUserUsecase
 }
 
 func NewAuthUsecase(
 	logger *logger.Logger,
-	redisManager redis.IRedisManager,
+	cache ICache,
 	config *config.Config,
 	userUsecase IUserUsecase,
 ) *AuthUsecase {
@@ -49,11 +53,11 @@ func NewAuthUsecase(
 	}
 
 	return &AuthUsecase{
-		logger:       logger,
-		config:       config,
-		redisManager: redisManager,
-		mailer:       m,
-		userUsecase:  userUsecase,
+		logger:      logger,
+		config:      config,
+		cache:       cache,
+		mailer:      m,
+		userUsecase: userUsecase,
 	}
 }
 
@@ -68,11 +72,11 @@ func (s *AuthUsecase) createAndStoreToken(ctx context.Context, userID string, ex
 		return "", constant.ErrUnprocessableEntity
 	}
 	key := userAgent + ":" + tokenDetails.TokenUUID
-	err = s.redisManager.Set(ctx, key, userID, time.Until(time.Unix(*tokenDetails.ExpiresIn, 0)))
+	err = s.cache.Set(ctx, key, userID, time.Until(time.Unix(*tokenDetails.ExpiresIn, 0)))
 	return *tokenDetails.Token, err
 }
 
-func (s *AuthUsecase) SignIn(ctx context.Context, user *entity.User) (*dto.LoginResponse, error) {
+func (s *AuthUsecase) SignIn(ctx context.Context, user *entity.User) (*entity.Tokens, error) {
 	user, err := s.userUsecase.GetByEmail(ctx, user.Email)
 	if err != nil || !utils.ComparePassword(user.Password, user.Password) {
 		return nil, constant.ErrInvalidEmailOrPassword
@@ -88,7 +92,7 @@ func (s *AuthUsecase) SignIn(ctx context.Context, user *entity.User) (*dto.Login
 		return nil, err
 	}
 
-	return &dto.LoginResponse{AccessToken: accessToken, RefreshToken: refreshToken}, nil
+	return &entity.Tokens{AccessToken: accessToken, RefreshToken: refreshToken}, nil
 }
 
 func (s *AuthUsecase) VerifyCode(ctx context.Context, data *dto.VerifyCodeDTO) error {
@@ -98,20 +102,20 @@ func (s *AuthUsecase) VerifyCode(ctx context.Context, data *dto.VerifyCodeDTO) e
 	}
 
 	var code string
-	if err := s.redisManager.Get(ctx, CodeRedisPrefix+hashEmail, &code); err != nil {
+	if err := s.cache.Get(ctx, CodeRedisPrefix+hashEmail, &code); err != nil {
 		return constant.ErrInternalServerError
 	}
 
-	if err := s.redisManager.Del(ctx, CodeRedisPrefix+hashEmail); err != nil {
+	if err := s.cache.Del(ctx, CodeRedisPrefix+hashEmail); err != nil {
 		return err
 	}
 
 	var tempUser dto.RegisterDTO
-	if err := s.redisManager.Get(ctx, UserRedisPrefix+hashEmail, &tempUser); err != nil {
+	if err := s.cache.Get(ctx, UserRedisPrefix+hashEmail, &tempUser); err != nil {
 		return err
 	}
 
-	return s.redisManager.Del(ctx, UserRedisPrefix+hashEmail)
+	return s.cache.Del(ctx, UserRedisPrefix+hashEmail)
 }
 
 func (s *AuthUsecase) SignUp(ctx context.Context, entity *entity.User) error {
@@ -132,7 +136,7 @@ func (s *AuthUsecase) SignUp(ctx context.Context, entity *entity.User) error {
 		return err
 	}
 
-	if err := s.redisManager.Set(ctx, UserRedisPrefix+hashEmail, entity, 10*time.Minute); err != nil {
+	if err := s.cache.Set(ctx, UserRedisPrefix+hashEmail, entity, 10*time.Minute); err != nil {
 		return err
 	}
 
@@ -147,11 +151,11 @@ func (s *AuthUsecase) SendCode(ctx context.Context, email string) error {
 	}
 
 	var tempUser dto.RegisterDTO
-	if err := s.redisManager.Get(ctx, UserRedisPrefix+hashEmail, &tempUser); err != nil {
+	if err := s.cache.Get(ctx, UserRedisPrefix+hashEmail, &tempUser); err != nil {
 		return constant.ErrUnprocessableEntity
 	}
 
-	if err := s.redisManager.Set(ctx, CodeRedisPrefix+hashEmail, code, s.config.VerifyCodeExpiredIn); err != nil {
+	if err := s.cache.Set(ctx, CodeRedisPrefix+hashEmail, code, s.config.VerifyCodeExpiredIn); err != nil {
 		return err
 	}
 
@@ -179,7 +183,7 @@ func (s *AuthUsecase) RefreshAccessToken(ctx context.Context, data *dto.RefreshT
 	}
 
 	var userID string
-	if err := s.redisManager.Get(ctx, tokenClaims.TokenUUID, &userID); err != nil {
+	if err := s.cache.Get(ctx, tokenClaims.TokenUUID, &userID); err != nil {
 		return "", constant.ErrCouldNotRefreshToken
 	}
 
@@ -201,7 +205,7 @@ func (s *AuthUsecase) SignOut(ctx context.Context, data *dto.LogoutDTO) error {
 		return constant.ErrAnauthorized
 	}
 
-	if err := s.redisManager.Del(ctx, tokenClaims.TokenUUID); err != nil {
+	if err := s.cache.Del(ctx, tokenClaims.TokenUUID); err != nil {
 		return err
 	}
 
