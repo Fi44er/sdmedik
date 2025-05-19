@@ -273,7 +273,10 @@ export default function ProductDynamicCertificatePage() {
               variant="h5"
               sx={{ color: "#00B3A4", fontWeight: "bold" }}
             >
-              {products.data?.certificate_price} ₽
+              {products.data?.certificate_price
+                ? products.data?.certificate_price
+                : products.data?.price}{" "}
+              ₽
             </Typography>
           </Box>
 
