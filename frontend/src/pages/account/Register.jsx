@@ -7,6 +7,8 @@ import {
   TextField,
   Typography,
   Modal,
+  Checkbox,
+  FormControlLabel,
 } from "@mui/material";
 import React, { useState } from "react";
 import { motion } from "framer-motion";
@@ -29,9 +31,9 @@ const formatPhoneNumber = (value) => {
   const match = cleaned.match(/^7(\d{0,3})(\d{0,3})(\d{0,2})(\d{0,2})$/);
   if (!match) return "+7 (";
   const [, areaCode, firstPart, secondPart, thirdPart] = match;
-  return `+7 (${areaCode}${areaCode ? ")" : ""}${firstPart ? ` ${firstPart}` : ""}${
-    secondPart ? `-${secondPart}` : ""
-  }${thirdPart ? `-${thirdPart}` : ""}`;
+  return `+7 (${areaCode}${areaCode ? ")" : ""}${
+    firstPart ? ` ${firstPart}` : ""
+  }${secondPart ? `-${secondPart}` : ""}${thirdPart ? `-${thirdPart}` : ""}`;
 };
 
 export default function Register() {
@@ -68,6 +70,7 @@ export default function Register() {
   });
 
   const [error, setError] = useState(null);
+  const [isConsentGiven, setIsConsentGiven] = useState(false);
   const navigate = useNavigate();
 
   // Синхронизация полей со store
@@ -112,7 +115,9 @@ export default function Register() {
       >
         <Paper sx={{ p: 2, mt: 5, mb: 5, width: { xs: 320, md: 500 } }}>
           <Container>
-            <Box sx={{ display: "flex", alignItems: "center", gridGap: 15, mb: 4 }}>
+            <Box
+              sx={{ display: "flex", alignItems: "center", gridGap: 15, mb: 4 }}
+            >
               <img src="/previwLogo.svg" alt="" />
               <Typography variant="h6" sx={{ color: "#2CC0B3" }}>
                 Sdmedik
@@ -122,7 +127,12 @@ export default function Register() {
               <Typography variant="h4">Регистрация</Typography>
               <form
                 onSubmit={handleSubmit(handleRegister)}
-                style={{ display: "flex", flexDirection: "column", gridGap: 30, marginTop: "10px" }}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gridGap: 30,
+                  marginTop: "10px",
+                }}
               >
                 <TextField
                   variant="outlined"
@@ -199,11 +209,6 @@ export default function Register() {
                       value: 6,
                       message: "Пароль должен быть не короче 6 символов",
                     },
-                    // pattern: {
-                    //   value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{6,}$/,
-                    //   message:
-                    //     "Пароль должен содержать минимум одну заглавную букву, одну строчную и одну цифру",
-                    // },
                   })}
                   error={!!errors.password}
                   helperText={errors.password?.message}
@@ -217,7 +222,40 @@ export default function Register() {
                     },
                   }}
                 />
-                <Button variant="contained" sx={{ background: "#2CC0B3" }} type="submit">
+
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={isConsentGiven}
+                      onChange={(e) => setIsConsentGiven(e.target.checked)}
+                      sx={{
+                        color: "#2CC0B3",
+                        "&.Mui-checked": {
+                          color: "#2CC0B3",
+                        },
+                      }}
+                    />
+                  }
+                  label={
+                    <Typography sx={{ fontSize: { xs: "14px", md: "16px" } }}>
+                      Я согласен на обработку персональных данных в соответствии
+                      с{" "}
+                      <Link
+                        href="/privacy-policy.pdf"
+                        target="_blank"
+                        sx={{ color: "#2CC0B3" }}
+                      >
+                        политикой конфиденциальности
+                      </Link>
+                    </Typography>
+                  }
+                />
+                <Button
+                  variant="contained"
+                  sx={{ background: "#2CC0B3" }}
+                  type="submit"
+                  disabled={!isConsentGiven}
+                >
                   Зарегистрироваться
                 </Button>
               </form>
