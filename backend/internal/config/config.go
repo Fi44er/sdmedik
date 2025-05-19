@@ -8,6 +8,10 @@ import (
 )
 
 type Config struct {
+	FrontendURL             string        `mapstructure:"FRONTEND_URL"`
+	ResetPassLink           string        `mapstructure:"RESET_PASS_LINK"`
+	RessetPassCodeExpiredIn time.Duration `mapstructure:"RESET_PASS_CODE_EXPIRED_IN"`
+
 	HTTPHost            string        `mapstructure:"HTTP_HOST"`
 	HTTPPort            string        `mapstructure:"HTTP_PORT"`
 	PostgresUrl         string        `mapstructure:"POSTGRES_URL"`

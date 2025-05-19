@@ -27,6 +27,10 @@ type IAuthService interface {
 	RefreshAccessToken(ctx context.Context, refreshToken string, userAgent string) (string, error)
 	VerifyCode(ctx context.Context, data *dto.VerifyCode) error
 	SendCode(ctx context.Context, email string) error
+
+	ResetPassword(ctx context.Context, email string) error
+	ChangePassword(ctx context.Context, token, password, userID string) error
+	ValidateToken(ctx context.Context, token string) (string, error)
 }
 
 type IProductService interface {

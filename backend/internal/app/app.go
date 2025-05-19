@@ -155,6 +155,9 @@ func (a *App) initRouter() error {
 	auth.Post("/verify-code", a.serviceProvider.authProvider.AuthImpl().VerifyCode)
 	auth.Post("/refresh", a.serviceProvider.authProvider.AuthImpl().RefreshAccessToken)
 
+	auth.Get("/resset-password/:email", a.serviceProvider.authProvider.AuthImpl().ResetPassword)
+	auth.Post("/resset-password", a.serviceProvider.authProvider.AuthImpl().ChangePassword)
+
 	product := v1.Group("/product")
 	product.Get("/filter/:category_id", a.serviceProvider.productProvider.ProductImpl().GetFilter)
 	product.Get("/", a.serviceProvider.productProvider.ProductImpl().Get)
