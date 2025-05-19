@@ -32,7 +32,7 @@ func (i *Implementation) ResetPassword(ctx *fiber.Ctx) error {
 // @Param token query string false "Reset password token"
 // @Param pass query string false "New password"
 // @Success 200 {object} response.Response "Successful password change response"
-// @Router /auth/change-password [post]
+// @Router /auth/reset-password [post]
 func (i *Implementation) ChangePassword(ctx *fiber.Ctx) error {
 	token := ctx.Query("token")
 	pass := ctx.Query("pass")

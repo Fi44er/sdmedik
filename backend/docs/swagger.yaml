@@ -249,30 +249,6 @@ info:
   title: sdmedik API
   version: "1.0"
 paths:
-  /auth/change-password:
-    post:
-      consumes:
-      - application/json
-      description: Changes the user's password
-      parameters:
-      - description: Reset password token
-        in: query
-        name: token
-        type: string
-      - description: New password
-        in: query
-        name: pass
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successful password change response
-          schema:
-            $ref: '#/definitions/response.Response'
-      summary: Change password
-      tags:
-      - auth
   /auth/login:
     post:
       consumes:
@@ -345,6 +321,30 @@ paths:
           schema:
             $ref: '#/definitions/response.Response'
       summary: User registration
+      tags:
+      - auth
+  /auth/reset-password:
+    post:
+      consumes:
+      - application/json
+      description: Changes the user's password
+      parameters:
+      - description: Reset password token
+        in: query
+        name: token
+        type: string
+      - description: New password
+        in: query
+        name: pass
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful password change response
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Change password
       tags:
       - auth
   /auth/reset-password/{email}:
