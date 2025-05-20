@@ -1,146 +1,260 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
-	"os"
-	"regexp"
-	"strings"
+	"log"
+	"net/http"
+	"sync"
+	"time"
 
-	"github.com/Fi44er/sdmedik/backend/pkg/webscraper/constants"
+	"github.com/gofiber/contrib/socketio"
+	"github.com/gofiber/fiber/v2"
 )
 
-type Item struct {
-	Price  float64 `json:"price"`
-	Region string  `json:"region"`
+// Message represents a chat message
+type Message struct {
+	UserID    string    `json:"user_id"`
+	Username  string    `json:"username"`
+	Content   string    `json:"content"`
+	Timestamp time.Time `json:"timestamp"`
 }
 
-type ParseProductsArticlesType struct {
-	Article string `json:"article"`
-	Name    string `json:"name"`
+// Chat stores messages and metadata for a support chat
+type Chat struct {
+	ID           string
+	Messages     []Message
+	LastActive   time.Time
+	Authorized   bool
+	MessageMutex sync.Mutex
 }
 
-type Items struct {
-	CategoryArticle string                      `json:"category_article"`
-	CategoryName    string                      `json:"category_name"`
-	Items           []Item                      `json:"items"`
-	Product         []ParseProductsArticlesType `json:"product"`
+// ChatManager manages all chats (authorized persistent and guest temporary)
+type ChatManager struct {
+	chats    map[string]*Chat
+	mutex    sync.Mutex
+	guestTTL time.Duration
 }
 
-func parseItems(data string) ([]Items, error) {
-	var result []Items
-
-	// Регулярное выражение для категорий:
-	// Предполагаем, что код категории - это XX-XX-XX, за которым идет пробел и название
-	categoryPattern := regexp.MustCompile(`\{(\d{2}-\d{2}-\d{2})\s+([^}]+?)\s+(\[\{.*?\}\])\s+(\[\{.*?\}\])\}`)
-	matches := categoryPattern.FindAllStringSubmatch(data, -1)
-
-	for _, match := range matches {
-		if len(match) != 5 {
-			continue
-		}
-
-		categoryArticle := match[1] // Код категории (например, "17-01-16")
-		categoryName := match[2]    // Название категории (все после кода до списка Items)
-		itemsStr := match[3]        // Список цен и регионов
-		productsStr := match[4]     // Список продуктов
-
-		// Парсинг Items
-		var items []Item
-		itemsPattern := regexp.MustCompile(`\{([\d.]+)\s+([A-Za-z0-9-]+)\}`)
-		itemMatches := itemsPattern.FindAllStringSubmatch(itemsStr, -1)
-		for _, itemMatch := range itemMatches {
-			if len(itemMatch) != 3 {
-				continue
-			}
-			var price float64
-			fmt.Sscanf(itemMatch[1], "%f", &price)
-			items = append(items, Item{
-				Price:  price,
-				Region: itemMatch[2],
-			})
-		}
-
-		// Парсинг Product
-		var products []ParseProductsArticlesType
-		productsPattern := regexp.MustCompile(`\{([0-9-.]+)\s+([^}]+)\}`)
-		productMatches := productsPattern.FindAllStringSubmatch(productsStr, -1)
-		for _, prodMatch := range productMatches {
-			if len(prodMatch) != 3 {
-				continue
-			}
-			products = append(products, ParseProductsArticlesType{
-				Article: prodMatch[1],
-				Name:    strings.TrimSpace(prodMatch[2]),
-			})
-		}
-
-		// Собираем структуру
-		result = append(result, Items{
-			CategoryArticle: categoryArticle,
-			CategoryName:    strings.TrimSpace(categoryName),
-			Items:           items,
-			Product:         products,
-		})
+func NewChatManager(guestTTL time.Duration) *ChatManager {
+	cm := &ChatManager{
+		chats:    make(map[string]*Chat),
+		guestTTL: guestTTL,
 	}
+	// Start a background goroutine to clean up expired guest chats
+	go cm.cleanupExpiredGuests()
+	return cm
+}
 
-	return result, nil
+// Get or create chat by ID and auth status
+func (cm *ChatManager) GetOrCreateChat(chatID string, authorized bool) *Chat {
+	cm.mutex.Lock()
+	defer cm.mutex.Unlock()
+
+	chat, exists := cm.chats[chatID]
+	if !exists {
+		chat = &Chat{
+			ID:         chatID,
+			Messages:   []Message{},
+			LastActive: time.Now(),
+			Authorized: authorized,
+		}
+		cm.chats[chatID] = chat
+	}
+	return chat
+}
+
+// Add message to chat, updates LastActive time
+func (c *Chat) AddMessage(msg Message) {
+	c.MessageMutex.Lock()
+	defer c.MessageMutex.Unlock()
+
+	c.Messages = append(c.Messages, msg)
+	c.LastActive = time.Now()
+}
+
+// Cleanup guest chats inactive for more than TTL
+func (cm *ChatManager) cleanupExpiredGuests() {
+	for {
+		time.Sleep(time.Minute)
+		cutoff := time.Now().Add(-cm.guestTTL)
+		cm.mutex.Lock()
+		for id, chat := range cm.chats {
+			if !chat.Authorized && chat.LastActive.Before(cutoff) {
+				delete(cm.chats, id)
+				log.Printf("Deleted guest chat %s due to inactivity\n", id)
+			}
+		}
+		cm.mutex.Unlock()
+	}
+}
+
+// Simulated user authentication - in real app replace with real auth logic
+func authenticateUser(c *fiber.Ctx) (userID, username string, authorized bool) {
+	// For demonstration, we check for a query param "user"
+	user := c.Query("user", "")
+	if user != "" {
+		return user, fmt.Sprintf("User-%s", user), true
+	}
+	return "", "Guest", false
 }
 
 func main() {
-	// Чтение файла
-	inputFile := "logs.txt"
-	data, err := os.ReadFile(inputFile)
-	if err != nil {
-		fmt.Printf("Ошибка чтения файла: %v\n", err)
-		return
-	}
+	app := fiber.New()
 
-	// Парсинг
-	items, err := parseItems(string(data))
-	if err != nil {
-		fmt.Printf("Ошибка парсинга: %v\n", err)
-		return
-	}
+	// Initialize socketio server
+	server := socketio.New(socketio.Websocket, &socketio.Options{
+		PingTimeout: 10 * time.Second,
+	})
 
-	// Преобразование в JSON
-	jsonData, err := json.MarshalIndent(items, "", "  ")
-	if err != nil {
-		fmt.Printf("Ошибка преобразования в JSON: %v\n", err)
-		return
-	}
+	chatManager := NewChatManager(30 * time.Minute)
 
-	// Сохранение в файл
-	outputFile := "output.json"
-	err = os.WriteFile(outputFile, jsonData, 0644)
-	if err != nil {
-		fmt.Printf("Ошибка записи в файл: %v\n", err)
-		return
-	}
+	// On connect handler
+	server.OnConnect("/", func(s socketio.Conn) error {
+		// Get query params for chatID and user info
+		chatID := s.URL().Query().Get("chat_id")
+		userID := s.URL().Query().Get("user_id")
+		username := s.URL().Query().Get("username")
+		isAdmin := s.URL().Query().Get("admin") == "1"
 
-	fmt.Println("Парсинг завершен, результат сохранен в output.json")
-
-	// Создаем map для быстрого поиска CategoryArticle
-	foundArticles := make(map[string]bool)
-	for _, item := range items {
-		foundArticles[item.CategoryArticle] = true
-	}
-
-	// Проверяем, каких артикулов нет в результате парсинга
-	missingArticles := []string{}
-	for _, article := range constants.Articles {
-		if !foundArticles[article] {
-			missingArticles = append(missingArticles, article)
+		if chatID == "" {
+			return fmt.Errorf("chat_id is required")
 		}
+
+		if username == "" {
+			username = "Guest"
+		}
+
+		s.SetContext(map[string]string{
+			"chat_id":  chatID,
+			"user_id":  userID,
+			"username": username,
+			"admin":    fmt.Sprintf("%v", isAdmin),
+		})
+
+		s.Join(chatID)
+
+		log.Printf("Connected: user %s joined chat %s (admin: %v)", username, chatID, isAdmin)
+
+		// On connection, send existing messages in chat to this client (if any)
+		chatManager.mutex.Lock()
+		chat, exists := chatManager.chats[chatID]
+		chatManager.mutex.Unlock()
+		if exists {
+			chat.MessageMutex.Lock()
+			for _, msg := range chat.Messages {
+				// Send old messages to client
+				s.Emit("message", msg)
+			}
+			chat.MessageMutex.Unlock()
+		}
+		return nil
+	})
+
+	// On disconnect handler
+	server.OnDisconnect("/", func(s socketio.Conn, reason string) {
+		chatID := s.Context().(map[string]string)["chat_id"]
+		username := s.Context().(map[string]string)["username"]
+		log.Printf("Disconnected: user %s left chat %s: %s", username, chatID, reason)
+		s.Leave(chatID)
+	})
+
+	// On message from client
+	type IncomingMessage struct {
+		Content string `json:"content"`
 	}
 
-	// Выводим отсутствующие артикулы
-	if len(missingArticles) > 0 {
-		fmt.Println("Следующие артикулы отсутствуют в результате парсинга:")
-		for _, missing := range missingArticles {
-			fmt.Println(missing)
+	server.OnEvent("/", "message", func(s socketio.Conn, msg IncomingMessage) {
+		ctx := s.Context().(map[string]string)
+		chatID := ctx["chat_id"]
+		userID := ctx["user_id"]
+		username := ctx["username"]
+		adminStr := ctx["admin"]
+		isAdmin := adminStr == "true" || adminStr == "1"
+
+		if msg.Content == "" {
+			return
 		}
-	} else {
-		fmt.Println("Все артикулы из массива Articles найдены в результате парсинга.")
-	}
+
+		// Determine if chat is authorized or guest
+		chatManager.mutex.Lock()
+		chat, exists := chatManager.chats[chatID]
+		chatManager.mutex.Unlock()
+
+		if !exists {
+			// If chat does not exist, create it
+			authorized := userID != ""
+			chat = chatManager.GetOrCreateChat(chatID, authorized)
+		}
+
+		message := Message{
+			UserID:    userID,
+			Username:  username,
+			Content:   msg.Content,
+			Timestamp: time.Now(),
+		}
+
+		// Store the message
+		chat.AddMessage(message)
+
+		// Broadcast message to all in chat room
+		server.BroadcastToRoom("/", chatID, "message", message)
+
+		log.Printf("[%s] %s: %s", chatID, username, msg.Content)
+	})
+
+	// Mount socketio server
+	app.Get("/socket.io/*", fiber.WrapHandler(server))
+
+	// HTTP endpoint to create or get chatID for a user (simplified)
+	app.Post("/startchat", func(c *fiber.Ctx) error {
+		userID, username, authorized := authenticateUser(c)
+
+		var chatID string
+		if authorized {
+			// for authorized users, chat id can be their user id (or generated from user id)
+			chatID = "user_" + userID
+		} else {
+			// for guests generate temporary chat id, here we keep simple unique ID as timestamp-nano
+			chatID = fmt.Sprintf("guest_%d", time.Now().UnixNano())
+		}
+
+		// Create chat entry (no messages yet)
+		chatManager.GetOrCreateChat(chatID, authorized)
+
+		// Return chat info
+		return c.JSON(fiber.Map{
+			"chat_id":    chatID,
+			"user_id":    userID,
+			"username":   username,
+			"authorized": authorized,
+		})
+	})
+
+	// For demo: Admin can see all active chats (in-memory)
+	app.Get("/admin/chats", func(c *fiber.Ctx) error {
+		// In real app, authenticate admin here
+		chatManager.mutex.Lock()
+		defer chatManager.mutex.Unlock()
+
+		type ChatInfo struct {
+			ID         string    `json:"id"`
+			Messages   int       `json:"messages"`
+			LastActive time.Time `json:"last_active"`
+			Authorized bool      `json:"authorized"`
+		}
+		chatsInfo := []ChatInfo{}
+		for _, chat := range chatManager.chats {
+			chatsInfo = append(chatsInfo, ChatInfo{
+				ID:         chat.ID,
+				Messages:   len(chat.Messages),
+				LastActive: chat.LastActive,
+				Authorized: chat.Authorized,
+			})
+		}
+
+		return c.JSON(chatsInfo)
+	})
+
+	log.Println("Starting server on :8080")
+	log.Fatal(app.Listen(":8080"))
 }

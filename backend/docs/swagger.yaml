@@ -323,6 +323,51 @@ paths:
       summary: User registration
       tags:
       - auth
+  /auth/reset-password:
+    post:
+      consumes:
+      - application/json
+      description: Changes the user's password
+      parameters:
+      - description: Reset password token
+        in: query
+        name: token
+        type: string
+      - description: New password
+        in: query
+        name: pass
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful password change response
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Change password
+      tags:
+      - auth
+  /auth/reset-password/{email}:
+    get:
+      consumes:
+      - application/json
+      description: Resets the user's password
+      parameters:
+      - description: User email
+        in: path
+        name: email
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful password reset response
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Reset password
+      tags:
+      - auth
   /auth/send-code:
     post:
       consumes:

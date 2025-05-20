@@ -10,6 +10,8 @@ import (
 	"github.com/Fi44er/sdmedik/backend/pkg/logger"
 	"github.com/Fi44er/sdmedik/backend/pkg/middleware"
 	"github.com/go-playground/validator/v10"
+	"github.com/gofiber/contrib/socketio"
+	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/session"
@@ -54,6 +56,14 @@ func (a *App) Run() error {
 		AllowOrigins:     corsOrigins, // Укажите источник вашего клиента
 		AllowCredentials: true,        // Включение поддержки учетных данных
 	}))
+
+	a.app.Use(func(c *fiber.Ctx) error {
+		if websocket.IsWebSocketUpgrade(c) {
+			c.Locals("allowed", true)
+			return c.Next()
+		}
+		return c.Next()
+	})
 
 	if err := a.initDeps(); err != nil {
 		return err
@@ -145,6 +155,9 @@ func (a *App) initRouter() error {
 	auth.Post("/verify-code", a.serviceProvider.authProvider.AuthImpl().VerifyCode)
 	auth.Post("/refresh", a.serviceProvider.authProvider.AuthImpl().RefreshAccessToken)
 
+	auth.Get("/reset-password/:email", a.serviceProvider.authProvider.AuthImpl().ResetPassword)
+	auth.Post("/reset-password", a.serviceProvider.authProvider.AuthImpl().ChangePassword)
+
 	product := v1.Group("/product")
 	product.Get("/filter/:category_id", a.serviceProvider.productProvider.ProductImpl().GetFilter)
 	product.Get("/", a.serviceProvider.productProvider.ProductImpl().Get)
@@ -184,6 +197,9 @@ func (a *App) initRouter() error {
 	promotion.Post("/", deserializeUser, adminRoleRequired, a.serviceProvider.promotionProvider.PromotionImpl().Create)
 	promotion.Get("/", a.serviceProvider.promotionProvider.PromotionImpl().GetAll)
 	promotion.Delete("/:id", deserializeUser, adminRoleRequired, a.serviceProvider.promotionProvider.PromotionImpl().Delete)
+
+	chat := v1.Group("/chat")
+	chat.Get("/conn/:user_id", socketio.New(a.serviceProvider.chatProvider.ChatImpl().WS()))
 
 	return nil
 }

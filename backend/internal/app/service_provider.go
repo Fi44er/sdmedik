@@ -30,6 +30,7 @@ type serviceProvider struct {
 	certificateProvider         provider.CertificateProvider
 	orderProvider               provider.OrderProvider
 	promotionProvider           provider.PromotionProvider
+	chatProvider                provider.ChatProvider
 
 	logger    *logger.Logger
 	db        *gorm.DB
@@ -204,6 +205,11 @@ func (s *serviceProvider) initOrderProvider() error {
 
 func (s *serviceProvider) initPromotionProvider() error {
 	s.promotionProvider = *provider.NewPromotionProvider(s.logger, s.db, s.validator, s.productProvider.ProductService())
+	return nil
+}
+
+func (s *serviceProvider) initChatProvider() error {
+	s.chatProvider = *provider.NewChatProvider()
 	return nil
 }
 
