@@ -49,10 +49,10 @@ func (s *service) sendToPaykeeper(
 	userID string,
 ) (string, *model.Order, error) {
 
-	// s.logger.Infof("Basket: %+v", basket)
-	// s.logger.Infof("Articles: %+v", articles)
-	// s.logger.Infof("User ID: %v", userID)
-	// s.logger.Infof("Data: %+v", data)
+	s.logger.Infof("Basket: %+v", basket)
+	s.logger.Infof("Articles: %+v", articles)
+	s.logger.Infof("User ID: %v", userID)
+	s.logger.Infof("Data: %+v", data)
 
 	user := s.config.PayKeeperUser
 	password := s.config.PayKeeperPass
@@ -74,7 +74,6 @@ func (s *service) sendToPaykeeper(
 	carts := []CartItem{}
 	for _, item := range basket.Items {
 		categoryArticle := strings.Split(item.Article, ".")[0]
-		truCode := certMap[categoryArticle] + "00000000643"
 		cartItem := CartItem{
 			ItemType:    "goods",
 			PaymentType: "full",
@@ -83,21 +82,22 @@ func (s *service) sendToPaykeeper(
 			Price:       item.Price,
 			Quantity:    item.Quantity,
 			ItemCode:    "",
-			TruCode:     truCode,
+			TruCode:     certMap[categoryArticle],
 			Tax:         "none",
 			Sum:         item.TotalPrice,
 		}
 		carts = append(carts, cartItem)
 	}
 
-	expireDate := time.Now().AddDate(0, 0, 3) // Текущая дата + 1 день
-	expire := expireDate.Format("2006-01-02")
-	cartsJson, err := json.MarshalIndent(carts, "", "  ")
+	jsonData, err := json.Marshal(carts)
 	if err != nil {
+		s.logger.Errorf("Ошибка при парсинге JSON для создания заказа: %v", err)
 		return "", nil, err
 	}
-	serviceName := ";PKC|" + string(cartsJson) + "|"
 
+	expireDate := time.Now().AddDate(0, 0, 3) // Текущая дата + 1 день
+	expire := expireDate.Format("2006-01-02")
+	serviceName := fmt.Sprintf(";PKC|%s|", jsonData)
 	order := Order{
 		CartJSON:    carts,
 		ClientEmail: data.Email,
@@ -140,24 +140,6 @@ func (s *service) sendToPaykeeper(
 	invoiceURI := "/change/invoice/preview/"
 
 	order.Token = token
-
-	test := map[string]string{
-		"cart_json":    string(cartsJson),
-		"client_email": order.ClientEmail,
-		"client_phone": order.ClientPhone,
-		"clientid":     order.ClientID,
-		"expiry":       order.Expiry,
-		"orderid":      order.OrderID,
-		"pay_amount":   fmt.Sprintf("%.2f", order.PayAmount),
-		"service_name": order.ServiceName,
-		"token":        order.Token,
-	}
-
-	// Преобразуем в JSON с отступами
-	jsonData, _ := json.MarshalIndent(test, "", "    ")
-
-	// Выводим результат
-	fmt.Println(string(jsonData))
 
 	options = utils.RequestOptions{
 		Method: "POST",
