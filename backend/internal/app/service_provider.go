@@ -87,6 +87,7 @@ func (s *serviceProvider) initDeps() error {
 		s.initIndexProvider,
 		s.initSearchProvider,
 		s.initOrderProvider,
+		s.initChatProvider,
 	}
 
 	for _, init := range inits {
@@ -209,7 +210,7 @@ func (s *serviceProvider) initPromotionProvider() error {
 }
 
 func (s *serviceProvider) initChatProvider() error {
-	s.chatProvider = *provider.NewChatProvider()
+	s.chatProvider = *provider.NewChatProvider(s.db, s.logger)
 	return nil
 }
 

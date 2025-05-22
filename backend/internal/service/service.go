@@ -117,3 +117,8 @@ type IPromotionService interface {
 	Delete(ctx context.Context, id string) error
 	GetAll(ctx context.Context) (*[]model.Promotion, error)
 }
+
+type IChatService interface {
+	Create(ctx context.Context, data *model.Chat) error
+	SaveMessage(ctx context.Context, data *model.Message) error
+}

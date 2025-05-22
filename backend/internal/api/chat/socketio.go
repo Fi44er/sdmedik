@@ -1,11 +1,15 @@
 package chat
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 
+	"github.com/Fi44er/sdmedik/backend/internal/model"
+	"github.com/Fi44er/sdmedik/backend/internal/response"
 	"github.com/gofiber/contrib/socketio"
 	"github.com/gofiber/fiber/v2/log"
+	"github.com/gofiber/fiber/v2/middleware/session"
 )
 
 type MessageObject struct {
@@ -35,7 +39,12 @@ func (i *Implementation) encodeMessage(ep *socketio.EventPayload) (map[string]in
 
 func (i *Implementation) WS() func(*socketio.Websocket) {
 	socketio.On("connect", func(ep *socketio.EventPayload) {
-		userID := ep.Kws.Params("user_id")
+		userID := i.getUserID(ep)
+		if userID == "" {
+			i.socketErr(ep, fmt.Errorf("user not found"))
+			return
+		}
+
 		i.mu.RLock()
 		i.connections[userID] = ep.Kws.UUID
 		i.mu.RUnlock()
@@ -43,7 +52,12 @@ func (i *Implementation) WS() func(*socketio.Websocket) {
 	})
 
 	socketio.On("disconnect", func(ep *socketio.EventPayload) {
-		userID := ep.Kws.Params("user_id")
+		userID := i.getUserID(ep)
+		if userID == "" {
+			i.socketErr(ep, fmt.Errorf("user not found"))
+			return
+		}
+
 		i.mu.Lock()
 		defer i.mu.Unlock()
 
@@ -65,7 +79,6 @@ func (i *Implementation) WS() func(*socketio.Websocket) {
 	})
 
 	// ================ Custom Events ================
-
 	socketio.On("join", func(ep *socketio.EventPayload) {
 		dataMap, err := i.encodeMessage(ep)
 		if err != nil {
@@ -76,6 +89,11 @@ func (i *Implementation) WS() func(*socketio.Websocket) {
 		chatID, ok := dataMap["chat_id"].(string)
 		if !ok {
 			i.socketErr(ep, fmt.Errorf("failed to parse chat_id"))
+			return
+		}
+
+		if err := i.service.Create(context.Background(), &model.Chat{ID: chatID}); err != nil {
+			i.socketErr(ep, err)
 			return
 		}
 
@@ -120,13 +138,26 @@ func (i *Implementation) WS() func(*socketio.Websocket) {
 	})
 
 	return func(kws *socketio.Websocket) {
-		log.Infof("KWS: %+v", kws)
+		// log.Infof("KWS: %+v", kws)
 	}
 }
 
+// ================ Helpers ================
 func (i *Implementation) addUserToChat(userUUID string, chatID string) {
 	i.userToChat[userUUID] = chatID
 	i.chatToUsers[chatID] = append(i.chatToUsers[chatID], userUUID)
+}
+
+func (i *Implementation) getUserID(ep *socketio.EventPayload) string {
+	user, _ := ep.Kws.Locals("user").(response.UserResponse)
+	userID := user.ID
+
+	if userID == "" {
+		session, _ := ep.Kws.Locals("session").(*session.Session)
+		userID = session.ID()
+	}
+
+	return userID
 }
 
 func (i *Implementation) removeUserFromChat(userUUID string) {

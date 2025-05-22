@@ -110,3 +110,11 @@ type IPromotionRepository interface {
 	CreateConditions(ctx context.Context, condition *model.Condition) error
 	CreateRewards(ctx context.Context, reward *model.Reward) error
 }
+
+type IChatRepository interface {
+	GetByID(ctx context.Context, id string) (*model.Chat, error)
+	Create(ctx context.Context, chat *model.Chat) error
+
+	SaveMessage(ctx context.Context, message *model.Message) error
+	GetMessagesByChatID(ctx context.Context, chatID string) ([]model.Message, error)
+}

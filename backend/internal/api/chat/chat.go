@@ -1,19 +1,28 @@
 package chat
 
-import "sync"
+import (
+	"sync"
+
+	"github.com/Fi44er/sdmedik/backend/internal/service"
+)
 
 type Implementation struct {
 	connections map[string]string // Мапа для хранения подключений (ключ — идентификатор пользователя)
 	mu          sync.RWMutex
 	userToChat  map[string]string   // ID пользователя, ID чата
 	chatToUsers map[string][]string // ID чата, участники
+
+	service service.IChatService
 }
 
-func NewImplementation() *Implementation {
+func NewImplementation(
+	service service.IChatService,
+) *Implementation {
 	return &Implementation{
 		connections: make(map[string]string),
 		mu:          sync.RWMutex{},
 		userToChat:  make(map[string]string),
 		chatToUsers: make(map[string][]string),
+		service:     service,
 	}
 }

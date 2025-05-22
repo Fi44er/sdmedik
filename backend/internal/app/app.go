@@ -199,7 +199,7 @@ func (a *App) initRouter() error {
 	promotion.Delete("/:id", deserializeUser, adminRoleRequired, a.serviceProvider.promotionProvider.PromotionImpl().Delete)
 
 	chat := v1.Group("/chat")
-	chat.Get("/conn/:user_id", socketio.New(a.serviceProvider.chatProvider.ChatImpl().WS()))
+	chat.Get("/conn", allowGuest, socketio.New(a.serviceProvider.chatProvider.ChatImpl().WS()))
 
 	return nil
 }

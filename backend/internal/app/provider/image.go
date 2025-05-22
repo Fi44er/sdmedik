@@ -13,7 +13,7 @@ import (
 
 type ImageProvider struct {
 	imageRepository repository.IImageRepository
-	ImageServise    service.IImageService
+	imageServise    service.IImageService
 
 	logger    *logger.Logger
 	db        *gorm.DB
@@ -44,8 +44,8 @@ func (p *ImageProvider) ImageRepository() repository.IImageRepository {
 }
 
 func (p *ImageProvider) ImageService() service.IImageService {
-	if p.ImageServise == nil {
-		p.ImageServise = imageService.NewService(p.logger, p.validator, p.ImageRepository(), p.config)
+	if p.imageServise == nil {
+		p.imageServise = imageService.NewService(p.logger, p.validator, p.ImageRepository(), p.config)
 	}
-	return p.ImageServise
+	return p.imageServise
 }
