@@ -23,6 +23,31 @@ func NewRepository(logger *logger.Logger, db *gorm.DB) *repository {
 	}
 }
 
+func (r *repository) GetAll(ctx context.Context, offset, limit int) ([]model.Chat, error) {
+	r.logger.Info("Fetching chats...")
+	var chats []model.Chat
+	if offset == 0 {
+		offset = -1
+	}
+
+	if limit == 0 {
+		limit = -1
+	}
+
+	if err := r.db.WithContext(ctx).
+		Preload("Messages", func(db *gorm.DB) *gorm.DB {
+			return db.Order("messages.created_at DESC").Limit(1)
+		}).
+		Offset(offset).
+		Limit(limit).
+		Find(&chats).Error; err != nil {
+		r.logger.Errorf("Failed to fetch chats: %v", err)
+		return nil, err
+	}
+	r.logger.Info("Chats fetched successfully")
+	return chats, nil
+}
+
 func (r *repository) GetByID(ctx context.Context, id string) (*model.Chat, error) {
 	r.logger.Info("Fetching chat...")
 	chat := new(model.Chat)

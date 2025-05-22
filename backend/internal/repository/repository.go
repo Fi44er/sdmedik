@@ -114,6 +114,7 @@ type IPromotionRepository interface {
 type IChatRepository interface {
 	GetByID(ctx context.Context, id string) (*model.Chat, error)
 	Create(ctx context.Context, chat *model.Chat) error
+	GetAll(ctx context.Context, offset, limit int) ([]model.Chat, error)
 
 	SaveMessage(ctx context.Context, message *model.Message) error
 	GetMessagesByChatID(ctx context.Context, chatID string) ([]model.Message, error)
