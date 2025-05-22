@@ -2,6 +2,7 @@ package provider
 
 import (
 	"github.com/Fi44er/sdmedik/backend/internal/api/chat"
+	"github.com/Fi44er/sdmedik/backend/internal/config"
 	"github.com/Fi44er/sdmedik/backend/internal/repository"
 	"github.com/Fi44er/sdmedik/backend/internal/service"
 	"github.com/Fi44er/sdmedik/backend/pkg/logger"
@@ -18,15 +19,18 @@ type ChatProvider struct {
 
 	db     *gorm.DB
 	logger *logger.Logger
+	config *config.Config
 }
 
 func NewChatProvider(
 	db *gorm.DB,
 	logger *logger.Logger,
+	config *config.Config,
 ) *ChatProvider {
 	return &ChatProvider{
 		db:     db,
 		logger: logger,
+		config: config,
 	}
 }
 
@@ -39,7 +43,7 @@ func (p *ChatProvider) ChatRepository() repository.IChatRepository {
 
 func (p *ChatProvider) ChatService() service.IChatService {
 	if p.chatService == nil {
-		p.chatService = chatService.NewService(p.logger, p.ChatRepository())
+		p.chatService = chatService.NewService(p.logger, p.ChatRepository(), p.config)
 	}
 	return p.chatService
 }

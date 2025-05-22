@@ -210,7 +210,7 @@ func (s *serviceProvider) initPromotionProvider() error {
 }
 
 func (s *serviceProvider) initChatProvider() error {
-	s.chatProvider = *provider.NewChatProvider(s.db, s.logger)
+	s.chatProvider = *provider.NewChatProvider(s.db, s.logger, s.config)
 	return nil
 }
 
