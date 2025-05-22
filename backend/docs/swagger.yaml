@@ -614,6 +614,30 @@ paths:
       summary: Update a category
       tags:
       - category
+  /chat:
+    get:
+      consumes:
+      - application/json
+      description: Get all chats
+      parameters:
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseData'
+      summary: Get all chats
+      tags:
+      - chat
   /order:
     get:
       consumes:

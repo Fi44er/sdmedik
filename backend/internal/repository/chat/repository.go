@@ -25,25 +25,37 @@ func NewRepository(logger *logger.Logger, db *gorm.DB) *repository {
 
 func (r *repository) GetAll(ctx context.Context, offset, limit int) ([]model.Chat, error) {
 	r.logger.Info("Fetching chats...")
+
+	// Нормализация параметров пагинации
+	if offset < 0 {
+		offset = 0
+	}
+	if limit <= 0 {
+		limit = 10 // или другое значение по умолчанию
+	}
+
 	var chats []model.Chat
-	if offset == 0 {
-		offset = -1
-	}
 
-	if limit == 0 {
-		limit = -1
-	}
+	// Подзапрос для получения ID последних сообщений
+	subQuery := r.db.Model(&model.Message{}).
+		Select("MAX(id) as last_message_id").
+		Group("chat_id")
 
-	if err := r.db.WithContext(ctx).
+	// Основной запрос
+	err := r.db.WithContext(ctx).
 		Preload("Messages", func(db *gorm.DB) *gorm.DB {
-			return db.Order("messages.created_at DESC").Limit(1)
+			return db.Joins("JOIN (?) as last ON messages.id = last.last_message_id", subQuery)
 		}).
 		Offset(offset).
 		Limit(limit).
-		Find(&chats).Error; err != nil {
+		Order("chats.id").
+		Find(&chats).Error
+
+	if err != nil {
 		r.logger.Errorf("Failed to fetch chats: %v", err)
 		return nil, err
 	}
+
 	r.logger.Info("Chats fetched successfully")
 	return chats, nil
 }
