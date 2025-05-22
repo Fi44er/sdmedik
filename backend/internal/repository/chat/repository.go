@@ -50,6 +50,7 @@ func (r *repository) Create(ctx context.Context, chat *model.Chat) error {
 
 func (r *repository) SaveMessage(ctx context.Context, message *model.Message) error {
 	r.logger.Info("Saving message...")
+	r.logger.Infof("Message: %+v", message)
 	if err := r.db.WithContext(ctx).Create(&message).Error; err != nil {
 		r.logger.Errorf("Failed to save message: %v", err)
 		return err

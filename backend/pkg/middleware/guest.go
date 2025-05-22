@@ -69,6 +69,7 @@ func AllowGuest(cache *redis.Client, db *gorm.DB, config *config.Config, store *
 			}
 
 			ctx.Locals("session", sess)
+			ctx.Locals("session_id", sess.ID())
 		}
 
 		return ctx.Next()

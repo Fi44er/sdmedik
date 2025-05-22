@@ -9,7 +9,6 @@ import (
 	"github.com/Fi44er/sdmedik/backend/internal/response"
 	"github.com/gofiber/contrib/socketio"
 	"github.com/gofiber/fiber/v2/log"
-	"github.com/gofiber/fiber/v2/middleware/session"
 )
 
 type MessageObject struct {
@@ -79,7 +78,33 @@ func (i *Implementation) WS() func(*socketio.Websocket) {
 	})
 
 	// ================ Custom Events ================
-	socketio.On("join", func(ep *socketio.EventPayload) {
+	socketio.On("join", func(ep *socketio.EventPayload) { // Подключение к чату обычного пользователя
+		userID := i.getUserID(ep)
+
+		if err := i.service.Create(context.Background(), &model.Chat{ID: userID}); err != nil {
+			i.socketErr(ep, err)
+			return
+		}
+
+		i.addUserToChat(ep.Kws.UUID, userID)
+
+		historyMessages, err := i.service.GetMessagesByChatID(context.Background(), userID)
+		if err != nil {
+			i.socketErr(ep, err)
+			return
+		}
+
+		jsonData, err := json.Marshal(historyMessages)
+		if err != nil {
+			i.socketErr(ep, err)
+			return
+		}
+
+		ep.Kws.EmitTo(ep.Kws.UUID, jsonData)
+		log.Info("Join event successful")
+	})
+
+	socketio.On("admin-join", func(ep *socketio.EventPayload) {
 		dataMap, err := i.encodeMessage(ep)
 		if err != nil {
 			i.socketErr(ep, err)
@@ -92,14 +117,44 @@ func (i *Implementation) WS() func(*socketio.Websocket) {
 			return
 		}
 
-		if err := i.service.Create(context.Background(), &model.Chat{ID: chatID}); err != nil {
+		existChat, err := i.service.GetByID(context.Background(), chatID)
+		if err != nil {
 			i.socketErr(ep, err)
 			return
 		}
 
-		i.addUserToChat(ep.Kws.UUID, chatID)
+		if existChat == nil {
+			i.socketErr(ep, fmt.Errorf("chat not found"))
+			return
+		}
 
-		log.Info("Join event successful")
+		user, ok := ep.Kws.Locals("user").(response.UserResponse)
+		if !ok {
+			log.Infof("User not found: %v", ep.Kws.Locals("user"))
+			i.socketErr(ep, fmt.Errorf("user not found"))
+			return
+		}
+
+		if user.Role == "admin" {
+			i.addUserToChat(ep.Kws.UUID, chatID)
+		} else {
+			i.socketErr(ep, fmt.Errorf("user has not permissions"))
+			return
+		}
+
+		historyMessages, err := i.service.GetMessagesByChatID(context.Background(), chatID)
+		if err != nil {
+			i.socketErr(ep, err)
+			return
+		}
+
+		jsonData, err := json.Marshal(historyMessages)
+		if err != nil {
+			i.socketErr(ep, err)
+			return
+		}
+
+		ep.Kws.EmitTo(ep.Kws.UUID, jsonData)
 	})
 
 	socketio.On("message-event", func(ep *socketio.EventPayload) {
@@ -134,6 +189,18 @@ func (i *Implementation) WS() func(*socketio.Websocket) {
 			return
 		}
 
+		userID := i.getUserID(ep)
+		saveMessageData := model.Message{
+			SenderID: userID,
+			Message:  message,
+			ChatID:   chatID,
+		}
+
+		if err := i.service.SaveMessage(context.Background(), &saveMessageData); err != nil {
+			i.socketErr(ep, err)
+			return
+		}
+
 		ep.Kws.EmitToList(recipients, []byte(message))
 	})
 
@@ -153,8 +220,7 @@ func (i *Implementation) getUserID(ep *socketio.EventPayload) string {
 	userID := user.ID
 
 	if userID == "" {
-		session, _ := ep.Kws.Locals("session").(*session.Session)
-		userID = session.ID()
+		userID = ep.Kws.Locals("session_id").(string)
 	}
 
 	return userID
