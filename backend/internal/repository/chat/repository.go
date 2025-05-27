@@ -38,13 +38,13 @@ func (r *repository) GetAll(ctx context.Context, offset, limit int) ([]model.Cha
 
 	// Подзапрос для получения ID последних сообщений
 	subQuery := r.db.Model(&model.Message{}).
-		Select("MAX(id) as last_message_id").
+		Select("chat_id, MAX(created_at) as max_created_at").
 		Group("chat_id")
 
 	// Основной запрос
 	err := r.db.WithContext(ctx).
 		Preload("Messages", func(db *gorm.DB) *gorm.DB {
-			return db.Joins("JOIN (?) as last ON messages.id = last.last_message_id", subQuery)
+			return db.Joins("JOIN (?) as last_msg ON messages.chat_id = last_msg.chat_id AND messages.created_at = last_msg.max_created_at", subQuery)
 		}).
 		Offset(offset).
 		Limit(limit).
