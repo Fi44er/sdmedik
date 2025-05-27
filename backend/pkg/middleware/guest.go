@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/Fi44er/sdmedik/backend/internal/config"
@@ -68,6 +69,7 @@ func AllowGuest(cache *redis.Client, db *gorm.DB, config *config.Config, store *
 				})
 			}
 
+			sess.Save()
 			ctx.Locals("session", sess)
 			ctx.Locals("session_id", sess.ID())
 		}
