@@ -9,6 +9,7 @@ import (
 	"net/smtp"
 	"time"
 
+	"github.com/cenkalti/backoff/v4"
 	"github.com/jordan-wright/email"
 )
 
@@ -42,6 +43,27 @@ func NewMailer(smtpHost, smtpPort, username, password, templatePath string, pool
 }
 
 // SendMail отправляет письмо с кодом подтверждения
+// func (m *Mailer) SendMail(from, to, subject string, templateData interface{}) error {
+// 	e := email.NewEmail()
+// 	e.From = from
+// 	e.To = []string{to}
+// 	e.Subject = subject
+//
+// 	var body bytes.Buffer
+// 	if err := m.Template.Execute(&body, templateData); err != nil {
+// 		return fmt.Errorf("failed to execute email template: %w", err)
+// 	}
+//
+// 	e.HTML = body.Bytes()
+//
+// 	if err := m.SMTPClient.Send(e, 10*time.Second); err != nil {
+// 		return fmt.Errorf("failed to send email: %w", err)
+// 	}
+//
+// 	log.Printf("Email sent successfully to %s", to)
+// 	return nil
+// }
+
 func (m *Mailer) SendMail(from, to, subject string, templateData interface{}) error {
 	e := email.NewEmail()
 	e.From = from
@@ -52,11 +74,25 @@ func (m *Mailer) SendMail(from, to, subject string, templateData interface{}) er
 	if err := m.Template.Execute(&body, templateData); err != nil {
 		return fmt.Errorf("failed to execute email template: %w", err)
 	}
-
 	e.HTML = body.Bytes()
 
-	if err := m.SMTPClient.Send(e, 10*time.Second); err != nil {
-		return fmt.Errorf("failed to send email: %w", err)
+	backOff := backoff.NewExponentialBackOff()
+	backOff.InitialInterval = 1 * time.Second
+	backOff.MaxInterval = 30 * time.Second
+	backOff.MaxElapsedTime = 5 * time.Minute
+
+	// Функция для уведомления о неудачных попытках
+	notify := func(err error, duration time.Duration) {
+		log.Printf("SendMail attempt failed: %v. Next try in %v", err, duration)
+	}
+
+	operation := func() error {
+		return m.SMTPClient.Send(e, 10*time.Second)
+	}
+
+	err := backoff.RetryNotify(operation, backOff, notify)
+	if err != nil {
+		return fmt.Errorf("failed to send email after multiple attempts: %w", err)
 	}
 
 	log.Printf("Email sent successfully to %s", to)
