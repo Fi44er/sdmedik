@@ -27,11 +27,11 @@ func (r *repository) GetAll(ctx context.Context, offset, limit int) ([]model.Cha
 	r.logger.Info("Fetching chats...")
 
 	// Нормализация параметров пагинации
-	if offset < 0 {
+	if offset <= 0 {
 		offset = 0
 	}
 	if limit <= 0 {
-		limit = 10 // или другое значение по умолчанию
+		limit = 0 // или другое значение по умолчанию
 	}
 
 	var chats []model.Chat

@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/Fi44er/sdmedik/backend/internal/config"
@@ -9,6 +8,7 @@ import (
 	"github.com/Fi44er/sdmedik/backend/internal/response"
 	"github.com/Fi44er/sdmedik/backend/pkg/utils"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/log"
 	"github.com/gofiber/fiber/v2/middleware/session"
 	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
@@ -16,6 +16,7 @@ import (
 
 func AllowGuest(cache *redis.Client, db *gorm.DB, config *config.Config, store *session.Store) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
+
 		var accessToken string
 		var err error
 		authorizeStatus := true
@@ -69,9 +70,10 @@ func AllowGuest(cache *redis.Client, db *gorm.DB, config *config.Config, store *
 				})
 			}
 
-			sess.Save()
 			ctx.Locals("session", sess)
 			ctx.Locals("session_id", sess.ID())
+
+			sess.Save()
 		}
 
 		return ctx.Next()

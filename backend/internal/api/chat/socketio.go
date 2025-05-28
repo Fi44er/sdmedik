@@ -81,6 +81,8 @@ func (i *Implementation) WS() func(*socketio.Websocket) {
 	socketio.On("join", func(ep *socketio.EventPayload) { // Подключение к чату обычного пользователя
 		userID := i.getUserID(ep)
 
+		log.Info("Join event: ", userID)
+
 		if err := i.service.Create(context.Background(), &model.Chat{ID: userID}); err != nil {
 			i.socketErr(ep, err)
 			return
