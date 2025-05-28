@@ -28,10 +28,10 @@ func (r *repository) GetAll(ctx context.Context, offset, limit int) ([]model.Cha
 
 	// Нормализация параметров пагинации
 	if offset <= 0 {
-		offset = 0
+		offset = -1
 	}
 	if limit <= 0 {
-		limit = 0 // или другое значение по умолчанию
+		limit = -1 // или другое значение по умолчанию
 	}
 
 	var chats []model.Chat
