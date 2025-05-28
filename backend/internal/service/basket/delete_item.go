@@ -45,9 +45,6 @@ func (s *service) DeleteItem(ctx context.Context, itemID string, userID string, 
 		}
 
 		sess.Set("basket", string(basketStr))
-		if err := sess.Save(); err != nil {
-			return err
-		}
 	}
 
 	return nil

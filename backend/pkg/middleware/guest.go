@@ -8,6 +8,7 @@ import (
 	"github.com/Fi44er/sdmedik/backend/internal/response"
 	"github.com/Fi44er/sdmedik/backend/pkg/utils"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/log"
 	"github.com/gofiber/fiber/v2/middleware/session"
 	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
@@ -58,11 +59,12 @@ func AllowGuest(cache *redis.Client, db *gorm.DB, config *config.Config, store *
 			}
 		}
 
+		var sess *session.Session
 		if authorizeStatus {
 			ctx.Locals("user", response.FilterUserResponse(&user))
 			ctx.Locals("access_token_uuid", tokenClaims.TokenUUID)
 		} else {
-			sess, err := store.Get(ctx)
+			sess, err = store.Get(ctx)
 			if err != nil {
 				return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 					"error": "Session error",
@@ -71,10 +73,9 @@ func AllowGuest(cache *redis.Client, db *gorm.DB, config *config.Config, store *
 
 			ctx.Locals("session", sess)
 			ctx.Locals("session_id", sess.ID())
-
-			sess.Save()
 		}
 
-		return ctx.Next()
+		_ = ctx.Next()
+		return sess.Save()
 	}
 }

@@ -100,7 +100,6 @@ func (s *service) AddItem(ctx context.Context, data *dto.AddBasketItem, userID s
 				return fmt.Errorf("failed to marshal basket: %w", err)
 			}
 			sess.Set("basket", string(basketStr))
-			sess.Save()
 		}
 		return nil
 	}
@@ -181,9 +180,6 @@ func (s *service) AddItem(ctx context.Context, data *dto.AddBasketItem, userID s
 			return fmt.Errorf("failed to marshal basket: %w", err)
 		}
 		sess.Set("basket", string(basketStr))
-		if err := sess.Save(); err != nil {
-			return err
-		}
 	}
 
 	return nil
