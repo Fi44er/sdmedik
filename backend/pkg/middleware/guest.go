@@ -8,7 +8,6 @@ import (
 	"github.com/Fi44er/sdmedik/backend/internal/response"
 	"github.com/Fi44er/sdmedik/backend/pkg/utils"
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/log"
 	"github.com/gofiber/fiber/v2/middleware/session"
 	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
@@ -76,6 +75,9 @@ func AllowGuest(cache *redis.Client, db *gorm.DB, config *config.Config, store *
 		}
 
 		_ = ctx.Next()
-		return sess.Save()
+		if sess != nil {
+			return sess.Save()
+		}
+		return nil
 	}
 }
