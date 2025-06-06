@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"reflect"
 	"strconv"
+	"strings"
 
 	"github.com/Fi44er/sdmedik/backend/internal/dto"
 	"github.com/Fi44er/sdmedik/backend/internal/model"
@@ -204,11 +205,20 @@ func (r *repository) Get(ctx context.Context, criteria dto.ProductSearchCriteria
 		}
 	}
 
-	for i := 0; i < len(criteria.Catalogs); i++ {
-		if criteria.Catalogs[i] > 0 {
-			var catalogMask uint8
-			catalogMask = 1 << (criteria.Catalogs[i] - 1)
-			request = request.Where("catalogs & ? != 0", catalogMask)
+	if len(criteria.Catalogs) > 0 {
+		var orConditions []string
+		var args []interface{}
+
+		for _, catalogID := range criteria.Catalogs {
+			if catalogID > 0 {
+				catalogMask := 1 << (catalogID - 1)
+				orConditions = append(orConditions, "catalogs & ? != 0")
+				args = append(args, catalogMask)
+			}
+		}
+
+		if len(orConditions) > 0 {
+			request = request.Where(strings.Join(orConditions, " OR "), args...)
 		}
 	}
 
