@@ -45,9 +45,9 @@ func (s *service) ResetPassword(ctx context.Context, email string) error {
 
 	s.mailer.SendMailAsync(
 		s.config.MailFrom, // Отправитель
-		email,             // Получатель
 		"Код подтверждения регистрации", // Тема письма
 		templateData, // Данные для шаблона
+		[]string{email},
 	)
 
 	return nil

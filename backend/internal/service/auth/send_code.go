@@ -35,9 +35,9 @@ func (s *service) SendCode(ctx context.Context, email string) error {
 
 	s.mailer.SendMailAsync(
 		s.config.MailFrom, // Отправитель
-		email,             // Получатель
 		"Код подтверждения регистрации", // Тема письма
 		templateData, // Данные для шаблона
+		[]string{email},
 	)
 	s.logger.Info(code)
 	return nil

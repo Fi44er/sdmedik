@@ -27,9 +27,9 @@ func (s *service) SaveMessage(ctx context.Context, message *model.Message) error
 
 	s.mailer.SendMailAsync(
 		s.config.MailFrom,
-		"sales@sdmedik.ru",
 		"New message",
 		templateData,
+		[]string{"sales@sdmedik.ru", "amanager@sdmedik.ru"},
 	)
 
 	return nil

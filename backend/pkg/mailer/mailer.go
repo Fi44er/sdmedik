@@ -64,10 +64,10 @@ func NewMailer(smtpHost, smtpPort, username, password, templatePath string, pool
 // 	return nil
 // }
 
-func (m *Mailer) SendMail(from, to, subject string, templateData interface{}) error {
+func (m *Mailer) SendMail(from, subject string, templateData interface{}, to []string) error {
 	e := email.NewEmail()
 	e.From = from
-	e.To = []string{to}
+	e.To = to
 	e.Subject = subject
 
 	var body bytes.Buffer
@@ -100,9 +100,9 @@ func (m *Mailer) SendMail(from, to, subject string, templateData interface{}) er
 }
 
 // SendMailAsync отправляет письмо асинхронно
-func (m *Mailer) SendMailAsync(from, to, subject string, templateData interface{}) {
+func (m *Mailer) SendMailAsync(from, subject string, templateData interface{}, to []string) {
 	go func() {
-		if err := m.SendMail(from, to, subject, templateData); err != nil {
+		if err := m.SendMail(from, subject, templateData, to); err != nil {
 			log.Printf("Error sending email to %s: %v", to, err)
 		}
 	}()

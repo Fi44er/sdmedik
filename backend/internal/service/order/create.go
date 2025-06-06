@@ -84,9 +84,9 @@ func (s *service) Create(ctx context.Context, data *dto.CreateOrder, userID stri
 
 	s.mailer.SendMailAsync(
 		s.config.MailFrom,
-		"sales@sdmedik.ru",
 		"Новый заказ",
 		templateData,
+		[]string{"sales@sdmedik.ru", "amanager@sdmedik.ru", "admin@sdmedik.ru"},
 	)
 
 	return link, nil
