@@ -204,10 +204,12 @@ func (r *repository) Get(ctx context.Context, criteria dto.ProductSearchCriteria
 		}
 	}
 
-	if criteria.Catalogs > 0 {
-		var catalogMask uint8
-		catalogMask = 1 << (criteria.Catalogs - 1)
-		request = request.Where("catalogs & ? != 0", catalogMask)
+	for i := 0; i < len(criteria.Catalogs); i++ {
+		if criteria.Catalogs[i] > 0 {
+			var catalogMask uint8
+			catalogMask = 1 << (criteria.Catalogs[i] - 1)
+			request = request.Where("catalogs & ? != 0", catalogMask)
+		}
 	}
 
 	if criteria.Offset != 0 {

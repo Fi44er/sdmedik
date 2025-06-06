@@ -2,6 +2,7 @@ package certificate
 
 import (
 	"context"
+	"errors"
 
 	"github.com/Fi44er/sdmedik/backend/internal/dto"
 	"github.com/Fi44er/sdmedik/backend/internal/model"
@@ -61,18 +62,35 @@ func (r *repository) GetMany(ctx context.Context, data *[]dto.GetManyCert) (*[]m
 	if len(*data) == 0 {
 		return certificates, nil
 	}
-	// Создаём запрос к базе данных
-	query := r.db.WithContext(ctx)
 
-	// Добавляем условия для каждого фильтра
+	// Сначала ищем точное совпадение по category_article + region_iso
+	query := r.db.WithContext(ctx)
 	for _, filter := range *data {
 		query = query.Or("category_article = ? AND region_iso = ?", filter.CategoryArticle, filter.RegionIso)
 	}
 
-	// Выполняем запрос
 	if err := query.Find(&certificates).Error; err != nil {
 		r.logger.Errorf("Failed to fetch certificates: %v", err)
 		return nil, err
+	}
+
+	// Если ничего не найдено, ищем только по category_article (первое вхождение)
+	if len(*certificates) == 0 {
+		r.logger.Info("No exact matches found, trying with category_article only...")
+		for _, filter := range *data {
+			var fallbackCert model.Certificate
+			err := r.db.WithContext(ctx).
+				Where("category_article = ?", filter.CategoryArticle).
+				First(&fallbackCert).Error
+
+			if err == nil { // Найдена запись
+				*certificates = append(*certificates, fallbackCert)
+				break // Берём первую найденную и выходим
+			} else if !errors.Is(err, gorm.ErrRecordNotFound) {
+				r.logger.Errorf("Error fetching fallback certificate: %v", err)
+				return nil, err
+			}
+		}
 	}
 
 	r.logger.Info("Certificates fetched successfully")

@@ -785,10 +785,13 @@ paths:
         in: query
         name: minimal
         type: boolean
-      - description: Catalogs
+      - collectionFormat: csv
+        description: Catalogs (comma-separated)
         in: query
+        items:
+          type: integer
         name: catalogs
-        type: integer
+        type: array
       - description: Filters in JSON format
         example: '{"price":{"min":20,"max":100},"characteristics":[{"characteristic_id":1,"values":["string"]}]}'
         in: query

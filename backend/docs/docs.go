@@ -815,8 +815,12 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
-                        "type": "integer",
-                        "description": "Catalogs",
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "Catalogs (comma-separated)",
                         "name": "catalogs",
                         "in": "query"
                     },

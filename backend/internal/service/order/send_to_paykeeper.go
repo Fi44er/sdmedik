@@ -110,6 +110,8 @@ func (s *service) sendToPaykeeper(
 		Token:       "",
 	}
 
+	s.logger.Infof("Order: %+v", order)
+
 	tokenURI := "/info/settings/token/"
 
 	options := utils.RequestOptions{

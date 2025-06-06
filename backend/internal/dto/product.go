@@ -25,7 +25,7 @@ type ProductSearchCriteria struct {
 	Limit      int            `query:"limit" gorm:"limit"`
 	Filters    ProductFilters `query:"filters" gorm:"-"`
 	Minimal    bool           `query:"minimal" gorm:"-"`
-	Catalogs   int            `query:"catalogs" gorm:"-"`
+	Catalogs   []int          `query:"catalogs" gorm:"-"`
 	Iso        string         `query:"iso" gorm:"-"`
 }
 
