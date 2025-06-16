@@ -78,6 +78,35 @@ func (i *Implementation) WS() func(*socketio.Websocket) {
 	})
 
 	// ================ Custom Events ================
+
+	socketio.On("mark-as-read", func(ep *socketio.EventPayload) {
+		dataMap, err := i.encodeMessage(ep)
+		if err != nil {
+			i.socketErr(ep, err)
+			return
+		}
+
+		messageID, ok := dataMap["message_id"].(string)
+		if !ok {
+			i.socketErr(ep, fmt.Errorf("failed to parse message_id"))
+			return
+		}
+
+		userID := i.getUserID(ep)
+		if userID == "" {
+			i.socketErr(ep, fmt.Errorf("user not found"))
+			return
+		}
+
+		err = i.service.MarkMsgAsRead(context.Background(), messageID, userID)
+		if err != nil {
+			i.socketErr(ep, err)
+			return
+		}
+
+		ep.Kws.EmitTo(ep.Kws.UUID, []byte(`{"event": "message-read", "message_id": "`+messageID+`"}`))
+	})
+
 	socketio.On("join", func(ep *socketio.EventPayload) { // Подключение к чату обычного пользователя
 		userID := i.getUserID(ep)
 

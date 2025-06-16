@@ -628,6 +628,10 @@ paths:
         in: query
         name: offset
         type: integer
+      - description: User ID
+        in: query
+        name: user_id
+        type: string
       produces:
       - application/json
       responses:

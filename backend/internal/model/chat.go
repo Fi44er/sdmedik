@@ -8,10 +8,11 @@ import (
 )
 
 type Message struct {
-	ID        string    `gorm:"primaryKey;type:string;" json:"id"`
-	SenderID  string    `gorm:"type:string;not null" json:"sender_id"`
-	Message   string    `gorm:"type:text;not null" json:"message"`
-	CreatedAt time.Time `gorm:"autoCreateTime;not null" json:"time_to_send"`
+	ID         string    `gorm:"primaryKey;type:string;" json:"id"`
+	SenderID   string    `gorm:"type:string;not null" json:"sender_id"`
+	Message    string    `gorm:"type:text;not null" json:"message"`
+	CreatedAt  time.Time `gorm:"autoCreateTime;not null" json:"time_to_send"`
+	ReadStatus bool      `gorm:"not null;default:false" json:"read_status"`
 
 	ChatID string `gorm:"type:string;not null" json:"chat_id"`
 	Chat   Chat   `gorm:"foreignKey:ChatID" json:"-"`

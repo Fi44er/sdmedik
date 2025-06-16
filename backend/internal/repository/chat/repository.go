@@ -106,3 +106,39 @@ func (r *repository) GetMessagesByChatID(ctx context.Context, chatID string) ([]
 	r.logger.Info("Messages fetched successfully")
 	return messages, nil
 }
+
+func (r *repository) GetMessageByID(ctx context.Context, id string) (*model.Message, error) {
+	r.logger.Info("Fetching message...")
+	message := new(model.Message)
+	if err := r.db.WithContext(ctx).Where("id = ?", id).First(&message).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			r.logger.Info("Message not found")
+			return nil, nil
+		}
+		r.logger.Errorf("Failed to fetch message: %v", err)
+		return nil, err
+	}
+	r.logger.Info("Message fetched successfully")
+	return message, nil
+}
+
+func (r *repository) MarkMsgAsRead(ctx context.Context, msgID string) error {
+	r.logger.Info("Marking message as read...")
+	if err := r.db.WithContext(ctx).Model(&model.Message{}).Where("id = ?", msgID).Update("read_status", true).Error; err != nil {
+		r.logger.Errorf("Failed to mark message as read: %v", err)
+		return err
+	}
+	r.logger.Info("Message marked as read successfully")
+	return nil
+}
+
+func (r *repository) GetUnreadCount(ctx context.Context, chatID, userID string) (int64, error) {
+	var count int64
+	if err := r.db.WithContext(ctx).
+		Model(&model.Message{}).
+		Where("chat_id = ? AND sender_id != ? AND read_status = ?", chatID, userID, false).
+		Count(&count).Error; err != nil {
+		return 0, err
+	}
+	return count, nil
+}

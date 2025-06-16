@@ -118,4 +118,8 @@ type IChatRepository interface {
 
 	SaveMessage(ctx context.Context, message *model.Message) error
 	GetMessagesByChatID(ctx context.Context, chatID string) ([]model.Message, error)
+
+	MarkMsgAsRead(ctx context.Context, msgID string) error
+	GetMessageByID(ctx context.Context, id string) (*model.Message, error)
+	GetUnreadCount(ctx context.Context, chatID, userID string) (int64, error)
 }

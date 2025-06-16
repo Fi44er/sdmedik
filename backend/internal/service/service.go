@@ -121,8 +121,10 @@ type IPromotionService interface {
 type IChatService interface {
 	Create(ctx context.Context, data *model.Chat) error
 	GetByID(ctx context.Context, id string) (*model.Chat, error)
-	GetAll(ctx context.Context, offset int, limit int) ([]model.Chat, error)
+	GetAll(ctx context.Context, offset, limit int, userID string) ([]response.ChatResponse, error)
 
 	SaveMessage(ctx context.Context, data *model.Message) error
 	GetMessagesByChatID(ctx context.Context, chatID string) ([]model.Message, error)
+
+	MarkMsgAsRead(ctx context.Context, msgID string, userID string) error
 }
