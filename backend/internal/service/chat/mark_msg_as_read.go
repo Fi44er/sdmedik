@@ -15,7 +15,7 @@ func (s *service) MarkMsgAsRead(ctx context.Context, msgID string, userID string
 	if message == nil {
 		return errors.New(404, "Message not found")
 	}
-	if message.SenderID != userID {
+	if message.SenderID == userID {
 		return errors.New(403, "You are not allowed to mark this message as read")
 	}
 
