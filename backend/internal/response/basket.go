@@ -23,4 +23,5 @@ type BasketItemRes struct {
 	IsCertificate           bool          `json:"is_certificate"`
 	Iso                     string        `json:"iso"`
 	SelectedOptions         []interface{} `json:"selected_options"`
+	TRU                     string        `json:"tru"`
 }

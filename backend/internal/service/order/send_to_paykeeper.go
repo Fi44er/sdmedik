@@ -74,6 +74,10 @@ func (s *service) sendToPaykeeper(
 	carts := []CartItem{}
 	for _, item := range basket.Items {
 		categoryArticle := strings.Split(item.Article, ".")[0]
+		truCode := certMap[categoryArticle]
+		if truCode == "" {
+			truCode = item.TRU
+		}
 		cartItem := CartItem{
 			ItemType:    "goods",
 			PaymentType: "full",
@@ -82,7 +86,7 @@ func (s *service) sendToPaykeeper(
 			Price:       item.Price,
 			Quantity:    item.Quantity,
 			ItemCode:    "",
-			TruCode:     certMap[categoryArticle],
+			TruCode:     truCode,
 			Tax:         "none",
 			Sum:         item.TotalPrice,
 		}

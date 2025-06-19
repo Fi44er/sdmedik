@@ -7,6 +7,7 @@ type CreateProduct struct {
 	Price                float64               `json:"price"`
 	CategoryIDs          []int                 `json:"category_ids"`
 	CharacteristicValues []CharacteristicValue `json:"characteristic_values" validate:"dive"`
+	TRU                  string                `json:"tru"`
 }
 
 type Product struct {
@@ -14,6 +15,7 @@ type Product struct {
 	Name        string  `json:"name" validate:"required"`
 	Description string  `json:"description" validate:"required"`
 	Price       float64 `json:"price"`
+	TRU         string  `json:"tru"`
 }
 
 type ProductSearchCriteria struct {

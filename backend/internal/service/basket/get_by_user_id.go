@@ -86,6 +86,7 @@ func (s *service) GetByUserID(ctx context.Context, userID string, sess *session.
 				IsCertificate:   item.IsCertificate,
 				Iso:             item.Iso,
 				SelectedOptions: item.SelectedOptions,
+				TRU:             productMap[item.ProductID].TRU,
 			})
 		} else {
 			basketRes.Items = append(basketRes.Items, response.BasketItemRes{
@@ -100,6 +101,7 @@ func (s *service) GetByUserID(ctx context.Context, userID string, sess *session.
 				IsCertificate:   item.IsCertificate,
 				Iso:             item.Iso,
 				SelectedOptions: item.SelectedOptions,
+				TRU:             productMap[item.ProductID].TRU,
 			})
 		}
 	}
