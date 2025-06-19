@@ -24,21 +24,21 @@ func (s *service) GetFilter(ctx context.Context, categoryID int) (*response.Prod
 		return nil, err
 	}
 
+	// Получаем мин и макс цену
 	maxProduct := lo.MaxBy(*products, func(a, b model.Product) bool {
 		return a.Price > b.Price
 	})
-
 	minProduct := lo.MinBy(*products, func(a, b model.Product) bool {
 		return a.Price < b.Price
 	})
-
 	filterRes.Price.Max = maxProduct.Price
 	filterRes.Price.Min = minProduct.Price
 
+	// Создаем map для хранения уникальных значений характеристик
 	charMap := make(map[string]struct {
 		ID     int
 		Type   string
-		Values []interface{}
+		Values map[interface{}]struct{} // Используем map для хранения уникальных значений
 	})
 
 	for _, product := range *products {
@@ -50,60 +50,39 @@ func (s *service) GetFilter(ctx context.Context, categoryID int) (*response.Prod
 			}
 
 			if char.CategoryID == categoryID {
-				var value []interface{}
-				// switch char.DataType {
-				// case model.TypeInt:
-				// 	value, err = strconv.Atoi(charValue.Value)
-				// case model.TypeFloat:
-				// 	value, err = strconv.ParseFloat(charValue.Value, 64)
-				// case model.TypeBool:
-				// 	value, err = strconv.ParseBool(charValue.Value)
-				// default:
-				// 	value = charValue.Value
-				// }
-
-				for _, charValue := range charValue.Value {
-					if _, exists := charMap[char.Name]; !exists {
-						charMap[char.Name] = struct {
-							ID     int
-							Type   string
-							Values []interface{}
-						}{
-							ID:     char.ID,
-							Type:   string(char.DataType),
-							Values: []interface{}{},
-						}
-					}
-
-					if !contains(charMap[char.Name].Values, value) {
-						charMap[char.Name] = struct {
-							ID     int
-							Type   string
-							Values []interface{}
-						}{
-							ID:     char.ID,
-							Type:   charMap[char.Name].Type,
-							Values: append(charMap[char.Name].Values, charValue),
-						}
+				// Инициализируем структуру для характеристики, если ее еще нет
+				if _, exists := charMap[char.Name]; !exists {
+					charMap[char.Name] = struct {
+						ID     int
+						Type   string
+						Values map[interface{}]struct{}
+					}{
+						ID:     char.ID,
+						Type:   string(char.DataType),
+						Values: make(map[interface{}]struct{}),
 					}
 				}
-				// value = charValue.Value
 
-				// if err != nil {
-				// 	s.logger.Errorf("Error converting characteristic value: %v", err)
-				// 	continue
-				// }
-
+				// Добавляем все значения, гарантируя уникальность
+				for _, val := range charValue.Value {
+					charMap[char.Name].Values[val] = struct{}{}
+				}
 			}
 		}
 	}
 
+	// Преобразуем map уникальных значений в slice для ответа
 	for name, data := range charMap {
+		values := make([]interface{}, 0, len(data.Values))
+		for val := range data.Values {
+			values = append(values, val)
+		}
+
 		filterRes.Characteristics = append(filterRes.Characteristics, response.CharacteristicFilter{
 			ID:     data.ID,
 			Name:   name,
 			Type:   data.Type,
-			Values: data.Values,
+			Values: values,
 		})
 	}
 
@@ -116,13 +95,4 @@ func (s *service) GetFilter(ctx context.Context, categoryID int) (*response.Prod
 	s.logger.Infof("Filter: %v", string(jsonData))
 
 	return filterRes, nil
-}
-
-func contains(slice []interface{}, value interface{}) bool {
-	for _, v := range slice {
-		if v == value {
-			return true
-		}
-	}
-	return false
 }
