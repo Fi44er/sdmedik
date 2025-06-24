@@ -29,6 +29,7 @@ type ProductResponse struct {
 	Images           []ProductImageRes          `json:"images"`
 	Characteristic   []ProductCharacteristicRes `json:"characteristic"`
 	Catalogs         uint8                      `json:"catalogs"`
+	TRU              string                     `json:"tru"`
 }
 
 type ProductCategoryRes struct {
