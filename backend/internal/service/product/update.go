@@ -10,6 +10,7 @@ import (
 	"github.com/Fi44er/sdmedik/backend/internal/dto"
 	"github.com/Fi44er/sdmedik/backend/internal/model"
 	"github.com/Fi44er/sdmedik/backend/pkg/constants"
+	customErr "github.com/Fi44er/sdmedik/backend/pkg/errors"
 	custom_errors "github.com/Fi44er/sdmedik/backend/pkg/errors"
 	events "github.com/Fi44er/sdmedik/backend/pkg/evenbus"
 	"github.com/Fi44er/sdmedik/backend/pkg/utils"
@@ -23,6 +24,11 @@ func (s *service) Update(ctx context.Context, data *dto.UpdateProduct, images *d
 
 	if err := s.validator.Struct(data); err != nil {
 		return custom_errors.New(400, err.Error())
+	}
+
+	reg := `^\d{9}\.\d{20}$`
+	if ok, _ := regexp.MatchString(reg, data.TRU); !ok {
+		return customErr.New(400, "Invalid tru")
 	}
 
 	var catalogBite uint8
