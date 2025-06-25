@@ -6,7 +6,6 @@ import (
 
 	"github.com/Fi44er/sdmedik/backend/internal/dto"
 	"github.com/Fi44er/sdmedik/backend/pkg/errors"
-	events "github.com/Fi44er/sdmedik/backend/pkg/evenbus"
 	"github.com/Fi44er/sdmedik/backend/pkg/utils"
 	"github.com/gofiber/fiber/v2/middleware/session"
 )
@@ -50,13 +49,12 @@ func (s *service) Login(ctx context.Context, data *dto.Login, userAgent string, 
 
 	s.logger.Infof("session login: %+v", session)
 
-	s.eventBus.Publish(events.Event{
-		Type: events.EventDataMoveBasket,
-		Data: dto.MoveBasket{
-			UserID:  existUser.ID,
-			Session: session,
-		},
-	})
+	if err := s.basketService.Move(ctx, &dto.MoveBasket{
+		UserID:  existUser.ID,
+		Session: session,
+	}); err != nil {
+		return "", "", err
+	}
 
 	return *accessTokenDetails.Token, *refreshTokenDetails.Token, nil
 }

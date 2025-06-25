@@ -21,7 +21,8 @@ type AuthProvider struct {
 	cache     *redis.Client
 	eventBus  *events.EventBus
 
-	userService service.IUserService
+	userService   service.IUserService
+	basketService service.IBasketService
 }
 
 func NewAuthProvider(
@@ -31,20 +32,22 @@ func NewAuthProvider(
 	cache *redis.Client,
 	eventBus *events.EventBus,
 	userService service.IUserService,
+	basketService service.IBasketService,
 ) *AuthProvider {
 	return &AuthProvider{
-		logger:      logger,
-		validator:   validator,
-		config:      config,
-		cache:       cache,
-		eventBus:    eventBus,
-		userService: userService,
+		logger:        logger,
+		validator:     validator,
+		config:        config,
+		cache:         cache,
+		eventBus:      eventBus,
+		userService:   userService,
+		basketService: basketService,
 	}
 }
 
 func (p *AuthProvider) AuthService() service.IAuthService {
 	if p.authService == nil {
-		serviceAuth, err := authService.NewService(p.logger, p.validator, p.config, p.cache, p.eventBus, p.userService)
+		serviceAuth, err := authService.NewService(p.logger, p.validator, p.config, p.cache, p.eventBus, p.userService, p.basketService)
 		if err != nil {
 			p.logger.Errorf("Error during initializing auth service: %s", err.Error())
 			return nil

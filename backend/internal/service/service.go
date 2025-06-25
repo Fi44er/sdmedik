@@ -80,6 +80,7 @@ type IBasketService interface {
 	AddItem(ctx context.Context, dto *dto.AddBasketItem, userID string, sess *session.Session) error
 	DeleteItem(ctx context.Context, itemID string, userID string, sess *session.Session) error
 	GetByUserID(ctx context.Context, userID string, sess *session.Session) (*response.BasketResponse, error)
+	Move(ctx context.Context, data *dto.MoveBasket) error
 }
 
 type ISearchService interface {

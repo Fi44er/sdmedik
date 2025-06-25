@@ -20,7 +20,8 @@ type service struct {
 	mailer    *mailer.Mailer
 	eventBus  *events.EventBus
 
-	userService def.IUserService
+	userService   def.IUserService
+	basketService def.IBasketService
 }
 
 func NewService(
@@ -30,6 +31,7 @@ func NewService(
 	cache *redis.Client,
 	eventBus *events.EventBus,
 	userService def.IUserService,
+	basketService def.IBasketService,
 ) (*service, error) {
 	templatePath := config.MailTemplatePath
 	m, err := mailer.NewMailer(
@@ -47,12 +49,13 @@ func NewService(
 	}
 
 	return &service{
-		logger:      logger,
-		validator:   validator,
-		config:      config,
-		cache:       cache,
-		mailer:      m,
-		eventBus:    eventBus,
-		userService: userService,
+		logger:        logger,
+		validator:     validator,
+		config:        config,
+		cache:         cache,
+		mailer:        m,
+		eventBus:      eventBus,
+		userService:   userService,
+		basketService: basketService,
 	}, nil
 }

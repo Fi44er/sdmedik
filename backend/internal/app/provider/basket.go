@@ -7,7 +7,6 @@ import (
 	basketItemRepository "github.com/Fi44er/sdmedik/backend/internal/repository/basket_item"
 	"github.com/Fi44er/sdmedik/backend/internal/service"
 	basketService "github.com/Fi44er/sdmedik/backend/internal/service/basket"
-	events "github.com/Fi44er/sdmedik/backend/pkg/evenbus"
 	"github.com/Fi44er/sdmedik/backend/pkg/logger"
 	"github.com/go-playground/validator/v10"
 	"gorm.io/gorm"
@@ -22,7 +21,6 @@ type BasketProvider struct {
 	logger    *logger.Logger
 	db        *gorm.DB
 	validator *validator.Validate
-	eventBus  *events.EventBus
 
 	productService   service.IProductService
 	promotionService service.IPromotionService
@@ -32,7 +30,6 @@ func NewBasketProvider(
 	logger *logger.Logger,
 	db *gorm.DB,
 	validator *validator.Validate,
-	eventBus *events.EventBus,
 	productService service.IProductService,
 	promotionService service.IPromotionService,
 ) *BasketProvider {
@@ -40,7 +37,6 @@ func NewBasketProvider(
 		logger:           logger,
 		db:               db,
 		validator:        validator,
-		eventBus:         eventBus,
 		productService:   productService,
 		promotionService: promotionService,
 	}
@@ -66,7 +62,6 @@ func (p *BasketProvider) BasketService() service.IBasketService {
 			p.logger,
 			p.validator,
 			p.BasketRepository(),
-			p.eventBus,
 			p.productService,
 			p.BasketItemRepository(),
 			p.promotionService,

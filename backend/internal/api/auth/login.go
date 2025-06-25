@@ -2,7 +2,6 @@ package auth
 
 import (
 	"strings"
-	"time"
 
 	"github.com/Fi44er/sdmedik/backend/internal/dto"
 	_ "github.com/Fi44er/sdmedik/backend/internal/response"
@@ -67,6 +66,5 @@ func (i *Implementation) Login(ctx *fiber.Ctx) error {
 		HTTPOnly: false,
 	})
 
-	time.Sleep(3 * time.Second)
 	return ctx.Status(200).JSON(fiber.Map{"status": "success", "message": "OK"})
 }
