@@ -108,6 +108,7 @@ func (s *service) Get(ctx context.Context, criteria dto.ProductSearchCriteria) (
 			Characteristic:   characteristicsRes,
 			CertificatePrice: certPrice,
 			Catalogs:         product.Catalogs,
+			TRU:              product.TRU,
 		})
 	}
 

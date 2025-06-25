@@ -14,7 +14,7 @@ import (
 //	@title				sdmedik API
 //	@version		1.0
 //	@description	Swagger docs from sdmedik backend
-//	@host			localhost:8080
+//	@host			127.0.0.1:8080
 //	@BasePath		/api/v1/
 
 func main() {

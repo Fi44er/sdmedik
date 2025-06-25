@@ -18,9 +18,11 @@ func (s *service) Create(ctx context.Context, product *dto.CreateProduct, images
 		return errors.New(400, err.Error())
 	}
 
-	reg := `^\d{9}\.\d{20}$`
-	if ok, _ := regexp.MatchString(reg, product.TRU); !ok {
-		return errors.New(400, "Invalid tru")
+	if product.TRU != "" {
+		reg := `^\d{9}\.\d{20}$`
+		if ok, _ := regexp.MatchString(reg, product.TRU); !ok {
+			return errors.New(400, "Invalid tru")
+		}
 	}
 
 	existArticle, _, err := s.repo.Get(ctx, dto.ProductSearchCriteria{Article: product.Article})
