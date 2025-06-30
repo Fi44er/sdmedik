@@ -7,6 +7,7 @@ import (
 	"github.com/Fi44er/sdmedik/backend/internal/dto"
 	"github.com/Fi44er/sdmedik/backend/internal/model"
 	"github.com/Fi44er/sdmedik/backend/internal/response"
+	"github.com/Fi44er/sdmedik/backend/pkg/utils"
 	"github.com/samber/lo"
 )
 
@@ -77,6 +78,8 @@ func (s *service) GetFilter(ctx context.Context, categoryID int) (*response.Prod
 		for val := range data.Values {
 			values = append(values, val)
 		}
+
+		values = utils.StringSliceToInterfaceSlice(utils.SortByNumericRange(utils.InterfaceToStrSlice(values)))
 
 		filterRes.Characteristics = append(filterRes.Characteristics, response.CharacteristicFilter{
 			ID:     data.ID,

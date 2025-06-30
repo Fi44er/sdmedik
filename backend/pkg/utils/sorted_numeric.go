@@ -1,4 +1,4 @@
-package main
+package utils
 
 import (
 	"fmt"
@@ -9,16 +9,6 @@ import (
 	"github.com/samber/lo"
 )
 
-func main() {
-	data := []string{"до 100 кг", "до 125 кг", "45 - 75 кг", "80 - 90 кг", "свыше 200 кг", "50 кг"}
-
-	sorted := SortByNumericRange(data)
-	fmt.Println("Отсортированный массив:")
-	lo.ForEach(sorted, func(s string, _ int) {
-		fmt.Println(s)
-	})
-}
-
 func SortByNumericRange(items []string) []string {
 	type itemRange struct {
 		min   float64
@@ -26,7 +16,6 @@ func SortByNumericRange(items []string) []string {
 		value string
 	}
 
-	// Парсим все элементы в структуры с диапазонами
 	ranges := lo.Map(items, func(item string, _ int) itemRange {
 		numbers := lo.Map(
 			regexp.MustCompile(`(\d+\.?\d*)`).FindAllString(item, -1),
@@ -50,7 +39,6 @@ func SortByNumericRange(items []string) []string {
 		}
 	})
 
-	// Сортируем
 	sort.Slice(ranges, func(i, j int) bool {
 		if ranges[i].min != ranges[j].min {
 			return ranges[i].min < ranges[j].min
@@ -58,8 +46,23 @@ func SortByNumericRange(items []string) []string {
 		return ranges[i].max < ranges[j].max
 	})
 
-	// Возвращаем только значения
 	return lo.Map(ranges, func(r itemRange, _ int) string {
 		return r.value
 	})
+}
+
+func InterfaceToStrSlice(input []interface{}) []string {
+	result := make([]string, len(input))
+	for i, v := range input {
+		result[i] = fmt.Sprintf("%v", v)
+	}
+	return result
+}
+
+func StringSliceToInterfaceSlice(strs []string) []interface{} {
+	result := make([]interface{}, len(strs))
+	for i, v := range strs {
+		result[i] = v
+	}
+	return result
 }
