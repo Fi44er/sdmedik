@@ -12,24 +12,6 @@ import (
 // Product godoc
 // @Summary Create a new product
 // @Description Creates a new product with metadata (JSON) and multiple files.
-// @Description Example JSON:
-// @Description ```
-// @Description {
-// @Description 	"article": "123-123-124",
-// @Description 	"category_ids": [
-// @Description 		2
-// @Description 	],
-// @Description 	"characteristic_values": [
-// @Description 		{
-// @Description 			"characteristic_id": 3,
-// @Description 			"value": ["12"]
-// @Description 		}
-// @Description 	],
-// @Description 	"description": "description #1",
-// @Description 	"name": "product #1",
-// @Description 	"price": 123.12
-// @Description }
-// @Description ```
 // @Tags product
 // @Accept multipart/form-data
 // @Produce json

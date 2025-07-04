@@ -789,6 +789,10 @@ paths:
         in: query
         name: minimal
         type: boolean
+      - description: MonotonyPrice
+        in: query
+        name: monotony_price
+        type: boolean
       - collectionFormat: csv
         description: Catalogs (comma-separated)
         in: query
@@ -814,26 +818,7 @@ paths:
     post:
       consumes:
       - multipart/form-data
-      description: |-
-        Creates a new product with metadata (JSON) and multiple files.
-        Example JSON:
-        ```
-        {
-        "article": "123-123-124",
-        "category_ids": [
-        2
-        ],
-        "characteristic_values": [
-        {
-        "characteristic_id": 3,
-        "value": ["12"]
-        }
-        ],
-        "description": "description #1",
-        "name": "product #1",
-        "price": 123.12
-        }
-        ```
+      description: Creates a new product with metadata (JSON) and multiple files.
       parameters:
       - description: Product metadata as JSON
         in: formData
@@ -882,35 +867,7 @@ paths:
     put:
       consumes:
       - multipart/form-data
-      description: |-
-        Updates a product with metadata (JSON) and multiple files
-        Example JSON:
-        ```
-        {
-        "name": "test update",
-        "price": 123.12,
-        "description": "test update",
-        "category_ids": [
-        2
-        ],
-        "characteristic_values": [
-        {
-        "characteristic_id": 2,
-        "value": ["string"]
-        },
-        {
-        "characteristic_id": 3,
-        "value": ["12"]
-        }
-        ],
-        "del_images": [
-        {
-        "id": "8832ed62-0a19-40e2-81b3-4c971884e962",
-        "name": "cb44cbb3-aaf9-47a4-867c-f81dbc0485ab.jpg"
-        }
-        ]
-        }
-        ```
+      description: Updates a product with metadata (JSON) and multiple files
       parameters:
       - description: Product ID
         in: path

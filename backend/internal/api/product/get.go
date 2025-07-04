@@ -24,6 +24,7 @@ import (
 // @Param limit query integer false "Limit"
 // @Param iso query string false "Region ISO"
 // @Param minimal query boolean false "Minimal"
+// @Param monotony_price query boolean false "MonotonyPrice"
 // @Param catalogs query []int false "Catalogs (comma-separated)" collectionFormat(csv)
 // @Param filters query string false "Filters in JSON format" example({"price":{"min":20,"max":100},"characteristics":[{"characteristic_id":1,"values":["string"]}]})
 // @Success 200 {object} response.ResponseData "OK"

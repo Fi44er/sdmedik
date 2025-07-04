@@ -30,6 +30,7 @@ type ProductResponse struct {
 	Characteristic   []ProductCharacteristicRes `json:"characteristic"`
 	Catalogs         uint8                      `json:"catalogs"`
 	TRU              string                     `json:"tru"`
+	Prewiew          string                     `json:"preview"`
 }
 
 type ProductCategoryRes struct {

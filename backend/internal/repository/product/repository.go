@@ -149,6 +149,12 @@ func (r *repository) Get(ctx context.Context, criteria dto.ProductSearchCriteria
 		request = request.Preload("Categories").Preload("Images").Preload("CharacteristicValues")
 	}
 
+	if criteria.MonotonyPrice { // предполагаем, что это bool поле в ProductSearchCriteria
+		request = request.Order("price ASC") // сортировка по возрастанию
+	} else {
+		request = request.Order("price DESC") // сортировка по убыванию
+	}
+
 	var count int64
 	if criteria.CategoryID != 0 {
 		err := r.db.Model(&model.Product{}).

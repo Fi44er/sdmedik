@@ -96,7 +96,6 @@ func (s *service) Update(ctx context.Context, data *dto.UpdateProduct, images *d
 		return err
 	}
 
-	s.logger.Infof("%v", modelProduct.Catalogs)
 	if err := s.repo.Update(ctx, modelProduct, tx); err != nil {
 		if errors.Is(err, constants.ErrProductNotFound) {
 			s.transactionManagerRepo.Rollback(tx)

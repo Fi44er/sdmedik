@@ -17,6 +17,7 @@ type Product struct {
 	BasketItems          []BasketItem          `gorm:"foreignKey:ProductID;constraint:OnDelete:CASCADE" json:"basket_items"`
 	Catalogs             uint8                 `gorm:"not null;default:0" json:"catalogs"`
 	TRU                  string                `gorm:"type:string" json:"tru"`
+	Preview              string                `gorm:"type:string" json:"preview"`
 }
 
 func (p *Product) BeforeCreate(tx *gorm.DB) error {

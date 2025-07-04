@@ -8,6 +8,7 @@ type CreateProduct struct {
 	CategoryIDs          []int                 `json:"category_ids"`
 	CharacteristicValues []CharacteristicValue `json:"characteristic_values" validate:"dive"`
 	TRU                  string                `json:"tru"`
+	Preview              string                `json:"preview"`
 }
 
 type Product struct {
@@ -16,19 +17,21 @@ type Product struct {
 	Description string  `json:"description" validate:"required"`
 	Price       float64 `json:"price"`
 	TRU         string  `json:"tru"`
+	Prewiew     string  `json:"preview"`
 }
 
 type ProductSearchCriteria struct {
-	ID         string         `query:"id" gorm:"id"`
-	Article    string         `query:"article" gorm:"article"`
-	Name       string         `query:"name" gorm:"name"`
-	CategoryID int            `query:"category_id" gorm:"category_id"`
-	Offset     int            `query:"offset" gorm:"offset"`
-	Limit      int            `query:"limit" gorm:"limit"`
-	Filters    ProductFilters `query:"filters" gorm:"-"`
-	Minimal    bool           `query:"minimal" gorm:"-"`
-	Catalogs   []int          `query:"catalogs" gorm:"-"`
-	Iso        string         `query:"iso" gorm:"-"`
+	ID            string         `query:"id" gorm:"id"`
+	Article       string         `query:"article" gorm:"article"`
+	Name          string         `query:"name" gorm:"name"`
+	CategoryID    int            `query:"category_id" gorm:"category_id"`
+	Offset        int            `query:"offset" gorm:"offset"`
+	Limit         int            `query:"limit" gorm:"limit"`
+	Filters       ProductFilters `query:"filters" gorm:"-"`
+	Minimal       bool           `query:"minimal" gorm:"-"`
+	Catalogs      []int          `query:"catalogs" gorm:"-"`
+	Iso           string         `query:"iso" gorm:"-"`
+	MonotonyPrice bool           `query:"monotony_price" gorm:"-"`
 }
 
 type ProductFilters struct {
@@ -55,6 +58,7 @@ type UpdateProduct struct {
 	CharacteristicValues []CharacteristicValue `json:"characteristic_values" validate:"dive"`
 	Catalogs             []int                 `json:"catalogs"`
 	TRU                  string                `json:"tru"`
+	Preview              string                `json:"preview"`
 }
 
 type DelImage struct {
