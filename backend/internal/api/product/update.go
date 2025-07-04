@@ -34,7 +34,7 @@ func (i *Implementation) Update(ctx *fiber.Ctx) error {
 	}
 
 	files := form.File["files"]
-	if len(files) > 5 {
+	if len(files) > 8 {
 		return ctx.Status(400).JSON(fiber.Map{"status": "error", "message": "Too many files"})
 	}
 

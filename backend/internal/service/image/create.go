@@ -23,7 +23,7 @@ func (s *service) CreateMany(ctx context.Context, dto *dto.CreateImages, tx *gor
 
 	if dto.ProductID != "" {
 		existImages, err = s.repo.GetByID(ctx, &dto.ProductID, nil, tx)
-		limit = 5
+		limit = 8
 	} else if dto.CategoryID != 0 {
 		existImages, err = s.repo.GetByID(ctx, nil, &dto.CategoryID, tx)
 		limit = 1
