@@ -13,6 +13,10 @@ func (s *service) Move(ctx context.Context, data *dto.MoveBasket) error {
 		return err
 	}
 
+	if data.Session == nil {
+		return nil
+	}
+
 	sessBasket, err := s.GetByUserID(ctx, "", data.Session)
 	if err != nil {
 		if err != constants.ErrBasketNotFound {

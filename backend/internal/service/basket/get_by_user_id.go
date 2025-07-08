@@ -9,6 +9,7 @@ import (
 	"github.com/Fi44er/sdmedik/backend/internal/model"
 	"github.com/Fi44er/sdmedik/backend/internal/response"
 	"github.com/Fi44er/sdmedik/backend/pkg/constants"
+	customErrors "github.com/Fi44er/sdmedik/backend/pkg/errors"
 	"github.com/gofiber/fiber/v2/middleware/session"
 )
 
@@ -28,6 +29,9 @@ func (s *service) GetByUserID(ctx context.Context, userID string, sess *session.
 			}
 		}
 	} else {
+		if sess == nil {
+			return nil, customErrors.New(500, "session is nil")
+		}
 		s.logger.Infof("sess: %v", sess)
 		if sess.Get("basket") != nil {
 			str, ok := sess.Get("basket").(string)

@@ -56,8 +56,10 @@ func (s *service) Login(ctx context.Context, data *dto.Login, userAgent string, 
 		return "", "", err
 	}
 
-	if err := session.Destroy(); err != nil {
-		s.logger.Errorf("Error during destroying session: %s", err.Error())
+	if session != nil {
+		if err := session.Destroy(); err != nil {
+			s.logger.Errorf("Error during destroying session: %s", err.Error())
+		}
 	}
 
 	return *accessTokenDetails.Token, *refreshTokenDetails.Token, nil
