@@ -9,6 +9,7 @@ type CreateProduct struct {
 	CharacteristicValues []CharacteristicValue `json:"characteristic_values" validate:"dive"`
 	TRU                  string                `json:"tru"`
 	Preview              string                `json:"preview"`
+	Catalogs             []int                 `json:"catalogs"`
 }
 
 type Product struct {

@@ -3,12 +3,14 @@ package product
 import (
 	"context"
 	"regexp"
+	"strconv"
 
 	"github.com/Fi44er/sdmedik/backend/internal/dto"
 	"github.com/Fi44er/sdmedik/backend/internal/model"
 
 	"github.com/Fi44er/sdmedik/backend/pkg/constants"
 	"github.com/Fi44er/sdmedik/backend/pkg/errors"
+	custom_errors "github.com/Fi44er/sdmedik/backend/pkg/errors"
 	events "github.com/Fi44er/sdmedik/backend/pkg/evenbus"
 	"github.com/Fi44er/sdmedik/backend/pkg/utils"
 )
@@ -23,6 +25,16 @@ func (s *service) Create(ctx context.Context, product *dto.CreateProduct, images
 		if ok, _ := regexp.MatchString(reg, product.TRU); !ok {
 			return errors.New(400, "Invalid tru")
 		}
+	}
+
+	var catalogBite uint8
+	s.logger.Infof("%v", catalogBite)
+	for _, catalog := range product.Catalogs {
+		catalogRegx := "^[12]$"
+		if ok, _ := regexp.MatchString(catalogRegx, strconv.Itoa(catalog)); !ok {
+			return custom_errors.New(400, "Invalid catalog")
+		}
+		catalogBite |= 1 << (catalog - 1)
 	}
 
 	existArticle, _, err := s.repo.Get(ctx, dto.ProductSearchCriteria{Article: product.Article})
@@ -65,6 +77,7 @@ func (s *service) Create(ctx context.Context, product *dto.CreateProduct, images
 		Description: product.Description,
 		Price:       product.Price,
 		TRU:         product.TRU,
+		Prewiew:     product.Preview,
 	}
 
 	var modelProduct model.Product
@@ -73,6 +86,7 @@ func (s *service) Create(ctx context.Context, product *dto.CreateProduct, images
 	}
 
 	modelProduct.Categories = *categories
+	modelProduct.Catalogs = catalogBite
 
 	if err := s.repo.Create(ctx, &modelProduct, tx); err != nil {
 		s.transactionManagerRepo.Rollback(tx)
