@@ -86,8 +86,8 @@ func (s *serviceProvider) initDeps() error {
 		s.initAuthProvider,
 		s.initIndexProvider,
 		s.initSearchProvider,
-		s.initOrderProvider,
 		s.initChatProvider,
+		s.initOrderProvider,
 	}
 
 	for _, init := range inits {
@@ -200,6 +200,7 @@ func (s *serviceProvider) initOrderProvider() error {
 		s.basketProvider.BasketService(),
 		s.certificateProvider.CertificateService(),
 		s.productProvider.ProductService(),
+		s.chatProvider.ChatService(),
 	)
 	return nil
 }

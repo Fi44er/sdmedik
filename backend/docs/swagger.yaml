@@ -642,6 +642,27 @@ paths:
       summary: Get all chats
       tags:
       - chat
+  /chat/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete chat
+      parameters:
+      - description: Chat ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Delete chat
+      tags:
+      - chat
   /order:
     get:
       consumes:

@@ -7,3 +7,9 @@ type ChatResponse struct {
 	Messages    []model.Message `json:"messages"`
 	UnreadCount int64           `json:"unread_count"`
 }
+
+type FragmenResponse struct {
+	ID       string          `json:"id"`
+	Color    string          `json:"color"`
+	Messages []model.Message `json:"messages"`
+}

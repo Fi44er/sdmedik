@@ -123,9 +123,13 @@ type IChatService interface {
 	Create(ctx context.Context, data *model.Chat) error
 	GetByID(ctx context.Context, id string) (*model.Chat, error)
 	GetAll(ctx context.Context, offset, limit int, userID string) ([]response.ChatResponse, error)
+	DeleteChat(ctx context.Context, chatID string) error
 
 	SaveMessage(ctx context.Context, data *model.Message) error
-	GetMessagesByChatID(ctx context.Context, chatID string) ([]model.Message, error)
+	GetMessagesByChatID(ctx context.Context, chatID string) ([]response.FragmenResponse, error)
 
 	MarkMsgAsRead(ctx context.Context, msgID string, userID string) error
+
+	AddFragment(ctx context.Context, data *dto.AddFragment) error
+	AddEndMsgID(ctx context.Context, chatID string) error
 }

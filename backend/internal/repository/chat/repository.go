@@ -2,6 +2,7 @@ package chat
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/Fi44er/sdmedik/backend/internal/model"
 	def "github.com/Fi44er/sdmedik/backend/internal/repository"
@@ -110,7 +111,7 @@ func (r *repository) GetMessagesByChatID(ctx context.Context, chatID string) ([]
 func (r *repository) GetMessageByID(ctx context.Context, id string) (*model.Message, error) {
 	r.logger.Info("Fetching message...")
 	message := new(model.Message)
-	if err := r.db.WithContext(ctx).Where("id = ?", id).First(&message).Error; err != nil {
+	if err := r.db.WithContext(ctx).Where("id = ?", id).First(message).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			r.logger.Info("Message not found")
 			return nil, nil
@@ -141,4 +142,137 @@ func (r *repository) GetUnreadCount(ctx context.Context, chatID, userID string) 
 		return 0, err
 	}
 	return count, nil
+}
+
+func (r *repository) DeleteChat(ctx context.Context, chatID string) error {
+	r.logger.Info("Deleting chat...")
+	if err := r.db.WithContext(ctx).Where("id = ?", chatID).Delete(&model.Chat{}).Error; err != nil {
+		r.logger.Errorf("Failed to delete chat: %v", err)
+		return err
+	}
+	r.logger.Info("Chat deleted successfully")
+	return nil
+}
+
+func (r *repository) CreateFragment(ctx context.Context, fragment *model.Fragment) error {
+	r.logger.Info("Creating fragment...")
+	if err := r.db.WithContext(ctx).Create(&fragment).Error; err != nil {
+		r.logger.Errorf("Failed to create fragment: %v", err)
+		return err
+	}
+	r.logger.Info("Fragment created successfully")
+	return nil
+}
+
+func (r *repository) AddEndMsgID(ctx context.Context, chatID, msgID string) error {
+	r.logger.Info("Adding end message ID...")
+	if err := r.db.WithContext(ctx).Model(&model.Chat{}).Where("id = ?", chatID).Update("end_msg_id", msgID).Error; err != nil {
+		r.logger.Errorf("Failed to add end message ID: %v", err)
+		return err
+	}
+	r.logger.Info("End message ID added successfully")
+	return nil
+}
+
+func (r *repository) GetFragmentByID(ctx context.Context, id string) (*model.Fragment, error) {
+	r.logger.Info("Fetching fragment...")
+	fragment := new(model.Fragment)
+	if err := r.db.WithContext(ctx).Where("id = ?", id).First(&fragment).Error; err != nil {
+		r.logger.Errorf("Failed to fetch fragment: %v", err)
+		return nil, err
+	}
+	r.logger.Info("Fragment fetched successfully")
+	return fragment, nil
+}
+
+func (r *repository) GetFragmentsByChatID(ctx context.Context, chatId string) ([]model.Fragment, error) {
+	r.logger.Info("Fetching fragments...")
+	fragments := make([]model.Fragment, 0)
+	if err := r.db.WithContext(ctx).Where("chat_id = ?", chatId).Find(&fragments).Error; err != nil {
+		r.logger.Errorf("Failed to fetch fragments: %v", err)
+		return nil, err
+	}
+	r.logger.Info("Fragments fetched successfully")
+	return fragments, nil
+}
+
+func (r *repository) GetMessagesInFragment(ctx context.Context, fragment model.Fragment) ([]model.Message, error) {
+	// Получаем граничные сообщения
+	var startMsg, endMsg model.Message
+
+	// Получаем стартовое сообщение
+	if err := r.db.WithContext(ctx).
+		Where("id = ?", fragment.StartMsgID).
+		First(&startMsg).Error; err != nil {
+		return nil, fmt.Errorf("start message not found: %v", err)
+	}
+
+	// Создаем базовый запрос для сообщений в чате после стартового
+	query := r.db.WithContext(ctx).
+		Where("chat_id = ?", fragment.ChatID).
+		Where("created_at >= ?", startMsg.CreatedAt).
+		Order("created_at ASC")
+
+	// Если есть конечное сообщение, добавляем условие
+	if fragment.EndMsgID != nil {
+		if err := r.db.WithContext(ctx).
+			Where("id = ?", *fragment.EndMsgID).
+			First(&endMsg).Error; err != nil {
+			return nil, fmt.Errorf("end message not found: %v", err)
+		}
+		query = query.Where("created_at <= ?", endMsg.CreatedAt)
+	}
+
+	// Выполняем запрос
+	var messages []model.Message
+	if err := query.Find(&messages).Error; err != nil {
+		return nil, fmt.Errorf("failed to get messages: %v", err)
+	}
+
+	return messages, nil
+}
+
+func (r *repository) GetActiveFragment(ctx context.Context, chatID string) (*model.Fragment, error) {
+	r.logger.Info("Fetching active fragment")
+	fragment := new(model.Fragment)
+	if err := r.db.WithContext(ctx).
+		Where("chat_id = ? AND end_msg_id IS NULL", chatID).
+		First(fragment).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			r.logger.Info("No active fragment found")
+			return nil, nil
+		}
+		r.logger.Errorf("Failed to fetch active fragment: %v", err)
+		return nil, err
+	}
+	r.logger.Info("Active fragment fetched successfully")
+	return fragment, nil
+}
+
+func (r *repository) GetLastChatFragment(ctx context.Context, chatID string) (*model.Fragment, error) {
+	r.logger.Info("Fetching last fragment")
+	fragment := new(model.Fragment)
+	if err := r.db.WithContext(ctx).
+		Where("chat_id = ?", chatID).
+		Order("created_at DESC").
+		First(fragment).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			r.logger.Info("No fragments found")
+			return nil, nil
+		}
+		r.logger.Errorf("Failed to fetch last fragment: %v", err)
+		return nil, err
+	}
+	r.logger.Info("Last fragment fetched successfully")
+	return fragment, nil
+}
+
+func (r *repository) UpdateFragment(ctx context.Context, fragment *model.Fragment) error {
+	r.logger.Info("Updating fragment...")
+	if err := r.db.WithContext(ctx).Save(fragment).Error; err != nil {
+		r.logger.Errorf("Failed to update fragment: %v", err)
+		return err
+	}
+	r.logger.Info("Fragment updated successfully")
+	return nil
 }

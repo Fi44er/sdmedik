@@ -2,15 +2,38 @@ package chat
 
 import (
 	"context"
+	"fmt"
 
+	"github.com/Fi44er/sdmedik/backend/internal/dto"
 	"github.com/Fi44er/sdmedik/backend/internal/model"
 )
 
 func (s *service) SaveMessage(ctx context.Context, message *model.Message) error {
+	// 1. Сохраняем сообщение
 	if err := s.repository.SaveMessage(ctx, message); err != nil {
 		return err
 	}
 
+	// 2. Получаем последний фрагмент (включая незавершенные)
+	lastFragment, err := s.repository.GetLastChatFragment(ctx, message.ChatID)
+	if err != nil {
+		return fmt.Errorf("failed to get last fragment: %w", err)
+	}
+
+	// 3. Создаем новый фрагмент только если:
+	// - нет ни одного фрагмента
+	// - последний фрагмент завершен (имеет EndMsgID)
+	if lastFragment == nil || lastFragment.EndMsgID != nil {
+		dto := &dto.AddFragment{
+			ChatID:     message.ChatID,
+			StartMsgID: message.ID,
+		}
+		if err := s.AddFragment(ctx, dto); err != nil {
+			return fmt.Errorf("failed to create fragment: %w", err)
+		}
+	}
+
+	// Отправка email
 	templateData := struct {
 		Message   string
 		ChatID    string

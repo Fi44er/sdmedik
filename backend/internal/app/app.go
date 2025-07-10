@@ -201,6 +201,7 @@ func (a *App) initRouter() error {
 	chat := v1.Group("/chat")
 	chat.Get("/conn", allowGuest, socketio.New(a.serviceProvider.chatProvider.ChatImpl().WS()))
 	chat.Get("/", deserializeUser, adminRoleRequired, a.serviceProvider.chatProvider.ChatImpl().GetAll)
+	chat.Delete("/:id", a.serviceProvider.chatProvider.ChatImpl().DeleteChat)
 
 	return nil
 }

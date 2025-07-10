@@ -20,6 +20,7 @@ type service struct {
 	basketService  def.IBasketService
 	certService    def.ICertificateService
 	productService def.IProductService
+	chatService    def.IChatService
 
 	mailer *mailer.Mailer
 }
@@ -32,6 +33,7 @@ func NewService(
 	basketService def.IBasketService,
 	certService def.ICertificateService,
 	productService def.IProductService,
+	chatService def.IChatService,
 ) *service {
 	templatePath := config.MailTemplatePath
 	m, err := mailer.NewMailer(
@@ -56,5 +58,6 @@ func NewService(
 		certService:    certService,
 		productService: productService,
 		mailer:         m,
+		chatService:    chatService,
 	}
 }

@@ -2,6 +2,7 @@ package order
 
 import (
 	"context"
+	"fmt"
 	"strings"
 	"time"
 
@@ -29,6 +30,16 @@ func (s *service) Create(ctx context.Context, data *dto.CreateOrder, userID stri
 
 	link, orderModel, err := s.sendToPaykeeper(ctx, data, basket, articles, userID)
 	if err != nil {
+		return "", err
+	}
+
+	chatID := userID
+	fmt.Println("CHATID", chatID)
+	if chatID == "" {
+		chatID = sess.ID()
+	}
+
+	if err := s.chatService.AddEndMsgID(ctx, chatID); err != nil {
 		return "", err
 	}
 

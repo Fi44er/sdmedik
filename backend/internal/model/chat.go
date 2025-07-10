@@ -16,6 +16,7 @@ type Message struct {
 
 	ChatID string `gorm:"type:string;not null" json:"chat_id"`
 	Chat   Chat   `gorm:"foreignKey:ChatID" json:"-"`
+	// Fragments []Fragment `gorm:"foreignKey:ChatID;references:ID" json:"fragments"`
 }
 
 func (m *Message) BeforeCreate(tx *gorm.DB) error {
@@ -23,12 +24,37 @@ func (m *Message) BeforeCreate(tx *gorm.DB) error {
 	return nil
 }
 
-type Chat struct {
-	ID       string    `gorm:"primaryKey;type:string;" json:"id"`
-	Messages []Message `gorm:"foreignKey:ChatID" json:"messages"`
+// type Fragment struct {
+// 	ID         string    `gorm:"primaryKey;type:string;" json:"id"`
+// 	ChatID     string    `gorm:"type:string;not null;" json:"chat_id"`
+// 	StartMsgID string    `gorm:"type:string;not null" json:"start_msg_id"`
+// 	EndMsgID   *string   `gorm:"type:string" json:"end_msg_id"`
+// 	Color      string    `gorm:"type:string;not null" json:"color"`
+// 	CreatedAt  time.Time `gorm:"autoCreateTime;not null" json:"created_at"`
+// }
+
+type Fragment struct {
+	ID         string    `gorm:"primaryKey;type:string;" json:"id"`
+	ChatID     string    `gorm:"type:string;not null;" json:"chat_id"`
+	StartMsgID string    `gorm:"type:string;not null" json:"start_msg_id"`
+	EndMsgID   *string   `gorm:"type:string" json:"end_msg_id"`
+	Color      string    `gorm:"type:string;not null" json:"color"`
+	CreatedAt  time.Time `gorm:"autoCreateTime;not null" json:"created_at"`
+
+	// Add these relationships:
+	StartMessage Message `gorm:"foreignKey:StartMsgID;references:ID"`
+	EndMessage   Message `gorm:"foreignKey:EndMsgID;references:ID"`
+	Chat         Chat    `gorm:"foreignKey:ChatID;references:ID"`
 }
 
-// func (c *Chat) BeforeCreate(tx *gorm.DB) error {
-// 	c.ID = uuid.New().String()
-// 	return nil
-// }
+func (f *Fragment) BeforeCreate(tx *gorm.DB) error {
+	f.ID = uuid.New().String()
+	f.CreatedAt = time.Now()
+	return nil
+}
+
+type Chat struct {
+	ID        string     `gorm:"primaryKey;type:string;" json:"id"`
+	Messages  []Message  `gorm:"foreignKey:ChatID;constraint:OnDelete:CASCADE;" json:"messages"`
+	Fragments []Fragment `gorm:"foreignKey:ChatID;constraint:OnDelete:CASCADE;" json:"fragments"`
+}

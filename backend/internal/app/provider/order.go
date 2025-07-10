@@ -25,6 +25,7 @@ type OrderProvider struct {
 	basketService  service.IBasketService
 	certService    service.ICertificateService
 	productService service.IProductService
+	chatService    service.IChatService
 }
 
 func NewOrderProvider(
@@ -35,6 +36,7 @@ func NewOrderProvider(
 	basketService service.IBasketService,
 	certService service.ICertificateService,
 	productService service.IProductService,
+	chatService service.IChatService,
 ) *OrderProvider {
 	return &OrderProvider{
 		logger:         logger,
@@ -44,6 +46,7 @@ func NewOrderProvider(
 		basketService:  basketService,
 		certService:    certService,
 		productService: productService,
+		chatService:    chatService,
 	}
 }
 
@@ -56,7 +59,7 @@ func (p *OrderProvider) OrderRepository() repository.IOrderRepository {
 
 func (p *OrderProvider) OrderService() service.IOrderService {
 	if p.orderService == nil {
-		p.orderService = orderService.NewService(p.logger, p.validator, p.config, p.OrderRepository(), p.basketService, p.certService, p.productService)
+		p.orderService = orderService.NewService(p.logger, p.validator, p.config, p.OrderRepository(), p.basketService, p.certService, p.productService, p.chatService)
 	}
 	return p.orderService
 }

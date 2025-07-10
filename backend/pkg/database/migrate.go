@@ -27,6 +27,7 @@ func Migrate(db *gorm.DB) error {
 		&model.Reward{},
 
 		&model.Chat{},
+		&model.Fragment{},
 		&model.Message{},
 	}
 

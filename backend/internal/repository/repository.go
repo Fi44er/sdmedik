@@ -115,6 +115,7 @@ type IChatRepository interface {
 	GetByID(ctx context.Context, id string) (*model.Chat, error)
 	Create(ctx context.Context, chat *model.Chat) error
 	GetAll(ctx context.Context, offset, limit int) ([]model.Chat, error)
+	DeleteChat(ctx context.Context, chatID string) error
 
 	SaveMessage(ctx context.Context, message *model.Message) error
 	GetMessagesByChatID(ctx context.Context, chatID string) ([]model.Message, error)
@@ -122,4 +123,14 @@ type IChatRepository interface {
 	MarkMsgAsRead(ctx context.Context, msgID string) error
 	GetMessageByID(ctx context.Context, id string) (*model.Message, error)
 	GetUnreadCount(ctx context.Context, chatID, userID string) (int64, error)
+
+	CreateFragment(ctx context.Context, fragment *model.Fragment) error
+	AddEndMsgID(ctx context.Context, chatID, msgID string) error
+	GetFragmentByID(ctx context.Context, id string) (*model.Fragment, error)
+	GetLastChatFragment(ctx context.Context, chatID string) (*model.Fragment, error)
+
+	GetFragmentsByChatID(ctx context.Context, chatId string) ([]model.Fragment, error)
+	GetMessagesInFragment(ctx context.Context, fragment model.Fragment) ([]model.Message, error)
+	UpdateFragment(ctx context.Context, fragment *model.Fragment) error
+	GetActiveFragment(ctx context.Context, chatID string) (*model.Fragment, error)
 }
