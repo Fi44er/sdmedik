@@ -2,7 +2,6 @@ package order
 
 import (
 	"context"
-	"database/sql"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -195,13 +194,6 @@ func (s *service) sendToPaykeeper(
 		FIO:        data.FIO,
 		Address:    data.Address,
 		Status:     "pending",
-	}
-
-	if userID != "" {
-		orderModel.UserID = sql.NullString{String: userID, Valid: true}
-	}
-	if err := s.repo.Create(ctx, &orderModel); err != nil {
-		return "", nil, err
 	}
 
 	return link, &orderModel, nil

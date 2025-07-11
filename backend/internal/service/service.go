@@ -131,5 +131,5 @@ type IChatService interface {
 	MarkMsgAsRead(ctx context.Context, msgID string, userID string) error
 
 	AddFragment(ctx context.Context, data *dto.AddFragment) error
-	AddEndMsgID(ctx context.Context, chatID string) error
+	AddEndMsgID(ctx context.Context, chatID string) (string, error)
 }

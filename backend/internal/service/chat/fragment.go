@@ -55,20 +55,24 @@ func (s *service) AddFragment(ctx context.Context, data *dto.AddFragment) error 
 	return s.repository.CreateFragment(ctx, &fragmentModel)
 }
 
-func (s *service) AddEndMsgID(ctx context.Context, chatID string) error {
+func (s *service) AddEndMsgID(ctx context.Context, chatID string) (string, error) {
 	fragment, err := s.repository.GetActiveFragment(ctx, chatID)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	msgs, err := s.repository.GetMessagesInFragment(ctx, *fragment)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	if len(msgs) != 0 {
 		fragment.EndMsgID = &msgs[len(msgs)-1].ID
 	}
 
-	return s.repository.UpdateFragment(ctx, fragment)
+	if err := s.repository.UpdateFragment(ctx, fragment); err != nil {
+		return "", err
+	}
+
+	return fragment.ID, nil
 }

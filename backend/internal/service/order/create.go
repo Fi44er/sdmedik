@@ -2,7 +2,7 @@ package order
 
 import (
 	"context"
-	"fmt"
+	"database/sql"
 	"strings"
 	"time"
 
@@ -34,12 +34,21 @@ func (s *service) Create(ctx context.Context, data *dto.CreateOrder, userID stri
 	}
 
 	chatID := userID
-	fmt.Println("CHATID", chatID)
 	if chatID == "" {
 		chatID = sess.ID()
 	}
 
-	if err := s.chatService.AddEndMsgID(ctx, chatID); err != nil {
+	fragmentID, err := s.chatService.AddEndMsgID(ctx, chatID)
+	if err != nil {
+		return "", err
+	}
+
+	if userID != "" {
+		orderModel.UserID = sql.NullString{String: userID, Valid: true}
+	}
+
+	orderModel.FragmentLink = s.config.FrontendURL + "/admin/admin_chat?fragment=" + fragmentID
+	if err := s.repo.Create(ctx, orderModel); err != nil {
 		return "", err
 	}
 

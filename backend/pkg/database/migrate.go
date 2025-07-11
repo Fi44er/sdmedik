@@ -31,7 +31,7 @@ func Migrate(db *gorm.DB) error {
 		&model.Message{},
 	}
 
-	db.Exec("CREATE TYPE status AS ENUM ('pending', 'processing', 'completed', 'cancelled')")
+	db.Exec("CREATE TYPE status AS ENUM ('pending', 'processing', 'completed', 'cancelled', 'paid')")
 	if err := db.AutoMigrate(models...); err != nil {
 		return err
 	}
