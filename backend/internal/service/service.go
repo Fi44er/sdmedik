@@ -127,6 +127,7 @@ type IChatService interface {
 
 	SaveMessage(ctx context.Context, data *model.Message) error
 	GetMessagesByChatID(ctx context.Context, chatID string) ([]response.FragmenResponse, error)
+	GetMessagesByUserChatID(ctx context.Context, chatID string) ([]model.Message, error)
 
 	MarkMsgAsRead(ctx context.Context, msgID string, userID string) error
 

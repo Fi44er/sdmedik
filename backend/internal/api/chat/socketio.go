@@ -119,7 +119,7 @@ func (i *Implementation) WS() func(*socketio.Websocket) {
 
 		i.addUserToChat(ep.Kws.UUID, userID)
 
-		historyMessages, err := i.service.GetMessagesByChatID(context.Background(), userID)
+		historyMessages, err := i.service.GetMessagesByUserChatID(context.Background(), userID)
 		if err != nil {
 			i.socketErr(ep, err)
 			return

@@ -3,6 +3,7 @@ package chat
 import (
 	"context"
 
+	"github.com/Fi44er/sdmedik/backend/internal/model"
 	"github.com/Fi44er/sdmedik/backend/internal/response"
 )
 
@@ -27,4 +28,8 @@ func (s *service) GetMessagesByChatID(ctx context.Context, chatID string) ([]res
 	}
 
 	return chatRes, nil
+}
+
+func (s *service) GetMessagesByUserChatID(ctx context.Context, chatID string) ([]model.Message, error) {
+	return s.repository.GetMessagesByChatID(ctx, chatID)
 }
