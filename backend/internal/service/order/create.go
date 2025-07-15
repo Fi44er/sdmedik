@@ -3,6 +3,7 @@ package order
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"strings"
 	"time"
 
@@ -47,7 +48,7 @@ func (s *service) Create(ctx context.Context, data *dto.CreateOrder, userID stri
 		orderModel.UserID = sql.NullString{String: userID, Valid: true}
 	}
 
-	orderModel.FragmentLink = s.config.FrontendURL + "/admin/admin_chat?fragment=" + fragmentID
+	orderModel.FragmentLink = fmt.Sprintf("%s/admin/admin_chat?fragment=%s&chat_id=%s", s.config.FrontendURL, fragmentID, chatID)
 	if err := s.repo.Create(ctx, orderModel); err != nil {
 		return "", err
 	}
