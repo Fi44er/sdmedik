@@ -134,3 +134,9 @@ type IChatRepository interface {
 	UpdateFragment(ctx context.Context, fragment *model.Fragment) error
 	GetActiveFragment(ctx context.Context, chatID string) (*model.Fragment, error)
 }
+
+type IPageRepository interface {
+	AddOrUpdateElement(ctx context.Context, element *model.Element) error
+	GetByPath(ctx context.Context, path string) (*model.Page, error)
+	Create(ctx context.Context, data *model.Page) error
+}

@@ -24,15 +24,6 @@ func (m *Message) BeforeCreate(tx *gorm.DB) error {
 	return nil
 }
 
-// type Fragment struct {
-// 	ID         string    `gorm:"primaryKey;type:string;" json:"id"`
-// 	ChatID     string    `gorm:"type:string;not null;" json:"chat_id"`
-// 	StartMsgID string    `gorm:"type:string;not null" json:"start_msg_id"`
-// 	EndMsgID   *string   `gorm:"type:string" json:"end_msg_id"`
-// 	Color      string    `gorm:"type:string;not null" json:"color"`
-// 	CreatedAt  time.Time `gorm:"autoCreateTime;not null" json:"created_at"`
-// }
-
 type Fragment struct {
 	ID         string    `gorm:"primaryKey;type:string;" json:"id"`
 	ChatID     string    `gorm:"type:string;not null;" json:"chat_id"`

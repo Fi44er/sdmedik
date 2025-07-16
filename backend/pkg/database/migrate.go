@@ -29,6 +29,8 @@ func Migrate(db *gorm.DB) error {
 		&model.Chat{},
 		&model.Fragment{},
 		&model.Message{},
+		&model.Page{},
+		&model.Element{},
 	}
 
 	db.Exec("CREATE TYPE status AS ENUM ('pending', 'processing', 'completed', 'cancelled', 'paid')")

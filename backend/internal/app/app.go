@@ -203,6 +203,10 @@ func (a *App) initRouter() error {
 	chat.Get("/", deserializeUser, adminRoleRequired, a.serviceProvider.chatProvider.ChatImpl().GetAll)
 	chat.Delete("/:id", a.serviceProvider.chatProvider.ChatImpl().DeleteChat)
 
+	page := v1.Group("/page")
+	page.Post("/", deserializeUser, adminRoleRequired, a.serviceProvider.pageProvider.PageImpl().AddElement)
+	page.Get("/:path", a.serviceProvider.pageProvider.PageImpl().GetByPath)
+
 	return nil
 }
 

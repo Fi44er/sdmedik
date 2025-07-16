@@ -17,6 +17,19 @@ definitions:
     - product_id
     - quantity
     type: object
+  dto.AddElement:
+    properties:
+      element_id:
+        type: string
+      page_path:
+        type: string
+      value:
+        type: string
+    required:
+    - element_id
+    - page_path
+    - value
+    type: object
   dto.ChangeOrderStatus:
     properties:
       order_id:
@@ -772,6 +785,43 @@ paths:
       summary: Update order status
       tags:
       - order
+  /page:
+    post:
+      consumes:
+      - application/json
+      description: Adds element to page
+      parameters:
+      - description: Element to add
+        in: body
+        name: element
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AddElement'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Add element to page
+      tags:
+      - page
+  /page/{path}:
+    get:
+      consumes:
+      - application/json
+      description: Get page by path
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Get page by path
+      tags:
+      - page
   /product:
     get:
       consumes:

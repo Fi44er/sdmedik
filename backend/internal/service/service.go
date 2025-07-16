@@ -134,3 +134,8 @@ type IChatService interface {
 	AddFragment(ctx context.Context, data *dto.AddFragment) error
 	AddEndMsgID(ctx context.Context, chatID string) (string, error)
 }
+
+type IPageService interface {
+	GetByPath(ctx context.Context, path string) (*model.Page, error)
+	AddElement(ctx context.Context, data *dto.AddElement) error
+}

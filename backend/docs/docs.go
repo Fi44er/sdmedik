@@ -790,6 +790,63 @@ const docTemplate = `{
                 }
             }
         },
+        "/page": {
+            "post": {
+                "description": "Adds element to page",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "page"
+                ],
+                "summary": "Add element to page",
+                "parameters": [
+                    {
+                        "description": "Element to add",
+                        "name": "element",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.AddElement"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/page/{path}": {
+            "get": {
+                "description": "Get page by path",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "page"
+                ],
+                "summary": "Get page by path",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/product": {
             "get": {
                 "description": "Gets a product",
@@ -1383,6 +1440,25 @@ const docTemplate = `{
                 },
                 "quantity": {
                     "type": "integer"
+                }
+            }
+        },
+        "dto.AddElement": {
+            "type": "object",
+            "required": [
+                "element_id",
+                "page_path",
+                "value"
+            ],
+            "properties": {
+                "element_id": {
+                    "type": "string"
+                },
+                "page_path": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
                 }
             }
         },
