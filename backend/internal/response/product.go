@@ -31,6 +31,7 @@ type ProductResponse struct {
 	Catalogs         uint8                      `json:"catalogs"`
 	TRU              string                     `json:"tru"`
 	Prewiew          string                     `json:"preview"`
+	Nameplate        string                     `json:"nameplate"`
 }
 
 type ProductCategoryRes struct {

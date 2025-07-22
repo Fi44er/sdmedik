@@ -110,6 +110,7 @@ func (s *service) Get(ctx context.Context, criteria dto.ProductSearchCriteria) (
 			Catalogs:         product.Catalogs,
 			TRU:              product.TRU,
 			Prewiew:          product.Preview,
+			Nameplate:        product.Nameplate,
 		})
 	}
 
