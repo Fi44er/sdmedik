@@ -78,6 +78,7 @@ func (s *service) Create(ctx context.Context, product *dto.CreateProduct, images
 		Price:       product.Price,
 		TRU:         product.TRU,
 		Prewiew:     product.Preview,
+		Nameplate:   product.Nameplate,
 	}
 
 	var modelProduct model.Product

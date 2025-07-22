@@ -18,6 +18,7 @@ type Product struct {
 	Catalogs             uint8                 `gorm:"not null;default:0" json:"catalogs"`
 	TRU                  string                `gorm:"type:string" json:"tru"`
 	Preview              string                `gorm:"type:string" json:"preview"`
+	Nameplate            string                `gorm:"type:string" json:"nameplate"`
 }
 
 func (p *Product) BeforeCreate(tx *gorm.DB) error {

@@ -33,7 +33,6 @@ func (p *Promotion) BeforeCreate(tx *gorm.DB) error {
 	return nil
 }
 
-// -------------------------------
 type ConditionType string
 
 const (

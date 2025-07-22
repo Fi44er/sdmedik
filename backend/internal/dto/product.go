@@ -9,6 +9,7 @@ type CreateProduct struct {
 	CharacteristicValues []CharacteristicValue `json:"characteristic_values" validate:"dive"`
 	TRU                  string                `json:"tru"`
 	Preview              string                `json:"preview"`
+	Nameplate            string                `json:"nameplate"`
 	Catalogs             []int                 `json:"catalogs"`
 }
 
@@ -19,6 +20,7 @@ type Product struct {
 	Price       float64 `json:"price"`
 	TRU         string  `json:"tru"`
 	Prewiew     string  `json:"preview"`
+	Nameplate   string  `json:"nameplate"`
 }
 
 type ProductSearchCriteria struct {
@@ -60,6 +62,7 @@ type UpdateProduct struct {
 	Catalogs             []int                 `json:"catalogs"`
 	TRU                  string                `json:"tru"`
 	Preview              string                `json:"preview"`
+	Nameplate            string                `json:"nameplate"`
 }
 
 type DelImage struct {
