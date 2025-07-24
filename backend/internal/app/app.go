@@ -207,6 +207,13 @@ func (a *App) initRouter() error {
 	page.Post("/", deserializeUser, adminRoleRequired, a.serviceProvider.pageProvider.PageImpl().AddElement)
 	page.Get("/:path", a.serviceProvider.pageProvider.PageImpl().GetByPath)
 
+	blog := v1.Group("/blog")
+	blog.Get("/:id", a.serviceProvider.blogProvider.BlogImpl().GetByID)
+	blog.Get("/", a.serviceProvider.blogProvider.BlogImpl().GetAll)
+	blog.Post("/upload", deserializeUser, adminRoleRequired, a.serviceProvider.blogProvider.BlogImpl().Upload)
+	blog.Post("/", deserializeUser, adminRoleRequired, a.serviceProvider.blogProvider.BlogImpl().Create)
+	blog.Put("/", deserializeUser, adminRoleRequired, a.serviceProvider.blogProvider.BlogImpl().Update)
+
 	return nil
 }
 

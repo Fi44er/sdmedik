@@ -32,6 +32,7 @@ type serviceProvider struct {
 	promotionProvider           provider.PromotionProvider
 	chatProvider                provider.ChatProvider
 	pageProvider                provider.PageProvider
+	blogProvider                provider.BlogProvider
 
 	logger    *logger.Logger
 	db        *gorm.DB
@@ -90,6 +91,7 @@ func (s *serviceProvider) initDeps() error {
 		s.initChatProvider,
 		s.initOrderProvider,
 		s.initPageProvider,
+		s.initBlogProvider,
 	}
 
 	for _, init := range inits {
@@ -99,6 +101,11 @@ func (s *serviceProvider) initDeps() error {
 		}
 	}
 
+	return nil
+}
+
+func (s *serviceProvider) initBlogProvider() error {
+	s.blogProvider = *provider.NewBlogProvider(s.logger, s.db)
 	return nil
 }
 

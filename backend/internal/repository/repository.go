@@ -140,3 +140,10 @@ type IPageRepository interface {
 	GetByPath(ctx context.Context, path string) (*model.Page, error)
 	Create(ctx context.Context, data *model.Page) error
 }
+
+type IBlogRepository interface {
+	Create(ctx context.Context, data *model.Blog) error
+	GetAll(ctx context.Context, offset, limit int) ([]model.Blog, error)
+	GetByID(ctx context.Context, id string) (*model.Blog, error)
+	Update(ctx context.Context, data *model.Blog) error
+}

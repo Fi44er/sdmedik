@@ -31,6 +31,7 @@ func Migrate(db *gorm.DB) error {
 		&model.Message{},
 		&model.Page{},
 		&model.Element{},
+		&model.Blog{},
 	}
 
 	db.Exec("CREATE TYPE status AS ENUM ('pending', 'processing', 'completed', 'cancelled', 'paid')")

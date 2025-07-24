@@ -139,3 +139,11 @@ type IPageService interface {
 	GetByPath(ctx context.Context, path string) (*model.Page, error)
 	AddElement(ctx context.Context, data *dto.AddElement) error
 }
+
+type IBlogService interface {
+	Create(ctx context.Context, data *model.Blog) error
+	Update(ctx context.Context, data *model.Blog) error
+	GetAll(ctx context.Context, offset, limit int) ([]model.Blog, error)
+	GetByID(ctx context.Context, id string) (*model.Blog, error)
+	Upload(ctx context.Context, name string, data []byte) (string, error)
+}

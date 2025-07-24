@@ -192,6 +192,15 @@ definitions:
     - code
     - email
     type: object
+  model.Blog:
+    properties:
+      id:
+        type: string
+      prewiew:
+        type: string
+      text:
+        type: string
+    type: object
   model.ConditionType:
     enum:
     - min_quantity
@@ -504,6 +513,112 @@ paths:
       summary: Create a new basket
       tags:
       - basket
+  /blog:
+    get:
+      description: Get list of blogs with pagination
+      parameters:
+      - default: 0
+        description: Pagination offset
+        in: query
+        name: offset
+        type: integer
+      - default: 10
+        description: Pagination limit
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Get all blogs
+      tags:
+      - blog
+    post:
+      consumes:
+      - application/json
+      description: Creating blog(ID указывать НЕ НУЖНО)
+      parameters:
+      - description: Create blog
+        in: body
+        name: element
+        required: true
+        schema:
+          $ref: '#/definitions/model.Blog'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Create blog
+      tags:
+      - blog
+    put:
+      consumes:
+      - application/json
+      description: Updating blog(ID указывать НЕ НУЖНО)
+      parameters:
+      - description: Update blog
+        in: body
+        name: element
+        required: true
+        schema:
+          $ref: '#/definitions/model.Blog'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Update blog
+      tags:
+      - blog
+  /blog/{id}:
+    get:
+      description: Get single blog by its ID
+      parameters:
+      - description: Blog ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Get blog by ID
+      tags:
+      - blog
+  /blog/upload:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Uploads a file to the server
+      parameters:
+      - description: File to upload
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Upload a file
+      tags:
+      - blog
   /category:
     get:
       consumes:
