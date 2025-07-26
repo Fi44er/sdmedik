@@ -10,6 +10,7 @@ type Blog struct {
 	Preview string `gorm:"type:varchar(255);" json:"prewiew"`
 	Heading string `gorm:"type:text;" json:"heading"`
 	Text    string `gorm:"type:text;" json:"text"`
+	Hex     string `gorm:"type:text;" json:"hex"`
 }
 
 func (m *Blog) BeforeCreate(tx *gorm.DB) error {
