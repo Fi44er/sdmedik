@@ -1,19 +1,32 @@
-# Используем базовый образ Go на Alpine
-FROM golang:1.23-alpine
+# Используем конкретную версию Golang для лучшей предсказуемости
+FROM golang:1.23-alpine AS builder
 
-# Устанавливаем GCC и зависимости для сборки
-RUN apk update && apk add --no-cache build-base
-
-# Копируем исходный код
+RUN apk add --no-cache build-base
+# Устанавливаем рабочую директорию
 WORKDIR /app
+
+# Копируем только необходимые файлы для скачивания зависимостей
+COPY go.mod go.sum ./
+RUN go mod download
+
+# Копируем все файлы проекта
 COPY . .
 
-# Скачиваем зависимости и собираем приложение
-RUN go mod download && \
-    CGO_ENABLED=1 GOOS=linux go build -o main ./cmd
+# Оптимизируем сборку, чтобы исключить ненужные зависимости и уменьшить размер образа
+RUN CGO_ENABLED=1 GOOS=linux go build -a -installsuffix cgo -o main ./cmd
 
-# Открываем порт (опционально)
+# Создаем минимальный контейнер для запуска приложения
+FROM alpine:latest
+
+# Устанавливаем рабочую директорию
+WORKDIR /app
+
+# Копируем скомпилированный бинарный файл из предыдущего этапа
+COPY --from=builder /app/main .
+COPY .env .
+# Указываем порт, который будет использовать приложение
 EXPOSE 8080
 
-# Запускаем приложение
+# Определяем команду запуска контейнера
 CMD ["./main"]
+

@@ -10,42 +10,32 @@ services:
       POSTGRES_DB: sdmedik
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    ports:
-      - 5432:5432
-    networks:
-      - app-network
+    network_mode: host
+    restart: unless-stopped
 
-
-  # backend:
-  #   build: .
-  #   container_name: backend
-  #   ports:
-  #     - "8080:8080"
-  #   volumes:
-  #     - ./image:/app/image
-  #      # - ./product_index:/app/product_index
-  #     - ./pkg/mailer/template:/app/template
-  #   depends_on:
-  #     - postgres
-  #     - redis
-  #   networks:
-  #     - app-network  # Используем сеть для связи между сервисами
-
+  backend:
+    build:
+      context: .
+      network: host  # Используем хост-сеть при сборке
+    container_name: backend
+    network_mode: host
+    volumes:
+      - ./image:/app/image
+      - ./pkg/mailer/template:/app/template
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
 
   redis:
     image: redis:alpine
     container_name: redis
-    ports:
-      - '6379:6379'
+    network_mode: host
     volumes:
       - redis_data:/data
-    networks:
-      - app-network
+    restart: unless-stopped
 
 volumes:
   postgres_data:
   redis_data:
 
-networks:
-  app-network:  # Создаем сеть для связи между сервисами
-    driver: bridge
