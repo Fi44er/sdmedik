@@ -41,12 +41,14 @@ func (i *Implementation) Create(ctx *fiber.Ctx) error {
 // @Success 200 {object} response.Response "OK"
 // @Router /blog [put]
 func (i *Implementation) Update(ctx *fiber.Ctx) error {
+	id := ctx.Params("id")
 	dto := new(model.Blog)
 
 	if err := ctx.BodyParser(dto); err != nil {
 		return ctx.Status(400).JSON("Failed to parse body")
 	}
 
+	dto.ID = id
 	if err := i.service.Update(ctx.Context(), dto); err != nil {
 		code, msg := errors.GetErroField(err)
 		return ctx.Status(code).JSON(msg)

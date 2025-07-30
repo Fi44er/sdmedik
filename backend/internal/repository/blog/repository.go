@@ -70,7 +70,7 @@ func (r *repository) GetByID(ctx context.Context, id string) (*model.Blog, error
 
 func (r *repository) Update(ctx context.Context, data *model.Blog) error {
 	r.logger.Info("Updating blog")
-	if err := r.db.WithContext(ctx).Model(data).Updates(data).Error; err != nil {
+	if err := r.db.WithContext(ctx).Where("id = ?", data.ID).Model(data).Updates(data).Error; err != nil {
 		r.logger.Errorf("Failed to update blog: %v", err)
 		return err
 	}

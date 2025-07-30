@@ -212,7 +212,7 @@ func (a *App) initRouter() error {
 	blog.Get("/", a.serviceProvider.blogProvider.BlogImpl().GetAll)
 	blog.Post("/upload", deserializeUser, adminRoleRequired, a.serviceProvider.blogProvider.BlogImpl().Upload)
 	blog.Post("/", deserializeUser, adminRoleRequired, a.serviceProvider.blogProvider.BlogImpl().Create)
-	blog.Put("/", deserializeUser, adminRoleRequired, a.serviceProvider.blogProvider.BlogImpl().Update)
+	blog.Put("/:id", deserializeUser, adminRoleRequired, a.serviceProvider.blogProvider.BlogImpl().Update)
 	blog.Delete("/:id", deserializeUser, adminRoleRequired, a.serviceProvider.blogProvider.BlogImpl().Delete)
 
 	return nil
