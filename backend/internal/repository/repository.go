@@ -146,4 +146,5 @@ type IBlogRepository interface {
 	GetAll(ctx context.Context, offset, limit int) ([]model.Blog, error)
 	GetByID(ctx context.Context, id string) (*model.Blog, error)
 	Update(ctx context.Context, data *model.Blog) error
+	Delete(ctx context.Context, id string) error
 }

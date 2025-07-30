@@ -146,4 +146,5 @@ type IBlogService interface {
 	GetAll(ctx context.Context, offset, limit int) ([]model.Blog, error)
 	GetByID(ctx context.Context, id string) (*model.Blog, error)
 	Upload(ctx context.Context, name string, data []byte) (string, error)
+	Delete(ctx context.Context, id string) error
 }

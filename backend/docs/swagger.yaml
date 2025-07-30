@@ -584,6 +584,24 @@ paths:
       tags:
       - blog
   /blog/{id}:
+    delete:
+      description: Delete blog by its ID
+      parameters:
+      - description: Blog ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Delete blog by ID
+      tags:
+      - blog
     get:
       description: Get single blog by its ID
       parameters:

@@ -78,3 +78,14 @@ func (r *repository) Update(ctx context.Context, data *model.Blog) error {
 	r.logger.Info("Blog updated successfully")
 	return nil
 }
+
+func (r *repository) Delete(ctx context.Context, id string) error {
+	r.logger.Info("Deleting blog")
+	if err := r.db.WithContext(ctx).Where("id = ?", id).Delete(&model.Blog{}).Error; err != nil {
+		r.logger.Errorf("Failed to delete blog: %v", err)
+		return err
+	}
+
+	r.logger.Info("Blog deleted successfully")
+	return nil
+}
