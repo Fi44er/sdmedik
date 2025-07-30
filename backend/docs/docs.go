@@ -1869,6 +1869,12 @@ const docTemplate = `{
         "model.Blog": {
             "type": "object",
             "properties": {
+                "heading": {
+                    "type": "string"
+                },
+                "hex": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "string"
                 },

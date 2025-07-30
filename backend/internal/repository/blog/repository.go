@@ -56,7 +56,7 @@ func (r *repository) GetAll(ctx context.Context, offset, limit int) ([]model.Blo
 func (r *repository) GetByID(ctx context.Context, id string) (*model.Blog, error) {
 	r.logger.Info("Fetching blog")
 	blog := new(model.Blog)
-	if err := r.db.WithContext(ctx).First(blog, id).Error; err != nil {
+	if err := r.db.WithContext(ctx).Where("id = ?", id).First(blog).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return nil, nil
 		}
