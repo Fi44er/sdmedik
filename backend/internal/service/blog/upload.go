@@ -8,7 +8,7 @@ import (
 	"github.com/google/uuid"
 )
 
-var fileLink = "http://localhost:8080/api/v1/image/"
+var fileLink = "https://sdmedik.ru/api/v1/image/"
 
 func (s *service) Upload(ctx context.Context, name string, data []byte) (string, error) {
 	expansion := filepath.Ext(name)

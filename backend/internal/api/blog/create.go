@@ -37,9 +37,10 @@ func (i *Implementation) Create(ctx *fiber.Ctx) error {
 // @Tags blog
 // @Accept json
 // @Produce json
+// @Param id path string true "Blog ID"
 // @Param element body model.Blog true "Update blog"
 // @Success 200 {object} response.Response "OK"
-// @Router /blog [put]
+// @Router /blog/{id} [put]
 func (i *Implementation) Update(ctx *fiber.Ctx) error {
 	id := ctx.Params("id")
 	dto := new(model.Blog)

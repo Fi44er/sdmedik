@@ -422,38 +422,6 @@ const docTemplate = `{
                     }
                 }
             },
-            "put": {
-                "description": "Updating blog(ID указывать НЕ НУЖНО)",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "blog"
-                ],
-                "summary": "Update blog",
-                "parameters": [
-                    {
-                        "description": "Update blog",
-                        "name": "element",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.Blog"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    }
-                }
-            },
             "post": {
                 "description": "Creating blog(ID указывать НЕ НУЖНО)",
                 "consumes": [
@@ -536,6 +504,45 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Updating blog(ID указывать НЕ НУЖНО)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "blog"
+                ],
+                "summary": "Update blog",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Blog ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update blog",
+                        "name": "element",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.Blog"
+                        }
                     }
                 ],
                 "responses": {
