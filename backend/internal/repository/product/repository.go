@@ -92,7 +92,10 @@ func (r *repository) Update(ctx context.Context, data *model.Product, tx *gorm.D
 		}
 	}
 
-	result := db.WithContext(ctx).Model(data).Select("*").Updates(data)
+	result := db.WithContext(ctx).Model(data).Updates(data).UpdateColumns(map[string]interface{}{
+		"Prewiu":    data.Preview,
+		"Nameplate": data.Nameplate,
+	})
 	if err := result.Error; err != nil {
 		r.logger.Errorf("Failed to update product: %v", err)
 		return err
