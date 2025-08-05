@@ -12,6 +12,13 @@ func (s *service) AddOrUpdate(data interface{}, docType string) error {
 		return err
 	}
 
+	// Добавляем извлечение артикула
+	article, err := utils.FindFieldInObject(data, "Article")
+	if err != nil {
+		// Если поле не найдено, можно пропустить или установить пустое значение
+		article = ""
+	}
+
 	id, err := utils.FindFieldInObject(data, "ID")
 	if err != nil {
 		return err
@@ -22,8 +29,9 @@ func (s *service) AddOrUpdate(data interface{}, docType string) error {
 	}
 
 	doc := map[string]interface{}{
-		"Name": name,
-		"Type": docType,
+		"Name":    name,
+		"Article": article, // Добавляем артикул
+		"Type":    docType,
 	}
 
 	if err := s.index.Index(strId, doc); err != nil {

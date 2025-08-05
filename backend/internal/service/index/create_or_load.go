@@ -66,6 +66,12 @@ func (s *service) createIndex() (bleve.Index, error) {
 	productMapping.AddFieldMappingsAt("Name", nameFieldMapping)
 	productMapping.AddFieldMappingsAt("Type", mapping.NewTextFieldMapping())
 
+	articleFieldMapping := mapping.NewTextFieldMapping()
+	articleFieldMapping.Analyzer = "keyword" // или другой подходящий анализатор
+	productMapping.AddFieldMappingsAt("Article", articleFieldMapping)
+
+	productMapping.AddFieldMappingsAt("Type", mapping.NewTextFieldMapping())
+
 	indexMapping.AddDocumentMapping("product", productMapping)
 
 	// Создаем индекс
@@ -98,17 +104,6 @@ func (s *service) addSampleProducts(ctx context.Context) error {
 	}
 	products = &newProducts
 
-	// categories, err := s.categoryService.GetAll(ctx)
-	// if err != nil {
-	// 	if !errors.Is(err, constants.ErrCategoryNotFound) {
-	// 		return err
-	// 	}
-	// }
-	//
-	// if categories == nil {
-	// 	categories = &[]model.Category{}
-	// }
-
 	// Создаем пакет для индексации
 	batch := s.index.NewBatch()
 
@@ -118,13 +113,6 @@ func (s *service) addSampleProducts(ctx context.Context) error {
 			s.logger.Errorf("ошибка при добавлении товара с ID %s в пакет: %v", product.ID, err)
 		}
 	}
-
-	// Добавляем категории в пакет
-	// for _, category := range *categories {
-	// 	if err := s.addToBatch(batch, category, "product"); err != nil {
-	// 		s.logger.Errorf("ошибка при добавлении категории с ID %v в пакет: %v", category.ID, err)
-	// 	}
-	// }
 
 	// Выполняем пакетную индексацию
 	if err := s.index.Batch(batch); err != nil {
@@ -140,6 +128,12 @@ func (s *service) addToBatch(batch *bleve.Batch, data interface{}, docType strin
 		return err
 	}
 
+	// Добавляем извлечение артикула
+	article, err := utils.FindFieldInObject(data, "Article")
+	if err != nil {
+		article = ""
+	}
+
 	id, err := utils.FindFieldInObject(data, "ID")
 	if err != nil {
 		return err
@@ -151,8 +145,9 @@ func (s *service) addToBatch(batch *bleve.Batch, data interface{}, docType strin
 	}
 
 	doc := map[string]interface{}{
-		"Name": name,
-		"Type": docType,
+		"Name":    name,
+		"Article": article,
+		"Type":    docType,
 	}
 
 	batch.Index(strId, doc)
