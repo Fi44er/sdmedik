@@ -165,8 +165,11 @@ func (s *service) AddItem(ctx context.Context, data *dto.AddBasketItem, userID s
 				for i, value := range charInfo.Values {
 					if option.Value == value {
 						// Заменяем цену на цену выбранной характеристики
-						selectedPrice = charInfo.Prices[i]
+						if charInfo.Prices[i] != 0 {
+							selectedPrice = charInfo.Prices[i]
+						}
 						break
+
 					}
 				}
 			}
