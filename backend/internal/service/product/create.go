@@ -95,11 +95,21 @@ func (s *service) Create(ctx context.Context, product *dto.CreateProduct, images
 	}
 
 	var characteristicsValue []model.CharacteristicValue
+	var characteristicPrices []float64
+
 	for _, values := range product.CharacteristicValues {
+		if catalogBite == 1 {
+			if len(values.Prices) > 0 && len(values.Prices) != len(values.Value) {
+				s.transactionManagerRepo.Rollback(tx)
+				return errors.New(400, "Invalid characteristic prices")
+			}
+			characteristicPrices = values.Prices
+		}
 		characteristicsValue = append(characteristicsValue, model.CharacteristicValue{
 			Value:            values.Value,
 			CharacteristicID: values.CharacteristicID,
 			ProductID:        modelProduct.ID,
+			Prices:           characteristicPrices,
 		})
 	}
 

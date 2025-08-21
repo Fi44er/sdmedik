@@ -83,9 +83,10 @@ func (s *service) Get(ctx context.Context, criteria dto.ProductSearchCriteria) (
 		for _, charValue := range product.CharacteristicValues {
 			if char, ok := characteristicMap[charValue.CharacteristicID]; ok {
 				characteristicsRes = append(characteristicsRes, response.ProductCharacteristicRes{
-					ID:    char.ID,
-					Value: charValue.Value,
-					Name:  char.Name,
+					ID:     char.ID,
+					Value:  charValue.Value,
+					Name:   char.Name,
+					Prices: charValue.Prices,
 				})
 			}
 		}

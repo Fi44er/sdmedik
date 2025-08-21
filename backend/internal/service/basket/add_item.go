@@ -54,9 +54,51 @@ func (s *service) AddItem(ctx context.Context, data *dto.AddBasketItem, userID s
 	var catalogMask uint8 = 1 << 1 // для 2ого каталога
 	isSertificate := (*product)[0].Catalogs&catalogMask != 0 && data.Iso != ""
 
+	charMap := make(map[int]struct {
+		Name   string
+		Values []string
+		Prices []float64
+	})
+	selectedOption := make([]interface{}, 0)
+	for _, char := range (*product)[0].Characteristic {
+		charMap[char.ID] = struct {
+			Name   string
+			Values []string
+			Prices []float64
+		}{Name: char.Name, Values: char.Value, Prices: char.Prices}
+	}
+
+	selectedOptionInCtx := ctx.Value("dinamic_options")
+	if selectedOptionInCtx != nil {
+		selectedOption = selectedOptionInCtx.([]interface{})
+	} else {
+		for _, option := range data.DinamicOptions {
+			if values, exist := charMap[option.ID]; exist {
+				existOption := false
+				for _, val := range values.Values {
+					if option.Value == val {
+						existOption = true
+						selectedOption = append(selectedOption, struct {
+							Name  string `json:"name"`
+							Value string `json:"value"`
+						}{Name: values.Name, Value: option.Value})
+						break
+					}
+				}
+				if !existOption {
+					return constants.ErrOptionNotFound
+				}
+			}
+		}
+	}
+
 	var basketItem *model.BasketItem
+	stringSelectedOption, err := json.Marshal(selectedOption)
+	if err != nil {
+		return fmt.Errorf("failed to marshal selected option: %w", err)
+	}
 	if userID != "" {
-		basketItem, err = s.basketItemRepo.GetByProductIDIsoIsCert(ctx, data.ProductID, basket.ID, data.Iso, isSertificate)
+		basketItem, err = s.basketItemRepo.GetByProductIDIsoIsCert(ctx, data.ProductID, basket.ID, data.Iso, isSertificate, string(stringSelectedOption))
 		if err != nil {
 			return fmt.Errorf("failed to get basket item: %w", err)
 		}
@@ -106,41 +148,6 @@ func (s *service) AddItem(ctx context.Context, data *dto.AddBasketItem, userID s
 
 	// Создаем новый элемент в корзине
 	// data.DinamicOptions
-	charMap := make(map[int]struct {
-		Name   string
-		Values []string
-	})
-	selectedOption := make([]interface{}, 0)
-	for _, char := range (*product)[0].Characteristic {
-		charMap[char.ID] = struct {
-			Name   string
-			Values []string
-		}{Name: char.Name, Values: char.Value}
-	}
-
-	selectedOptionInCtx := ctx.Value("dinamic_options")
-	if selectedOptionInCtx != nil {
-		selectedOption = selectedOptionInCtx.([]interface{})
-	} else {
-		for _, option := range data.DinamicOptions {
-			if values, exist := charMap[option.ID]; exist {
-				existOption := false
-				for _, val := range values.Values {
-					if option.Value == val {
-						existOption = true
-						selectedOption = append(selectedOption, struct {
-							Name  string `json:"name"`
-							Value string `json:"value"`
-						}{Name: values.Name, Value: option.Value})
-						break
-					}
-				}
-				if !existOption {
-					return constants.ErrOptionNotFound
-				}
-			}
-		}
-	}
 
 	var totalPrice float64
 	iso := ""
@@ -148,7 +155,25 @@ func (s *service) AddItem(ctx context.Context, data *dto.AddBasketItem, userID s
 		totalPrice = (*product)[0].CertificatePrice * float64(data.Quantity)
 		iso = data.Iso
 	} else {
-		totalPrice = (*product)[0].Price * float64(data.Quantity)
+		// Используем базовую цену по умолчанию
+		selectedPrice := (*product)[0].Price
+
+		// Проходим по всем выбранным опциям
+		for _, option := range data.DinamicOptions {
+			if charInfo, exists := charMap[option.ID]; exists {
+				// Ищем выбранное значение в списке значений характеристики
+				for i, value := range charInfo.Values {
+					if option.Value == value {
+						// Заменяем цену на цену выбранной характеристики
+						selectedPrice = charInfo.Prices[i]
+						break
+					}
+				}
+			}
+		}
+
+		// Общая цена = выбранная цена * количество
+		totalPrice = selectedPrice * float64(data.Quantity)
 	}
 
 	newBasketItem := model.BasketItem{

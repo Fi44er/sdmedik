@@ -75,39 +75,54 @@ func (s *service) GetByUserID(ctx context.Context, userID string, sess *session.
 			imageUrl = productMap[item.ProductID].Images[0].Name
 		}
 
-		var catalogMask uint8
-		catalogMask = 1 << 1
-		if productMap[item.ProductID].Catalogs&catalogMask != 0 {
-			basketRes.Items = append(basketRes.Items, response.BasketItemRes{
-				ID:              item.ID,
-				Article:         item.Article,
-				ProductID:       item.ProductID,
-				Name:            productMap[item.ProductID].Name,
-				Image:           imageUrl,
-				Quantity:        item.Quantity,
-				TotalPrice:      item.TotalPrice,
-				Price:           item.TotalPrice / float64(item.Quantity),
-				IsCertificate:   item.IsCertificate,
-				Iso:             item.Iso,
-				SelectedOptions: item.SelectedOptions,
-				TRU:             productMap[item.ProductID].TRU,
-			})
-		} else {
-			basketRes.Items = append(basketRes.Items, response.BasketItemRes{
-				ID:              item.ID,
-				Article:         item.Article,
-				ProductID:       item.ProductID,
-				Name:            productMap[item.ProductID].Name,
-				Image:           imageUrl,
-				Quantity:        item.Quantity,
-				TotalPrice:      item.TotalPrice,
-				Price:           productMap[item.ProductID].Price,
-				IsCertificate:   item.IsCertificate,
-				Iso:             item.Iso,
-				SelectedOptions: item.SelectedOptions,
-				TRU:             productMap[item.ProductID].TRU,
-			})
-		}
+		// var catalogMask uint8
+		// catalogMask = 1 << 1
+		// if productMap[item.ProductID].Catalogs&catalogMask != 0 {
+		// 	basketRes.Items = append(basketRes.Items, response.BasketItemRes{
+		// 		ID:              item.ID,
+		// 		Article:         item.Article,
+		// 		ProductID:       item.ProductID,
+		// 		Name:            productMap[item.ProductID].Name,
+		// 		Image:           imageUrl,
+		// 		Quantity:        item.Quantity,
+		// 		TotalPrice:      item.TotalPrice,
+		// 		Price:           item.TotalPrice / float64(item.Quantity),
+		// 		IsCertificate:   item.IsCertificate,
+		// 		Iso:             item.Iso,
+		// 		SelectedOptions: item.SelectedOptions,
+		// 		TRU:             productMap[item.ProductID].TRU,
+		// 	})
+		// } else {
+		// 	basketRes.Items = append(basketRes.Items, response.BasketItemRes{
+		// 		ID:              item.ID,
+		// 		Article:         item.Article,
+		// 		ProductID:       item.ProductID,
+		// 		Name:            productMap[item.ProductID].Name,
+		// 		Image:           imageUrl,
+		// 		Quantity:        item.Quantity,
+		// 		TotalPrice:      item.TotalPrice,
+		// 		Price:           productMap[item.ProductID].Price,
+		// 		IsCertificate:   item.IsCertificate,
+		// 		Iso:             item.Iso,
+		// 		SelectedOptions: item.SelectedOptions,
+		// 		TRU:             productMap[item.ProductID].TRU,
+		// 	})
+		// }
+
+		basketRes.Items = append(basketRes.Items, response.BasketItemRes{
+			ID:              item.ID,
+			Article:         item.Article,
+			ProductID:       item.ProductID,
+			Name:            productMap[item.ProductID].Name,
+			Image:           imageUrl,
+			Quantity:        item.Quantity,
+			TotalPrice:      item.TotalPrice,
+			Price:           item.TotalPrice / float64(item.Quantity),
+			IsCertificate:   item.IsCertificate,
+			Iso:             item.Iso,
+			SelectedOptions: item.SelectedOptions,
+			TRU:             productMap[item.ProductID].TRU,
+		})
 	}
 
 	basketRes.ID = basket.ID

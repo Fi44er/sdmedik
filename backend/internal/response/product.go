@@ -45,9 +45,10 @@ type ProductImageRes struct {
 }
 
 type ProductCharacteristicRes struct {
-	ID    int      `json:"id"`
-	Value []string `json:"value"`
-	Name  string   `json:"name"`
+	ID     int       `json:"id"`
+	Value  []string  `json:"value"`
+	Name   string    `json:"name"`
+	Prices []float64 `json:"prices"`
 }
 
 type ProductPopularity struct {
