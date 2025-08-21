@@ -169,7 +169,6 @@ func (s *service) AddItem(ctx context.Context, data *dto.AddBasketItem, userID s
 							selectedPrice = charInfo.Prices[i]
 						}
 						break
-
 					}
 				}
 			}
