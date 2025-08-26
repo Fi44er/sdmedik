@@ -61,6 +61,10 @@ func (s *service) AddEndMsgID(ctx context.Context, chatID string) (string, error
 		return "", err
 	}
 
+	if fragment == nil {
+		return "", nil
+	}
+
 	msgs, err := s.repository.GetMessagesInFragment(ctx, *fragment)
 	if err != nil {
 		return "", err
