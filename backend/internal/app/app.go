@@ -146,6 +146,7 @@ func (a *App) initRouter() error {
 	user.Get("/", a.serviceProvider.userProvider.UserImpl().GetAll)
 	user.Get("/:id", a.serviceProvider.userProvider.UserImpl().GetByID)
 	user.Put("/:id", a.serviceProvider.userProvider.UserImpl().Update)
+	user.Delete("/:id", deserializeUser, adminRoleRequired, a.serviceProvider.userProvider.UserImpl().Delete)
 
 	auth := v1.Group("/auth")
 	auth.Post("/register", a.serviceProvider.authProvider.AuthImpl().Register)
