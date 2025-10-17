@@ -2,6 +2,7 @@ package chat
 
 import (
 	"context"
+	"time"
 
 	"github.com/Fi44er/sdmedik/backend/pkg/errors"
 )
@@ -19,5 +20,6 @@ func (s *service) MarkMsgAsRead(ctx context.Context, msgID string, userID string
 		return errors.New(403, "You are not allowed to mark this message as read")
 	}
 
-	return s.repository.MarkMsgAsRead(ctx, msgID)
+	readAt := time.Now().UTC()
+	return s.repository.MarkMsgAsRead(ctx, msgID, readAt)
 }

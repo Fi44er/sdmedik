@@ -13,6 +13,7 @@ type Message struct {
 	Message    string    `gorm:"type:text;not null" json:"message"`
 	CreatedAt  time.Time `gorm:"autoCreateTime;not null" json:"time_to_send"`
 	ReadStatus bool      `gorm:"not null;default:false" json:"read_status"`
+	ReadAt     time.Time `json:"read_at"`
 
 	ChatID string `gorm:"type:string;not null" json:"chat_id"`
 	Chat   Chat   `gorm:"foreignKey:ChatID" json:"-"`

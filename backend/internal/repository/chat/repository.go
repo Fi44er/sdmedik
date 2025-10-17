@@ -3,6 +3,7 @@ package chat
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/Fi44er/sdmedik/backend/internal/model"
 	def "github.com/Fi44er/sdmedik/backend/internal/repository"
@@ -123,9 +124,18 @@ func (r *repository) GetMessageByID(ctx context.Context, id string) (*model.Mess
 	return message, nil
 }
 
-func (r *repository) MarkMsgAsRead(ctx context.Context, msgID string) error {
+func (r *repository) MarkMsgAsRead(ctx context.Context, msgID string, readAt time.Time) error {
 	r.logger.Info("Marking message as read...")
-	if err := r.db.WithContext(ctx).Model(&model.Message{}).Where("id = ?", msgID).Update("read_status", true).Error; err != nil {
+
+	// map[string]interface{}{
+	//       "read_status": true,
+	//       "updated_at":  time.Now(),
+	//       "read_by":     userID,
+	//   }
+	if err := r.db.WithContext(ctx).Model(&model.Message{}).Where("id = ?", msgID).Updates(map[string]any{
+		"read_status": true,
+		"read_at":     readAt,
+	}).Error; err != nil {
 		r.logger.Errorf("Failed to mark message as read: %v", err)
 		return err
 	}
