@@ -126,7 +126,7 @@ func (r *repository) GetMessageByID(ctx context.Context, id string) (*model.Mess
 
 func (r *repository) DeleteMessageByID(ctx context.Context, id string) error {
 	r.logger.Info("Deleting message")
-	if err := r.db.WithContext(ctx).Delete(&model.Message{}, id); err != nil {
+	if err := r.db.WithContext(ctx).Where("id = ?", id).Delete(&model.Message{}); err != nil {
 		r.logger.Errorf("Failed to delete msg: %v", err)
 	}
 

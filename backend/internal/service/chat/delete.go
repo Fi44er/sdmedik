@@ -17,7 +17,7 @@ func (s *service) DeleteMessage(ctx context.Context, msgID, userID string) error
 		return err
 	}
 
-	if existMessage.SenderID != userID {
+	if existMessage != nil && existMessage.SenderID != userID {
 		return errors.New(403, "You are not delete this message")
 	}
 
@@ -30,7 +30,7 @@ func (s *service) EditMessage(ctx context.Context, msg, msgID, userID string) er
 		return err
 	}
 
-	if existMessage.SenderID != userID {
+	if existMessage != nil && existMessage.SenderID != userID {
 		return errors.New(403, "You are not delete this message")
 	}
 
