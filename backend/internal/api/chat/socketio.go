@@ -79,6 +79,58 @@ func (i *Implementation) WS() func(*socketio.Websocket) {
 
 	// ================ Custom Events ================
 
+	socketio.On("delete-message", func(ep *socketio.EventPayload) {
+		dataMap, err := i.encodeMessage(ep)
+		if err != nil {
+			i.socketErr(ep, err)
+			return
+		}
+
+		messageID, ok := dataMap["message_id"].(string)
+		if !ok {
+			i.socketErr(ep, fmt.Errorf("failed to parse message_id"))
+			return
+		}
+
+		userID := i.getUserID(ep)
+
+		if err := i.service.DeleteMessage(context.Background(), messageID, userID); err != nil {
+			i.socketErr(ep, err)
+			return
+		}
+
+		ep.Kws.EmitTo(ep.Kws.UUID, []byte(`{"event": "deleted-message", "message_id": "`+messageID+`"}`))
+	})
+
+	socketio.On("edit-message", func(ep *socketio.EventPayload) {
+		dataMap, err := i.encodeMessage(ep)
+		if err != nil {
+			i.socketErr(ep, err)
+			return
+		}
+
+		messageID, ok := dataMap["message_id"].(string)
+		if !ok {
+			i.socketErr(ep, fmt.Errorf("failed to parse message_id"))
+			return
+		}
+
+		message, ok := dataMap["message"].(string)
+		if !ok {
+			i.socketErr(ep, fmt.Errorf("failed to parse message_id"))
+			return
+		}
+
+		userID := i.getUserID(ep)
+
+		if err := i.service.EditMessage(context.Background(), message, messageID, userID); err != nil {
+			i.socketErr(ep, err)
+			return
+		}
+
+		ep.Kws.EmitTo(ep.Kws.UUID, []byte(`{"event": "edited-message", "message_id": "`+messageID+`"}`))
+	})
+
 	socketio.On("mark-as-read", func(ep *socketio.EventPayload) {
 		dataMap, err := i.encodeMessage(ep)
 		if err != nil {

@@ -135,6 +135,9 @@ type IChatRepository interface {
 	GetMessagesInFragment(ctx context.Context, fragment model.Fragment) ([]model.Message, error)
 	UpdateFragment(ctx context.Context, fragment *model.Fragment) error
 	GetActiveFragment(ctx context.Context, chatID string) (*model.Fragment, error)
+
+	UpdateMessage(ctx context.Context, id, msg string) error
+	DeleteMessageByID(ctx context.Context, id string) error
 }
 
 type IPageRepository interface {

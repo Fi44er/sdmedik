@@ -133,6 +133,9 @@ type IChatService interface {
 
 	AddFragment(ctx context.Context, data *dto.AddFragment) error
 	AddEndMsgID(ctx context.Context, chatID string) (string, error)
+
+	EditMessage(ctx context.Context, msg, msgID, userID string) error
+	DeleteMessage(ctx context.Context, msgID, userID string) error
 }
 
 type IPageService interface {

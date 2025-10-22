@@ -124,6 +124,33 @@ func (r *repository) GetMessageByID(ctx context.Context, id string) (*model.Mess
 	return message, nil
 }
 
+func (r *repository) DeleteMessageByID(ctx context.Context, id string) error {
+	r.logger.Info("Deleting message")
+	if err := r.db.WithContext(ctx).Delete(&model.Message{}, id); err != nil {
+		r.logger.Errorf("Failed to delete msg: %v", err)
+	}
+
+	return nil
+}
+
+func (r *repository) UpdateMessage(ctx context.Context, id, msg string) error {
+	r.logger.Info("Updating message")
+
+	result := r.db.WithContext(ctx).
+		Model(&model.Message{}).
+		Where("id = ?", id).
+		Update("message", msg)
+
+	if result.Error != nil {
+		return result.Error
+	}
+
+	if result.RowsAffected == 0 {
+		return fmt.Errorf("message with id %s not found", id)
+	}
+
+	return nil
+}
 func (r *repository) MarkMsgAsRead(ctx context.Context, msgID string, readAt time.Time) error {
 	r.logger.Info("Marking message as read...")
 
