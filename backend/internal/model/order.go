@@ -17,7 +17,7 @@ type Order struct {
 	Address      string         `gorm:"type:string;not null" json:"address"`
 	TotalPrice   float64        `gorm:"not null" json:"total_price"`
 	Status       string         `gorm:"column:status;type:status;not null" json:"status"` // pending or completed
-	Items        []OrderItem    `gorm:"foreignKey:OrderID" json:"items"`
+	Items        []OrderItem    `gorm:"foreignKey:OrderID;constraint:OnDelete:CASCADE" json:"items"`
 	CreatedAt    time.Time      `gorm:"autoCreateTime" json:"created_at"`
 	FragmentLink string         `gorm:"type:string" json:"fragment_link"`
 }

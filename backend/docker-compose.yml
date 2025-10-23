@@ -13,19 +13,19 @@ services:
     network_mode: host
     restart: unless-stopped
 
-  backend:
-    build:
-      context: .
-      network: host  # Используем хост-сеть при сборке
-    container_name: backend
-    network_mode: host
-    volumes:
-      - ./image:/app/image
-      - ./pkg/mailer/template:/app/template
-    depends_on:
-      - postgres
-      - redis
-    restart: unless-stopped
+  # backend:
+  #   build:
+  #     context: .
+  #     network: host  # Используем хост-сеть при сборке
+  #   container_name: backend
+  #   network_mode: host
+  #   volumes:
+  #     - ./image:/app/image
+  #     - ./pkg/mailer/template:/app/template
+  #   depends_on:
+  #     - postgres
+  #     - redis
+  #   restart: unless-stopped
 
   redis:
     image: redis:alpine
